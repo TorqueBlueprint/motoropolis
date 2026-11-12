@@ -181,10 +181,10 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
   </section>
   <div class="screen" id="screen">
     <canvas id="city" width="1920" height="1080" aria-label="Live map of the city of Motoropolis"></canvas>
-    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button></div>
+    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button></div>
     <p class="v-msg" id="vMsg" hidden="" aria-live="polite"></p>
   </div>
-  <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click the repair shop to step inside.</p>
+  <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click the repair shop to step inside it in 3D.</p>
   <button type="button" class="enter-btn" id="wsOpen">Step inside the TorqueBlueprint Repair Shop ▶</button>
   <div class="cards">
     <section class="card">
@@ -1349,7 +1349,7 @@ function wsFrame(ts){if(!wsOpenFlag)return;const dt=Math.min(.1,(ts-(wsLast||ts)
  $('wsStage').innerHTML=Workshop.svg(wsState(),wsT);wsRaf=setTimeout(()=>requestAnimationFrame(wsFrame),45)}
 function openWorkshop(){if(wsOpenFlag)return;wsOpenFlag=true;wsT=0;wsLast=0;$('wsOverlay').hidden=false;$('wsClose').focus();requestAnimationFrame(wsFrame)}
 function closeWorkshop(){wsOpenFlag=false;clearTimeout(wsRaf);$('wsOverlay').hidden=true;$('wsOpen').focus()}
-$('wsOpen').addEventListener('click',openWorkshop);
+$('wsOpen').addEventListener('click',()=>{if(typeof view3d!=='undefined'&&view3d&&R3)R3.enterIn();else openWorkshop()});
 $('wsClose').addEventListener('click',closeWorkshop);
 $('wsOverlay').addEventListener('click',ev=>{if(ev.target.id==='wsOverlay')closeWorkshop()});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&wsOpenFlag)closeWorkshop()});
@@ -1639,8 +1639,8 @@ function make3D(T){
   const wa=groups.lavagem;if(wa)wa.traverse(o=>{if(o.userData.spin)o.rotation.y+=.25})}
  // ---------- camera ----------
  const cam={tx:CX,tz:CZ-9,yaw:Math.PI-.3,pitch:.86,dist:200},home={...cam};let idle=0,dragging=false;
- const clampCam=()=>{cam.pitch=clamp(cam.pitch,.28,1.42);cam.dist=clamp(cam.dist,28,270);cam.tx=clamp(cam.tx,XS3[0]-10,XS3[4]+10);cam.tz=clamp(cam.tz,YS3[0]-10,YS3[3]+10)};
- function placeCam(){const cp=Math.cos(cam.pitch);camera.position.set(cam.tx+Math.sin(cam.yaw)*cp*cam.dist,Math.sin(cam.pitch)*cam.dist,cam.tz+Math.cos(cam.yaw)*cp*cam.dist);camera.lookAt(cam.tx,0,cam.tz)}
+ const clampCam=()=>{if(mode==='in'){cam.pitch=clamp(cam.pitch,.12,1.2);cam.dist=clamp(cam.dist,10,62);cam.tx=clamp(cam.tx,-24,24);cam.tz=clamp(cam.tz,-10,8);return}cam.pitch=clamp(cam.pitch,.28,1.42);cam.dist=clamp(cam.dist,28,270);cam.tx=clamp(cam.tx,XS3[0]-10,XS3[4]+10);cam.tz=clamp(cam.tz,YS3[0]-10,YS3[3]+10)};
+ function placeCam(){const cp=Math.cos(cam.pitch);const ly=mode==='in'?3:0;camera.position.set(cam.tx+Math.sin(cam.yaw)*cp*cam.dist,ly+Math.sin(cam.pitch)*cam.dist,cam.tz+Math.cos(cam.yaw)*cp*cam.dist);camera.lookAt(cam.tx,ly,cam.tz)}
  const ptrs=new Map();let down=null,pinch=null;
  function pan(dx,dy){const k=cam.dist/700;const sx=Math.cos(cam.yaw),sz=-Math.sin(cam.yaw);const fx=-Math.sin(cam.yaw),fz=-Math.cos(cam.yaw);cam.tx-=(dx*sx-dy*fx)*k;cam.tz-=(dx*sz-dy*fz)*k;clampCam()}
  c3.addEventListener('pointerdown',e=>{c3.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});idle=0;
@@ -1658,10 +1658,10 @@ function make3D(T){
  const v3=new T.Vector3();
  function toHud(x,y,z){v3.set(x,y,z).project(camera);if(v3.z>1||v3.z<-1)return null;return{x:(v3.x+1)/2*CW,y:(1-v3.y)/2*CH}}
  const ray=new T.Raycaster(),ndc=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-Y0),hit=new T.Vector3();
- function clickAt(cx,cy){if(trailer)return;const r=c3.getBoundingClientRect(),hx=(cx-r.left)/r.width*CW,hy=(cy-r.top)/r.height*CH;
+ function clickAt(cx,cy){if(trailer||mode==='in')return;const r=c3.getBoundingClientRect(),hx=(cx-r.left)/r.width*CW,hy=(cy-r.top)/r.height*CH;
   let best=null,bd=40*40;for(const c of cars){if(c.hidden||c.removed)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+.7,g.position.z);if(!s)continue;const d=(s.x-hx)**2+(s.y-hy)**2;if(d<bd){bd=d;best=c}}
-  if(!best){ndc.set((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);if(ray.ray.intersectPlane(plane,hit)){const px=hit.x*10,py=hit.z*10,O=B.oficina;if(px>=O.x0&&px<=O.x1&&py>=O.y0&&py<=O.y1){openWorkshop();return}}
-   const og=groups.oficina;if(og){const hits=ray.intersectObject(og,true);if(hits.length){openWorkshop();return}}}
+  if(!best){ndc.set((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);if(ray.ray.intersectPlane(plane,hit)){const px=hit.x*10,py=hit.z*10,O=B.oficina;if(px>=O.x0&&px<=O.x1&&py>=O.y0&&py<=O.y1){enterIn();return}}
+   const og=groups.oficina;if(og){const hits=ray.intersectObject(og,true);if(hits.length){enterIn();return}}}
   selected=best;updateCard()}
  // ---------- labels drawn on the HUD canvas ----------
  function pill(text,x,y,size,bg,fg,stroke){hctx.font=`700 ${size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
@@ -1680,17 +1680,111 @@ function make3D(T){
    if(selected.driver)pill('★ '+selected.driver,s.x,s.y-34,17,'rgba(255,122,26,.95)','#1d0f02')}}
   if(!trailer){const O=B.oficina,s=toHud(U(O.x0+O.w/2),11.5,U(O.y0+O.h*.55));if(s){hctx.globalAlpha=.82+.18*Math.sin(simTime*3);pill('CLICK TO STEP INSIDE ▶',s.x,s.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#ff7a1a');hctx.globalAlpha=1}}
  }
+ // ---------- 3D interior: the TorqueBlueprint repair shop ----------
+ let mode='city',fade=0,fadeTo=null,cityCam=null;
+ const IN={scene:new T.Scene(),lifts:[],built:false};
+ const inHome={tx:0,tz:-4,yaw:.2,pitch:.34,dist:46};
+ function buildInterior(){
+  const S=IN.scene;S.background=new T.Color(0x0b1626);S.fog=new T.Fog(0x0b1626,70,140);
+  S.add(new T.HemisphereLight(0xdfe9ff,0x2a2f38,.75));
+  const key=new T.DirectionalLight(0xfff3e0,1.6);key.position.set(14,26,22);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-32,right:32,top:20,bottom:-20,near:2,far:80});key.shadow.bias=-.0006;S.add(key);
+  const RW=56,RD=24,RH=9,X0=-RW/2,Z0=-RD/2;
+  const add=(o)=>{S.add(o);return o};
+  const B2=(w,h,d,m,x,y,z,cast)=>add(box(w,h,d,m,x,y,z,cast));
+  // floor with painted bays
+  const fl=new T.Mesh(new T.PlaneGeometry(RW,RD+8),M(0x8b9097,{roughness:.6,metalness:.05}));fl.rotation.x=-Math.PI/2;fl.position.set(0,0,4);fl.receiveShadow=true;add(fl);
+  for(let k=0;k<5;k++){const x=-16+k*8;B2(6.4,.02,9,M(0x6f757d),x,0,-2,false);for(const dx of[-3.2,3.2])B2(.14,.03,9,mat.stripe||(mat.stripe=M(0xffd34d)),x+dx,0,-2,false)}
+  B2(RW,.03,.3,M(0xffd34d),0,0,5.2,false);
+  // walls
+  const wallM=M(0x1d3b5c,{roughness:.9}),wallM2=M(0x16304d,{roughness:.9});
+  B2(RW,RH,.5,wallM,0,0,Z0,true);B2(.5,RH,RD,wallM2,X0,0,0,true);B2(.5,RH,RD,wallM2,-X0,0,0,true);
+  for(let y=1;y<RH;y+=1.2)B2(RW-.2,.05,.05,M(0x24476d),0,y,Z0+.3,false);
+  B2(RW,.5,.6,M(0xff7a1a),0,RH-1.6,Z0+.5,false);
+  // ceiling beams + lamps
+  const lampM=M(0xfff6d6,{emissive:0xfff6d6,emissiveIntensity:1.2});
+  for(let k=0;k<5;k++){const x=-16+k*8;const pl=new T.PointLight(0xfff1d0,40,22,1.6);pl.position.set(x,RH-1,-2);add(pl)}
+  // big sign + wall of mechanics
+  add(sign('TORQUEBLUEPRINT REPAIR SHOP',22,2,'#ff7a1a','#1d0f02',0,RH-2.8,Z0+.4,0));
+  IN.board=new T.Group();IN.board.position.set(-15,4.2,Z0+.45);add(IN.board);IN.boardKey='';
+  // lifts (one per city lift slot)
+  for(let k=0;k<5;k++){const x=-16+k*8,g=new T.Group();g.position.set(x,0,-2);
+   for(const dx of[-2.6,2.6]){g.add(box(.55,5.2,.55,mat.yellow,dx,0,0));g.add(box(.9,.15,.9,mat.dark,dx,0,0,false))}
+   g.add(box(5.75,.35,.55,mat.yellow,0,5.2,0));const arms=new T.Group();for(const dx of[-1.2,1.2])arms.add(box(.22,.16,3.2,mat.steel,dx,0,0));g.add(arms);
+   add(g);const car=new T.Group();car.position.set(x,0,-2);add(car);
+   const mech=personMesh('#1d4fb8','#f0c9a0','#2b1d14');mech.scale.setScalar(1.5);mech.visible=false;add(mech);
+   IN.lifts.push({x,arms,car,mech,id:null})}
+  // workbench (left) with the bolt jar
+  const bx=-23;B2(4.5,1.5,2.2,M(0x8a5a2b),bx,0,-8.5);B2(4.7,.2,2.4,M(0xc08a4a),bx,1.5,-8.5);
+  const jar=new T.Mesh(new T.CylinderGeometry(.8,.8,2,24,1,true),new T.MeshStandardMaterial({color:0xbfe9ff,transparent:true,opacity:.25,roughness:.05,metalness:.1,side:T.DoubleSide,depthWrite:false}));jar.position.set(bx,2.7,-8.5);add(jar);
+  B2(1.75,.25,1.75,mat.steel,bx,3.7,-8.5,false);
+  IN.boltGeo=new T.CylinderGeometry(.12,.12,.08,6);IN.boltMat=M(0xcfd9e5,{metalness:.7,roughness:.3});IN.bolts=null;IN.boltN=-1;
+  IN.crates=new T.Group();add(IN.crates);IN.cratesN=-1;
+  // unlockable gear, each with its blueprint ghost
+  const gear=(n,name,build,x,z,ry)=>{const real=build();real.position.set(x,0,z);real.rotation.y=ry||0;add(real);const ghost=build();ghost.position.set(x,0,z);ghost.rotation.y=ry||0;
+   ghost.traverse(o=>{if(o.isMesh){o.material=ghostMat;o.castShadow=false;if(o.geometry===BOX&&o.scale.x*o.scale.y*o.scale.z>.3)o.add(new T.LineSegments(EDGES,edgeMat))}});add(ghost);return{n,name,real,ghost,x,z}};
+  const G=()=>new T.Group();
+  IN.gear=[
+   gear(10,'TOOL CHEST',()=>{const g=G();g.add(box(1.8,2.4,1,mat.red,0,0,0));for(let k=0;k<5;k++)g.add(box(1.6,.06,.05,mat.steel,0,.4+k*.42,.52,false));return g},-19.2,-9.6),
+   gear(25,'TIRE RACK',()=>{const g=G();const tg=new T.CylinderGeometry(.75,.75,.45,18);for(let r=0;r<3;r++)for(let k=0;k<4;k++){const t=new T.Mesh(tg,mat.tire);t.rotation.x=Math.PI/2;t.position.set(-1.5+k*1,.9+r*1.7,0);t.castShadow=true;g.add(t)}g.add(box(4.4,.12,.9,mat.steel,0,.1,0));g.add(box(4.4,.12,.9,mat.steel,0,1.8,0));g.add(box(4.4,.12,.9,mat.steel,0,3.5,0));return g},-25,0,Math.PI/2),
+   gear(50,'AIR COMPRESSOR',()=>{const g=G();const tk=new T.Mesh(new T.CylinderGeometry(.6,.6,2.2,18),mat.red);tk.rotation.z=Math.PI/2;tk.position.y=.8;tk.castShadow=true;g.add(tk);g.add(box(.9,.7,.7,mat.dark,0,1.4,0));return g},-22.5,4),
+   gear(1000,'PAINT BOOTH',()=>{const g=G();g.add(box(7,5.6,.2,mat.glass,0,0,2.4,false));g.add(box(7,5.6,.2,mat.glass,0,0,-2.4,false));g.add(box(.2,5.6,5,mat.glass,3.5,0,0,false));g.add(box(7.4,.4,5.4,M(0x3ee08f),0,5.6,0));return g},22,-6),
+   gear(5000,'DYNO',()=>{const g=G();g.add(box(4.6,.3,2.4,mat.dark,0,0,0));for(const dz of[-.6,.6]){const r=new T.Mesh(new T.CylinderGeometry(.35,.35,2,16),mat.chrome);r.rotation.x=Math.PI/2;r.position.set(dz*2.2,.35,0);g.add(r)}g.add(box(.2,2.4,.2,mat.dark,3,0,-1.4));g.add(box(1.6,1,.15,M(0x071a2d,{emissive:0x3ee08f,emissiveIntensity:.4}),3,2.4,-1.4,false));return g},22,4)];
+  IN.built=true;
+ }
+ function boardTex(names){const c=document.createElement('canvas');c.width=1024;c.height=640;const x=c.getContext('2d');x.fillStyle='#5a3d22';x.fillRect(0,0,1024,640);
+  x.fillStyle='rgba(0,0,0,.35)';for(let i=12;i<1024;i+=22)for(let j=12;j<640;j+=22){x.beginPath();x.arc(i,j,2.5,0,Math.PI*2);x.fill()}
+  x.fillStyle='#ffd34d';x.fillRect(212,18,600,74);x.fillStyle='#071a2d';x.font="800 50px 'Barlow Condensed','Arial Narrow',sans-serif";x.textAlign='center';x.textBaseline='middle';x.fillText('WALL OF MECHANICS',512,57);
+  const shown=names.slice(0,16);if(!shown.length){x.fillStyle='#eef3fb';x.font="700 44px 'Barlow Condensed',sans-serif";x.fillText('Comment WORKSHOP to get your name here',512,360)}
+  shown.forEach((n,i)=>{const col=i%2,row=Math.floor(i/2);const px=40+col*482,py=118+row*62;x.fillStyle='#e9b531';x.fillRect(px,py,462,50);x.fillStyle='#2b1f05';x.font="800 34px 'Barlow Condensed',sans-serif";x.fillText(n.length>22?n.slice(0,21)+'…':n,px+231,py+27)});
+  if(names.length>16){x.fillStyle='#ffd34d';x.font="800 30px 'Barlow Condensed',sans-serif";x.fillText(`+${names.length-16} more mechanics`,512,618)}
+  const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return t}
+ function syncInterior(dt){
+  const sv=subs||0;
+  // wall of mechanics
+  const key=WALL.join('|');if(key!==IN.boardKey){IN.boardKey=key;while(IN.board.children.length)IN.board.remove(IN.board.children[0]);
+   IN.board.add(box(12.4,8,.3,mat.dark,0,-4,0,false));const pm2=new T.Mesh(new T.PlaneGeometry(12,7.5),new T.MeshStandardMaterial({map:boardTex(WALL),roughness:.8}));pm2.position.z=.2;IN.board.add(pm2)}
+  // bolts, crates, pallets
+  const nb=sv%100;if(nb!==IN.boltN){IN.boltN=nb;if(IN.bolts)IN.scene.remove(IN.bolts);const im=new T.InstancedMesh(IN.boltGeo,IN.boltMat,Math.max(1,nb));const o=new T.Object3D();
+   for(let i=0;i<nb;i++){const a=i*2.399,r=.62*Math.sqrt((i%9+.5)/9);o.position.set(-23+Math.cos(a)*r,1.82+Math.floor(i/9)*.1,-8.5+Math.sin(a)*r);o.rotation.set(Math.random()*.4,a,0);o.updateMatrix();im.setMatrixAt(i,o.matrix)}
+   im.count=nb;IN.bolts=im;IN.scene.add(im)}
+  const nc=Math.floor(sv/100)%10,np=Math.floor(sv/1000)%10,ck=nc+'/'+np;if(ck!==IN.cratesN){IN.cratesN=ck;while(IN.crates.children.length)IN.crates.remove(IN.crates.children[0]);
+   for(let i=0;i<nc;i++)IN.crates.add(box(1.1,.9,1.1,M(0xc08a4a),-25+(i%3)*1.25,Math.floor(i/3)*.92,-5.4));
+   for(let i=0;i<np;i++){IN.crates.add(box(1.8,.2,1.8,M(0x7a5126),-24.4,0,8-i*2.2));IN.crates.add(box(1.6,1.4,1.6,M(0xc08a4a),-24.4,.2,8-i*2.2))}}
+  for(const gq of IN.gear){const on=sv>=gq.n;gq.real.visible=on;gq.ghost.visible=!on}
+  // cars on the lifts mirror the city's repair shop
+  B.oficina.slots.forEach((s,k)=>{const L=IN.lifts[k];const c=s.car&&s.car.state==='service'&&!s.car.removed?s.car:null;const id=c?c.id:null;
+   if(id!==L.id){L.id=id;while(L.car.children.length)L.car.remove(L.car.children[0]);if(c){const m=carMesh(c);m.scale.setScalar(1.55);m.rotation.y=Math.PI;L.car.add(m)}}
+   let lift=0;if(c&&c.kind==='car'&&c.task&&c.task.type!=='parts'){const tot=c.svcTotal||6,el=tot-c.timer;lift=Math.min(2.4,el*1.4,Math.max(0,c.timer)*1.4)}
+   L.car.position.y=lift;L.arms.position.y=lift+.2;
+   L.mech.visible=!!c;if(c){const ph=simTime*2+k;L.mech.position.set(L.x+3.4+Math.sin(ph)*.3,0,-2+Math.cos(ph*.7)*1.6);L.mech.rotation.y=-Math.PI/2+Math.sin(ph)*.4}});
+ }
+ function drawInteriorLabels(){hctx.textAlign='center';hctx.textBaseline='middle';const sz=clamp(1100/cam.dist,14,26);
+  for(const gq of IN.gear){if(gq.real.visible)continue;const s=toHud(gq.x,4.4,gq.z);if(s)pill(`${gq.name} · UNLOCKS AT ${gq.n.toLocaleString('en-US')} SUBS`,s.x,s.y,sz*.85,'rgba(15,47,92,.92)','#c8defa','#9fd0ff')}
+  IN.lifts.forEach((L,k)=>{if(!L.id)return;const c=cars.find(q=>q.id===L.id);if(!c)return;const s=toHud(L.x,L.car.position.y+3.6,-2);if(!s)return;
+   pill(c.driver?'★ '+c.driver:c.plate,s.x,s.y,sz,c.driver?'rgba(255,122,26,.95)':'#fafafa',c.driver?'#1d0f02':'#111');
+   if(c.fault){const s2=toHud(L.x,L.car.position.y+2.8,-2);if(s2)pill(c.fault.n.toUpperCase(),s2.x,s2.y,sz*.8,'rgba(16,19,24,.85)','#ffb36b')}});
+  const s=toHud(-23,4.6,-8.5);if(s)pill('1 BOLT = 1 SUBSCRIBER',s.x,s.y,sz*.85,'rgba(16,19,24,.85)','#ffd34d');
+  hctx.globalAlpha=1;
+  // header
+  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE TORQUEBLUEPRINT REPAIR SHOP',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,CW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,CW/2,89);
+ }
+ function enterIn(){if(mode==='in'||fadeTo)return;if(!IN.built)buildInterior();fadeTo='in';fade=0;onMode&&onMode('in')}
+ function exitIn(){if(mode!=='in'||fadeTo)return;fadeTo='city';fade=0;onMode&&onMode('city')}
+ let onMode=null;
+ function stepFade(dt){if(!fadeTo)return;fade+=dt/.35;if(fade>=1&&mode!==fadeTo){if(fadeTo==='in'){cityCam={...cam};Object.assign(cam,inHome);camera.fov=40;camera.updateProjectionMatrix()}else{Object.assign(cam,cityCam||home);camera.fov=34;camera.updateProjectionMatrix()}mode=fadeTo}if(fade>=2){fadeTo=null;fade=0}}
  // ---------- frame ----------
  let W0=0,H0=0;
  function resize(){const w=c3.clientWidth||screenEl.clientWidth,h=c3.clientHeight||screenEl.clientHeight;if(!w||!h)return;if(w===W0&&h===H0)return;W0=w;H0=h;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,w>1100?1.5:2));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
  if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe(screenEl);
- function frame(dt){resize();idle+=dt;if(idle>25&&!dragging)cam.yaw+=dt*.025;
-  syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();applyNight(false);placeCam();renderer.render(scene,camera);
+ function frame(dt){resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
+  if(mode==='in'){syncInterior(dt);placeCam();renderer.render(IN.scene,camera);hctx.clearRect(0,0,CW,CH);drawInteriorLabels()}
+  else{syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();applyNight(false);placeCam();renderer.render(scene,camera);
   hctx.clearRect(0,0,CW,CH);drawLabels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)drawHUD();if(!trailer)drawCeleb()}finally{ctx=keep}}
- function reset(){Object.assign(cam,home);idle=0}
+  if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,CW,CH)}}
+ function reset(){Object.assign(cam,mode==='in'?inHome:home);idle=0}
  syncBuildings();
- return{frame,reset,resize,cam,renderer};
+ return{frame,reset,resize,cam,renderer,camera,enterIn,exitIn,mode:()=>mode,setOnMode:f=>{onMode=f}};
 }
 async function loadR3(){
  try{const T=await import(THREE_URL);if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T);return R3}
@@ -1703,10 +1797,10 @@ async function setView(want3d,save){
  if(want3d&&!R3){vMsg.textContent='Loading the 3D city…';vMsg.hidden=false;if(!r3Loading)r3Loading=loadR3();await r3Loading;vMsg.hidden=true;
   if(!R3){v3b.disabled=true;v3b.title='3D isn’t available in this browser';want3d=false;vMsg.textContent='3D isn’t available in this browser, showing the map.';vMsg.hidden=false;setTimeout(()=>{vMsg.hidden=true},3500)}}
  view3d=!!want3d;C.hidden=view3d;c3.hidden=!view3d;hud.hidden=!view3d;vRes.hidden=!view3d;v3b.setAttribute('aria-pressed',String(view3d));v2b.setAttribute('aria-pressed',String(!view3d));
- if(view3d&&R3){R3.resize()}
+ if(view3d&&R3){R3.resize();R3.setOnMode(m=>{$('vBack').hidden=m!=='in'})}
  if(save)store('mtp-view',view3d?'3d':'2d');
 }
-v3b.addEventListener('click',()=>setView(true,true));v2b.addEventListener('click',()=>setView(false,true));vRes.addEventListener('click',()=>{if(R3)R3.reset()});
+v3b.addEventListener('click',()=>setView(true,true));v2b.addEventListener('click',()=>{if(R3&&R3.mode()==='in')R3.exitIn();setView(false,true)});$('vBack').addEventListener('click',()=>{if(R3)R3.exitIn()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&R3&&R3.mode()==='in'&&!wsOpenFlag)R3.exitIn()});vRes.addEventListener('click',()=>{if(R3)R3.reset()});
 if(!hasGL()){v3b.disabled=true;v3b.title='3D isn’t available in this browser'}
 else if(readStore('mtp-view')!=='2d')setView(true,false);
 
