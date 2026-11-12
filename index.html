@@ -1681,6 +1681,8 @@ function make3D(T){
   if(!trailer){const O=B.oficina,s=toHud(U(O.x0+O.w/2),11.5,U(O.y0+O.h*.55));if(s){hctx.globalAlpha=.82+.18*Math.sin(simTime*3);pill('CLICK TO STEP INSIDE ▶',s.x,s.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#ff7a1a');hctx.globalAlpha=1}
    if(isOpen('lavagem')){const Lw=B.lavagem,s2=toHud(U(Lw.x0+Lw.w/2),8,U(Lw.y0+Lw.h/2));if(s2){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+1);pill('STEP INSIDE THE CAR WASH ▶',s2.x,s2.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#46c8ff');hctx.globalAlpha=1}}
    if(isOpen('reboques')){const Rb=B.reboques,s3=toHud(U(Rb.x0+Rb.w/2),9,U(Rb.y0+Rb.h*.7));if(s3){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+2);pill('STEP INSIDE THE TOW DEPOT ▶',s3.x,s3.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2a51a');hctx.globalAlpha=1}}}
+   {const LBLS={bomba:['STEP INSIDE THE GAS STATION ▶','#d93a2f',7.5,.55],pneus:['STEP INSIDE THE TIRE SHOP ▶','#9aa3ae',9,.7],inspecao:['STEP INSIDE THE INSPECTION CENTER ▶','#1d4fb8',7,.5],parque:['STEP INSIDE THE PARKING ▶','#1d4fb8',4,.5],pecas:['STEP INSIDE AUTO PARTS ▶','#c0392b',8,.5],stand:['STEP INSIDE THE DEALERSHIP ▶','#ff7a1a',8,.5],sucata:['STEP INSIDE THE JUNKYARD ▶','#a08a66',6,.5],fabrica:['STEP INSIDE THE FACTORY ▶','#ff7a1a',10,.4],pista:['STEP INSIDE THE PIT GARAGE ▶','#ff7a1a',4,.5]};
+    for(const k in LBLS){if(!isOpen(k))continue;const L=LBLS[k],b=B[k],sp=toHud(U(b.x0+b.w/2),L[2],U(b.y0+b.h*L[3]));if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+k.length);pill(L[0],sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',L[1]);hctx.globalAlpha=1}}}
  }
  // ---------- 3D interior: the TorqueBlueprint repair shop ----------
  let mode='city',fade=0,fadeTo=null,cityCam=null;
