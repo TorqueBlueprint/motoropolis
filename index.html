@@ -1722,6 +1722,7 @@ function loop(ts){
 }
 requestAnimationFrame(loop);
 ownerTools();
+setInterval(()=>{fetch('state.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Number.isFinite(+j.subs)&&+j.subs!==subs)setSubs(+j.subs)}).catch(()=>{})},120000);
 if(location.hostname==='localhost')window.__mtpBuild=()=>buildPage(STATE);
 })();
 </script></body></html>
