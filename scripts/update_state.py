@@ -64,6 +64,33 @@ def main():
             if not token:
                 break
 
+    # public subscribers (needs the channel owner's OAuth refresh token)
+    cid, csec, rtok = (os.environ.get(k, "").strip() for k in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN"))
+    if cid and csec and rtok:
+        try:
+            body = urllib.parse.urlencode({"client_id": cid, "client_secret": csec, "refresh_token": rtok, "grant_type": "refresh_token"}).encode()
+            with urllib.request.urlopen(urllib.request.Request("https://oauth2.googleapis.com/token", data=body), timeout=30) as r:
+                tok = json.load(r)["access_token"]
+            token = None
+            for _ in range(20):
+                q = {"part": "subscriberSnippet", "mySubscribers": "true", "maxResults": 50}
+                if token:
+                    q["pageToken"] = token
+                req = urllib.request.Request("https://www.googleapis.com/youtube/v3/subscriptions?" + urllib.parse.urlencode(q), headers={"Authorization": "Bearer " + tok})
+                with urllib.request.urlopen(req, timeout=30) as r:
+                    res = json.load(r)
+                for it in res.get("items", []):
+                    nm = it.get("subscriberSnippet", {}).get("title", "").lstrip("@").strip()[:MAX_NAME]
+                    if nm and nm.lower() not in seen:
+                        names.append(nm)
+                        seen.add(nm.lower())
+                token = res.get("nextPageToken")
+                if not token:
+                    break
+            print("public subscribers checked")
+        except Exception as e:
+            print("subscriber list unavailable:", e)
+
     if subs == state.get("subs") and names == state.get("names", []):
         print("no change", subs, len(names))
         return 0
