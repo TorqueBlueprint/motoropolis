@@ -8,6 +8,8 @@ KEY = os.environ.get("YT_API_KEY", "").strip()
 HANDLE = os.environ.get("YT_HANDLE", "TorqueBlueprint")
 MAX_VIDEOS = 50
 MAX_NAME = 24
+ROLE_MAP = {"police": "police", "cop": "police", "officer": "police", "thief": "thief", "robber": "thief",
+            "lawyer": "lawyer", "attorney": "lawyer", "judge": "judge"}
 STATE = os.path.join(os.path.dirname(__file__), "..", "state.json")
 
 
@@ -37,6 +39,8 @@ def main():
     # names of people who commented "workshop" on any recent upload
     names = list(state.get("names", []))
     seen = {n.lower() for n in names}
+    roles = dict(state.get("roles", {}))
+    got_role = set()
     uploads = ch["contentDetails"]["relatedPlaylists"]["uploads"]
     vids = [i["contentDetails"]["videoId"] for i in api("playlistItems", part="contentDetails", playlistId=uploads, maxResults=MAX_VIDEOS).get("items", [])]
     for vid in vids:
@@ -52,7 +56,8 @@ def main():
                 break
             for th in res.get("items", []):
                 top = th["snippet"]["topLevelComment"]["snippet"]
-                if not re.search(r"\bworkshop\b", top.get("textDisplay", ""), re.I):
+                m = re.search(r"\bworkshop\b[\s:,.!-]*(police|cop|officer|thief|robber|lawyer|attorney|judge)?", top.get("textDisplay", ""), re.I)
+                if not m:
                     continue
                 if top.get("authorChannelId", {}).get("value") == ch["id"]:
                     continue  # skip the channel's own comments
@@ -60,6 +65,12 @@ def main():
                 if nm and nm.lower() not in seen:
                     names.append(nm)
                     seen.add(nm.lower())
+                if nm and m.group(1):
+                    role = ROLE_MAP[m.group(1).lower()]
+                    # comments come newest first, so the first role seen in this run is the latest choice
+                    if nm not in got_role:
+                        roles[nm] = role
+                        got_role.add(nm)
             token = res.get("nextPageToken")
             if not token:
                 break
@@ -91,11 +102,12 @@ def main():
         except Exception as e:
             print("subscriber list unavailable:", e)
 
-    if subs == state.get("subs") and names == state.get("names", []):
+    if subs == state.get("subs") and names == state.get("names", []) and roles == state.get("roles", {}):
         print("no change", subs, len(names))
         return 0
     state["subs"] = subs
     state["names"] = names
+    state["roles"] = roles
     state["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     with open(STATE, "w", encoding="utf-8") as f:
         json.dump(state, f, indent=2, ensure_ascii=False)

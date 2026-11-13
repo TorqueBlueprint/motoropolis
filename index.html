@@ -85,6 +85,13 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
 .np-list li{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:7px 0;border-bottom:1px solid #ddd6c6;font:14px/1.3 Georgia,'Times New Roman',serif}
 .np-t{font:500 11px var(--mono);color:#7a7d83}
 .np-tip{margin:10px 0 0;font-size:13px;color:#5b5f66}.np-tip b{color:#d93a2f}
+.cr-live{margin:0 0 10px;padding:8px 10px;border-radius:6px;background:rgba(217,58,47,.18);border-left:3px solid #ff5a4f;animation:crb 1s steps(2) infinite}@keyframes crb{50%{background:rgba(47,111,217,.22)}}@media (prefers-reduced-motion:reduce){.cr-live{animation:none}}
+.cr-calm{margin:0 0 10px;color:var(--muted)}
+#crime h3{font:700 12px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.cr-w{display:flex;flex-wrap:wrap;gap:6px;margin:0}.cr-w span{background:#2a1416;border:1px solid #ff5a4f;color:#ffb3ad;border-radius:4px;padding:3px 8px;font:700 13px var(--display)}.cr-w i{color:var(--muted)}
+.cr-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.cr-list li{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;background:var(--surface-2);border-radius:6px;padding:7px 9px;font-size:13.5px}.cr-list small{color:var(--muted)}
+.cr-no{font:500 12px var(--mono);color:var(--muted)}.cr-v{font:800 11px/1 var(--display);letter-spacing:.06em;padding:4px 7px;border-radius:4px;white-space:nowrap}.cr-v.pending{background:rgba(232,185,49,.16);color:#e8b931}.cr-v.guilty{background:rgba(217,58,47,.18);color:#ff7a70}.cr-v.community{background:rgba(70,200,255,.15);color:#6cd0ff}.cr-v.free{background:rgba(92,201,138,.16);color:var(--ok)}
+.cr-tip{margin:10px 0 0;font-size:13px;color:var(--muted)}.cr-tip b{color:#ffd34d}
 .jsum{margin:0 0 10px;font-size:14px;color:var(--muted)}.jsum b{color:var(--fg)}.jobs{list-style:none;margin:0;padding:0 4px 0 0;display:flex;flex-direction:column;gap:6px;max-height:330px;overflow-y:auto;font-size:13.5px}.jobs>li{background:var(--surface-2);border-radius:6px;padding:7px 9px;border-left:3px solid var(--line)}.jobs>li.open{border-left-color:var(--ok)}.jobs .jh{display:flex;justify-content:space-between;gap:8px;align-items:center}.jobs .chip{font:700 11px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:4px;background:var(--surface);color:var(--muted);white-space:nowrap}.jobs>li.open .chip{background:rgba(92,201,138,.16);color:var(--ok)}.jobs ul{margin:5px 0 0;padding-left:16px}.jobs p{margin:4px 0 0;color:var(--muted)}.jobs i{color:var(--muted)}
 .card h2{font:700 14px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:0}
@@ -236,6 +243,10 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
       <h2>Jobs in Motoropolis</h2>
       <div id="jobs"></div>
     </section>
+    <section class="card cr-card">
+      <h2>Crime &amp; justice</h2>
+      <div id="crime"><p class="cr-calm">The police station is opening…</p></div>
+    </section>
     <section class="card" id="carCard">
       <h2>Car details</h2>
       <p class="empty" id="carEmpty">Click a car on the map to see its plate, mileage, fuel and engine condition.</p>
@@ -381,8 +392,8 @@ const S=Math.PI/2;
  // the new district (row 4): leisure, the city newspaper and the next big updates
  b=mkB('park',0,3,null,0,'Motoropolis Park');
  b=mkB('news',1,3,'top',60,'Motoropolis Daily');
- b=mkB('police',2,3,null,0,'Police station');
- b=mkB('court',3,3,null,0,'Courthouse');
+ b=mkB('police',2,3,'top',70,'Police station');slot(b,42,118,S);slot(b,98,118,S);
+ b=mkB('court',3,3,'top',173,'Courthouse');
 }
 const approach=s=>({x:s.x-Math.cos(s.ang)*36,y:s.y-Math.sin(s.ang)*36});
 // the news kiosk stands on the plaza in front of the Motoropolis Daily building
@@ -440,6 +451,7 @@ function pathTo(c,goal){if(c.to===goal)return[];return bfs(c.to,c.from,goal)||[]
 function planRoute(c){
  const t=c.task;
  if(t.type==='tow'){const tc=t.target;c.route=pathTo(c,tc.from).concat([tc.to]);return}
+ if(t.type==='chase'){c.route=pathTo(c,t.target.to);return}
  if(!t.b||!t.b.seg){c.task=null;return}
  const[a,b]=t.b.seg,p1=pathTo(c,a).concat([b]),p2=pathTo(c,b).concat([a]);
  c.route=p1.length<=p2.length?p1:p2;
@@ -470,8 +482,9 @@ function giveUp(c){
 }
 function atNode(c){
  const n=nodes[c.to];
- if(lightState(n,axisOf(c))!=='g'){c.waitRed=true;return}
+ if(!c.siren&&lightState(n,axisOf(c))!=='g'){c.waitRed=true;return}
  c.waitRed=false;
+ if(c.task&&c.task.type==='chase')c.route=[];
  if(c.task&&!c.route.length)planRoute(c);
  const next=c.route.length?c.route.shift():randomNext(c);
  const tp=turnPts({x:c.x,y:c.y},c.from,c.to,next);
@@ -492,6 +505,7 @@ function gapAhead(c){
 }
 function wear(c,d){c.fuel=Math.max(2,c.fuel-d*.004);c.health=Math.max(5,c.health-d*.0004*(c.m.classic?1.6:1));c.dirt=Math.min(100,c.dirt+d*.003);c.km+=d*KM}
 function stepCar(c,dt){
+ if(c.arrestT>0){c.arrestT-=dt;c.v=0;c.brake=true;return}
  if(c.state==='towed'||c.state==='service'||c.state==='hooking'||c.state==='waitlift')return;
  const tgt=c.pts[0];let want=c.vmax;
  if((c.fault&&c.fault.k==='tire')||c.limp)want*=.45;
@@ -499,7 +513,7 @@ function stepCar(c,dt){
  if(c.state==='broken')want=Math.min(want,30);
  if(c.state==='road'){
   if(c.ghost<=0){const gp=gapAhead(c);if(gp<6)want=0;else if(gp<46)want=Math.min(want,(gp-6)*3)}
-  if(tgt&&tgt.stop&&c.pts.length===1&&lightState(nodes[c.to],axisOf(c))!=='g'){const d=dist(c,tgt);want=Math.min(want,Math.max(0,(d-1)*2.6))}
+  if(!c.siren&&tgt&&tgt.stop&&c.pts.length===1&&lightState(nodes[c.to],axisOf(c))!=='g'){const d=dist(c,tgt);want=Math.min(want,Math.max(0,(d-1)*2.6))}
  }
  if(tgt&&tgt.rev)want=Math.min(want,28);
  if(!tgt)want=0;
@@ -529,7 +543,7 @@ function serviceTime(c,Bd){switch(Bd.type){
 function arrive(c){
  const s=c.slot;c.v=0;c.ang=s.ang;c.x=s.x;c.y=s.y;
  if(c.task&&c.task.type==='deliver'){releaseTow(c);return}
- if(c.kind==='tow'&&c.task&&c.task.type==='home'){c.state='service';c.idle=true;c.timer=Infinity;c.task=null;return}
+ if((c.kind==='tow'||c.kind==='police')&&c.task&&c.task.type==='home'){c.state='service';c.idle=true;c.timer=Infinity;c.task=null;c.driver=null;return}
  c.state='service';c.timer=serviceTime(c,s.b);c.svcTotal=c.timer;
 }
 function exitBuilding(c){const s=c.slot;if(s&&s.car===c)s.car=null;c.slot=null;leave(c,s.b,s)}
@@ -616,7 +630,7 @@ function dispatch(){
  }
 }
 function brain(c){
- if(c.kind!=='car'||c.state!=='road')return;
+ if(c.kind!=='car'||c.state!=='road'||c.stolen)return;
  if(c.forceBreak){
   if(!isOpen('reboques')){const f=c.forceBreak;c.forceBreak=null;stats.faults++;c.fault=f;c.limp=true;c.task={type:'svc',b:B.oficina};
    log(`${c.plate} broke down: ${f.n.toLowerCase()}. No tow trucks in town yet, so it’s limping to the repair shop.`,'bad');newsBreakdown(c,f);return}
@@ -643,6 +657,7 @@ function brain(c){
 const tows=[];let van=null;
 const race=[{t:0,sp:1,col:'#e8b931',num:7,laps:0},{t:.03,sp:1,col:'#2f6fd9',num:21,laps:0},{t:.06,sp:1,col:'#d93a2f',num:44,laps:0}];
 function setup(){
+ setupPolice();
  B.reboques.slots.forEach((s,k)=>{const t=newCar({kind:'tow',model:{n:'Tow truck',len:46,wid:17,price:0,v:[85,95]},color:'#f2a51a'});t.len=46;t.wid=17;t.vmax=92;t.fuel=100;t.health=100;t.home=s;parkIn(t,s,Infinity);t.idle=true;t.hidden=true;tows.push(t)});
  van=newCar({kind:'van',model:{n:'Parts van',len:38,wid:17,price:0,v:[80,90]},color:'#f4f4f0'});van.len=38;van.wid=17;van.vmax=85;van.home=B.pecas.vanHome;parkIn(van,van.home,Infinity);van.hidden=true;
  log('Good morning, Motoropolis. The repair shop is open.','info');
@@ -709,6 +724,7 @@ function update(dt){
  for(const c of cars)if(c.towing){const t=c,tc=c.towing,k=(t.len+tc.len)/2+4;tc.ang=t.ang;tc.x=t.x-Math.cos(t.ang)*k;tc.y=t.y-Math.sin(t.ang)*k}
  cars=cars.filter(c=>!c.removed);
  dispatchT-=dt;if(dispatchT<=0){dispatchT=.5;dispatch()}
+ crimeTick(dt);
  secT-=dt;if(secT<=0){secT=1;if(subs!==null)cityHousekeeping()}
  for(const c of cars)if(c.newT>0)c.newT-=dt;
  if(subToast){subToast.t+=dt;if(subToast.t>3)subToast=null}
@@ -826,13 +842,17 @@ function drawBuildingsStatic(){
   g.fillStyle='#246640';g.beginPath();g.arc(kx,ky,18,0,TAU);g.fill();g.fillStyle='#ffd34d';g.beginPath();g.arc(kx,ky,5,0,TAU);g.fill();
   g.fillStyle='#ffffff';g.font="800 13px 'Barlow Condensed', sans-serif";g.textAlign='center';g.textBaseline='middle';g.fillText('NEWS',kx,ky+44);
   g.fillStyle='#7a5a3a';g.fillRect(x0+18,y0+h-40,40,9);g.fillRect(x0+70,y0+h-40,40,9);tree(x0+22,y0+22,12);tree(x0+100,y0+h-70,11)}
- // future lots: police station and courthouse
- for(const[t,lab,col]of[['police','POLICE STATION','#2f6fd9'],['court','COURTHOUSE','#b48a3c']]){const q=B[t];const x0=q.x0,y0=q.y0,w=q.w,h=q.h;
-  g.fillStyle='#b9a27c';g.fillRect(x0,y0,w,h);g.fillStyle='rgba(0,0,0,.06)';for(let k=0;k<40;k++)g.fillRect(x0+R()*w,y0+R()*h,rr(6,18),rr(4,10));
-  g.strokeStyle='#ff7a1a';g.lineWidth=4;g.setLineDash([14,10]);g.strokeRect(x0+8,y0+8,w-16,h-16);g.setLineDash([]);
-  g.fillStyle='rgba(15,47,92,.92)';rrect(g,x0+w/2-130,y0+h/2-42,260,84,8);g.fill();g.strokeStyle=col;g.lineWidth=3;g.stroke();
-  g.fillStyle='#ffb36b';g.font="700 14px 'JetBrains Mono', monospace";g.textAlign='center';g.textBaseline='middle';g.fillText('COMING SOON',x0+w/2,y0+h/2-20);
-  g.fillStyle='#ffffff';g.font="800 30px 'Barlow Condensed', sans-serif";g.fillText(lab,x0+w/2,y0+h/2+12)}
+ // police station
+ b=B.police;{const x0=b.x0,y0=b.y0,w=b.w,h=b.h;g.fillStyle='#c9c4b9';g.fillRect(x0,y0,w,h);
+  g.strokeStyle='#f4f1e6';g.lineWidth=2;for(const x of[14,70,126])g.strokeRect(x0+x,y0+92,0.1,52);g.fillStyle='rgba(47,111,217,.35)';g.fillRect(x0+18,y0+150,104,6);
+  shed(x0+150,y0+20,w-162,h-32,'#8f949b');g.fillStyle='#1d4fb8';g.fillRect(x0+145,y0+15,w-152,12);
+  sign(g,'POLICE',x0+170,y0+h/2-16,w-200,32,'#1d4fb8','#ffffff',24);g.fillStyle='#ffffff';g.beginPath();g.arc(x0+150+(w-162)/2,y0+h-40,10,0,TAU);g.fill();g.fillStyle='#1d4fb8';g.beginPath();g.arc(x0+150+(w-162)/2,y0+h-40,6,0,TAU);g.fill()}
+ // courthouse
+ b=B.court;{const x0=b.x0,y0=b.y0,w=b.w,h=b.h;g.fillStyle='#d9d1c0';g.fillRect(x0,y0,w,h);
+  g.fillStyle='#e9e5dc';g.fillRect(x0+60,y0+10,w-120,40);g.strokeStyle='#b9b2a3';g.lineWidth=1;for(let k=0;k<4;k++){g.beginPath();g.moveTo(x0+60,y0+18+k*9);g.lineTo(x0+w-60,y0+18+k*9);g.stroke()}
+  shed(x0+40,y0+60,w-80,h-72,'#b9a27c');g.fillStyle='#f4f1e6';for(let k=0;k<6;k++){g.beginPath();g.arc(x0+70+k*((w-140)/5),y0+56,7,0,TAU);g.fill()}
+  sign(g,'COURTHOUSE',x0+w/2-80,y0+h/2,160,30,'#4a3412','#ffd34d',22);g.fillStyle='#e8b931';g.font="800 26px 'Barlow Condensed', sans-serif";g.textAlign='center';g.textBaseline='middle';g.fillText('⚖',x0+w/2,y0+h/2+52);
+  tree(x0+18,y0+20,12);tree(x0+w-18,y0+20,12)}
  // pista
  b=B.pista;g.fillStyle='#6f9a4f';g.fillRect(b.x0,b.y0,b.w,b.h);
  const cx=b.x0+b.w/2,cy=b.y0+b.h/2,ax=b.w/2-26,ay=b.h/2-24;
@@ -871,7 +891,10 @@ function drawCar(c){
  ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.ang);ctx.scale(sc,sc);
  const L=c.len,W=c.wid,hl=-L/2,hw=-W/2;
  ctx.fillStyle='#15171b';for(const wx of [hl+L*.2,hl+L*.78]){ctx.fillRect(wx-3.5,hw-1.2,7,3);ctx.fillRect(wx-3.5,W/2-1.8,7,3)}
- if(c.kind==='tow'){
+ if(c.kind==='police'){
+  ctx.fillStyle='#f4f4f0';rrect(ctx,hl,hw,L,W,4);ctx.fill();ctx.fillStyle='#1d2430';ctx.fillRect(hl+L*.28,hw,L*.36,W);ctx.fillStyle='rgba(25,35,45,.88)';rrect(ctx,hl+L*.2,hw+2,L*.5,W-4,3);ctx.fill();
+  const on=Math.floor(simTime*6)%2===0;ctx.fillStyle=c.siren?(on?'#ff3b30':'#2f6fd9'):'#7a1a1a';ctx.fillRect(hl+L*.44,hw+1,4,W/2-1);ctx.fillStyle=c.siren?(on?'#2f6fd9':'#ff3b30'):'#1a2f7a';ctx.fillRect(hl+L*.44,0,4,W/2-1);
+ }else if(c.kind==='tow'){
   ctx.fillStyle='#3a3d42';ctx.fillRect(hl,hw+1,L*.62,W-2);
   ctx.fillStyle='#55595f';ctx.fillRect(hl+2,-2,L*.5,4);
   ctx.fillStyle=c.color;rrect(ctx,hl+L*.6,hw,L*.4,W,4);ctx.fill();
@@ -893,6 +916,7 @@ function drawCar(c){
  ctx.fillStyle='#fff4c2';ctx.fillRect(L/2-2,hw+1.5,2,3);ctx.fillRect(L/2-2,W/2-4.5,2,3);
  const brake=c.brake&&(c.state==='road'||c.state==='broken');
  ctx.fillStyle=brake?'#ff3020':'#8a1a14';ctx.fillRect(hl,hw+1.5,2,3);ctx.fillRect(hl,W/2-4.5,2,3);
+ if(c.stolen&&Math.floor(simTime*4)%2===0){ctx.strokeStyle='#ff3b30';ctx.lineWidth=3;ctx.strokeRect(hl-4,hw-4,L+8,W+8)}
  if(c.state==='broken'||c.state==='towed'){if(Math.floor(simTime*3)%2===0){ctx.fillStyle='#ffa600';ctx.fillRect(hl-1,hw,3,3);ctx.fillRect(hl-1,W/2-3,3,3);ctx.fillRect(L/2-2,hw,3,3);ctx.fillRect(L/2-2,W/2-3,3,3)}}
  ctx.restore();
 }
@@ -1120,9 +1144,54 @@ function log(text,kind){
  const s=document.createElement('span');s.textContent=text;li.append(t,s);logEl.prepend(li);
  while(logEl.children.length>120)logEl.lastChild.remove();
 }
+// ---------- crime & justice: thieves, police chases and the courthouse ----------
+const police=[];let crime=null,crimeT=45;const CASES=[];let caseNo=1;
+const ROLE_OF=n=>ROLES[String(n).toLowerCase()]||null;
+const thieves=()=>WALL.filter(n=>ROLE_OF(n)==='thief');
+const FAKE_THIEVES=['the Midnight Mechanic','a masked thief','"Fast Eddie"','the Hubcap Bandit','"Slim Jim"'];
+function officerName(k){return staffOf('police','Police Officer',k)}
+function setupPolice(){B.police.slots.forEach((s,k)=>{const p=newCar({kind:'police',model:{n:'Police car',len:42,wid:18,price:0,v:[120,130]},color:'#f4f4f0'});p.len=42;p.wid=18;p.vmax=125;p.fuel=100;p.health=100;p.home=s;p.k=k;parkIn(p,s,Infinity);p.idle=true;police.push(p)})}
+function startCrime(){
+ const pool=cars.filter(c=>c.kind==='car'&&c.state==='road'&&!c.task&&!c.fault&&!c.forceBreak&&!c.hidden&&!c.removed&&!c.stolen);if(!pool.length)return;
+ const c=pick(pool),tn=thieves(),thief=tn.length?pick(tn):pick(FAKE_THIEVES),isSub=tn.includes(thief);
+ c.stolen={thief,isSub,v0:c.vmax};c.vmax=Math.min(118,c.vmax*1.3);const owner=c.driver;
+ crime={car:c,thief,isSub,t:0,cops:[]};
+ log(`🚨 Car stolen: ${c.plate}${owner?` (${owner}'s car)`:''}. Police are on the way.`,'bad');
+ news(owner?`${owner}'s car stolen by ${thief}!`:`Car theft downtown: ${c.plate} stolen by ${thief}`,'crime',`The ${c.model} was taken in broad daylight. Every police car in Motoropolis is on the chase.`);
+ const free=police.filter(p=>p.idle||(p.task&&p.task.type==='home'));for(const p of free.slice(0,2)){p.task={type:'chase',target:c};p.route=[];p.siren=true;p.driver=officerName(p.k)||null;if(p.idle){p.idle=false;exitBuilding(p)}crime.cops.push(p)}}
+function endChase(caught){const c=crime.car,cops=crime.cops;
+ for(const p of cops){p.siren=false;p.task={type:'home',b:B.police};p.route=[]}
+ if(caught){const cop=cops.find(p=>p.driver);const officer=cop?cop.driver:'Officer on duty';
+  c.arrestT=4;cops.forEach(p=>p.arrestT=4);
+  log(`🚔 Arrested! ${crime.thief} was caught in ${c.plate} by ${officer}.`,'ok');
+  news(`Caught! ${officer} arrests ${crime.thief} after a chase`,'crime',`The stolen car ${c.plate} is back with its owner. The case goes to the Motoropolis Courthouse.`);
+  openCase(crime.thief,crime.isSub,c.plate,officer)}
+ else{log(`The thief got away with ${c.plate}... for now. The car was found abandoned.`,'info');news(`${crime.thief} escapes the police!`,'crime',`Car ${c.plate} was found abandoned across town. Detectives are on the case.`)}
+ c.vmax=c.stolen.v0;c.stolen=null;crime=null;crimeT=rr(70,110);renderCrime()}
+function openCase(thief,isSub,plate,officer){
+ const lawyer=staffOf('court','Lawyer',caseNo%2)||staffOf('court','Lawyer',(caseNo+1)%2)||'Public defender',judge=staffOf('court','Judge',0)||'Judge Ironside';
+ const cs={no:caseNo++,thief,isSub,plate,officer,lawyer,judge,at:simTime+rr(35,55),verdict:null,time:clockStr()};CASES.unshift(cs);if(CASES.length>8)CASES.pop();
+ news(`Trial set: Motoropolis vs ${thief}`,'court',`Judge: ${judge}. Defense lawyer: ${lawyer}. The verdict comes later today.`);renderCrime()}
+function crimeTick(dt){
+ if(!police.length)return;
+ for(const p of police)p.hidden=false;
+ for(const cs of CASES)if(!cs.verdict&&simTime>=cs.at){const r=R();
+  cs.verdict=r<.6?'guilty':r<.85?'community':'free';cs.vtime=clockStr();
+  const txt=cs.verdict==='guilty'?`GUILTY: ${cs.thief} must pay a $${(Math.round(rr(5,20))*100).toLocaleString('en-US')} fine`:cs.verdict==='community'?`${cs.thief} sentenced to wash cars for 30 days`:`Not guilty! ${cs.lawyer} gets ${cs.thief} off the hook`;
+  log(`⚖️ Verdict in case #${cs.no}: ${txt}.`,cs.verdict==='free'?'info':'ok');news(txt,'court',`${cs.judge} closed case #${cs.no} (car ${cs.plate}).`);renderCrime()}
+ if(crime){crime.t+=dt;const c=crime.car;
+  if(c.removed||c.state!=='road'&&c.state!=='lot'){endChase(false);return}
+  for(const p of crime.cops){if(p.state==='road'&&Math.hypot(p.x-c.x,p.y-c.y)<60){endChase(true);return}}
+  if(crime.t>75)endChase(false);return}
+ crimeT-=dt;if(crimeT<=0){crimeT=rr(70,110);startCrime();renderCrime()}}
+function renderCrime(){const el=$('crime');if(!el)return;const th=thieves();
+ const st=crime?`<p class="cr-live">🚨 <b>LIVE CHASE:</b> ${esc(crime.thief)} in ${esc(crime.car.plate)}</p>`:'<p class="cr-calm">✅ The streets are calm. For now.</p>';
+ const cs=CASES.slice(0,5).map(c=>`<li><span class="cr-no">#${c.no}</span><span><b>Motoropolis vs ${esc(c.thief)}</b><br><small>Judge ${esc(c.judge.replace(/^Judge /,''))} · Lawyer ${esc(c.lawyer)} · Arrested by ${esc(c.officer)}</small></span><span class="cr-v ${c.verdict||'pending'}">${c.verdict==='guilty'?'GUILTY':c.verdict==='community'?'CAR WASH DUTY':c.verdict==='free'?'NOT GUILTY':'PENDING'}</span></li>`).join('');
+ el.innerHTML=st+`<h3>Wanted</h3><p class="cr-w">${th.length?th.map(n=>`<span>${esc(n)}</span>`).join(''):'<i>No thieves yet. Be the first!</i>'}</p><h3>Court docket</h3>${cs?`<ol class="cr-list">${cs}</ol>`:'<p class="cr-calm">No cases yet.</p>'}<p class="cr-tip">Pick your side: comment <b>WORKSHOP POLICE</b>, <b>WORKSHOP THIEF</b> or <b>WORKSHOP LAWYER</b> on any video.</p>`}
+
 // ---------- Motoropolis Daily: the city's own newspaper ----------
 const NEWS=[];let NEWSV=0;const newsCool={};
-const NCAT={city:['CITY','#46c8ff'],people:['PEOPLE','#ffd34d'],cars:['ON THE ROAD','#ff5a4f'],biz:['BUSINESS','#5cc98a'],jobs:['CLASSIFIEDS','#ff7a1a']};
+const NCAT={city:['CITY','#46c8ff'],people:['PEOPLE','#ffd34d'],cars:['ON THE ROAD','#ff5a4f'],biz:['BUSINESS','#5cc98a'],jobs:['CLASSIFIEDS','#ff7a1a'],crime:['CRIME','#ff5a4f'],court:['COURT','#e8b931']};
 const dayNo=()=>Math.floor((70+simTime)/240)+1;
 function news(h,k,body,cool){
  if(cool){const key=k+':'+cool;if(newsCool[key]!=null&&simTime-newsCool[key]<cool)return;newsCool[key]=simTime}
@@ -1154,6 +1223,8 @@ function newsSummary(){const s=stats;const opts=[];
  if(opts.length){const o=pick(opts);news(o[0],o[1],o[2])}}
 function stateText(c){
  const t=c.task;
+ if(c.kind==='police')return c.siren&&t&&t.target?[`Chasing the stolen car ${t.target.plate}`,'']:c.idle?['Parked at the police station, ready','']:['Driving back to the police station',''];
+ if(c.stolen)return[`STOLEN by ${c.stolen.thief}! The police are chasing it`,''];
  switch(c.state){
   case 'broken':return c.towAssigned?['Broken down. The tow truck is on its way',c.fault&&c.fault.n]:['Broken down on the shoulder, waiting for a tow',c.fault&&c.fault.n];
   case 'towed':return['Being towed to the repair shop',c.fault&&c.fault.n];
@@ -1468,13 +1539,17 @@ function stepPeds(dt){for(const p of peds){
  p.s+=p.v*dt;p.phase+=dt*Math.abs(p.v)*.6;const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=p.v<0?q.ang+Math.PI:q.ang}}
 
 // ---------- jobs: the Wall of Mechanics works in the city ----------
-const CIVIC=[{type:'news',label:'Motoropolis Daily'},{type:'park',label:'Motoropolis Park'}];
-const JOB_LIST=[['news','Reporter',2],['news','Newspaper Vendor',1],['park','Park Ranger',1],['oficina','Mechanic',5],['oficina','Receptionist',1],['reboques','Tow Truck Driver',3],['reboques','Dispatcher',1],['bomba','Cashier',1],['bomba','Fuel Attendant',1],['pneus','Tire Technician',3],['lavagem','Wash Attendant',2],['inspecao','Inspector',2],['parque','Parking Attendant',1],['pecas','Warehouse Worker',2],['pecas','Parts Van Driver',1],['stand','Car Salesman',2],['sucata','Crusher Operator',1],['fabrica','Assembly Worker',4],['pista','Race Driver',3],['pista','Pit Crew',3]];
+const CIVIC=[{type:'news',label:'Motoropolis Daily'},{type:'park',label:'Motoropolis Park'},{type:'police',label:'Police station'},{type:'court',label:'Courthouse'}];
+const ROLES=(()=>{const o={},r=(STATE&&STATE.roles)||{};for(const k in r)o[String(k).toLowerCase()]=String(r[k]).toLowerCase();return o})();
+const JOB_LIST=[['news','Reporter',2],['news','Newspaper Vendor',1],['park','Park Ranger',1],['police','Police Officer',3],['police','Detective',1],['court','Judge',1],['court','Lawyer',2],['court','Court Clerk',1],['oficina','Mechanic',5],['oficina','Receptionist',1],['reboques','Tow Truck Driver',3],['reboques','Dispatcher',1],['bomba','Cashier',1],['bomba','Fuel Attendant',1],['pneus','Tire Technician',3],['lavagem','Wash Attendant',2],['inspecao','Inspector',2],['parque','Parking Attendant',1],['pecas','Warehouse Worker',2],['pecas','Parts Van Driver',1],['stand','Car Salesman',2],['sucata','Crusher Operator',1],['fabrica','Assembly Worker',4],['pista','Race Driver',3],['pista','Pit Crew',3]];
 let JOBS={},JOBSIG='';
 function assignJobs(){const slots=[];for(const m of MILESTONES){if(!isOpen(m.type))continue;for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k})}
  for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k});
- const nj={};WALL.forEach((n,i)=>{if(i<slots.length)nj[n]=slots[i]});JOBS=nj;const sig=WALL.length+'|'+slots.length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs()}}
-function JOB_SLOTS(){let n=4;for(const m of MILESTONES)if(isOpen(m.type))for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];return n}
+ const nj={},used=new Set(),want={police:['Police Officer','Detective'],lawyer:['Lawyer'],judge:['Judge','Lawyer']};
+ for(const n of WALL){const r=ROLE_OF(n);if(!want[r])continue;const i=slots.findIndex((q,k)=>!used.has(k)&&want[r].includes(q.title));if(i>=0){nj[n]=slots[i];used.add(i)}}
+ let k=0;for(const n of WALL){if(nj[n]||ROLE_OF(n)==='thief')continue;while(k<slots.length&&used.has(k))k++;if(k>=slots.length)break;nj[n]=slots[k];used.add(k);k++}
+ JOBS=nj;const sig=WALL.length+'|'+slots.length+'|'+Object.keys(ROLES).length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs();renderCrime()}}
+function JOB_SLOTS(){let n=0;for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];for(const m of MILESTONES)if(isOpen(m.type))for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];return n}
 function staffOf(b,title,k){for(const n in JOBS){const j=JOBS[n];if(j.b===b&&j.title===title&&j.k===k)return n}return null}
 function jobOf(n){return JOBS[n]?JOBS[n].title:null}
 function renderJobs(){const el=$('jobs');if(!el)return;let h='';let open=0,taken=0;
@@ -1592,11 +1667,29 @@ function make3D(T){
   g.add(kg);
   const benchM=M(0x7a5a3a);for(const[x,z]of[[3.8,L.d-3.4],[9,L.d-3.4]]){const bg=new T.Group();bg.add(box(2.4,.12,.7,benchM,0,.45,0));bg.add(box(2.4,.6,.1,benchM,0,.55,.32));bg.position.set(L.x0+x,Y0,L.z0+z);g.add(bg)}
   scene.add(g)}
- // future lots: police station and courthouse
- for(const[t,lab,col]of[['police','POLICE STATION','#2f6fd9'],['court','COURTHOUSE','#8a6a2c']]){const L=LOT[t],g=new T.Group();g.add(box(L.w,.05,L.d,mat.dirt,L.cx,Y0,L.cz,false));
-  for(let k=0;k<7;k++){const cn=new T.Mesh(new T.ConeGeometry(.32,.85,10),mat.orange);cn.position.set(L.x0+3+k*((L.w-6)/6),Y0+.43,L.z0+1.6);cn.castShadow=true;g.add(cn)}
-  g.add(panel([['COMING SOON',50,'#ffd34d'],[lab,110,'#ffffff'],['THE NEXT BIG UPDATE',44,'#c8defa']],col==='#2f6fd9'?'#0f2f5c':'#4a3412',14,5.4,L.cx,Y0+3.8,L.cz,0));
-  g.add(box(.25,1.2,.25,mat.dark,L.cx-5.5,Y0,L.cz));g.add(box(.25,1.2,.25,mat.dark,L.cx+5.5,Y0,L.cz));scene.add(g)}
+ {// POLICE STATION
+  const L=LOT.police,g=new T.Group();g.add(box(L.w,.05,L.d,M(0xc9c4b9),L.cx,Y0,L.cz,false));
+  const bw=L.w-16.2,bd=L.d-3.2,bx=L.x0+15+bw/2,bz=L.z0+2+bd/2;const pm=M(0x1d4fb8);
+  shellB(g,bw,6.4,bd,bx,bz,mat.wall2,pm);rowWin(g,bx-bw/2+1,bx+bw/2-1,Y0+1.4,bz-bd/2,6,-1);rowWin(g,bx-bw/2+1,bx+bw/2-1,Y0+4.2,bz-bd/2,6,-1);
+  g.add(box(3.4,3,.2,mat.glass,bx-bw/2+3,Y0,bz-bd/2-.1,false));g.add(box(4.2,.3,1.6,pm,bx-bw/2+3,Y0+3.1,bz-bd/2-.7,false));
+  g.add(sign('POLICE',bw-6,1.6,'#1d4fb8','#fff',bx+1.5,Y0+7.6,bz-bd/2+.4,0));
+  const lb=box(.8,.5,.8,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:1.2}),bx-bw/2+3,Y0+3.5,bz-bd/2-.7,false);g.add(lb);
+  g.add(box(.2,6,.2,mat.steel,L.x0+13,Y0,L.z0+2));const fl=box(1.6,1,.05,M(0x2f6fd9),L.x0+13.9,Y0+5,L.z0+2,false);g.add(fl);
+  for(const x of[1.4,7,12.6])g.add(box(.12,.02,5.2,mat.dash,L.x0+x,Y0+.06,L.z0+11.8,false));
+  hvac(g,bx+bw/4,Y0+6.85,bz);scene.add(g)}
+ {// COURTHOUSE
+  const L=LOT.court,g=new T.Group(),st=M(0xe9e5dc),st2=M(0xd8d1c2);g.add(box(L.w,.05,L.d,M(0xd9d1c0),L.cx,Y0,L.cz,false));
+  const bw=L.w-8,bd=L.d-7.2,bx=L.cx,bz=L.z0+6+bd/2;
+  shellB(g,bw,7,bd,bx,bz,mat.wall3,M(0x8a6a2c));
+  for(let k=0;k<4;k++)g.add(box(bw-8-k*1.2+4,.3,1,st2,bx,Y0+k*.3,L.z0+1.4+k*1.05,false));
+  for(let k=0;k<6;k++){const x=bx-(bw-14)/2+k*(bw-14)/5;const col=new T.Mesh(new T.CylinderGeometry(.42,.48,6.2,14),st);col.position.set(x,Y0+1.2+3.1,L.z0+5.2);col.castShadow=true;g.add(col)}
+  g.add(box(bw-10,.6,2.4,st,bx,Y0+7.4,L.z0+5.2));
+  g.add(box(bw-9,.5,3,st2,bx,Y0+8,L.z0+5.4));g.add(box(bw-12,.5,2.6,st,bx,Y0+8.5,L.z0+5.4));
+  g.add(sign('COURTHOUSE',bw-14,1.3,'#4a3412','#ffd34d',bx,Y0+6.9,L.z0+3.9,0));
+  const sc=new T.Group();sc.add(box(.15,2.2,.15,M(0xe8b931,{metalness:.6,roughness:.3}),0,0,0));sc.add(box(2.4,.12,.12,M(0xe8b931,{metalness:.6,roughness:.3}),0,2.1,0));for(const dx of[-1.1,1.1]){const pan=new T.Mesh(new T.CylinderGeometry(.45,.3,.15,14),M(0xe8b931,{metalness:.6,roughness:.3}));pan.position.set(dx,1.5,0);sc.add(pan)}
+  sc.position.set(bx,Y0+9.9,L.z0+5.4);g.add(sc);
+  for(const x of[2,L.w-2]){const tr=new T.Mesh(new T.IcosahedronGeometry(1.4,0),M(0x4f8a3c,{flatShading:true}));tr.position.set(L.x0+x,Y0+2.4,L.z0+2);tr.castShadow=true;g.add(tr);g.add(box(.3,1.4,.3,mat.trunk,L.x0+x,Y0,L.z0+2))}
+  scene.add(g)}
  function shellB(g,w,h,d,x,z,wallM,trim){g.add(box(w,h,d,wallM,x,Y0,z));g.add(box(w+.4,.45,d+.4,mat.roof,x,Y0+h,z));
   for(const[dx,dz,ww,dd]of[[0,-d/2,w+.4,.25],[0,d/2,w+.4,.25],[-w/2,0,.25,d+.4],[w/2,0,.25,d+.4]])g.add(box(ww,.55,dd,wallM,x+dx,Y0+h+.2,z+dz,false));
   if(trim)g.add(box(w+.08,.45,d+.08,trim,x,Y0+h-1,z,false))}
@@ -1747,6 +1840,7 @@ function make3D(T){
    if(cl)for(const s of[1,-1])add(Wd*1.02,.12,.12,mat.chrome,0,.36,s*L*.5,false)}
   for(const[x,z]of[[-1,.32],[1,.32],[-1,-.32],[1,-.32]]){const w=new T.Mesh(WHEEL,mat.tire);w.position.set(x*Wd/2,.3,z*L);g.add(w)}
   const hl=add(Wd*.75,.14,.05,mat.hl,0,.5,L/2+.01,false);const tl=add(Wd*.75,.13,.05,mat.tailOff,0,.52,-L/2-.01,false);g.userData.tl=tl;
+  if(c.kind==='police'){for(const s of[1,-1])add(.06,.36,L*.36,mat.black,s*(Wd/2+.01),.32,-.05*L,false);add(Wd*.9,.04,L*.18,mat.black,0,1.29,-L*.04,false);g.userData.lb=[add(Wd*.4,.18,.3,M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2}),-Wd*.22,1.36,-L*.04,false),add(Wd*.4,.18,.3,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:2}),Wd*.22,1.36,-L*.04,false)]}
   return g}
  const raceMeshes=race.map(r=>{const g=carMesh({kind:'car',len:30,wid:16,color:r.col,m:{sport:true,n:'race'}});const nb=new T.Mesh(new T.CircleGeometry(.42,16).rotateX(-Math.PI/2),M(0xffffff));nb.position.set(0,1.15,-.2);g.add(nb);g.visible=false;scene.add(g);return g});
  const meshes=new Map();
@@ -1756,6 +1850,7 @@ function make3D(T){
   const seen=new Set();
   for(const c of cars){if(c.removed)continue;seen.add(c.id);let g=meshes.get(c.id);if(!g){g=carMesh(c);g.userData.y=inLot(c.x,c.y)?Y0:.02;scene.add(g);meshes.set(c.id,g)}
    g.visible=!c.hidden;if(!g.visible)continue;
+   if(g.userData.lb){const on=Math.floor(simTime*6)%2===0;g.userData.lb[0].visible=!c.siren||on;g.userData.lb[1].visible=!c.siren||!on}
    const ty=c.state==='towed'?.55:(inLot(c.x,c.y)?Y0:.02);g.userData.y+=(ty-g.userData.y)*Math.min(1,dt*8);
    let sc=1;if(c.state==='service'&&c.slot&&c.slot.b.type==='sucata')sc=Math.max(.35,c.timer/3);
    let lift=0;if(c.state==='service'&&c.slot&&c.slot.b.type==='oficina'&&c.kind==='car'&&c.task&&c.task.type!=='parts'){const tot=c.svcTotal||6,el=tot-c.timer;lift=Math.min(1.4,el*.9,Math.max(0,c.timer)*.9)}
@@ -1837,6 +1932,7 @@ function make3D(T){
   hctx.globalAlpha=1;
   for(const c of cars){if(!(c.newT>0)||c.hidden)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+2.6,g.position.z);if(!s)continue;const k=c.newT/6;hctx.globalAlpha=k;hctx.font="800 22px 'Barlow Condensed', sans-serif";hctx.fillStyle='#5cc98a';hctx.strokeStyle='rgba(16,19,24,.9)';hctx.lineWidth=4;hctx.strokeText('+1 SUB',s.x,s.y-(1-k)*14);hctx.fillText('+1 SUB',s.x,s.y-(1-k)*14)}
   hctx.globalAlpha=1;
+  if(crime){const c=crime.car,g=meshes.get(c.id);const s=g&&toHud(g.position.x,g.position.y+3,g.position.z);if(s)pill(`STOLEN · ${crime.thief}`,s.x,s.y,sz,'rgba(217,58,47,.95)','#fff');for(const p of crime.cops){const gp=meshes.get(p.id);const sp=gp&&toHud(gp.position.x,gp.position.y+3,gp.position.z);if(sp)pill(p.driver?`🚔 ${p.driver}`:'🚔 POLICE',sp.x,sp.y,sz*.9,'rgba(29,79,184,.95)','#fff')}}
   if(selected&&!selected.removed&&!selected.hidden){const g=meshes.get(selected.id);const s=g&&toHud(g.position.x,g.position.y+2.4,g.position.z);if(s){hctx.font="700 16px 'JetBrains Mono', monospace";const t=selected.plate,w=hctx.measureText(t).width+20;hctx.fillStyle='#fafafa';rrect(hctx,s.x-w/2,s.y-28,w,26,4);hctx.fill();hctx.strokeStyle='#111';hctx.lineWidth=2;hctx.stroke();hctx.fillStyle='#111';hctx.fillText(t,s.x,s.y-14.5);
    if(selected.driver)pill('★ '+selected.driver,s.x,s.y-34,17,'rgba(255,122,26,.95)','#1d0f02')}}
   if(!trailer){const O=B.oficina,s=toHud(U(O.x0+O.w/2),11.5,U(O.y0+O.h*.55));if(s){hctx.globalAlpha=.82+.18*Math.sin(simTime*3);pill('CLICK TO STEP INSIDE ▶',s.x,s.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#ff7a1a');hctx.globalAlpha=1}
@@ -1844,6 +1940,7 @@ function make3D(T){
    if(isOpen('reboques')){const Rb=B.reboques,s3=toHud(U(Rb.x0+Rb.w/2),9,U(Rb.y0+Rb.h*.7));if(s3){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+2);pill('STEP INSIDE THE TOW DEPOT ▶',s3.x,s3.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2a51a');hctx.globalAlpha=1}}}
    {const LBLS={bomba:['STEP INSIDE THE GAS STATION ▶','#d93a2f',7.5,.55],pneus:['STEP INSIDE THE TIRE SHOP ▶','#9aa3ae',9,.7],inspecao:['STEP INSIDE THE INSPECTION CENTER ▶','#1d4fb8',7,.5],parque:['STEP INSIDE THE PARKING ▶','#1d4fb8',4,.5],pecas:['STEP INSIDE AUTO PARTS ▶','#c0392b',8,.5],stand:['STEP INSIDE THE DEALERSHIP ▶','#ff7a1a',8,.5],sucata:['STEP INSIDE THE JUNKYARD ▶','#a08a66',6,.5],fabrica:['STEP INSIDE THE FACTORY ▶','#ff7a1a',10,.4],pista:['STEP INSIDE THE PIT GARAGE ▶','#ff7a1a',4,.5]};
     for(const k in LBLS){if(!isOpen(k))continue;const L=LBLS[k],b=B[k],sp=toHud(U(b.x0+b.w/2),L[2],U(b.y0+b.h*L[3]));if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+k.length);pill(L[0],sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',L[1]);hctx.globalAlpha=1}}
+    {for(const[t2,lab,col,hh]of[['police','STEP INSIDE THE POLICE STATION ▶','#1d4fb8',9.4],['court','STEP INSIDE THE COURTHOUSE ▶','#8a6a2c',12]]){const Lc=LOT[t2],sp=toHud(Lc.cx,hh,Lc.cz-2);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+t2.length);pill(lab,sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',col);hctx.globalAlpha=1}}}
     {const Ln=LOT.news,sp=toHud(Ln.cx+3,10.6,Ln.cz-2);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+5);pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}}
  }
  // ---------- 3D interior: the TorqueBlueprint repair shop ----------
@@ -2182,7 +2279,7 @@ function make3D(T){
   if(RT.timer<=0){RT.timer=.5;const x=RT.screenC.getContext('2d');x.fillStyle='#071a2d';x.fillRect(0,0,1024,512);x.fillStyle='#ff7a1a';x.font="800 56px 'Barlow Condensed',sans-serif";x.textAlign='left';x.textBaseline='middle';x.fillText('LIVE TIMING',36,56);
    [...race].sort((a,b)=>(b.laps+b.t)-(a.laps+a.t)).forEach((r,i)=>{const y=150+i*110;x.fillStyle=r.col;x.fillRect(36,y-40,80,80);x.fillStyle='#111';x.font="800 48px 'Barlow Condensed',sans-serif";x.textAlign='center';x.fillText(String(r.num),76,y+2);x.textAlign='left';x.fillStyle='#fff';x.fillText(`P${i+1}`,150,y);x.fillStyle='#c8defa';x.font="700 44px 'JetBrains Mono',monospace";x.fillText(`LAP ${r.laps+1}`,330,y);x.fillText(`${Math.round(r.t*100)}%`,700,y)});RT.screenT.needsUpdate=true}}
  function labelsPits(){lockedNote('pista');header('INSIDE THE RACE TRACK PIT GARAGE')}
- const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},news:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}}};let cur=INTS.oficina;
+ const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},news:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}},police:{get scene(){return PS.S},build:buildPolice,isBuilt:()=>PS.built,sync:syncPolice,labels:labelsPolice,get home(){return PS.home}},court:{get scene(){return CT.S},build:buildCourt,isBuilt:()=>CT.built,sync:syncCourt,labels:labelsCourt,get home(){return CT.home}}};let cur=INTS.oficina;
  // ===== NEWS KIOSK (Motoropolis Daily) =====
  const NK={built:false,v:-1,home:{...STD_HOME,yaw:.1,dist:40}};
  function frontPage(){const c=NK.cv,x=c.getContext('2d'),W=c.width,H=c.height;x.fillStyle='#f4f1e6';x.fillRect(0,0,W,H);x.fillStyle='#1c1d20';
@@ -2216,6 +2313,54 @@ function make3D(T){
   NK.rep.forEach((m,k)=>{m.rotation.y=Math.PI+Math.sin(simTime*(.6+k*.2))*.25;m.position.y=0});
   NK.L.forEach((m,k)=>loopP(m,paths[k],22+k*3,k*.27,.12))}
  function labelsKiosk(){staffTag(NK.vendor,'news','Newspaper Vendor',0,4.4);NK.rep.forEach((m,k)=>staffTag(m,'news','Reporter',k,4.4));header('INSIDE MOTOROPOLIS DAILY')}
+ // ===== POLICE STATION =====
+ const PS={built:false,home:{...STD_HOME,yaw:.15}};
+ function buildPolice(){const R=room({title:'MOTOROPOLIS POLICE DEPARTMENT',titleW:26,sbg:'#1d4fb8',trim:0x1d4fb8,wall:0x22303f,wall2:0x1b2734,floor:0x9aa3ad,h:14});PS.S=R.S;
+  // holding cells on the left
+  for(let k=0;k<2;k++){const cx=-20+k*8;R.B2(7.6,.2,6,mat.dark,cx,0,-7);for(let b=0;b<9;b++)R.B2(.12,5,.12,mat.steel,cx-3.4+b*.85,0,-4.1,false);R.B2(7.6,.2,.2,mat.steel,cx,5,-4.1,false);R.B2(2.4,.6,1.2,M(0x5a6472),cx-2,0,-9)}
+  PS.cell=mkP(PS.S,'#e8732a',180);putP(PS.cell,{x:-20,z:-6.5,ang:0},false);PS.cell.visible=false;
+  // desks with screens
+  PS.cops=[];[[-2,2],[6,2],[14,2]].forEach(([x,z],i)=>{R.B2(5,1.5,2.4,M(0xe9e5dc),x,0,z);R.B2(1.8,1.1,.12,M(0x46c8ff,{emissive:0x46c8ff,emissiveIntensity:.5}),x-1,1.6,z-.6,false);R.B2(1.2,.9,.5,M(0x2b3440),x-1,0,z+3.4);
+   const m=mkP(PS.S,'#1d4fb8',181+i);putP(m,{x:x-1,z:z+2,ang:Math.PI},false);PS.cops.push(m)});
+  // wanted board
+  PS.cv=document.createElement('canvas');PS.cv.width=1024;PS.cv.height=640;PS.tex=new T.CanvasTexture(PS.cv);PS.tex.colorSpace=T.SRGBColorSpace;
+  R.B2(13.4,8.6,.3,mat.dark,12,.9,-10.6,false);const wb=new T.Mesh(new T.PlaneGeometry(12.8,8),new T.MeshBasicMaterial({map:PS.tex,toneMapped:false}));wb.position.set(12,5.2,-10.4);R.add(wb);PS.v='';
+  // front desk
+  R.B2(7,1.6,2,M(0x1d4fb8),-6,0,8);R.B2(7.2,.15,2.2,M(0xe9e5dc),-6,1.6,8);PS.desk=mkP(PS.S,'#1d4fb8',185);putP(PS.desk,{x:-6,z:6.2,ang:0},false);
+  PS.L=[mkP(PS.S,null,186),mkP(PS.S,null,187)];PS.built=true;wantedBoard()}
+ function wantedBoard(){const th=thieves(),cs=CASES.slice(0,3);const key=th.join('|')+'#'+cs.map(c=>c.no+c.verdict).join('|')+(crime?'!'+crime.thief:'');if(key===PS.v)return;PS.v=key;
+  const x=PS.cv.getContext('2d'),W=1024,H=640;x.fillStyle='#f1e7c9';x.fillRect(0,0,W,H);x.fillStyle='#8a1a14';x.font="900 96px 'Barlow Condensed',sans-serif";x.textAlign='center';x.textBaseline='alphabetic';x.fillText('WANTED',W/2,110);
+  x.fillStyle='#3a2a1a';x.font="600 30px 'JetBrains Mono',monospace";x.fillText(crime?`LIVE CHASE: ${crime.thief.toUpperCase()}`:'MOTOROPOLIS POLICE DEPARTMENT',W/2,160);
+  const list=th.length?th:['NO SUSPECTS... YET'];list.slice(0,6).forEach((n,i)=>{const cx=110+(i%3)*300,cy=200+Math.floor(i/3)*210;x.fillStyle='#d8cba6';x.fillRect(cx,cy,220,180);x.strokeStyle='#3a2a1a';x.lineWidth=4;x.strokeRect(cx,cy,220,180);
+   x.fillStyle='#3a2a1a';x.beginPath();x.arc(cx+110,cy+65,34,0,Math.PI*2);x.fill();x.fillRect(cx+60,cy+100,100,40);x.font="800 26px 'Barlow Condensed',sans-serif";x.fillText(String(n).slice(0,16),cx+110,cy+170)});
+  x.font="700 26px 'Barlow Condensed',sans-serif";x.fillStyle='#8a1a14';x.fillText('COMMENT "WORKSHOP THIEF" TO JOIN THE WANTED LIST',W/2,H-24);PS.tex.needsUpdate=true}
+ function syncPolice(){wantedBoard();const caught=CASES.find(c=>!c.verdict);PS.cell.visible=!!caught;if(caught)PS.cell.rotation.y=Math.sin(simTime*.8)*.6;
+  PS.cops.forEach((m,k)=>{m.rotation.y=Math.PI+Math.sin(simTime*(.5+k*.2))*.3});PS.desk.rotation.y=Math.sin(simTime*.4)*.4;
+  PS.L.forEach((m,k)=>loopP(m,[[24,10],[-6,10.3],[-6,10.3]],14+k*4,k*.5,.3))}
+ function labelsPolice(){PS.cops.forEach((m,k)=>staffTag(m,'police','Police Officer',k,4.4));staffTag(PS.desk,'police','Detective',0,4.6);
+  const cs=CASES.find(c=>!c.verdict);if(cs&&PS.cell.visible)tag(-20,4.4,-6.5,`IN CUSTODY: ${cs.thief}`,'rgba(217,58,47,.95)','#fff');
+  if(crime)pill(`🚨 LIVE CHASE: ${crime.thief} in ${crime.car.plate}`,hud.width/2,150,26,'rgba(217,58,47,.95)','#fff')
+  header('INSIDE THE POLICE STATION')}
+
+ // ===== COURTHOUSE =====
+ const CT={built:false,home:{...STD_HOME,yaw:0,tz:0,dist:42}};
+ function buildCourt(){const R=room({title:'MOTOROPOLIS COURTHOUSE',titleW:22,sbg:'#4a3412',sfg:'#ffd34d',trim:0x8a6a2c,wall:0x5a4330,wall2:0x4a3626,floor:0xa88a62,h:12});CT.S=R.S;const wd=M(0x6b4a2b),wd2=M(0x8a6a2c);
+  // judge's bench
+  R.B2(12,3.2,3,wd,0,0,-8);R.B2(12.4,.2,3.2,wd2,0,3.2,-8);R.B2(3,3,.6,wd,0,3.4,-10.3);CT.judge=mkP(CT.S,'#111',190);putP(CT.judge,{x:0,z:-8.9,ang:0},false);CT.judge.position.y=1.8;
+  const sc=new T.Group();sc.add(box(.12,1.6,.12,M(0xe8b931,{metalness:.6}),0,0,0));sc.add(box(1.8,.1,.1,M(0xe8b931,{metalness:.6}),0,1.5,0));for(const dx of[-.8,.8]){const pn=new T.Mesh(new T.CylinderGeometry(.35,.22,.1,12),M(0xe8b931,{metalness:.6}));pn.position.set(dx,1.1,0);sc.add(pn)}sc.position.set(4.6,3.4,-7.4);R.add(sc);
+  // witness box & clerk
+  R.B2(3,2,2.4,wd,-9,0,-6);CT.clerk=mkP(CT.S,'#5a6472',191);putP(CT.clerk,{x:9,z:-6,ang:0},false);R.B2(3.4,1.4,2,wd,9,0,-4.6);
+  // defense and prosecution tables
+  CT.law=[];[[-7,1],[7,1]].forEach(([x,z],i)=>{R.B2(7,1.5,2.4,wd2,x,0,z);const m=mkP(CT.S,i?'#22252b':'#2b3a55',192+i);putP(m,{x:x-1.5,z:z+2.2,ang:Math.PI},false);CT.law.push(m)});
+  CT.def=mkP(CT.S,'#e8732a',194);putP(CT.def,{x:-4.5,z:3.2,ang:Math.PI},false);
+  // public benches
+  for(let r=0;r<2;r++)for(const x of[-12,12])R.B2(12,1,1.2,wd,x,0,8+r*2.8);CT.pub=[0,1,2,3,4,5].map(i=>{const m=mkP(CT.S,null,195+i);putP(m,{x:(i<3?-15:9)+(i%3)*3,z:9.4,ang:Math.PI},false);return m});
+  R.B2(.2,1.2,5,wd2,0,0,8.6);CT.built=true}
+ function syncCourt(){const cs=CASES[0];CT.def.visible=!!cs;CT.judge.rotation.y=Math.sin(simTime*.5)*.35;CT.law.forEach((m,k)=>{m.rotation.y=Math.PI+Math.sin(simTime*(.7+k*.3))*.5})}
+ function labelsCourt(){staffTag(CT.judge,'court','Judge',0,6.2);staffTag(CT.clerk,'court','Court Clerk',0,4.4);CT.law.forEach((m,k)=>staffTag(m,'court','Lawyer',k,4.4));
+  const cs=CASES[0];if(cs){tag(-4.5,4.4,3.2,`DEFENDANT: ${cs.thief}`,'rgba(232,115,42,.95)','#1d0f02');pill(cs.verdict?`CASE #${cs.no} · ${cs.verdict==='guilty'?'GUILTY':cs.verdict==='community'?'30 DAYS WASHING CARS':'NOT GUILTY'}`:`CASE #${cs.no} · MOTOROPOLIS vs ${cs.thief} · IN SESSION`,hud.width/2,150,24,cs.verdict==='free'?'rgba(46,139,87,.95)':'rgba(74,52,18,.95)','#ffd34d')}
+  else pill('NO CASES TODAY · THE STREETS ARE CALM',hud.width/2,150,22,'rgba(16,19,24,.85)','#c8defa')
+  header('INSIDE THE COURTHOUSE')}
  // ---------- people inside the buildings ----------
  function pathPos(pts,u){let tot=0;const seg=[];for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(d);tot+=d}
   let d=clamp(u,0,1)*tot;for(let i=0;i<seg.length;i++){if(d<=seg[i]||i===seg.length-1){const k=seg[i]?clamp(d/seg[i],0,1):0,a=pts[i],b=pts[i+1];return{x:a[0]+(b[0]-a[0])*k,z:a[1]+(b[1]-a[1])*k,ang:Math.atan2(b[0]-a[0],b[1]-a[1])}}d-=seg[i]}return{x:pts[0][0],z:pts[0][1],ang:0}}
@@ -2342,7 +2487,7 @@ function loop(ts){
 requestAnimationFrame(loop);
 ownerTools();
 setTimeout(()=>{newsSeed();parkRanger()},1500);setInterval(newsSummary,55000);
-setInterval(()=>{fetch('state.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;if(Number.isFinite(+j.subs)&&+j.subs!==subs)setSubs(+j.subs);if(Array.isArray(j.names)){let add=0;for(const raw of j.names){const n=String(raw).trim().slice(0,24);if(n&&!WALL.some(x=>x.toLowerCase()===n.toLowerCase())){WALL.push(n);add++}}if(add){assignDrivers();assignJobs();WALL.slice(-add).forEach(n=>{const jb=jobOf(n);news(jb?`Welcome, ${n}! The city's newest ${jb}`:`Welcome, ${n}! Now looking for a job`,'people',`${n} joined Motoropolis from the comments.`)})}}}).catch(()=>{})},120000);
+setInterval(()=>{fetch('state.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;if(Number.isFinite(+j.subs)&&+j.subs!==subs)setSubs(+j.subs);if(j.roles&&typeof j.roles==='object')for(const k in j.roles)ROLES[k.toLowerCase()]=String(j.roles[k]).toLowerCase();if(Array.isArray(j.names)){let add=0;for(const raw of j.names){const n=String(raw).trim().slice(0,24);if(n&&!WALL.some(x=>x.toLowerCase()===n.toLowerCase())){WALL.push(n);add++}}if(add){assignDrivers();assignJobs();WALL.slice(-add).forEach(n=>{const jb=jobOf(n);news(jb?`Welcome, ${n}! The city's newest ${jb}`:`Welcome, ${n}! Now looking for a job`,'people',`${n} joined Motoropolis from the comments.`)})}}}).catch(()=>{})},120000);
 if(location.hostname==='localhost')window.__mtpBuild=()=>buildPage(STATE);
 })();
 </script></body></html>
