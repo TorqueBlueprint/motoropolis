@@ -67,6 +67,7 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
 .metas li.next{outline:2px solid var(--accent)}
 .metas li.next .chip{background:var(--accent);color:#1d0f02}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.jsum{margin:0 0 10px;font-size:14px;color:var(--muted)}.jsum b{color:var(--fg)}.jobs{list-style:none;margin:0;padding:0 4px 0 0;display:flex;flex-direction:column;gap:6px;max-height:330px;overflow-y:auto;font-size:13.5px}.jobs>li{background:var(--surface-2);border-radius:6px;padding:7px 9px;border-left:3px solid var(--line)}.jobs>li.open{border-left-color:var(--ok)}.jobs .jh{display:flex;justify-content:space-between;gap:8px;align-items:center}.jobs .chip{font:700 11px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:4px;background:var(--surface);color:var(--muted);white-space:nowrap}.jobs>li.open .chip{background:rgba(92,201,138,.16);color:var(--ok)}.jobs ul{margin:5px 0 0;padding-left:16px}.jobs p{margin:4px 0 0;color:var(--muted)}.jobs i{color:var(--muted)}
 .card h2{font:700 14px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin:0}
 .stats div{border-left:3px solid var(--line);padding-left:10px}
@@ -207,6 +208,10 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
     <section class="card">
       <h2>Subscriber milestones</h2>
       <ol class="metas" id="metas"></ol>
+    </section>
+    <section class="card">
+      <h2>Jobs in Motoropolis</h2>
+      <div id="jobs"></div>
     </section>
     <section class="card" id="carCard">
       <h2>Car details</h2>
@@ -639,7 +644,7 @@ function cityHousekeeping(){
  if(!isOpen('pecas')){if(van.state==='service'&&van.slot===van.home){van.hidden=true;van.timer=Infinity}}
  else if(van.hidden){van.hidden=false;van.timer=rr(2,5)}
  if(!tw)for(const c of cars){if(c.state==='broken'&&!c.towAssigned&&!c.pts.length){c.state='road';c.limp=true;c.task={type:'svc',b:B.oficina};c.route=[];c.pts=[stopPt(c.from,c.to)]}}
- reconcile(false);assignDrivers();
+ reconcile(false);assignDrivers();assignJobs();
 }
 function setSubs(v,silent){
  v=Math.max(0,Math.floor(Number(v)||0));
@@ -1370,6 +1375,21 @@ function stepPeds(dt){for(const p of peds){
  if(p.pause>0){p.pause-=dt;continue}
  if(R()<dt*.025)p.pause=rr(1.5,4);
  p.s+=p.v*dt;p.phase+=dt*Math.abs(p.v)*.6;const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=p.v<0?q.ang+Math.PI:q.ang}}
+
+// ---------- jobs: the Wall of Mechanics works in the city ----------
+const JOB_LIST=[['oficina','Mechanic',5],['oficina','Receptionist',1],['reboques','Tow Truck Driver',3],['reboques','Dispatcher',1],['bomba','Cashier',1],['bomba','Fuel Attendant',1],['pneus','Tire Technician',3],['lavagem','Wash Attendant',2],['inspecao','Inspector',2],['parque','Parking Attendant',1],['pecas','Warehouse Worker',2],['pecas','Parts Van Driver',1],['stand','Car Salesman',2],['sucata','Crusher Operator',1],['fabrica','Assembly Worker',4],['pista','Race Driver',3],['pista','Pit Crew',3]];
+let JOBS={},JOBSIG='';
+function assignJobs(){const slots=[];for(const m of MILESTONES){if(!isOpen(m.type))continue;for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k})}
+ const nj={};WALL.forEach((n,i)=>{if(i<slots.length)nj[n]=slots[i]});JOBS=nj;const sig=WALL.length+'|'+slots.length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs()}}
+function staffOf(b,title,k){for(const n in JOBS){const j=JOBS[n];if(j.b===b&&j.title===title&&j.k===k)return n}return null}
+function jobOf(n){return JOBS[n]?JOBS[n].title:null}
+function renderJobs(){const el=$('jobs');if(!el)return;let h='';let open=0,taken=0;
+ for(const m of MILESTONES){const js=JOB_LIST.filter(j=>j[0]===m.type);const isO=isOpen(m.type);
+  h+=`<li class="${isO?'open':''}"><div class="jh"><b>${esc(m.label)}</b><span class="chip">${isO?'Hiring':'Opens at '+m.n.toLocaleString('en-US')}</span></div>`;
+  if(isO){h+='<ul>';for(const j of js)for(let k=0;k<j[2];k++){const n=staffOf(m.type,j[1],k);if(n)taken++;else open++;h+=`<li>${esc(j[1])}: ${n?'<b>★ '+esc(n)+'</b>':'<i>open · comment WORKSHOP</i>'}</li>`}h+='</ul>'}
+  else h+=`<p>${js.map(j=>j[2]+'× '+esc(j[1])).join(' · ')}</p>`;h+='</li>'}
+ const waiting=Math.max(0,WALL.length-Object.keys(JOBS).length);
+ el.innerHTML=`<p class="jsum"><b>${taken}</b> people working · <b>${open}</b> jobs open${waiting?` · <b>${waiting}</b> looking for a job`:''}</p><ol class="jobs">${h}</ol>`}
 function assignDrivers(){
  if(!WALL.length)return;const taken=new Set();for(const c of cars)if(c.driver&&!c.removed)taken.add(c.driver);
  for(const n of WALL){if(taken.has(n))continue;const c=cars.find(c=>c.kind==='car'&&!c.removed&&!c.driver&&!c.isNew);if(!c)break;c.driver=n;taken.add(n)}
@@ -1668,7 +1688,7 @@ function make3D(T){
  function drawLabels(){
   hctx.textAlign='center';hctx.textBaseline='middle';const sz=clamp(2600/cam.dist,13,26),near=cam.dist<200;
   const items=[];
-  if(near)peds.forEach((p,k)=>{if(!p.name)return;const g=pedMeshes[k];items.push({w:g.position,h:2.25,t:p.name,kind:'p'})});
+  if(near)peds.forEach((p,k)=>{if(!p.name)return;const g=pedMeshes[k];items.push({w:g.position,h:2.25,t:p.name+(jobOf(p.name)?' · '+jobOf(p.name).toUpperCase():''),kind:'p'})});
   for(const c of cars){if(!c.driver||c.hidden||c.removed||c===selected)continue;const g=meshes.get(c.id);if(g&&near)items.push({w:g.position,h:2.1,t:'★ '+c.driver,kind:'d'})}
   const cp=camera.position;for(const it of items)it.d=Math.hypot(it.w.x-cp.x,it.w.y-cp.y,it.w.z-cp.z);items.sort((a,b)=>a.d-b.d);
   let shown=0;for(const it of items){if(shown>=36)break;const s=toHud(it.w.x,it.w.y+it.h,it.w.z);if(!s||s.x<-50||s.x>CW+50||s.y<0||s.y>CH)continue;shown++;
@@ -1760,7 +1780,7 @@ function make3D(T){
    if(id!==L.id){L.id=id;while(L.car.children.length)L.car.remove(L.car.children[0]);if(c){const m=carMesh(c);m.scale.setScalar(1.55);m.rotation.y=Math.PI;L.car.add(m)}}
    let lift=0;if(c&&c.kind==='car'&&c.task&&c.task.type!=='parts'){const tot=c.svcTotal||6,el=tot-c.timer;lift=Math.min(2.4,el*1.4,Math.max(0,c.timer)*1.4)}
    L.car.position.y=lift;L.arms.position.y=lift+.2;
-   L.mech.visible=!!c;if(c){const ph=simTime*2+k;L.mech.position.set(L.x+3.4+Math.sin(ph)*.3,0,-2+Math.cos(ph*.7)*1.6);L.mech.rotation.y=-Math.PI/2+Math.sin(ph)*.4}});
+   L.mech.visible=!!c||!!staffOf('oficina','Mechanic',k);if(!c&&L.mech.visible){L.mech.position.set(L.x+3.4,0,1.6);L.mech.rotation.y=Math.PI+Math.sin(simTime*.6+k)*.5}if(c){const ph=simTime*2+k;L.mech.position.set(L.x+3.4+Math.sin(ph)*.3,0,-2+Math.cos(ph*.7)*1.6);L.mech.rotation.y=-Math.PI/2+Math.sin(ph)*.4}});
  }
  function drawInteriorLabels(){hctx.textAlign='center';hctx.textBaseline='middle';const sz=clamp(1100/cam.dist,14,26);
   for(const gq of IN.gear){if(gq.real.visible)continue;const s=toHud(gq.x,4.4,gq.z);if(s)pill(`${gq.name} · UNLOCKS AT ${gq.n.toLocaleString('en-US')} SUBS`,s.x,s.y,sz*.85,'rgba(15,47,92,.92)','#c8defa','#9fd0ff')}
@@ -2046,7 +2066,7 @@ function make3D(T){
    const L=IN.L;putP(L.rec,{x:20,z:5.6,ang:0},false);L.rec.rotation.y=Math.sin(simTime*.7)*.4;
    B.oficina.slots.forEach((s,k)=>{const m=L.w[k];const c=s.car&&s.car.state==='service'&&s.car.kind==='car'?s.car:null;m.visible=!!c;m.userData.c=c;if(!c)return;
     const el=(c.svcTotal||6)-c.timer,seat=[21.4+k*.9,9.4];if(el<2.2)putP(m,pathPos([[IN.lifts[k].x,1],[18,4],seat],el/2.2),true);else putP(m,{x:seat[0],z:seat[1],ang:Math.PI},false)})},
-  labels(){const L=IN.L;if(!L)return;for(const m of L.w)if(m.visible)tag(m.position.x,3.3,m.position.z,(m.userData.c.driver?'★ ':'')+(m.userData.c.driver||'OWNER')+' · WAITING');tag(20,3.6,5.6,'RECEPTION','rgba(255,122,26,.95)','#1d0f02')}};
+  labels(){const L=IN.L;if(!L)return;for(const m of L.w)if(m.visible)tag(m.position.x,3.3,m.position.z,(m.userData.c.driver?'★ ':'')+(m.userData.c.driver||'OWNER')+' · WAITING')}};
  // CAR WASH: an attendant guides each car in
  LIFE.lavagem={sync(){const S=WS.scene;if(!WS.L)WS.L={a:[mkP(S,'#3fa7c4',40),mkP(S,'#3fa7c4',41)],p:mkP(S,null,42)};WS.lanes.forEach((L,k)=>{const m=WS.L.a[k];const x=L.id?L.car.position.x-5:-22;putP(m,{x:clamp(x,-23,-15),z:L.z+(k?3.2:-3.2),ang:Math.PI/2},!!L.id&&x>-23&&x<-15)});loopP(WS.L.p,[[-23.5,7],[-23.5,9.5],[-18,9.5]],18,0,.3)},
   labels(){if(!WS.L)return;WS.L.a.forEach((m,k)=>{if(WS.lanes[k].id)tag(m.position.x,3.3,m.position.z,'COME FORWARD…','rgba(63,167,196,.95)','#062a36')})}};
@@ -2082,6 +2102,22 @@ function make3D(T){
    RT.L.forEach((m,k)=>{const x=-16+pit*10;if(ph<.4)putP(m,{x:x+[-2.6,2.6,0][k],z:-3+[0,0,3.6][k],ang:[Math.PI/2,-Math.PI/2,Math.PI][k]},false);else putP(m,{x:-20+k*2,z:5,ang:Math.PI},false)})},
   labels(){if(!RT.L)return;const pit=Math.floor(simTime/15)%3,ph=(simTime%15)/15;if(ph<.4)tag(-16+pit*10,4.6,-3,`PIT STOP · #${race[pit].num}`,'rgba(255,122,26,.95)','#1d0f02')}};
  for(const k in LIFE){const it=INTS[k];if(!it)continue;const s0=it.sync,l0=it.labels;it.sync=dt=>{s0(dt);LIFE[k].sync(dt)};it.labels=()=>{l0();LIFE[k].labels()}}
+
+ // job tags: who works where, inside every building
+ function staffTag(m,b,title,k,y){if(!m||!m.visible)return;const n=staffOf(b,title,k);tag(m.position.x,y||3.9,m.position.z,n?`★ ${n} · ${title.toUpperCase()}`:`${title.toUpperCase()} · JOB OPEN`,n?'rgba(46,139,87,.95)':'rgba(16,19,24,.8)',n?'#fff':'#9aa3ae')}
+ const XTRA={bomba:{sync(){if(!GS.att){GS.att=mkP(GS.S,'#d93a2f',150)}loopP(GS.att,[[0,11.5],[24,11.5]],16,0,.25)},labels(){staffTag(GS.cashier,'bomba','Cashier',0);staffTag(GS.att,'bomba','Fuel Attendant',0)}},
+  oficina:{sync(){},labels(){IN.lifts.forEach((L,k)=>staffTag(L.mech,'oficina','Mechanic',k,4.6));if(IN.L)staffTag(IN.L.rec,'oficina','Receptionist',0,4.4)}},
+  reboques:{sync(){},labels(){if(TW.L)TW.L.forEach((m,k)=>staffTag(m,'reboques','Tow Truck Driver',k));staffTag(TW.disp,'reboques','Dispatcher',0,4.2)}},
+  pneus:{sync(){},labels(){if(TS.L)TS.L.m.forEach((m,k)=>staffTag(m,'pneus','Tire Technician',k))}},
+  lavagem:{sync(){},labels(){if(WS.L)WS.L.a.forEach((m,k)=>staffTag(m,'lavagem','Wash Attendant',k,4.6))}},
+  inspecao:{sync(){},labels(){if(IC.L)IC.L.forEach((m,k)=>staffTag(m,'inspecao','Inspector',k,4.6))}},
+  parque:{sync(){if(!PK.att){PK.att=mkP(PK.S,'#1d4fb8',151);putP(PK.att,{x:24,z:7.6,ang:Math.PI},false)}PK.att.rotation.y=Math.PI+Math.sin(simTime*.5)*.6},labels(){staffTag(PK.att,'parque','Parking Attendant',0)}},
+  pecas:{sync(){},labels(){if(PW.L){staffTag(PW.L[0],'pecas','Warehouse Worker',0);staffTag(PW.L[1],'pecas','Warehouse Worker',1);staffTag(PW.L[2],'pecas','Parts Van Driver',0)}}},
+  stand:{sync(){if(!DS.s2){DS.s2=mkP(DS.S,'#22252b',152)}const t=DS.L&&DS.L.c[1];if(t)putP(DS.s2,{x:t.position.x-1.4,z:t.position.z+1.2,ang:t.rotation.y},true)},labels(){if(DS.L)staffTag(DS.L.s,'stand','Car Salesman',0);staffTag(DS.s2,'stand','Car Salesman',1)}},
+  sucata:{sync(){},labels(){if(JY.L)staffTag(JY.L[0],'sucata','Crusher Operator',0)}},
+  fabrica:{sync(){},labels(){if(FC.L)FC.L.slice(0,4).forEach((m,k)=>staffTag(m,'fabrica','Assembly Worker',k))}},
+  pista:{sync(){},labels(){if(RT.cars)RT.cars.forEach((c,k)=>{const n=staffOf('pista','Race Driver',k);tag(c.g.position.x,3.6,c.g.position.z,n?`★ ${n} · RACE DRIVER #${c.r.num}`:`RACE DRIVER #${c.r.num} · JOB OPEN`,n?'rgba(46,139,87,.95)':'rgba(16,19,24,.8)',n?'#fff':'#9aa3ae')});if(RT.L)RT.L.forEach((m,k)=>staffTag(m,'pista','Pit Crew',k))}}};
+ for(const k in XTRA){const it=INTS[k];if(!it)continue;const s0=it.sync,l0=it.labels;it.sync=dt=>{s0(dt);XTRA[k].sync(dt)};it.labels=()=>{l0();XTRA[k].labels()}}
  function enterIn(type){if(mode==='in'||fadeTo)return;cur=INTS[type]||INTS.oficina;if(!cur.isBuilt())cur.build();fadeTo='in';fade=0;onMode&&onMode('in')}
  function exitIn(){if(mode!=='in'||fadeTo)return;fadeTo='city';fade=0;onMode&&onMode('city')}
  let onMode=null;
