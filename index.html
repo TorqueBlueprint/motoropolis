@@ -1823,12 +1823,12 @@ function make3D(T,X){
   pileG=inst(new T.BoxGeometry(2.5,1,1.7),M(0xffffff,{roughness:.6,metalness:.3}),list,true,cols)}
  // ---------- REMAKE world: canal with bridges, roundabouts, rounded blocks, bus stops ----------
  if(X){
-  {const rx0=XS3[0]-H3,rx1=XS3[NX-1]+H3,rz0=YS3[0]-H3,rz1=YS3[NY-1]+H3;const base=new T.Mesh(new T.PlaneGeometry(rx1-rx0,rz1-rz0),mat.asphalt);base.rotation.x=-Math.PI/2;base.position.set((rx0+rx1)/2,.004,(rz0+rz1)/2);base.receiveShadow=true;scene.add(base)}
+  {const rx0=XS3[0]-H3,rx1=XS3[NX-1]+H3,rz0=YS3[0]-H3,rz1=YS3[NY-1]+H3;const base=new T.Mesh(new T.PlaneGeometry(rx1-rx0,rz1-rz0),mat.asphalt);base.rotation.x=-Math.PI/2;base.position.set((rx0+rx1)/2,-.006,(rz0+rz1)/2);base.receiveShadow=true;scene.add(base)}
   if(CANAL_I>=0){const cx=XS3[CANAL_I],cw=(HALF*2+24)/10,z0=YS3[0]-H3-4,z1=YS3[NY-1]+H3+4;
-   const water=new T.Mesh(new T.PlaneGeometry(cw-.6,z1-z0),new T.MeshPhysicalMaterial({color:0x2f6f9f,roughness:.08,metalness:.1,transmission:0,clearcoat:1,clearcoatRoughness:.05}));water.rotation.x=-Math.PI/2;water.position.set(cx,.03,(z0+z1)/2);scene.add(water);
+   const wm=M(0x2f6f9f,{roughness:.22,metalness:.15});const cuts=[z0,...YS3.flatMap(z=>[z-H3-.4,z+H3+.4]),z1];for(let k=0;k<cuts.length;k+=2){const a=cuts[k],b=cuts[k+1];if(b-a<.5)continue;const w=new T.Mesh(new T.PlaneGeometry(cw-.6,b-a),wm);w.rotation.x=-Math.PI/2;w.position.set(cx,.02,(a+b)/2);w.receiveShadow=true;scene.add(w)}
    const stone=M(0xb8b1a3,{roughness:.9});for(const s of[-1,1])scene.add(box(.3,.45,z1-z0,stone,cx+s*(cw/2-.15),0,(z0+z1)/2));
    const rail=M(0x2b3038,{metalness:.6,roughness:.35}),arch=M(0xc9c3b6,{roughness:.8});
-   for(const z of YS3){const deck=box(cw+.4,.5,H3*2+.8,arch,cx,-.42,z);scene.add(deck);for(const s of[-1,1]){const zz=z+s*(H3+.25);scene.add(box(cw+.4,.22,.22,rail,cx,.95,zz));for(let k=0;k<7;k++)scene.add(box(.08,.95,.08,rail,cx-cw/2+.2+k*(cw/6),0,zz));scene.add(box(.5,1.4,.5,arch,cx-cw/2-.1,0,zz));scene.add(box(.5,1.4,.5,arch,cx+cw/2+.1,0,zz))}
+   for(const z of YS3){const deck=box(cw+.4,.5,H3*2+.8,arch,cx,-.5,z);scene.add(deck);for(const s of[-1,1]){const zz=z+s*(H3+.25);scene.add(box(cw+.4,.22,.22,rail,cx,.95,zz));for(let k=0;k<7;k++)scene.add(box(.08,.95,.08,rail,cx-cw/2+.2+k*(cw/6),0,zz));scene.add(box(.5,1.4,.5,arch,cx-cw/2-.1,0,zz));scene.add(box(.5,1.4,.5,arch,cx+cw/2+.1,0,zz))}
     const lamp=new T.Mesh(new T.SphereGeometry(.22,10,8),mat.lamp);lamp.position.set(cx-cw/2-.1,1.65,z+H3+.25);scene.add(lamp);const l2=lamp.clone();l2.position.z=z-H3-.25;scene.add(l2)}
    const boat=new T.Group();boat.add(box(1.2,.35,3.2,M(0xf4f4f0),0,0,0,true));boat.add(box(.9,.5,1.1,M(0x2f6fd9),0,.35,-.3,true));boat.position.set(cx,.05,(YS3[1]+YS3[2])/2);scene.add(boat);KQ.boat=boat}
   for(const n of nodes){if(!n.round)continue;const x=U(n.x),z=U(n.y);const disc=new T.Mesh(new T.CircleGeometry((HALF+8)/10,40),mat.asphalt);disc.rotation.x=-Math.PI/2;disc.position.set(x,.014,z);scene.add(disc);
@@ -1891,7 +1891,7 @@ function make3D(T,X){
   hemi.intensity=.6-.32*nv;sun.intensity=3.3-2.95*nv;sun.color.setHex(nv>.5?0x8fb0ff:0xfff1dc);mat.win.emissiveIntensity=1.6*nv;mat.lamp.emissiveIntensity=3*nv;mat.hl.emissiveIntensity=.15+2.4*nv;
   renderer.toneMappingExposure=X?.92+.2*nv:1.05+.25*nv;if(X){sun.color.setHex(nv>.6?0x8fb0ff:0xffbf86);hemi.color.setHex(0x9fb2e0);hemi.groundColor.setHex(0x3a2c26)}for(const m of signMats)m.emissiveIntensity=(X?.22:0)+.5*nv;for(const p of pls)p.intensity=nv*30}
  // ---------- vehicles ----------
- const colCache={};const colMat=c=>colCache[c]||(colCache[c]=X?new T.MeshPhysicalMaterial({color:c,roughness:.28,metalness:.45,clearcoat:1,clearcoatRoughness:.08}):M(c,{roughness:.32,metalness:.35}));
+ const colCache={};const colMat=c=>colCache[c]||(colCache[c]=X?new T.MeshPhysicalMaterial({color:c,roughness:.38,metalness:.35,clearcoat:.6,clearcoatRoughness:.25}):M(c,{roughness:.32,metalness:.35}));
  const WHEEL=new T.CylinderGeometry(.3,.3,.22,14).rotateZ(Math.PI/2);
  function carMesh(c){if(X){const xm=carMeshX(c);if(xm)return xm}
   const g=new T.Group(),L=c.len/10,Wd=c.wid/10*.92,body=colMat(c.color),m=c.m||{};
@@ -1956,7 +1956,7 @@ function make3D(T,X){
   if(fit==='police'||fit==='hivis'||fit==='green'){const cm=XM(fit==='hivis'?'#1b2233':fit==='green'?'#3b4a3a':'#151a26');const c=new T.Mesh(PG.hair,cm);c.scale.set(.72,.62,.74);c.position.y=1.64;g.add(c);const br=new T.Mesh(BOX,cm);br.scale.set(.2,.02,.14);br.position.set(0,1.66,.16);g.add(br)}
   g.userData.legs=legs;return g}
  if(X){
-  renderer.toneMappingExposure=1.1;const pm2=new T.PMREMGenerator(renderer);scene.environment=pm2.fromScene(new X.RoomEnvironment(),.04).texture;scene.environmentIntensity=.25;
+  camera.near=2;camera.updateProjectionMatrix();renderer.toneMappingExposure=1.1;const pm2=new T.PMREMGenerator(renderer);scene.environment=pm2.fromScene(new X.RoomEnvironment(),.04).texture;scene.environmentIntensity=.25;
   mat.asphalt.roughness=.48;mat.asphalt.metalness=.12;mat.asphalt.color.setHex(0x2c2f36);
   mat.orange.emissive=new T.Color(0xff6a00);mat.orange.emissiveIntensity=.45;mat.yellow.emissive=new T.Color(0xffa000);mat.yellow.emissiveIntensity=.15;
   // skyline around the city
@@ -1964,7 +1964,7 @@ function make3D(T,X){
    const texs=[mk(),mk(),mk()];const sk=new T.Group();for(let k=0;k<70;k++){const a=k/70*Math.PI*2+rnd()*.05,r=230+rnd()*60,w=8+rnd()*12,h=30+rnd()*80;const tx=texs[k%3];
     const m=new T.Mesh(new T.BoxGeometry(w,h,w),new T.MeshStandardMaterial({color:0x2a3346,map:tx,emissive:0xffffff,emissiveMap:tx,emissiveIntensity:.25,roughness:.4,metalness:.4}));m.position.set(CX+Math.cos(a)*r,h/2,CZ+Math.sin(a)*r*.8);sk.add(m);signMats.push(m.material)}scene.add(sk)}
  }
- const composer=X?(()=>{const c=new X.EffectComposer(renderer,new T.WebGLRenderTarget(1024,1024,{samples:4,type:T.HalfFloatType}));const rp=new X.RenderPass(scene,camera);c.addPass(rp);c.addPass(new X.UnrealBloomPass(new T.Vector2(512,512),.45,.45,.9));c.addPass(new X.OutputPass());c.rp=rp;return c})():null;
+ const composer=X&&!/[?&]lite/.test(location.search)?(()=>{const c=new X.EffectComposer(renderer,new T.WebGLRenderTarget(1024,1024,{samples:4,type:T.HalfFloatType}));const rp=new X.RenderPass(scene,camera);c.addPass(rp);c.addPass(new X.ShaderPass({uniforms:{tDiffuse:{value:null}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'uniform sampler2D tDiffuse;varying vec2 vUv;void main(){vec4 c=texture2D(tDiffuse,vUv);if(any(isnan(c))||any(isinf(c)))c=vec4(0.0,0.0,0.0,1.0);gl_FragColor=clamp(c,0.0,8.0);}'}));c.addPass(new X.UnrealBloomPass(new T.Vector2(512,512),.45,.45,.9));c.addPass(new X.OutputPass());c.rp=rp;return c})():null;
  // ---------- REMAKE detail: world-space textures, rooftop equipment, street dressing ----------
  function canvasTex(sz,draw){const c=document.createElement('canvas');c.width=c.height=sz;const x=c.getContext('2d');draw(x,sz);const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;return t}
  const noise=(x,sz,base,n,a,b)=>{x.fillStyle=base;x.fillRect(0,0,sz,sz);for(let k=0;k<n;k++){x.fillStyle=Math.random()<.5?a:b;const s=1+Math.random()*2.5;x.fillRect(Math.random()*sz,Math.random()*sz,s,s)}};
@@ -2584,7 +2584,7 @@ function make3D(T,X){
  return{frame,reset,resize,cam,renderer,camera,enterIn,exitIn,mode:()=>mode,setOnMode:f=>{onMode=f}};
 }
 async function loadR3(){
- try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass}}catch(err){console.warn('remake addons unavailable',err)}}if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T,X);return R3}
+ try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}}if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T,X);return R3}
  catch(e){console.warn('3D view unavailable',e);R3=null;return null}
 }
 const vMsg=$('vMsg'),v3b=$('v3d'),v2b=$('v2d'),vRes=$('vReset');
