@@ -1576,6 +1576,8 @@ function drawPeopleNames(){
 
 // ---------- 3D view (three.js, loaded on demand; the simulation above stays the same) ----------
 const THREE_URL='https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
+const REMAKE=document.documentElement.dataset.remake==='1';
+const ADDON=p=>'https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/'+p;
 let view3d=false,R3=null,r3Loading=null;
 const screenEl=$('screen');
 const c3=document.createElement('canvas');c3.id='city3d';c3.hidden=true;c3.setAttribute('aria-label','3D view of the city of Motoropolis. Drag to turn, scroll or pinch to zoom.');
@@ -1583,7 +1585,7 @@ const hud=document.createElement('canvas');hud.id='hud3d';hud.width=CW;hud.heigh
 screenEl.insertBefore(hud,C.nextSibling);screenEl.insertBefore(c3,hud);
 const hctx=hud.getContext('2d');
 function hasGL(){try{const t=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(t.getContext('webgl2')||t.getContext('webgl')))}catch(e){return false}}
-function make3D(T){
+function make3D(T,X){
  const renderer=new T.WebGLRenderer({canvas:c3,antialias:true,powerPreference:'high-performance'});
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.outputColorSpace=T.SRGBColorSpace;
  const scene=new T.Scene();const camera=new T.PerspectiveCamera(34,16/9,1,1600);
@@ -1818,12 +1820,12 @@ function make3D(T){
  const hemi=new T.HemisphereLight(0xdbe8ff,0x4a5a33,.6);scene.add(hemi);
  const sun=new T.DirectionalLight(0xfff1dc,3.3);sun.position.set(CX+70,95,CZ-80);sun.target.position.set(CX,0,CZ);sun.castShadow=true;
  sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-125,right:125,top:100,bottom:-100,near:10,far:420});sun.shadow.bias=-.0005;sun.shadow.normalBias=.05;scene.add(sun,sun.target);
- let lastN=-1;const dayC=new T.Color(0xa9cdf0),nightC=new T.Color(0x0b1430),bgC=new T.Color();scene.fog=new T.Fog(0xa9cdf0,230,520);
- function applyNight(force){const nv=nightLevel();if(!force&&Math.abs(nv-lastN)<.004)return;lastN=nv;bgC.lerpColors(dayC,nightC,nv);scene.background=bgC;scene.fog.color.copy(bgC);
+ let lastN=-1;const duskC=new T.Color(0x7d86b0),dayC=new T.Color(0xa9cdf0),nightC=new T.Color(0x0b1430),bgC=new T.Color();scene.fog=new T.Fog(0xa9cdf0,230,520);
+ function applyNight(force){const nv0=nightLevel(),nv=X?Math.max(nv0,.42):nv0;if(!force&&Math.abs(nv-lastN)<.004)return;lastN=nv;bgC.lerpColors(X?duskC:dayC,nightC,X?Math.max(0,(nv-.42)/.58):nv);scene.background=bgC;scene.fog.color.copy(bgC);
   hemi.intensity=.6-.32*nv;sun.intensity=3.3-2.95*nv;sun.color.setHex(nv>.5?0x8fb0ff:0xfff1dc);mat.win.emissiveIntensity=1.6*nv;mat.lamp.emissiveIntensity=3*nv;mat.hl.emissiveIntensity=.15+2.4*nv;
-  renderer.toneMappingExposure=1.05+.25*nv;for(const m of signMats)m.emissiveIntensity=.5*nv;for(const p of pls)p.intensity=nv*30}
+  renderer.toneMappingExposure=X?.92+.2*nv:1.05+.25*nv;if(X){sun.color.setHex(nv>.6?0x8fb0ff:0xffbf86);hemi.color.setHex(0x9fb2e0);hemi.groundColor.setHex(0x3a2c26)}for(const m of signMats)m.emissiveIntensity=(X?.22:0)+.5*nv;for(const p of pls)p.intensity=nv*30}
  // ---------- vehicles ----------
- const colCache={};const colMat=c=>colCache[c]||(colCache[c]=M(c,{roughness:.32,metalness:.35}));
+ const colCache={};const colMat=c=>colCache[c]||(colCache[c]=X?new T.MeshPhysicalMaterial({color:c,roughness:.28,metalness:.45,clearcoat:1,clearcoatRoughness:.08}):M(c,{roughness:.32,metalness:.35}));
  const WHEEL=new T.CylinderGeometry(.3,.3,.22,14).rotateZ(Math.PI/2);
  function carMesh(c){
   const g=new T.Group(),L=c.len/10,Wd=c.wid/10*.92,body=colMat(c.color),m=c.m||{};
@@ -1866,10 +1868,44 @@ function make3D(T){
  // ---------- people ----------
  const PG={body:new T.CylinderGeometry(.24,.3,.62,10),head:new T.SphereGeometry(.22,12,10),leg:new T.BoxGeometry(.13,.5,.15),hair:new T.SphereGeometry(.23,12,8,0,Math.PI*2,0,Math.PI/2)};
  const pMat={};const pm=c=>pMat[c]||(pMat[c]=M(c));
- function personMesh(col,skin,hair){const g=new T.Group();const legs=[];for(const dx of[-.11,.11]){const l=new T.Mesh(PG.leg,pm('#2c3442'));l.position.set(dx,.5,0);l.castShadow=true;g.add(l);legs.push(l)}
+ // ---------- REMAKE look (only on the preview page): game-style people, glossy cars, glow, skyline and bloom ----------
+ const OUTFIT={'#1d4fb8':'mech','#f2a51a':'hivis','#e8b931':'hivis','#141a28':'police','#22252b':'suit','#111':'robe','#2e7d4f':'green','#d93a2f':'red','#c0392b':'red'};
+ const XG=X?{cap:(r,l)=>new T.CapsuleGeometry(r,l,5,10)}:null;const xm={};const XM=(c,o)=>{const k=c+JSON.stringify(o||{});return xm[k]||(xm[k]=M(c,Object.assign({roughness:.7},o||{})))};
+ function personMeshX(col,skin,hair){const g=new T.Group();const fit=OUTFIT[col]||'casual';
+  const C={mech:['#1f2a44','#1f2a44'],hivis:['#c7e01f','#232c40'],police:['#151a26','#141821'],suit:['#22252b','#22252b'],robe:['#121214','#121214'],green:['#2e7d4f','#3b4a3a'],red:['#d93a2f','#2b2f38'],casual:[col,'#5d7fb0']}[fit];
+  const top=XM(C[0]),pant=XM(C[1]),sk=XM(skin,{roughness:.6}),hr=XM(hair,{roughness:.55}),boot=XM(fit==='casual'?'#f4f4f0':'#1b1c1f',{roughness:.5});
+  const legs=[];for(const dx of[-.1,.1]){const lg=new T.Group();lg.position.set(dx,.78,0);const l=new T.Mesh(XG.cap(.085,.5),pant);l.position.y=-.36;l.castShadow=true;lg.add(l);const b=new T.Mesh(BOX,boot);b.scale.set(.15,.12,.24);b.position.set(0,-.72,.04);lg.add(b);
+   if(fit==='hivis'){const s=new T.Mesh(BOX,XM('#d8dde2',{metalness:.7,roughness:.2}));s.scale.set(.19,.04,.19);s.position.y=-.4;lg.add(s)}g.add(lg);legs.push(lg)}
+  const tor=new T.Mesh(XG.cap(.17,.34),fit==='robe'?XM('#121214'):top);tor.scale.z=.72;tor.position.y=1.1;tor.castShadow=true;g.add(tor);
+  if(fit==='robe'){const r=new T.Mesh(new T.CylinderGeometry(.2,.3,.7,10),XM('#121214'));r.position.y=.62;g.add(r)}
+  const belt=new T.Mesh(BOX,XM('#18191c',{metalness:.4}));belt.scale.set(.36,.05,.26);belt.position.y=.84;g.add(belt);
+  if(fit==='hivis'){for(const y of[1.02,1.2]){const s=new T.Mesh(BOX,XM('#d8dde2',{metalness:.7,roughness:.2}));s.scale.set(.37,.05,.27);s.position.y=y;g.add(s)}}
+  if(fit==='mech'){const s=new T.Mesh(BOX,XM('#ff7a1a',{emissive:'#ff6a00',emissiveIntensity:.35}));s.scale.set(.03,.28,.03);s.position.set(.08,1.12,.13);g.add(s)}
+  if(fit==='police'){const bd=new T.Mesh(BOX,XM('#e8c45a',{metalness:.9,roughness:.2}));bd.scale.set(.06,.07,.02);bd.position.set(-.09,1.22,.13);g.add(bd)}
+  if(fit==='suit'){const t=new T.Mesh(BOX,XM('#c0392b'));t.scale.set(.04,.22,.02);t.position.set(0,1.16,.13);g.add(t);const sh=new T.Mesh(BOX,XM('#f4f4f0'));sh.scale.set(.1,.14,.02);sh.position.set(0,1.24,.125);g.add(sh)}
+  for(const s of[-1,1]){const a=new T.Mesh(XG.cap(.06,.42),top);a.position.set(s*.25,1.07,0);a.rotation.z=s*.1;a.castShadow=true;g.add(a);const h=new T.Mesh(PG.head,fit==='mech'||fit==='police'?XM('#15161a'):sk);h.scale.setScalar(.27);h.position.set(s*.28,.76,0);g.add(h)}
+  const hd=new T.Mesh(PG.head,sk);hd.scale.set(.66,.76,.68);hd.position.y=1.56;hd.castShadow=true;g.add(hd);
+  for(const s of[-1,1]){const e=new T.Mesh(PG.head,XM('#1a1410'));e.scale.setScalar(.08);e.position.set(s*.05,1.58,.135);g.add(e)}
+  const hc=new T.Mesh(PG.hair,hr);hc.scale.set(.68,.72,.7);hc.position.y=1.6;hc.rotation.x=-.2;g.add(hc);
+  if(fit==='police'||fit==='hivis'||fit==='green'){const cm=XM(fit==='hivis'?'#1b2233':fit==='green'?'#3b4a3a':'#151a26');const c=new T.Mesh(PG.hair,cm);c.scale.set(.72,.62,.74);c.position.y=1.64;g.add(c);const br=new T.Mesh(BOX,cm);br.scale.set(.2,.02,.14);br.position.set(0,1.66,.16);g.add(br)}
+  g.userData.legs=legs;return g}
+ if(X){
+  renderer.toneMappingExposure=1.1;const pm2=new T.PMREMGenerator(renderer);scene.environment=pm2.fromScene(new X.RoomEnvironment(),.04).texture;scene.environmentIntensity=.25;
+  mat.asphalt.roughness=.48;mat.asphalt.metalness=.12;mat.asphalt.color.setHex(0x2c2f36);
+  mat.orange.emissive=new T.Color(0xff6a00);mat.orange.emissiveIntensity=.45;mat.yellow.emissive=new T.Color(0xffa000);mat.yellow.emissiveIntensity=.15;
+  // skyline around the city
+  {const mk=()=>{const c=document.createElement('canvas');c.width=64;c.height=256;const q=c.getContext('2d');q.fillStyle='#1d2433';q.fillRect(0,0,64,256);for(let yy=4;yy<256;yy+=10)for(let xx=4;xx<64;xx+=9)if(Math.random()<.45){q.fillStyle=Math.random()<.5?'#ffd59a':'#9fd0ff';q.fillRect(xx,yy,5,6)}const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t};
+   const texs=[mk(),mk(),mk()];const sk=new T.Group();for(let k=0;k<70;k++){const a=k/70*Math.PI*2+rnd()*.05,r=230+rnd()*60,w=8+rnd()*12,h=30+rnd()*80;const tx=texs[k%3];
+    const m=new T.Mesh(new T.BoxGeometry(w,h,w),new T.MeshStandardMaterial({color:0x2a3346,map:tx,emissive:0xffffff,emissiveMap:tx,emissiveIntensity:.25,roughness:.4,metalness:.4}));m.position.set(CX+Math.cos(a)*r,h/2,CZ+Math.sin(a)*r*.8);sk.add(m);signMats.push(m.material)}scene.add(sk)}
+ }
+ const composer=X?(()=>{const c=new X.EffectComposer(renderer);const rp=new X.RenderPass(scene,camera);c.addPass(rp);c.addPass(new X.UnrealBloomPass(new T.Vector2(512,512),.45,.45,.9));c.addPass(new X.OutputPass());c.rp=rp;return c})():null;
+ function RENDER(sc){if(composer){composer.rp.scene=sc;composer.render()}else renderer.render(sc,camera)}
+ function personMesh(col,skin,hair){return X?personMeshX(col,skin,hair):personMesh0(col,skin,hair)}
+ function personMesh0(col,skin,hair){const g=new T.Group();const legs=[];for(const dx of[-.11,.11]){const l=new T.Mesh(PG.leg,pm('#2c3442'));l.position.set(dx,.5,0);l.castShadow=true;g.add(l);legs.push(l)}
   const b=new T.Mesh(PG.body,pm(col));b.position.y=1.02;b.castShadow=true;g.add(b);const h=new T.Mesh(PG.head,pm(skin));h.position.y=1.52;h.castShadow=true;g.add(h);const hr=new T.Mesh(PG.hair,pm(hair));hr.position.y=1.56;g.add(hr);
   g.userData.legs=legs;return g}
- const pedMeshes=peds.map(p=>{const g=personMesh(p.col,p.skin,p.hair);g.scale.setScalar(p.name?1.08:1);scene.add(g);return g});
+ const JOBCOL={'Mechanic':'#1d4fb8','Receptionist':'#1d4fb8','Tow Truck Driver':'#f2a51a','Dispatcher':'#f2a51a','Inspector':'#e8b931','Crusher Operator':'#e8b931','Police Officer':'#141a28','Detective':'#141a28','Lawyer':'#22252b','Judge':'#22252b','Car Salesman':'#22252b','Park Ranger':'#2e7d4f','Newspaper Vendor':'#2e7d4f','Cashier':'#d93a2f','Fuel Attendant':'#d93a2f'};
+ const pedMeshes=peds.map(p=>{const jc=X&&p.name&&jobOf(p.name)?JOBCOL[jobOf(p.name)]:null;const g=personMesh(jc||p.col,p.skin,p.hair);g.scale.setScalar(p.name?1.08:1);scene.add(g);return g});
  const mech=[];for(let k=0;k<5;k++){const g=personMesh('#1d4fb8','#f0c9a0','#2b1d14');g.visible=false;scene.add(g);mech.push(g)}
  function syncPeople(){
   peds.forEach((p,k)=>{const g=pedMeshes[k];const walking=p.pause<=0;const sw=walking?Math.sin(p.phase*2)*.5:0;
@@ -2321,12 +2357,12 @@ function make3D(T){
   PS.cell=mkP(PS.S,'#e8732a',180);putP(PS.cell,{x:-20,z:-6.5,ang:0},false);PS.cell.visible=false;
   // desks with screens
   PS.cops=[];[[-2,2],[6,2],[14,2]].forEach(([x,z],i)=>{R.B2(5,1.5,2.4,M(0xe9e5dc),x,0,z);R.B2(1.8,1.1,.12,M(0x46c8ff,{emissive:0x46c8ff,emissiveIntensity:.5}),x-1,1.6,z-.6,false);R.B2(1.2,.9,.5,M(0x2b3440),x-1,0,z+3.4);
-   const m=mkP(PS.S,'#1d4fb8',181+i);putP(m,{x:x-1,z:z+2,ang:Math.PI},false);PS.cops.push(m)});
+   const m=mkP(PS.S,'#141a28',181+i);putP(m,{x:x-1,z:z+2,ang:Math.PI},false);PS.cops.push(m)});
   // wanted board
   PS.cv=document.createElement('canvas');PS.cv.width=1024;PS.cv.height=640;PS.tex=new T.CanvasTexture(PS.cv);PS.tex.colorSpace=T.SRGBColorSpace;
   R.B2(13.4,8.6,.3,mat.dark,12,.9,-10.6,false);const wb=new T.Mesh(new T.PlaneGeometry(12.8,8),new T.MeshBasicMaterial({map:PS.tex,toneMapped:false}));wb.position.set(12,5.2,-10.4);R.add(wb);PS.v='';
   // front desk
-  R.B2(7,1.6,2,M(0x1d4fb8),-6,0,8);R.B2(7.2,.15,2.2,M(0xe9e5dc),-6,1.6,8);PS.desk=mkP(PS.S,'#1d4fb8',185);putP(PS.desk,{x:-6,z:6.2,ang:0},false);
+  R.B2(7,1.6,2,M(0x1d4fb8),-6,0,8);R.B2(7.2,.15,2.2,M(0xe9e5dc),-6,1.6,8);PS.desk=mkP(PS.S,'#141a28',185);putP(PS.desk,{x:-6,z:6.2,ang:0},false);
   PS.L=[mkP(PS.S,null,186),mkP(PS.S,null,187)];PS.built=true;wantedBoard()}
  function wantedBoard(){const th=thieves(),cs=CASES.slice(0,3);const key=th.join('|')+'#'+cs.map(c=>c.no+c.verdict).join('|')+(crime?'!'+crime.thief:'');if(key===PS.v)return;PS.v=key;
   const x=PS.cv.getContext('2d'),W=1024,H=640;x.fillStyle='#f1e7c9';x.fillRect(0,0,W,H);x.fillStyle='#8a1a14';x.font="900 96px 'Barlow Condensed',sans-serif";x.textAlign='center';x.textBaseline='alphabetic';x.fillText('WANTED',W/2,110);
@@ -2445,11 +2481,11 @@ function make3D(T){
  // ---------- frame ----------
  let W0=0,H0=0;
  function resize(){const w=c3.clientWidth||screenEl.clientWidth,h=c3.clientHeight||screenEl.clientHeight;if(!w||!h)return;if(w===W0&&h===H0)return;W0=w;H0=h;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,w>1100?1.5:2));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,w>1100?1.5:2));renderer.setSize(w,h,false);if(composer){composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h)}camera.aspect=w/h;camera.updateProjectionMatrix()}
  if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe(screenEl);
  function frame(dt){resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
-  if(mode==='in'){cur.sync(dt);placeCam();renderer.render(cur.scene,camera);hctx.clearRect(0,0,CW,CH);cur.labels()}
-  else{syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();applyNight(false);placeCam();renderer.render(scene,camera);
+  if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,CW,CH);cur.labels()}
+  else{syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();applyNight(false);placeCam();RENDER(scene);
   hctx.clearRect(0,0,CW,CH);drawLabels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)drawHUD();if(!trailer)drawCeleb()}finally{ctx=keep}}
   if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,CW,CH)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
@@ -2457,7 +2493,7 @@ function make3D(T){
  return{frame,reset,resize,cam,renderer,camera,enterIn,exitIn,mode:()=>mode,setOnMode:f=>{onMode=f}};
 }
 async function loadR3(){
- try{const T=await import(THREE_URL);if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T);return R3}
+ try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass}}catch(err){console.warn('remake addons unavailable',err)}}if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T,X);return R3}
  catch(e){console.warn('3D view unavailable',e);R3=null;return null}
 }
 const vMsg=$('vMsg'),v3b=$('v3d'),v2b=$('v2d'),vRes=$('vReset');
