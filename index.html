@@ -41,7 +41,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .primary{background:var(--accent);color:#1d0f02;border-color:var(--accent)}
 .check{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--fg);cursor:pointer}
 .check input{accent-color:var(--accent);width:16px;height:16px}
-.screen{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#2a2f36}
+.screen{position:relative;width:100%;max-width:100%;aspect-ratio:1920/1380;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#2a2f36}
 .screen:fullscreen{border:0;border-radius:0;background:#000}
 canvas{display:block;width:100%;height:100%;cursor:pointer;object-fit:contain}
 .screen.vertical{aspect-ratio:9/16;width:min(100%,calc(78vh * 9 / 16));margin-inline:auto;background:#0d0f13}
@@ -199,7 +199,7 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
     <p id="ownMsg" aria-live="polite"></p>
   </section>
   <div class="screen" id="screen">
-    <canvas id="city" width="1920" height="1080" aria-label="Live map of the city of Motoropolis"></canvas>
+    <canvas id="city" width="1920" height="1380" aria-label="Live map of the city of Motoropolis"></canvas>
     <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button></div>
     <p class="v-msg" id="vMsg" hidden="" aria-live="polite"></p>
   </div>
@@ -269,10 +269,10 @@ const APP0=document.getElementById('app').innerHTML;
 const CSS0=document.getElementById('css').textContent;
 const SRC0=document.currentScript.textContent;
 const HEAD_TOP="<title>Motoropolis by TorqueBlueprint</title>\n<meta name=\"claude:viewport-fit-sides\" content=\"cover\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap\">";
-const CW=1920,CH=1080,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
-const XS=[100,530,960,1390,1820],YS=[100,400,700,1000],NX=5,NY=4;
+const CW=1920,CH=1380,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
+const XS=[100,530,960,1390,1820],YS=[100,400,700,1000,1300],NX=5,NY=5;
 const C=document.getElementById('city'),octx=C.getContext('2d');
-const world=document.createElement('canvas');world.width=1920;world.height=1080;let ctx=world.getContext('2d');
+const world=document.createElement('canvas');world.width=CW;world.height=CH;let ctx=world.getContext('2d');
 const bg=document.createElement('canvas');bg.width=CW;bg.height=CH;const g=bg.getContext('2d');
 const $=id=>document.getElementById(id);
 const R=Math.random,rr=(a,b)=>a+(b-a)*R(),pick=a=>a[Math.floor(R()*a.length)];
@@ -378,11 +378,15 @@ const S=Math.PI/2;
  b=mkB('inspecao',1,2,'top',36,'Inspection center');slot(b,200,80,0,{fwd:true});slot(b,200,158,0,{fwd:true});
  b=mkB('parque',2,2,'top',173,'Parking lot');for(const y of [74,166])for(let k=0;k<5;k++)slot(b,50+k*62,y,S);
  b=mkB('sucata',3,2,'top',90,'Junkyard');slot(b,90,140,S);b.pile=6;
+ // the new district (row 4): leisure, the city newspaper and the next big updates
+ b=mkB('park',0,3,null,0,'Motoropolis Park');
+ b=mkB('news',1,3,'top',60,'Motoropolis Daily');
+ b=mkB('police',2,3,null,0,'Police station');
+ b=mkB('court',3,3,null,0,'Courthouse');
 }
 const approach=s=>({x:s.x-Math.cos(s.ang)*36,y:s.y-Math.sin(s.ang)*36});
-// the news kiosk sits on the corner of the race track site
-const KIOSK={x0:B.pista.x0+8,y0:B.pista.y0+8,w:66,h:44};KIOSK.x1=KIOSK.x0+KIOSK.w;KIOSK.y1=KIOSK.y0+KIOSK.h;
-const inKiosk=(x,y,m=6)=>x>=KIOSK.x0-m&&x<=KIOSK.x1+m&&y>=KIOSK.y0-m&&y<=KIOSK.y1+m;
+// the news kiosk stands on the plaza in front of the Motoropolis Daily building
+const inKiosk=(x,y,m=6)=>{const b=B.news;return x>=b.x0-m&&x<=b.x1+m&&y>=b.y0-m&&y<=b.y1+m};
 
 // ---------- subscriber milestones ----------
 const MILESTONES=[
@@ -736,17 +740,17 @@ function drawBackground(){
  {const gg=g.createLinearGradient(0,0,CW,CH);gg.addColorStop(0,'#88af5d');gg.addColorStop(1,'#6e9951');g.fillStyle=gg;g.fillRect(0,0,CW,CH);
   g.save();g.rotate(-.5);for(let k=-40;k<90;k++){g.fillStyle=k%2?'rgba(255,255,255,.04)':'rgba(0,0,0,.035)';g.fillRect(-900,k*34,3600,34)}g.restore();
   for(let k=0;k<2600;k++){g.fillStyle=R()<.5?'rgba(40,80,30,.16)':'rgba(215,238,150,.14)';g.fillRect(R()*CW,R()*CH,2,2)}
-  for(let k=0;k<70;k++){const x=R()*CW,y=R()*CH;if(x>XS[0]-HALF-20&&x<XS[4]+HALF+20&&y>YS[0]-HALF-20&&y<YS[3]+HALF+20)continue;g.fillStyle=pick(['#f4e36a','#ffffff','#f29ac0']);for(let q=0;q<5;q++)g.fillRect(x+rr(-8,8),y+rr(-8,8),2,2)}}
- for(let k=0;k<160;k++){const x=R()*CW,y=R()*CH;if(x>XS[0]-HALF-20&&x<XS[4]+HALF+20&&y>YS[0]-HALF-20&&y<YS[3]+HALF+20)continue;tree(x,y,rr(9,16))}
+  for(let k=0;k<70;k++){const x=R()*CW,y=R()*CH;if(x>XS[0]-HALF-20&&x<XS[NX-1]+HALF+20&&y>YS[0]-HALF-20&&y<YS[NY-1]+HALF+20)continue;g.fillStyle=pick(['#f4e36a','#ffffff','#f29ac0']);for(let q=0;q<5;q++)g.fillRect(x+rr(-8,8),y+rr(-8,8),2,2)}}
+ for(let k=0;k<160;k++){const x=R()*CW,y=R()*CH;if(x>XS[0]-HALF-20&&x<XS[NX-1]+HALF+20&&y>YS[0]-HALF-20&&y<YS[NY-1]+HALF+20)continue;tree(x,y,rr(9,16))}
  // blocks: sidewalks + lots
  for(const b of buildings){const X=b.x0-12,Y=b.y0-12,Wd=b.w+24,Hd=b.h+24;g.fillStyle='#b7b1a4';g.fillRect(X,Y,Wd,Hd);g.fillStyle='#cdc7bb';g.fillRect(X+2,Y+2,Wd-4,Hd-4);
   g.strokeStyle='rgba(0,0,0,.08)';g.lineWidth=1;g.beginPath();for(let k=X+12;k<X+Wd;k+=12){g.moveTo(k,Y);g.lineTo(k,Y+12);g.moveTo(k,Y+Hd-12);g.lineTo(k,Y+Hd)}for(let k=Y+12;k<Y+Hd;k+=12){g.moveTo(X,k);g.lineTo(X+12,k);g.moveTo(X+Wd-12,k);g.lineTo(X+Wd,k)}g.stroke();
   g.fillStyle='#d6d1c6';g.fillRect(b.x0,b.y0,b.w,b.h)}
  // roads
  g.fillStyle='#3a3f47';
- for(const y of YS)g.fillRect(XS[0]-HALF,y-HALF,XS[4]-XS[0]+HALF*2,HALF*2);
- for(const x of XS)g.fillRect(x-HALF,YS[0]-HALF,HALF*2,YS[3]-YS[0]+HALF*2);
- {const rx0=XS[0]-HALF,ry0=YS[0]-HALF,rw=XS[4]-XS[0]+HALF*2,rh=YS[3]-YS[0]+HALF*2;
+ for(const y of YS)g.fillRect(XS[0]-HALF,y-HALF,XS[NX-1]-XS[0]+HALF*2,HALF*2);
+ for(const x of XS)g.fillRect(x-HALF,YS[0]-HALF,HALF*2,YS[NY-1]-YS[0]+HALF*2);
+ {const rx0=XS[0]-HALF,ry0=YS[0]-HALF,rw=XS[NX-1]-XS[0]+HALF*2,rh=YS[NY-1]-YS[0]+HALF*2;
   const onRoad=(x,y)=>XS.some(v=>Math.abs(x-v)<HALF-1)||YS.some(v=>Math.abs(y-v)<HALF-1);
   for(let k=0;k<5600;k++){const x=rx0+R()*rw,y=ry0+R()*rh;if(!onRoad(x,y))continue;g.fillStyle=R()<.5?'rgba(255,255,255,.05)':'rgba(0,0,0,.11)';g.fillRect(x,y,rr(1,3),rr(1,3))}
   g.fillStyle='rgba(0,0,0,.07)';for(const y of YS)for(const o of [-LANE,LANE])g.fillRect(rx0,y+o-7,rw,14);for(const x of XS)for(const o of [-LANE,LANE])g.fillRect(x+o-7,ry0,14,rh);
@@ -804,6 +808,31 @@ function drawBuildingsStatic(){
  // lavagem
  b=B.lavagem;g.fillStyle='#cfd6d9';g.fillRect(b.x0,b.y0,b.w,b.h);
  for(const s of b.slots){g.fillStyle='#2f6f8f';g.fillRect(s.x-60,s.y-30,120,6);g.fillRect(s.x-60,s.y+24,120,6)}
+ // park
+ b=B.park;{const x0=b.x0,y0=b.y0,w=b.w,h=b.h;g.fillStyle='#6fa34e';g.fillRect(x0,y0,w,h);g.fillStyle='rgba(255,255,255,.05)';for(let k=0;k<w;k+=24)g.fillRect(x0+k,y0,12,h);
+  g.strokeStyle='#e3d6b4';g.lineWidth=14;g.lineJoin='round';rrect(g,x0+26,y0+26,w-52,h-52,40);g.stroke();
+  g.beginPath();g.moveTo(x0+w/2,y0);g.lineTo(x0+w/2,y0+26);g.stroke();g.beginPath();g.moveTo(x0+26,y0+h/2);g.lineTo(x0+w-26,y0+h/2);g.stroke();
+  g.fillStyle='#4f9bd1';g.beginPath();g.ellipse(x0+w*.3,y0+h*.3,44,24,0,0,TAU);g.fill();g.strokeStyle='#d8cfb4';g.lineWidth=4;g.stroke();g.fillStyle='rgba(255,255,255,.35)';g.beginPath();g.ellipse(x0+w*.3-12,y0+h*.3-6,16,6,0,0,TAU);g.fill();
+  g.fillStyle='#d8cfb4';g.beginPath();g.arc(x0+w/2,y0+h/2,26,0,TAU);g.fill();g.fillStyle='#62b3e6';g.beginPath();g.arc(x0+w/2,y0+h/2,18,0,TAU);g.fill();g.fillStyle='#ffffff';g.beginPath();g.arc(x0+w/2,y0+h/2,5,0,TAU);g.fill();
+  g.fillStyle='#e6b25a';g.fillRect(x0+w*.66,y0+h*.62,70,46);g.fillStyle='#d93a2f';g.fillRect(x0+w*.66+8,y0+h*.62+6,20,34);g.fillStyle='#2f6fd9';g.fillRect(x0+w*.66+40,y0+h*.62+8,22,8);g.fillRect(x0+w*.66+40,y0+h*.62+26,22,8);
+  g.fillStyle='#7a5a3a';for(const[bx,by]of[[x0+70,y0+h/2-16],[x0+w-110,y0+h/2-16],[x0+w/2+40,y0+40],[x0+w/2-80,y0+h-56]])g.fillRect(bx,by,32,8);
+  for(const[tx,ty,r]of[[x0+14,y0+14,13],[x0+w-16,y0+16,14],[x0+16,y0+h-16,14],[x0+w-18,y0+h-18,13],[x0+w*.12,y0+h*.62,15],[x0+w*.55,y0+h*.78,13],[x0+w*.82,y0+h*.28,15],[x0+w*.62,y0+h*.22,11],[x0+w*.2,y0+h*.85,11]])tree(tx,ty,r);
+  sign(g,'MOTOROPOLIS PARK',x0+w/2-80,y0+4,160,22,'#2e7d4f','#ffffff',16)}
+ // newsroom: Motoropolis Daily + kiosk plaza
+ b=B.news;{const x0=b.x0,y0=b.y0,w=b.w,h=b.h;g.fillStyle='#d9d1c0';g.fillRect(x0,y0,w,h);g.strokeStyle='rgba(0,0,0,.06)';g.lineWidth=1;g.beginPath();for(let k=x0+18;k<x0+w;k+=18){g.moveTo(k,y0);g.lineTo(k,y0+h)}for(let k=y0+18;k<y0+h;k+=18){g.moveTo(x0,k);g.lineTo(x0+w,k)}g.stroke();
+  shed(x0+128,y0+62,w-140,h-72,'#9aa0a8');g.fillStyle='#1f3a2c';g.fillRect(x0+123,y0+57,w-130,14);
+  sign(g,'MOTOROPOLIS DAILY',x0+128,y0+20,w-140,30,'#d93a2f','#ffffff',20);
+  const kx=x0+58,ky=y0+86;g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.arc(kx+4,ky+5,30,0,TAU);g.fill();g.fillStyle='#2e7d4f';g.beginPath();for(let k=0;k<8;k++){const a=k*TAU/8+TAU/16;g.lineTo(kx+Math.cos(a)*30,ky+Math.sin(a)*30)}g.closePath();g.fill();
+  g.fillStyle='#246640';g.beginPath();g.arc(kx,ky,18,0,TAU);g.fill();g.fillStyle='#ffd34d';g.beginPath();g.arc(kx,ky,5,0,TAU);g.fill();
+  g.fillStyle='#ffffff';g.font="800 13px 'Barlow Condensed', sans-serif";g.textAlign='center';g.textBaseline='middle';g.fillText('NEWS',kx,ky+44);
+  g.fillStyle='#7a5a3a';g.fillRect(x0+18,y0+h-40,40,9);g.fillRect(x0+70,y0+h-40,40,9);tree(x0+22,y0+22,12);tree(x0+100,y0+h-70,11)}
+ // future lots: police station and courthouse
+ for(const[t,lab,col]of[['police','POLICE STATION','#2f6fd9'],['court','COURTHOUSE','#b48a3c']]){const q=B[t];const x0=q.x0,y0=q.y0,w=q.w,h=q.h;
+  g.fillStyle='#b9a27c';g.fillRect(x0,y0,w,h);g.fillStyle='rgba(0,0,0,.06)';for(let k=0;k<40;k++)g.fillRect(x0+R()*w,y0+R()*h,rr(6,18),rr(4,10));
+  g.strokeStyle='#ff7a1a';g.lineWidth=4;g.setLineDash([14,10]);g.strokeRect(x0+8,y0+8,w-16,h-16);g.setLineDash([]);
+  g.fillStyle='rgba(15,47,92,.92)';rrect(g,x0+w/2-130,y0+h/2-42,260,84,8);g.fill();g.strokeStyle=col;g.lineWidth=3;g.stroke();
+  g.fillStyle='#ffb36b';g.font="700 14px 'JetBrains Mono', monospace";g.textAlign='center';g.textBaseline='middle';g.fillText('COMING SOON',x0+w/2,y0+h/2-20);
+  g.fillStyle='#ffffff';g.font="800 30px 'Barlow Condensed', sans-serif";g.fillText(lab,x0+w/2,y0+h/2+12)}
  // pista
  b=B.pista;g.fillStyle='#6f9a4f';g.fillRect(b.x0,b.y0,b.w,b.h);
  const cx=b.x0+b.w/2,cy=b.y0+b.h/2,ax=b.w/2-26,ay=b.h/2-24;
@@ -1070,7 +1099,6 @@ function draw(){
  drawDynamicOver();
  drawPeople();
  drawLocked();
- drawKiosk2D();
  const n=nightLevel();
  drawAmbient(n);
  drawNight(n);
@@ -1082,13 +1110,6 @@ function draw(){
  if(showHud&&!trailer)drawHUD();
  if(!trailer)drawCeleb();
 }
-
-function drawKiosk2D(){const K=KIOSK;ctx.save();ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(K.x0+4,K.y0+5,K.w,K.h);
- ctx.fillStyle='#2e7d4f';ctx.fillRect(K.x0,K.y0,K.w,K.h);ctx.fillStyle='#246640';ctx.fillRect(K.x0+4,K.y0+4,K.w-8,K.h-14);
- for(let i=0;i<8;i++){ctx.fillStyle=i%2?'#f4f1e6':'#d93a2f';ctx.fillRect(K.x0+i*K.w/8,K.y0-6,K.w/8+.5,10)}
- ctx.fillStyle='#fff';ctx.font="800 17px 'Barlow Condensed', sans-serif";ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('NEWS',K.x0+K.w/2,K.y0+K.h/2+1);
- if(!trailer){ctx.globalAlpha=.85+.15*Math.sin(simTime*3+2);sign(ctx,'NEWS KIOSK ▶',K.x0+K.w/2-48,K.y1+6,96,20,'#22252b','#ffffff',14);ctx.globalAlpha=1}
- ctx.restore()}
 
 // ---------- UI ----------
 const logEl=$('log');
@@ -1120,7 +1141,7 @@ function newsBreakdown(c,f){const n=who(c),fault=f.n.toLowerCase();
  if(n)news(pick([`${n}'s car breaks down: ${fault}`,`Bad day for ${n}: ${fault}`,`${n} stuck on the side of the road with a ${fault.replace(/^an? /,'')}`]),'people',`${c.model?c.model+' ':''}${c.plate} needs help.${isOpen('reboques')?' A tow truck is on the way.':' No tow trucks in town yet.'}`,25);
  else news(pick([`Breakdown downtown: ${c.plate}, ${fault}`,`Another one: ${c.plate} breaks down (${fault})`]),'cars','',45)}
 function newsSeed(){
- news('First edition: Motoropolis gets its own newspaper','city','Everything that happens in the city now makes the news, from breakdowns to new jobs. Pick up your copy at the news kiosk next to the race track site.');
+ news('First edition: Motoropolis gets its own newspaper','city','Everything that happens in the city now makes the news, from breakdowns to new jobs. Pick up your copy at the kiosk in front of the Motoropolis Daily building, in the new district next to Motoropolis Park.');
  const nm=nextMilestone();if(nm)news(`Coming soon: the ${nm.label} opens at ${nm.n.toLocaleString('en-US')} subscribers`,'city','Every new subscriber brings the next building closer.');
  const open=Object.keys(JOBS).length,slots=JOB_SLOTS();if(slots>open)news(`Help wanted: ${slots-open} job${slots-open>1?'s':''} open in Motoropolis`,'jobs','Comment WORKSHOP on any TorqueBlueprint video and you get a job in the city.');
  WALL.slice(-3).forEach(n=>{const j=jobOf(n);news(j?`Welcome, ${n}! The city's newest ${j}`:`Welcome, ${n}! Now looking for a job`,'people',j?`${n} joined Motoropolis from the comments and starts work today.`:'')})}
@@ -1437,18 +1458,23 @@ function mkPed(name,k){
  Object.assign(p,pedPos(p));p.ang=p.v<0?p.ang+Math.PI:p.ang;peds.push(p);return p}
 WALL.slice(0,40).forEach((n,k)=>mkPed(n,k));
 for(let k=0;k<26;k++)mkPed(null,k+WALL.length);
+// strollers and joggers on the loop path of Motoropolis Park
+const PARK_LOOP=(()=>{const b=B.park;return{x0:b.x0+26,y0:b.y0+26,x1:b.x1-26,y1:b.y1-26}})();
+for(let k=0;k<9;k++){const p=mkPed(null,k+90);p.loop={...PARK_LOOP};p.s=k*140;p.v=(k%3===0?rr(26,32):rr(8,12))*(k%2?-1:1);Object.assign(p,pedPos(p))}
+function parkRanger(){const n=staffOf('park','Park Ranger',0);if(!n)return;const p=peds.find(q=>q.name===n);if(p&&p.loop.x0!==PARK_LOOP.x0){p.loop={...PARK_LOOP};p.col='#2e7d4f';Object.assign(p,pedPos(p))}}
 function stepPeds(dt){for(const p of peds){
  if(p.pause>0){p.pause-=dt;continue}
  if(R()<dt*.025)p.pause=rr(1.5,4);
  p.s+=p.v*dt;p.phase+=dt*Math.abs(p.v)*.6;const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=p.v<0?q.ang+Math.PI:q.ang}}
 
 // ---------- jobs: the Wall of Mechanics works in the city ----------
-const JOB_LIST=[['kiosk','Newspaper Vendor',1],['oficina','Mechanic',5],['oficina','Receptionist',1],['reboques','Tow Truck Driver',3],['reboques','Dispatcher',1],['bomba','Cashier',1],['bomba','Fuel Attendant',1],['pneus','Tire Technician',3],['lavagem','Wash Attendant',2],['inspecao','Inspector',2],['parque','Parking Attendant',1],['pecas','Warehouse Worker',2],['pecas','Parts Van Driver',1],['stand','Car Salesman',2],['sucata','Crusher Operator',1],['fabrica','Assembly Worker',4],['pista','Race Driver',3],['pista','Pit Crew',3]];
+const CIVIC=[{type:'news',label:'Motoropolis Daily'},{type:'park',label:'Motoropolis Park'}];
+const JOB_LIST=[['news','Reporter',2],['news','Newspaper Vendor',1],['park','Park Ranger',1],['oficina','Mechanic',5],['oficina','Receptionist',1],['reboques','Tow Truck Driver',3],['reboques','Dispatcher',1],['bomba','Cashier',1],['bomba','Fuel Attendant',1],['pneus','Tire Technician',3],['lavagem','Wash Attendant',2],['inspecao','Inspector',2],['parque','Parking Attendant',1],['pecas','Warehouse Worker',2],['pecas','Parts Van Driver',1],['stand','Car Salesman',2],['sucata','Crusher Operator',1],['fabrica','Assembly Worker',4],['pista','Race Driver',3],['pista','Pit Crew',3]];
 let JOBS={},JOBSIG='';
 function assignJobs(){const slots=[];for(const m of MILESTONES){if(!isOpen(m.type))continue;for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k})}
- slots.push({b:'kiosk',title:'Newspaper Vendor',k:0});
+ for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k});
  const nj={};WALL.forEach((n,i)=>{if(i<slots.length)nj[n]=slots[i]});JOBS=nj;const sig=WALL.length+'|'+slots.length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs()}}
-function JOB_SLOTS(){let n=1;for(const m of MILESTONES)if(isOpen(m.type))for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];return n}
+function JOB_SLOTS(){let n=4;for(const m of MILESTONES)if(isOpen(m.type))for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];return n}
 function staffOf(b,title,k){for(const n in JOBS){const j=JOBS[n];if(j.b===b&&j.title===title&&j.k===k)return n}return null}
 function jobOf(n){return JOBS[n]?JOBS[n].title:null}
 function renderJobs(){const el=$('jobs');if(!el)return;let h='';let open=0,taken=0;
@@ -1456,7 +1482,7 @@ function renderJobs(){const el=$('jobs');if(!el)return;let h='';let open=0,taken
   h+=`<li class="${isO?'open':''}"><div class="jh"><b>${esc(m.label)}</b><span class="chip">${isO?'Hiring':'Opens at '+m.n.toLocaleString('en-US')}</span></div>`;
   if(isO){h+='<ul>';for(const j of js)for(let k=0;k<j[2];k++){const n=staffOf(m.type,j[1],k);if(n)taken++;else open++;h+=`<li>${esc(j[1])}: ${n?'<b>★ '+esc(n)+'</b>':'<i>open · comment WORKSHOP</i>'}</li>`}h+='</ul>'}
   else h+=`<p>${js.map(j=>j[2]+'× '+esc(j[1])).join(' · ')}</p>`;h+='</li>'}
- {const n=staffOf('kiosk','Newspaper Vendor',0);if(n)taken++;else open++;h+=`<li class="open"><div class="jh"><b>News kiosk</b><span class="chip">Hiring</span></div><ul><li>Newspaper Vendor: ${n?'<b>★ '+esc(n)+'</b>':'<i>open · comment WORKSHOP</i>'}</li></ul></li>`}
+ for(const m of CIVIC){h+=`<li class="open"><div class="jh"><b>${esc(m.label)}</b><span class="chip">Hiring</span></div><ul>`;for(const j of JOB_LIST.filter(j=>j[0]===m.type))for(let k=0;k<j[2];k++){const n=staffOf(m.type,j[1],k);if(n)taken++;else open++;h+=`<li>${esc(j[1])}: ${n?'<b>★ '+esc(n)+'</b>':'<i>open · comment WORKSHOP</i>'}</li>`}h+='</ul></li>'}
  const waiting=Math.max(0,WALL.length-Object.keys(JOBS).length);
  el.innerHTML=`<p class="jsum"><b>${taken}</b> people working · <b>${open}</b> jobs open${waiting?` · <b>${waiting}</b> looking for a job`:''}</p><ol class="jobs">${h}</ol>`}
 function assignDrivers(){
@@ -1486,7 +1512,7 @@ function make3D(T){
  const renderer=new T.WebGLRenderer({canvas:c3,antialias:true,powerPreference:'high-performance'});
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.outputColorSpace=T.SRGBColorSpace;
  const scene=new T.Scene();const camera=new T.PerspectiveCamera(34,16/9,1,1600);
- const U=v=>v/10,XS3=XS.map(U),YS3=YS.map(U),H3=U(HALF),CX=U(CW/2),CZ=U((YS[0]+YS[3])/2);
+ const U=v=>v/10,XS3=XS.map(U),YS3=YS.map(U),H3=U(HALF),CX=U(CW/2),CZ=U((YS[0]+YS[NY-1])/2);
  const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0},o||{}));
  const mat={grass:M(0x76a253),grass2:M(0x5f8f45),asphalt:M(0x363a42,{roughness:.95}),curb:M(0xc9c3b6),pad:M(0xd9d4c8),dash:M(0xf2f0e8),lotAsph:M(0x8f949b),
   wall:M(0xe9e5dc),wall2:M(0xcfd6de),wall3:M(0xd8c9b0),roof:M(0x59616d),roofD:M(0x3d434c),glass:M(0x7fbfe8,{roughness:.12,metalness:.25,transparent:true,opacity:.62}),
@@ -1513,28 +1539,64 @@ function make3D(T){
  let seed=11;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
  // ground & roads
  {const gr=new T.Mesh(new T.PlaneGeometry(700,500),mat.grass);gr.rotation.x=-Math.PI/2;gr.position.set(CX,-.02,CZ);gr.receiveShadow=true;scene.add(gr);
-  const rx0=XS3[0]-H3,rx1=XS3[4]+H3,rz0=YS3[0]-H3,rz1=YS3[3]+H3;
+  const rx0=XS3[0]-H3,rx1=XS3[NX-1]+H3,rz0=YS3[0]-H3,rz1=YS3[NY-1]+H3;
   for(const z of YS3){const r=new T.Mesh(new T.PlaneGeometry(rx1-rx0,H3*2),mat.asphalt);r.rotation.x=-Math.PI/2;r.position.set(CX,.01,z);r.receiveShadow=true;scene.add(r)}
   for(const x of XS3){const r=new T.Mesh(new T.PlaneGeometry(H3*2,rz1-rz0),mat.asphalt);r.rotation.x=-Math.PI/2;r.position.set(x,.012,(rz0+rz1)/2);r.receiveShadow=true;scene.add(r)}
   const dash=[],dashV=[],cw=[];
   for(const z of YS3)for(let i=0;i<4;i++)for(let x=XS3[i]+H3+1.5;x<XS3[i+1]-H3-1;x+=3)dash.push([x,.03,z]);
-  for(const x of XS3)for(let j=0;j<3;j++)for(let z=YS3[j]+H3+1.5;z<YS3[j+1]-H3-1;z+=3)dashV.push([x,.03,z]);
+  for(const x of XS3)for(let j=0;j<NY-1;j++)for(let z=YS3[j]+H3+1.5;z<YS3[j+1]-H3-1;z+=3)dashV.push([x,.03,z]);
   for(const x of XS3)for(const z of YS3)for(const[dx,dz,hz]of[[H3+.9,0,0],[-H3-.9,0,0],[0,H3+.9,1],[0,-H3-.9,1]])for(let k=-2.2;k<=2.2;k+=.75)cw.push([x+dx+(hz?k:0),.031,z+dz+(hz?0:k),0,hz?Math.PI/2:0,0]);
   inst(new T.PlaneGeometry(1.4,.18).rotateX(-Math.PI/2),mat.dash,dash);inst(new T.PlaneGeometry(.18,1.4).rotateX(-Math.PI/2),mat.dash,dashV);inst(new T.PlaneGeometry(1.2,.42).rotateX(-Math.PI/2),mat.dash,cw)}
  // lots (sidewalk + pad) and buildings
  const LOT={};for(const b of buildings){const x0=U(b.x0),z0=U(b.y0),w=U(b.w),d=U(b.h);LOT[b.type]={b,x0,z0,w,d,cx:x0+w/2,cz:z0+d/2};
   scene.add(box(w+2.4,.25,d+2.4,mat.curb,x0+w/2,0,z0+d/2,false));scene.add(box(w,.3,d,mat.pad,x0+w/2,0,z0+d/2,false))}
  const Y0=.3;
- const KQ={x0:U(KIOSK.x0),z0:U(KIOSK.y0),w:U(KIOSK.w),d:U(KIOSK.h)};KQ.cx=KQ.x0+KQ.w/2;KQ.cz=KQ.z0+KQ.d/2;
- {const g=new T.Group(),{cx,cz,w,d}=KQ,gm=M(0x2e7d4f),fz=cz-d/2+.7;
-  g.add(box(w,.12,d,mat.pad,cx,Y0,cz,false));g.add(box(w-1.4,2.8,d-1.4,gm,cx,Y0,cz));g.add(box(w-.8,.35,d-.8,mat.roofD,cx,Y0+2.8,cz));
-  g.add(box(w-3,1.1,.1,mat.dark,cx,Y0+1.2,fz-.02,false));g.add(box(w-2.6,.18,.5,mat.wood,cx,Y0+1.1,fz-.2,false));
-  for(let i=0;i<9;i++){const st=box((w-.8)/9,.08,1.3,i%2?mat.kerbW:mat.red,cx-(w-.8)/2+(i+.5)*(w-.8)/9,Y0+2.55,fz-.55,true);st.rotation.x=.35;g.add(st)}
-  const cols=[0xd93a2f,0x2f6fd9,0xf2b81d,0x3ee08f,0xff7a1a,0x7a3fb0,0xf4f1e6];
-  for(const sd of[-1,1]){const rx=cx+sd*(w/2-.15);g.add(box(.2,1.9,d-2,mat.steel,rx,Y0,cz,false));for(let k=0;k<8;k++)g.add(box(.08,.55,.42,M(cols[(k+(sd>0?3:0))%7]),rx+sd*.14,Y0+.25+Math.floor(k/4)*.8,cz-d/2+1.5+(k%4)*.55,false))}
-  for(let k=0;k<3;k++)g.add(box(.7,.25+k*.05,.5,M(0xf4f1e6),cx-1.6+k*1.6,Y0+1.3,fz-.25,false));
-  const sg=sign('MOTOROPOLIS DAILY · NEWS',w-1.6,.75,'#d93a2f','#fff',cx,Y0+3.6,fz-.1,0);g.add(sg);
+ // ---------- the new district: Motoropolis Park, Motoropolis Daily and the future lots ----------
+ const KQ={};
+ {// PARK
+  const L=LOT.park,g=new T.Group();const gm=M(0x6fa34e),pathM=M(0xe3d6b4),water=M(0x4f9bd1,{roughness:.15,metalness:.2}),benchM=M(0x7a5a3a);
+  g.add(box(L.w,.06,L.d,gm,L.cx,Y0,L.cz,false));
+  const pw=1.4,ix0=L.x0+2.6,ix1=L.x0+L.w-2.6,iz0=L.z0+2.6,iz1=L.z0+L.d-2.6;
+  for(const z of[iz0,iz1])g.add(box(ix1-ix0+pw,.05,pw,pathM,(ix0+ix1)/2,Y0+.06,z,false));for(const x of[ix0,ix1])g.add(box(pw,.05,iz1-iz0+pw,pathM,x,Y0+.06,(iz0+iz1)/2,false));
+  g.add(box(pw,.05,2.6,pathM,L.cx,Y0+.06,L.z0+1.3,false));g.add(box(ix1-ix0,.05,pw,pathM,L.cx,Y0+.06,L.cz,false));
+  const pond=new T.Mesh(new T.CircleGeometry(1,40),water);pond.rotation.x=-Math.PI/2;pond.scale.set(4.4,2.4,1);pond.position.set(L.x0+L.w*.3,Y0+.08,L.z0+L.d*.3);g.add(pond);
+  const rim=new T.Mesh(new T.RingGeometry(1,1.08,40),pathM);rim.rotation.x=-Math.PI/2;rim.scale.set(4.4,2.4,1);rim.position.copy(pond.position);rim.position.y+=.01;g.add(rim);
+  const f1=new T.Mesh(new T.CylinderGeometry(2.6,2.8,.5,24),pathM);f1.position.set(L.cx,Y0+.25,L.cz);g.add(f1);const f2=new T.Mesh(new T.CylinderGeometry(2.1,2.1,.1,24),water);f2.position.set(L.cx,Y0+.52,L.cz);g.add(f2);
+  const f3=new T.Mesh(new T.CylinderGeometry(.25,.4,1.6,10),pathM);f3.position.set(L.cx,Y0+1.2,L.cz);g.add(f3);const f4=new T.Mesh(new T.CylinderGeometry(.9,.5,.25,14),pathM);f4.position.set(L.cx,Y0+2,L.cz);g.add(f4);
+  KQ.spray=new T.Mesh(new T.ConeGeometry(.8,1.3,14,1,true),M(0xbfe8ff,{transparent:true,opacity:.55,roughness:.1}));KQ.spray.position.set(L.cx,Y0+2.7,L.cz);g.add(KQ.spray);
+  for(const[x,z,r]of[[.07,.85,0],[.9,.5,Math.PI/2],[.6,.17,0],[.35,.75,0]]){const bx=L.x0+L.w*x,bz=L.z0+L.d*z;const bg=new T.Group();bg.add(box(2.4,.12,.7,benchM,0,.45,0));bg.add(box(2.4,.6,.1,benchM,0,.55,-.32));for(const dx of[-1,1])bg.add(box(.1,.45,.6,mat.dark,dx,0,0));bg.position.set(bx,Y0,bz);bg.rotation.y=r;g.add(bg)}
+  {const px=L.x0+L.w*.72,pz=L.z0+L.d*.72;g.add(box(7,.05,4.6,M(0xe6b25a),px+.8,Y0+.06,pz+1.6,false));
+   for(const dx of[-1.6,1.6])g.add(box(.18,2.6,.18,mat.red,px+dx,Y0,pz));g.add(box(3.6,.18,.18,mat.red,px,Y0+2.6,pz));for(const dx of[-.8,.8]){g.add(box(.04,1.8,.04,mat.dark,px+dx,Y0+.8,pz));g.add(box(.6,.08,.3,mat.blue,px+dx,Y0+.75,pz))}
+   const sl=box(.9,.12,3.4,mat.yellow,px+3.2,Y0+.9,pz+2.2);sl.rotation.x=.45;g.add(sl);g.add(box(1,1.8,1,mat.blue,px+3.2,Y0,pz+.2))}
+  const tl=[],lf=[],lc=[];for(const[x,z,s]of[[.04,.07,1.3],[.95,.08,1.4],[.05,.92,1.4],[.95,.92,1.3],[.12,.6,1.5],[.55,.8,1.2],[.82,.28,1.5],[.62,.22,1.1],[.2,.86,1.1],[.42,.08,1],[.9,.62,1.2]]){const x2=L.x0+L.w*x,z2=L.z0+L.d*z;tl.push([x2,Y0+.7*s,z2,0,0,0,s]);lf.push([x2,Y0+2.1*s,z2,.3,.6,0,s]);lc.push(['#4f8a3c','#3f7a34','#5c9445','#467f38'][Math.floor(rnd()*4)])}
+  inst(new T.CylinderGeometry(.18,.25,1.4,6),mat.trunk,tl,true);inst(new T.IcosahedronGeometry(1.25,0),M(0xffffff,{flatShading:true}),lf,true,lc);
+  g.add(sign('MOTOROPOLIS PARK',9,1.3,'#2e7d4f','#fff',L.cx,Y0+1.3,L.z0+.5,0));for(const dx of[-4.2,4.2])g.add(box(.2,1.4,.2,mat.dark,L.cx+dx,Y0,L.z0+.5));
   scene.add(g)}
+ {// MOTOROPOLIS DAILY: newsroom building + kiosk plaza
+  const L=LOT.news,g=new T.Group();const bw=L.w-14,bd=L.d-7.2,bx=L.x0+12.8+bw/2,bz=L.z0+6.2+bd/2;
+  g.add(box(L.w,.05,L.d,M(0xd9d1c0),L.cx,Y0,L.cz,false));
+  shellB(g,bw,7.2,bd,bx,bz,mat.wall3,M(0x1f3a2c));rowWin(g,bx-bw/2+1,bx+bw/2-1,Y0+1.2,bz-bd/2,8,-1);rowWin(g,bx-bw/2+1,bx+bw/2-1,Y0+4.2,bz-bd/2,8,-1);
+  g.add(box(3.2,3,.2,mat.glass,bx-bw/2+4,Y0,bz-bd/2-.1,false));g.add(box(4,.3,1.6,M(0xd93a2f),bx-bw/2+4,Y0+3.1,bz-bd/2-.7,false));
+  g.add(sign('MOTOROPOLIS DAILY',bw-4,1.7,'#d93a2f','#fff',bx,Y0+8.4,bz-bd/2+.4,0));
+  hvac(g,bx+bw/4,Y0+7.65,bz);hvac(g,bx-bw/4,Y0+7.65,bz+2);
+  const dish=new T.Mesh(new T.SphereGeometry(1,16,8,0,Math.PI*2,0,Math.PI/2),mat.steel);dish.scale.set(1.1,.4,1.1);dish.rotation.x=-.9;dish.position.set(bx+bw/2-2.5,Y0+8.6,bz+bd/2-2.5);g.add(dish);
+  // kiosk on the plaza
+  const kx=L.x0+5.8,kz=L.z0+8.6;KQ.cx=kx;KQ.cz=kz;const kg=new T.Group();kg.position.set(kx,Y0,kz);const gm=M(0x2e7d4f);
+  const body=new T.Mesh(new T.CylinderGeometry(2.1,2.2,2.6,8),gm);body.position.y=1.3;body.castShadow=true;kg.add(body);
+  const band=new T.Mesh(new T.CylinderGeometry(2.35,2.35,.7,8),M(0xd93a2f));band.position.y=2.95;band.castShadow=true;kg.add(band);
+  const roof=new T.Mesh(new T.ConeGeometry(2.7,1.6,8),gm);roof.position.y=4.1;roof.castShadow=true;kg.add(roof);const fin=new T.Mesh(new T.SphereGeometry(.25,10,8),mat.yellow);fin.position.y=5;kg.add(fin);
+  const cols=[0xd93a2f,0x2f6fd9,0xf2b81d,0x3ee08f,0xff7a1a,0x7a3fb0,0xf4f1e6,0x46c8ff];
+  for(let k=0;k<8;k++){const a=k*Math.PI/4+Math.PI/8;if(k===6)continue;for(let r=0;r<2;r++)for(let c=0;c<2;c++){const mg=new T.Mesh(BOX,M(cols[(k*2+r+c)%8]));mg.scale.set(.5,.65,.05);const rr2=2.17;mg.position.set(Math.sin(a)*rr2+Math.cos(a)*(c-.5)*.6,.9+r*.8,Math.cos(a)*rr2-Math.sin(a)*(c-.5)*.6);mg.rotation.y=a;kg.add(mg)}}
+  {const a=6*Math.PI/4+Math.PI/8;const win=new T.Mesh(BOX,mat.dark);win.scale.set(1.5,1.1,.1);win.position.set(Math.sin(a)*2.12,1.6,Math.cos(a)*2.12);win.rotation.y=a;kg.add(win);const ct=new T.Mesh(BOX,mat.wood);ct.scale.set(1.6,.12,.5);ct.position.set(Math.sin(a)*2.35,1.05,Math.cos(a)*2.35);ct.rotation.y=a;kg.add(ct)}
+  for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/8;const sg=sign('NEWS',1.6,.5,'#d93a2f','#fff',Math.sin(a)*2.37,2.95,Math.cos(a)*2.37,a);sg.scale.set(.9,.9,.3);kg.add(sg)}
+  g.add(kg);
+  const benchM=M(0x7a5a3a);for(const[x,z]of[[3.8,L.d-3.4],[9,L.d-3.4]]){const bg=new T.Group();bg.add(box(2.4,.12,.7,benchM,0,.45,0));bg.add(box(2.4,.6,.1,benchM,0,.55,.32));bg.position.set(L.x0+x,Y0,L.z0+z);g.add(bg)}
+  scene.add(g)}
+ // future lots: police station and courthouse
+ for(const[t,lab,col]of[['police','POLICE STATION','#2f6fd9'],['court','COURTHOUSE','#8a6a2c']]){const L=LOT[t],g=new T.Group();g.add(box(L.w,.05,L.d,mat.dirt,L.cx,Y0,L.cz,false));
+  for(let k=0;k<7;k++){const cn=new T.Mesh(new T.ConeGeometry(.32,.85,10),mat.orange);cn.position.set(L.x0+3+k*((L.w-6)/6),Y0+.43,L.z0+1.6);cn.castShadow=true;g.add(cn)}
+  g.add(panel([['COMING SOON',50,'#ffd34d'],[lab,110,'#ffffff'],['THE NEXT BIG UPDATE',44,'#c8defa']],col==='#2f6fd9'?'#0f2f5c':'#4a3412',14,5.4,L.cx,Y0+3.8,L.cz,0));
+  g.add(box(.25,1.2,.25,mat.dark,L.cx-5.5,Y0,L.cz));g.add(box(.25,1.2,.25,mat.dark,L.cx+5.5,Y0,L.cz));scene.add(g)}
  function shellB(g,w,h,d,x,z,wallM,trim){g.add(box(w,h,d,wallM,x,Y0,z));g.add(box(w+.4,.45,d+.4,mat.roof,x,Y0+h,z));
   for(const[dx,dz,ww,dd]of[[0,-d/2,w+.4,.25],[0,d/2,w+.4,.25],[-w/2,0,.25,d+.4],[w/2,0,.25,d+.4]])g.add(box(ww,.55,dd,wallM,x+dx,Y0+h+.2,z+dz,false));
   if(trim)g.add(box(w+.08,.45,d+.08,trim,x,Y0+h-1,z,false))}
@@ -1650,7 +1712,7 @@ function make3D(T){
   const L=LOT.sucata,list=[],cols=[];for(let k=0;k<n;k++){const col=k%6,row=Math.floor(k/6)%4,lay=Math.floor(k/24);list.push([L.x0+15+col*2.9,Y0+.55+lay*1.05,L.z0+8+row*3,0,((k*.37)%.5)-.25,0]);cols.push('#'+pileCols[k%pileCols.length].toString(16).padStart(6,'0'))}
   pileG=inst(new T.BoxGeometry(2.5,1,1.7),M(0xffffff,{roughness:.6,metalness:.3}),list,true,cols)}
  // trees, lamps, traffic lights
- {const tr=[],lf=[],lc=[];for(let k=0;k<560;k++){const x=CX+(rnd()-.5)*420,z=CZ+(rnd()-.5)*300;if(x>XS3[0]-H3-3&&x<XS3[4]+H3+3&&z>YS3[0]-H3-3&&z<YS3[3]+H3+3)continue;const s=.8+rnd()*.9;
+ {const tr=[],lf=[],lc=[];for(let k=0;k<560;k++){const x=CX+(rnd()-.5)*420,z=CZ+(rnd()-.5)*300;if(x>XS3[0]-H3-3&&x<XS3[NX-1]+H3+3&&z>YS3[0]-H3-3&&z<YS3[NY-1]+H3+3)continue;const s=.8+rnd()*.9;
    tr.push([x,.7*s,z,0,0,0,s]);lf.push([x,2.1*s,z,rnd(),rnd(),0,s]);lc.push(['#4f8a3c','#3f7a34','#5c9445','#467f38'][Math.floor(rnd()*4)])}
   inst(new T.CylinderGeometry(.18,.25,1.4,6),mat.trunk,tr,true);inst(new T.IcosahedronGeometry(1.25,0),M(0xffffff),lf,true,lc)}
  const lampPos=[];{const poles=[],heads=[];for(let i=0;i<4;i++)for(const z of YS3)for(let x=XS3[i]+9;x<XS3[i+1]-5;x+=14)for(const s of[-1,1]){const px=x+(s>0?7:0);poles.push([px,2,z+s*(H3+.8),0,0,0,1]);heads.push([px,4.05,z+s*(H3+.35)]);lampPos.push([px,3.7,z+s*(H3+.2)])}
@@ -1662,7 +1724,7 @@ function make3D(T){
  // lights & sky
  const hemi=new T.HemisphereLight(0xdbe8ff,0x4a5a33,.6);scene.add(hemi);
  const sun=new T.DirectionalLight(0xfff1dc,3.3);sun.position.set(CX+70,95,CZ-80);sun.target.position.set(CX,0,CZ);sun.castShadow=true;
- sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-112,right:112,top:80,bottom:-80,near:10,far:420});sun.shadow.bias=-.0005;sun.shadow.normalBias=.05;scene.add(sun,sun.target);
+ sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-125,right:125,top:100,bottom:-100,near:10,far:420});sun.shadow.bias=-.0005;sun.shadow.normalBias=.05;scene.add(sun,sun.target);
  let lastN=-1;const dayC=new T.Color(0xa9cdf0),nightC=new T.Color(0x0b1430),bgC=new T.Color();scene.fog=new T.Fog(0xa9cdf0,230,520);
  function applyNight(force){const nv=nightLevel();if(!force&&Math.abs(nv-lastN)<.004)return;lastN=nv;bgC.lerpColors(dayC,nightC,nv);scene.background=bgC;scene.fog.color.copy(bgC);
   hemi.intensity=.6-.32*nv;sun.intensity=3.3-2.95*nv;sun.color.setHex(nv>.5?0x8fb0ff:0xfff1dc);mat.win.emissiveIntensity=1.6*nv;mat.lamp.emissiveIntensity=3*nv;mat.hl.emissiveIntensity=.15+2.4*nv;
@@ -1737,8 +1799,8 @@ function make3D(T){
   const sj=groups.sucata;if(sj&&sj.userData.press){const s=B.sucata.slots[0],c=s.car;const k=c&&c.state==='service'?clamp(1-c.timer/3,0,1):0;sj.userData.press.position.y=Y0+3.2-k*1.6}
   const wa=groups.lavagem;if(wa)wa.traverse(o=>{if(o.userData.spin)o.rotation.y+=.25})}
  // ---------- camera ----------
- const cam={tx:CX,tz:CZ-9,yaw:Math.PI-.3,pitch:.86,dist:200},home={...cam};let idle=0,dragging=false;
- const clampCam=()=>{if(mode==='in'){cam.pitch=clamp(cam.pitch,.12,1.2);cam.dist=clamp(cam.dist,10,62);cam.tx=clamp(cam.tx,-24,24);cam.tz=clamp(cam.tz,-10,8);return}cam.pitch=clamp(cam.pitch,.28,1.42);cam.dist=clamp(cam.dist,28,270);cam.tx=clamp(cam.tx,XS3[0]-10,XS3[4]+10);cam.tz=clamp(cam.tz,YS3[0]-10,YS3[3]+10)};
+ const cam={tx:CX,tz:CZ-9,yaw:Math.PI-.3,pitch:.86,dist:235},home={...cam};let idle=0,dragging=false;
+ const clampCam=()=>{if(mode==='in'){cam.pitch=clamp(cam.pitch,.12,1.2);cam.dist=clamp(cam.dist,10,62);cam.tx=clamp(cam.tx,-24,24);cam.tz=clamp(cam.tz,-10,8);return}cam.pitch=clamp(cam.pitch,.28,1.42);cam.dist=clamp(cam.dist,28,270);cam.tx=clamp(cam.tx,XS3[0]-10,XS3[NX-1]+10);cam.tz=clamp(cam.tz,YS3[0]-10,YS3[NY-1]+10)};
  function placeCam(){const cp=Math.cos(cam.pitch);const ly=mode==='in'?3:0;camera.position.set(cam.tx+Math.sin(cam.yaw)*cp*cam.dist,ly+Math.sin(cam.pitch)*cam.dist,cam.tz+Math.cos(cam.yaw)*cp*cam.dist);camera.lookAt(cam.tx,ly,cam.tz)}
  const ptrs=new Map();let down=null,pinch=null;
  function pan(dx,dy){const k=cam.dist/700;const sx=Math.cos(cam.yaw),sz=-Math.sin(cam.yaw);const fx=-Math.sin(cam.yaw),fz=-Math.cos(cam.yaw);cam.tx-=(dx*sx-dy*fx)*k;cam.tz-=(dx*sz-dy*fz)*k;clampCam()}
@@ -1759,7 +1821,7 @@ function make3D(T){
  const ray=new T.Raycaster(),ndc=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-Y0),hit=new T.Vector3();
  function clickAt(cx,cy){if(trailer||mode==='in')return;const r=c3.getBoundingClientRect(),hx=(cx-r.left)/r.width*CW,hy=(cy-r.top)/r.height*CH;
   let best=null,bd=40*40;for(const c of cars){if(c.hidden||c.removed)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+.7,g.position.z);if(!s)continue;const d=(s.x-hx)**2+(s.y-hy)**2;if(d<bd){bd=d;best=c}}
-  if(!best){ndc.set((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);if(ray.ray.intersectPlane(plane,hit)){const px=hit.x*10,py=hit.z*10,O=B.oficina;if(inKiosk(px,py,12)){enterIn('kiosk');return}if(px>=O.x0&&px<=O.x1&&py>=O.y0&&py<=O.y1){enterIn('oficina');return}const Lw=B.lavagem;if(isOpen('lavagem')&&px>=Lw.x0&&px<=Lw.x1&&py>=Lw.y0&&py<=Lw.y1){enterIn('lavagem');return}const Rb=B.reboques;if(isOpen('reboques')&&px>=Rb.x0&&px<=Rb.x1&&py>=Rb.y0&&py<=Rb.y1){enterIn('reboques');return}const bb=buildings.find(b=>px>=b.x0&&px<=b.x1&&py>=b.y0&&py<=b.y1);if(bb&&INTS[bb.type]){enterIn(bb.type);return}}
+  if(!best){ndc.set((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);if(ray.ray.intersectPlane(plane,hit)){const px=hit.x*10,py=hit.z*10,O=B.oficina;if(inKiosk(px,py,4)){enterIn('news');return}if(px>=O.x0&&px<=O.x1&&py>=O.y0&&py<=O.y1){enterIn('oficina');return}const Lw=B.lavagem;if(isOpen('lavagem')&&px>=Lw.x0&&px<=Lw.x1&&py>=Lw.y0&&py<=Lw.y1){enterIn('lavagem');return}const Rb=B.reboques;if(isOpen('reboques')&&px>=Rb.x0&&px<=Rb.x1&&py>=Rb.y0&&py<=Rb.y1){enterIn('reboques');return}const bb=buildings.find(b=>px>=b.x0&&px<=b.x1&&py>=b.y0&&py<=b.y1);if(bb&&INTS[bb.type]){enterIn(bb.type);return}}
    const og=groups.oficina;if(og){const hits=ray.intersectObject(og,true);if(hits.length){enterIn('oficina');return}}const lg=groups.lavagem;if(lg&&isOpen('lavagem')){const h2=ray.intersectObject(lg,true);if(h2.length){enterIn('lavagem');return}}const rg=groups.reboques;if(rg&&isOpen('reboques')){const h3=ray.intersectObject(rg,true);if(h3.length){enterIn('reboques');return}}}
   selected=best;updateCard()}
  // ---------- labels drawn on the HUD canvas ----------
@@ -1782,7 +1844,7 @@ function make3D(T){
    if(isOpen('reboques')){const Rb=B.reboques,s3=toHud(U(Rb.x0+Rb.w/2),9,U(Rb.y0+Rb.h*.7));if(s3){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+2);pill('STEP INSIDE THE TOW DEPOT ▶',s3.x,s3.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2a51a');hctx.globalAlpha=1}}}
    {const LBLS={bomba:['STEP INSIDE THE GAS STATION ▶','#d93a2f',7.5,.55],pneus:['STEP INSIDE THE TIRE SHOP ▶','#9aa3ae',9,.7],inspecao:['STEP INSIDE THE INSPECTION CENTER ▶','#1d4fb8',7,.5],parque:['STEP INSIDE THE PARKING ▶','#1d4fb8',4,.5],pecas:['STEP INSIDE AUTO PARTS ▶','#c0392b',8,.5],stand:['STEP INSIDE THE DEALERSHIP ▶','#ff7a1a',8,.5],sucata:['STEP INSIDE THE JUNKYARD ▶','#a08a66',6,.5],fabrica:['STEP INSIDE THE FACTORY ▶','#ff7a1a',10,.4],pista:['STEP INSIDE THE PIT GARAGE ▶','#ff7a1a',4,.5]};
     for(const k in LBLS){if(!isOpen(k))continue;const L=LBLS[k],b=B[k],sp=toHud(U(b.x0+b.w/2),L[2],U(b.y0+b.h*L[3]));if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+k.length);pill(L[0],sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',L[1]);hctx.globalAlpha=1}}
-    {const sp=toHud(KQ.cx,5.4,KQ.cz);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+5);pill('STEP INSIDE THE NEWS KIOSK ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}}
+    {const Ln=LOT.news,sp=toHud(Ln.cx+3,10.6,Ln.cz-2);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+5);pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}}
  }
  // ---------- 3D interior: the TorqueBlueprint repair shop ----------
  let mode='city',fade=0,fadeTo=null,cityCam=null;
@@ -1973,7 +2035,7 @@ function make3D(T){
    if(id!==bay.id){bay.id=id;while(bay.truck.children.length)bay.truck.remove(bay.truck.children[0]);if(inBay){const m=carMesh(t);m.scale.setScalar(1.5);m.rotation.y=Math.PI;bay.truck.add(m)}}});
   // pins on the wall map for broken-down cars
   while(TW.mapPins.children.length)TW.mapPins.remove(TW.mapPins.children[0]);
-  for(const q of cars){if(q.state!=='broken'&&q.state!=='towed')continue;const pin=new T.Mesh(new T.SphereGeometry(.14,8,6),q.state==='towed'?mat.tlG:mat.tlR);pin.position.set(25.6,4.4+2.53-q.y/1080*5.06,-3-4.5+q.x/1920*9);TW.mapPins.add(pin)}}
+  for(const q of cars){if(q.state!=='broken'&&q.state!=='towed')continue;const pin=new T.Mesh(new T.SphereGeometry(.14,8,6),q.state==='towed'?mat.tlG:mat.tlR);pin.position.set(25.6,4.4+2.53-q.y/CH*5.06,-3-4.5+q.x/1920*9);TW.mapPins.add(pin)}}
  function drawTowLabels(){hctx.textAlign='center';hctx.textBaseline='middle';const sz=clamp(1100/cam.dist,14,26);
   B.reboques.slots.forEach((s,k)=>{const bay=TW.bays[k];const t=tows.find(q=>q.home===s);if(!t||t.hidden)return;const p=toHud(bay.x,bay.id?4.2:1.4,-3.5);if(!p)return;
    if(bay.id)pill(`TRUCK ${t.plate} · READY`,p.x,p.y,sz,'rgba(16,19,24,.85)','#5cc98a');
@@ -2120,7 +2182,7 @@ function make3D(T){
   if(RT.timer<=0){RT.timer=.5;const x=RT.screenC.getContext('2d');x.fillStyle='#071a2d';x.fillRect(0,0,1024,512);x.fillStyle='#ff7a1a';x.font="800 56px 'Barlow Condensed',sans-serif";x.textAlign='left';x.textBaseline='middle';x.fillText('LIVE TIMING',36,56);
    [...race].sort((a,b)=>(b.laps+b.t)-(a.laps+a.t)).forEach((r,i)=>{const y=150+i*110;x.fillStyle=r.col;x.fillRect(36,y-40,80,80);x.fillStyle='#111';x.font="800 48px 'Barlow Condensed',sans-serif";x.textAlign='center';x.fillText(String(r.num),76,y+2);x.textAlign='left';x.fillStyle='#fff';x.fillText(`P${i+1}`,150,y);x.fillStyle='#c8defa';x.font="700 44px 'JetBrains Mono',monospace";x.fillText(`LAP ${r.laps+1}`,330,y);x.fillText(`${Math.round(r.t*100)}%`,700,y)});RT.screenT.needsUpdate=true}}
  function labelsPits(){lockedNote('pista');header('INSIDE THE RACE TRACK PIT GARAGE')}
- const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},kiosk:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}}};let cur=INTS.oficina;
+ const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},news:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}}};let cur=INTS.oficina;
  // ===== NEWS KIOSK (Motoropolis Daily) =====
  const NK={built:false,v:-1,home:{...STD_HOME,yaw:.1,dist:40}};
  function frontPage(){const c=NK.cv,x=c.getContext('2d'),W=c.width,H=c.height;x.fillStyle='#f4f1e6';x.fillRect(0,0,W,H);x.fillStyle='#1c1d20';
@@ -2133,12 +2195,14 @@ function make3D(T){
   x.fillStyle='#c9c3b6';x.fillRect(50,y-30,W-100,2);
   for(const n of NEWS.slice(1,5)){if(y>H-40)break;y=wrap('• '+n.h,y+14,32,2,'#33363b')}
   NK.tex.needsUpdate=true}
- function buildKiosk(){const R=room({title:'MOTOROPOLIS DAILY · NEWS KIOSK',titleW:26,sbg:'#d93a2f',trim:0x2e7d4f,wall:0x1f3a2c,wall2:0x183024,floor:0xb9b2a3,h:14});NK.S=R.S;
+ function buildKiosk(){const R=room({title:'MOTOROPOLIS DAILY · NEWSROOM & KIOSK',titleW:30,sbg:'#d93a2f',trim:0x2e7d4f,wall:0x1f3a2c,wall2:0x183024,floor:0xb9b2a3,h:14});NK.S=R.S;
   const cols=[0xd93a2f,0x2f6fd9,0xf2b81d,0x3ee08f,0xff7a1a,0x7a3fb0,0xf4f1e6,0x46c8ff];
   // magazine wall on the left
   for(let lv=0;lv<4;lv++){R.B2(20,.18,1.2,mat.wood,-14,.6+lv*1.6,-10.2,false);for(let k=0;k<12;k++){const mg=R.B2(1.2,1.4,.1,M(cols[(k*3+lv)%8]),-23.2+k*1.65,.8+lv*1.6,-10.3,false);mg.rotation.x=-.15}}
   // newspaper stacks on two tables
-  for(const tx of[-14,-6]){R.B2(5,1.6,2.6,mat.wood,tx,0,0);for(let k=0;k<3;k++){R.B2(1.3,.35+k*.12,1.8,M(0xf4f1e6),tx-1.6+k*1.6,1.6,0,false);R.B2(1.3,.04,1.8,M(0x1c1d20),tx-1.6+k*1.6,1.95+k*.12,-.2,false)}}
+  for(const tx of[-14,-6]){R.B2(5,1.6,2.6,mat.wood,tx,0,-3);for(let k=0;k<3;k++){R.B2(1.3,.35+k*.12,1.8,M(0xf4f1e6),tx-1.6+k*1.6,1.6,-3,false);R.B2(1.3,.04,1.8,M(0x1c1d20),tx-1.6+k*1.6,1.95+k*.12,-3.2,false)}}
+  // the newsroom: reporters' desks with screens
+  NK.rep=[];[-18,-10,-2].forEach((dx,i)=>{R.B2(5,1.5,2.4,M(0xe9e5dc),dx,0,5);R.B2(1.8,1.2,.15,mat.dark,dx-1,1.5,4.4);const sc=R.B2(1.6,1,.05,M(0x46c8ff,{emissive:0x46c8ff,emissiveIntensity:.6}),dx-1,1.6,4.5,false);R.B2(.9,.06,.4,mat.dark,dx+.9,1.5,4.8,false);R.B2(.6,.4,.6,mat.dark,dx-1,1.5,4.4,false);const pr=R.B2(.9,.12,1.2,M(0xf4f1e6),dx+1.4,1.5,5.1,false);pr.rotation.y=.3;R.B2(1.2,.9,.5,M(0x2b3440),dx-1,0,7.5);if(i!==1){const m=mkP(NK.S,['#7a3fb0','#3fa7c4'][i?1:0],170+i);putP(m,{x:dx-1,z:6.7,ang:Math.PI},false);NK.rep.push(m)}});
   // today's front page on the back wall
   NK.cv=document.createElement('canvas');NK.cv.width=1024;NK.cv.height=640;NK.tex=new T.CanvasTexture(NK.cv);NK.tex.colorSpace=T.SRGBColorSpace;NK.tex.anisotropy=8;
   R.B2(13.4,8.6,.3,mat.dark,12,1.1,-10.6,false);const fp=new T.Mesh(new T.PlaneGeometry(12.8,8),new T.MeshBasicMaterial({map:NK.tex,toneMapped:false}));fp.position.set(12,5.4,-10.4);R.add(fp);
@@ -2148,9 +2212,10 @@ function make3D(T){
   NK.L=[0,1,2,3].map(i=>mkP(NK.S,null,161+i));NK.v=-1;frontPage();NK.built=true}
  function syncKiosk(){if(NK.v!==NEWSV){NK.v=NEWSV;frontPage()}
   NK.vendor.rotation.y=Math.sin(simTime*.7)*.5;
-  const paths=[[[-24,9],[-14,2.4],[13,4.6],[24,9]],[[24,9],[-6,2.4],[14,4.6],[-24,9]],[[-24,9],[-16,-8.6],[-10,-4],[-10,2.6],[-6,2.6],[14,4.6],[24,9]],[[24,9],[-10,-8.6],[2,4.6],[15,4.6],[-24,9]]];
+  const paths=[[[24,9],[14,4.6],[24,9]],[[24,9],[4,-.6],[-6,-.6],[14,4.6],[24,9]],[[24,9],[4,-.6],[-14,-.6],[-16,-8.4],[-14,-.6],[14,4.6],[24,9]],[[24,9],[12,-7.8],[8,-1],[9,4.6],[14,4.6],[24,9]]];
+  NK.rep.forEach((m,k)=>{m.rotation.y=Math.PI+Math.sin(simTime*(.6+k*.2))*.25;m.position.y=0});
   NK.L.forEach((m,k)=>loopP(m,paths[k],22+k*3,k*.27,.12))}
- function labelsKiosk(){staffTag(NK.vendor,'kiosk','Newspaper Vendor',0,4.4);header('INSIDE THE NEWS KIOSK')}
+ function labelsKiosk(){staffTag(NK.vendor,'news','Newspaper Vendor',0,4.4);NK.rep.forEach((m,k)=>staffTag(m,'news','Reporter',k,4.4));header('INSIDE MOTOROPOLIS DAILY')}
  // ---------- people inside the buildings ----------
  function pathPos(pts,u){let tot=0;const seg=[];for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(d);tot+=d}
   let d=clamp(u,0,1)*tot;for(let i=0;i<seg.length;i++){if(d<=seg[i]||i===seg.length-1){const k=seg[i]?clamp(d/seg[i],0,1):0,a=pts[i],b=pts[i+1];return{x:a[0]+(b[0]-a[0])*k,z:a[1]+(b[1]-a[1])*k,ang:Math.atan2(b[0]-a[0],b[1]-a[1])}}d-=seg[i]}return{x:pts[0][0],z:pts[0][1],ang:0}}
@@ -2276,7 +2341,7 @@ function loop(ts){
 }
 requestAnimationFrame(loop);
 ownerTools();
-setTimeout(newsSeed,1500);setInterval(newsSummary,55000);
+setTimeout(()=>{newsSeed();parkRanger()},1500);setInterval(newsSummary,55000);
 setInterval(()=>{fetch('state.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;if(Number.isFinite(+j.subs)&&+j.subs!==subs)setSubs(+j.subs);if(Array.isArray(j.names)){let add=0;for(const raw of j.names){const n=String(raw).trim().slice(0,24);if(n&&!WALL.some(x=>x.toLowerCase()===n.toLowerCase())){WALL.push(n);add++}}if(add){assignDrivers();assignJobs();WALL.slice(-add).forEach(n=>{const jb=jobOf(n);news(jb?`Welcome, ${n}! The city's newest ${jb}`:`Welcome, ${n}! Now looking for a job`,'people',`${n} joined Motoropolis from the comments.`)})}}}).catch(()=>{})},120000);
 if(location.hostname==='localhost')window.__mtpBuild=()=>buildPage(STATE);
 })();
