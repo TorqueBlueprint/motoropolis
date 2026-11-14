@@ -2064,7 +2064,7 @@ function make3D(T,X){
  const MANMAT={};
  function personGLB(col,skin,fit){const C={mech:['#1f2a44','#1f2a44'],hivis:['#c7e01f','#232c40'],police:['#151a26','#141821'],suit:['#22252b','#22252b'],robe:['#121214','#121214'],green:['#2e7d4f','#3b4a3a'],red:['#d93a2f','#2b2f38'],casual:[col,'#3c5a85']}[fit];
   const key=C[0]+C[1]+skin;const g=new T.Group();const m=X.man.clone(X.man.scene);const s=1.8/X.man.h;m.scale.multiplyScalar(s);m.position.y=-X.man.y0*s;g.add(m);
-  const legs=[],rig={};m.traverse(o=>{if(o.isBone){const mm=/^(UpperLeg|LowerLeg|UpperArm|LowerArm)\.?([LR])/.exec(o.name);if(mm){rig[mm[1]+mm[2]]={b:o,x:o.rotation.x,y:o.rotation.y}}}if(!o.isMesh)return;o.castShadow=true;o.frustumCulled=false;
+  const legs=[],rig={};m.traverse(o=>{if(o.isBone){const mm=/^(UpperLeg|LowerLeg|UpperArm|LowerArm)\.?([LR])/.exec(o.name);if(mm){rig[mm[1]+mm[2]]={b:o,q0:o.quaternion.clone()}}}if(!o.isMesh)return;o.castShadow=true;o.frustumCulled=false;
    if(!MANMAT[key]){const base=o.material,img=base.map.image;const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;const x=cv.getContext('2d');x.drawImage(img,0,0);const d=x.getImageData(0,0,cv.width,cv.height),p=d.data;
      const hx=h=>{const n=parseInt(h.slice(1),16);return[n>>16,n>>8&255,n&255]};const top=hx(C[0]),pan=hx(C[1]),sk=hx(skin);
      for(let i=0;i<p.length;i+=4){const r=p[i],gg=p[i+1],b=p[i+2],l=(r+gg+b)/3;let t=null,k=1;
@@ -2072,9 +2072,13 @@ function make3D(T,X){
       if(t){p[i]=Math.min(255,t[0]*k);p[i+1]=Math.min(255,t[1]*k);p[i+2]=Math.min(255,t[2]*k)}}
      x.putImageData(d,0,0);const tx=new T.CanvasTexture(cv);tx.colorSpace=T.SRGBColorSpace;tx.flipY=base.map.flipY;tx.magFilter=T.NearestFilter;const nm=base.clone();nm.map=tx;MANMAT[key]=nm}
    o.material=MANMAT[key]});
-  g.userData.legs=[new T.Object3D(),new T.Object3D()];if(rig.UpperLegL&&rig.UpperLegR)g.userData.rig=rig;return g}
- function walkPose(g,t,on){const r=g.userData.rig;if(!r)return false;const f=on?Math.sin(t):0,c=on?Math.cos(t):0,A=(k,ax,v)=>{const q=r[k];if(q)q.b.rotation[ax]=q[ax]+v};
-  A('UpperLegL','x',f*.5);A('UpperLegR','x',f*.5);A('LowerLegL','y',-(Math.max(0,-c)*.75+(on?.08:0)));A('LowerLegR','y',Math.max(0,c)*.75+(on?.08:0));A('UpperArmL','x',f*.35);A('UpperArmR','x',f*.35);return true}
+  g.userData.legs=[new T.Object3D(),new T.Object3D()];if(rig.UpperLegL&&rig.UpperLegR){g.updateMatrixWorld(true);const wq=new T.Quaternion();for(const k in rig){rig[k].b.getWorldQuaternion(wq);rig[k].ax=new T.Vector3(1,0,0).applyQuaternion(wq.invert()).normalize()}g.userData.rig=rig}return g}
+ const WQ=X?new T.Quaternion():null;
+ function walkPose(g,t,on){const r=g.userData.rig;if(!r)return false;const A=(k,v)=>{const q=r[k];if(!q)return;WQ.setFromAxisAngle(q.ax,v);q.b.quaternion.copy(q.q0).multiply(WQ)};
+  if(!on){for(const k in r)r[k].b.quaternion.copy(r[k].q0);return true}
+  const f=Math.sin(t),c=Math.cos(t),kn=x=>x>0?x*x*(3-2*x):0;
+  A('UpperLegL',-.42*f);A('UpperLegR',.42*f);A('LowerLegL',.12+.75*kn(c));A('LowerLegR',.12+.75*kn(-c));
+  A('UpperArmL',.3*f);A('UpperArmR',-.3*f);A('LowerArmL',-.25);A('LowerArmR',-.25);return true}
  function personMeshX(col,skin,hair){const fit0=OUTFIT[col]||'casual';if(X.man&&fit0!=='robe')return personGLB(col,skin,fit0);const g=new T.Group();const fit=fit0;
   const C={mech:['#1f2a44','#1f2a44'],hivis:['#c7e01f','#232c40'],police:['#151a26','#141821'],suit:['#22252b','#22252b'],robe:['#121214','#121214'],green:['#2e7d4f','#3b4a3a'],red:['#d93a2f','#2b2f38'],casual:[col,'#5d7fb0']}[fit];
   const top=XM(C[0]),pant=XM(C[1]),sk=XM(skin,{roughness:.6}),hr=XM(hair,{roughness:.55}),boot=XM(fit==='casual'?'#f4f4f0':'#1b1c1f',{roughness:.5});
@@ -2138,7 +2142,7 @@ function make3D(T,X){
  const mech=[];for(let k=0;k<5;k++){const g=personMesh('#1d4fb8','#f0c9a0','#2b1d14');g.visible=false;scene.add(g);mech.push(g)}
  function syncPeople(){
   peds.forEach((p,k)=>{const g=pedMeshes[k];const walking=p.pause<=0;const sw=walking?Math.sin(p.phase*2)*.5:0;
-   const rg=walkPose(g,p.phase*2,walking);g.position.set(U(p.x),.25+(walking?Math.abs(Math.sin(p.phase*2))*(rg?.015:.04):0),U(p.y));g.rotation.y=Math.PI/2-p.ang;if(!rg){g.userData.legs[0].rotation.x=sw;g.userData.legs[1].rotation.x=-sw}});
+   const rg=walkPose(g,p.phase*.7,walking);g.position.set(U(p.x),.25+(walking?Math.abs(Math.sin(rg?p.phase*.7:p.phase*2))*(rg?.015:.04):0),U(p.y));g.rotation.y=Math.PI/2-p.ang;if(!rg){g.userData.legs[0].rotation.x=sw;g.userData.legs[1].rotation.x=-sw}});
   B.oficina.slots.forEach((s,k)=>{const g=mech[k];const on=s.car&&s.car.state==='service'&&s.car.kind==='car';g.visible=on;if(!on)return;const ph=simTime*2+k;g.position.set(U(s.x)+1.9+Math.sin(ph)*.25,Y0,U(s.y)+Math.cos(ph*.7)*1.2);g.rotation.y=-Math.PI/2+Math.sin(ph)*.4})}
  // ---------- particles ----------
  const PMAX=500,pGeo=new T.BufferGeometry(),pPos=new Float32Array(PMAX*3),pCol=new Float32Array(PMAX*3);
@@ -2676,7 +2680,7 @@ function make3D(T,X){
  // ---------- people inside the buildings ----------
  function pathPos(pts,u){let tot=0;const seg=[];for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(d);tot+=d}
   let d=clamp(u,0,1)*tot;for(let i=0;i<seg.length;i++){if(d<=seg[i]||i===seg.length-1){const k=seg[i]?clamp(d/seg[i],0,1):0,a=pts[i],b=pts[i+1];return{x:a[0]+(b[0]-a[0])*k,z:a[1]+(b[1]-a[1])*k,ang:Math.atan2(b[0]-a[0],b[1]-a[1])}}d-=seg[i]}return{x:pts[0][0],z:pts[0][1],ang:0}}
- function putP(m,p,moving,ang){m.position.set(p.x,0,p.z);m.rotation.y=ang!=null?ang:p.ang;const ph=simTime*9+(m.userData.ph||0),sw=moving?Math.sin(ph)*.55:0,rg=walkPose(m,ph,moving);if(!rg){m.userData.legs[0].rotation.x=sw;m.userData.legs[1].rotation.x=-sw}m.position.y=moving?Math.abs(Math.sin(ph))*(rg?.02:.06):0}
+ function putP(m,p,moving,ang){m.position.set(p.x,0,p.z);m.rotation.y=ang!=null?ang:p.ang;const rg0=!!m.userData.rig,ph=simTime*(rg0?6.5:9)+(m.userData.ph||0),sw=moving?Math.sin(ph)*.55:0,rg=walkPose(m,ph,moving);if(!rg){m.userData.legs[0].rotation.x=sw;m.userData.legs[1].rotation.x=-sw}m.position.y=moving?Math.abs(Math.sin(ph))*(rg?.02:.06):0}
  // a looping errand: walk the path there, wait, walk back, wait
  function loopP(m,pts,period,off,wait){const ph=((simTime/period)+off)%1,w=wait||.2,go=(1-2*w)/2;
   if(ph<go)putP(m,pathPos(pts,ph/go),true);else if(ph<go+w)putP(m,pathPos(pts,1),false);else if(ph<2*go+w)putP(m,pathPos([...pts].reverse(),(ph-go-w)/go),true);else putP(m,pathPos(pts,0),false)}
