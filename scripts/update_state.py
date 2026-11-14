@@ -9,8 +9,8 @@ HANDLE = os.environ.get("YT_HANDLE", "TorqueBlueprint")
 MAX_VIDEOS = 50
 MAX_NAME = 24
 ROLE_MAP = {"police": "police", "cop": "police", "officer": "police", "thief": "thief", "robber": "thief",
-            "lawyer": "lawyer", "attorney": "lawyer", "judge": "judge", "busdriver": "bus", "bus": "bus", "homeless": "homeless"}
-WORKSHOP_RE = re.compile(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(police|cop|officer|thief|robber|lawyer|attorney|judge|bus[\s_-]*driver|bus|homeless)?", re.I)
+            "lawyer": "lawyer", "attorney": "lawyer", "judge": "judge", "busdriver": "bus", "bus": "bus", "homeless": "homeless", "taxi": "taxi", "garbage": "garbage"}
+WORKSHOP_RE = re.compile(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(police|cop|officer|thief|robber|lawyer|attorney|judge|bus[\s_-]*driver|bus|homeless|taxi|garbage)?", re.I)
 STATE = os.path.join(os.path.dirname(__file__), "..", "state.json")
 
 
