@@ -2674,14 +2674,34 @@ function make3D(T,X){
   // water: animated ripples
   {const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');x.fillStyle='#3d8bd0';x.fillRect(0,0,256,256);for(let k=0;k<500;k++){x.fillStyle=Math.random()<.5?'rgba(255,255,255,.07)':'rgba(10,50,110,.07)';x.fillRect(Math.random()*256,Math.random()*256,4+Math.random()*8,1)}
    const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;mt.water.map=t;mt.water.color.setHex(0xffffff);W3.waterTex=t}
-  const winTex=(base,win,lit)=>{const c=document.createElement('canvas');c.width=64;c.height=128;const x=c.getContext('2d');x.fillStyle=base;x.fillRect(0,0,64,128);const e=document.createElement('canvas');e.width=64;e.height=128;const y=e.getContext('2d');y.fillStyle='#000';y.fillRect(0,0,64,128);
-   for(let r=4;r<128;r+=16)for(let q=4;q<64;q+=16){x.fillStyle=win;x.fillRect(q,r,10,10);if(Math.random()<lit){y.fillStyle=Math.random()<.6?'#ffd38a':'#bfe0ff';y.fillRect(q,r,10,10)}}
-   const a=new T.CanvasTexture(c),b=new T.CanvasTexture(e);for(const t of[a,b]){t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=4}a.colorSpace=T.SRGBColorSpace;return[a,b]};
-  const tMat=(base,win,o)=>{const[a,b]=winTex(base,win,.45);const m=new T.MeshStandardMaterial(Object.assign({map:a,emissiveMap:b,emissive:0xffffff,emissiveIntensity:0,roughness:.4,metalness:.25},o||{}));W3.tmats.push(m);return m};
-  const TM=[tMat('#7fa7c9','#2a4a6a',{metalness:.5,roughness:.2}),tMat('#d9d2c2','#3a4656'),tMat('#9aa4ae','#24303c',{metalness:.4}),tMat('#c9b49a','#33404e'),tMat('#5f7f9f','#1b2b3c',{metalness:.6,roughness:.15})];
-  const AM=[tMat('#efe6d6','#4a5a6c'),tMat('#e3d3bf','#405062'),tMat('#d8dde3','#3d4b5b'),tMat('#f0dcc8','#4f5e70')];
+  // facade textures: one tile = 2 window bays x 1 floor, with frames, sills, slab bands and lit windows at night
+  const winTex=(base,win,lit,style)=>{const S=128,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');const e=document.createElement('canvas');e.width=e.height=S;const y=e.getContext('2d');y.fillStyle='#000';y.fillRect(0,0,S,S);
+   const sh=(hex,k)=>{const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;r=Math.max(0,Math.min(255,r+k));g=Math.max(0,Math.min(255,g+k));b=Math.max(0,Math.min(255,b+k));return`rgb(${r},${g},${b})`};
+   const glass=(gx,gy,gw,gh)=>{const gr=x.createLinearGradient(0,gy,0,gy+gh);gr.addColorStop(0,sh(win,70));gr.addColorStop(.45,win);gr.addColorStop(1,sh(win,-25));x.fillStyle=gr;x.fillRect(gx,gy,gw,gh);x.fillStyle='rgba(255,255,255,.22)';x.beginPath();x.moveTo(gx,gy+gh*.65);x.lineTo(gx+gw*.55,gy);x.lineTo(gx+gw*.75,gy);x.lineTo(gx,gy+gh*.95);x.fill()};
+   const litW=(gx,gy,gw,gh)=>{if(Math.random()<lit){y.fillStyle=Math.random()<.65?'#ffd38a':'#cfe6ff';y.fillRect(gx,gy,gw,gh);y.fillStyle='rgba(0,0,0,.35)';y.fillRect(gx+gw*.6,gy,gw*.4,gh)}};
+   if(style==='glass'){glass(0,0,S,S);x.fillStyle=sh(base,-10);for(let q=0;q<=S;q+=32)x.fillRect(q-2,0,4,S);x.fillStyle=sh(base,-30);x.fillRect(0,S-14,S,14);x.fillStyle=sh(base,25);x.fillRect(0,S-14,S,3);for(let q=0;q<S;q+=32)litW(q+2,4,28,S-20)}
+   else{x.fillStyle=base;x.fillRect(0,0,S,S);for(let k=0;k<700;k++){x.fillStyle=Math.random()<.5?'rgba(0,0,0,.035)':'rgba(255,255,255,.05)';x.fillRect(Math.random()*S,Math.random()*S,2,2)}
+    x.fillStyle=sh(base,-28);x.fillRect(0,S-8,S,8);x.fillStyle=sh(base,18);x.fillRect(0,S-8,S,2);
+    for(const q of[14,74]){const ww=40,wh=style==='res'?62:72,wy=style==='res'?26:18;x.fillStyle=sh(base,-45);x.fillRect(q-3,wy-3,ww+6,wh+6);x.fillStyle='#f4f4f0';x.fillRect(q-2,wy-2,ww+4,wh+4);glass(q,wy,ww,wh);x.fillStyle='#f4f4f0';x.fillRect(q+ww/2-1.5,wy,3,wh);x.fillRect(q,wy+wh*.42,ww,3);
+     x.fillStyle=sh(base,-55);x.fillRect(q-5,wy+wh+2,ww+10,5);if(style==='res'){x.fillStyle='rgba(40,44,52,.85)';x.fillRect(q-6,wy+wh-16,ww+12,2);for(let k=q-6;k<=q+ww+6;k+=6)x.fillRect(k,wy+wh-16,1.5,18);x.fillRect(q-6,wy+wh+1,ww+12,2)}litW(q,wy,ww,wh)}}
+   const a=new T.CanvasTexture(c),b=new T.CanvasTexture(e);for(const t of[a,b]){t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8}a.colorSpace=T.SRGBColorSpace;b.colorSpace=T.SRGBColorSpace;return[a,b]};
+  const tMat=(base,win,o,style)=>{const[a,b]=winTex(base,win,.45,style);const m=new T.MeshStandardMaterial(Object.assign({map:a,emissiveMap:b,emissive:0xffffff,emissiveIntensity:0,roughness:.45,metalness:.15},o||{}));W3.tmats.push(m);return m};
+  const TM=[tMat('#5d7590','#6f9fc9',{metalness:.55,roughness:.18},'glass'),tMat('#d9d2c2','#3a5a78',{},'office'),tMat('#8f9aa6','#4a6f92',{metalness:.35,roughness:.3},'office'),tMat('#c9b49a','#41607e',{},'office'),tMat('#3e5268','#5a8fbf',{metalness:.6,roughness:.12},'glass')];
+  const AM=[tMat('#efe6d6','#4a6a8c',{},'res'),tMat('#e3d3bf','#456686',{},'res'),tMat('#d8dde3','#3f5f80',{},'res'),tMat('#f0dcc8','#4f6f90',{},'res')];
+  // house walls: windows with white frames, shutters and a front door
+  const houseM=(()=>{const c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');x.fillStyle='#ffffff';x.fillRect(0,0,256,128);for(let k=0;k<900;k++){x.fillStyle='rgba(0,0,0,.04)';x.fillRect(Math.random()*256,Math.random()*128,2,2)}
+   x.fillStyle='#c9c4ba';x.fillRect(0,112,256,16);const e=document.createElement('canvas');e.width=256;e.height=128;const y=e.getContext('2d');y.fillStyle='#000';y.fillRect(0,0,256,128);
+   const win=(wx,wy,ww,wh)=>{x.fillStyle='#6b4a2b';x.fillRect(wx-10,wy,8,wh);x.fillRect(wx+ww+2,wy,8,wh);x.fillStyle='#f6f6f2';x.fillRect(wx-3,wy-3,ww+6,wh+6);const gr=x.createLinearGradient(0,wy,0,wy+wh);gr.addColorStop(0,'#bfe0f5');gr.addColorStop(1,'#4d7ea6');x.fillStyle=gr;x.fillRect(wx,wy,ww,wh);x.fillStyle='#f6f6f2';x.fillRect(wx+ww/2-1.5,wy,3,wh);x.fillRect(wx,wy+wh/2-1.5,ww,3);x.fillStyle='#b9b4aa';x.fillRect(wx-5,wy+wh+2,ww+10,4);if(Math.random()<.6){y.fillStyle='#ffd38a';y.fillRect(wx,wy,ww,wh)}};
+   win(34,34,40,46);win(182,34,40,46);x.fillStyle='#f6f6f2';x.fillRect(107,38,42,76);x.fillStyle='#7a3f2a';x.fillRect(111,42,34,72);x.fillStyle='#e8c45a';x.fillRect(138,78,4,4);x.fillStyle='rgba(255,255,255,.25)';x.fillRect(116,48,24,20);x.fillStyle='#8a8f96';x.fillRect(100,112,56,8);
+   const a=new T.CanvasTexture(c),b=new T.CanvasTexture(e);a.colorSpace=b.colorSpace=T.SRGBColorSpace;a.anisotropy=8;const m=new T.MeshStandardMaterial({map:a,emissiveMap:b,emissive:0xffffff,emissiveIntensity:0,roughness:.8});W3.tmats.push(m);return m})();
   function boxUV(w,h,d,ru,rv){const g=new T.BoxGeometry(w,h,d);g.translate(0,h/2,0);const uv=g.attributes.uv;for(let f=0;f<6;f++)for(let k=0;k<4;k++){const i=f*4+k;const su=f<2?d/ru:w/ru,sv=f===2||f===3?d/ru:h/rv;uv.setXY(i,uv.getX(i)*su,uv.getY(i)*sv)}return g}
-  function bld(g,w,h,d,side,roof,x,z,ry){const m=new T.Mesh(boxUV(w,h,d,4,4),[side,side,roof,roof,side,side]);m.position.set(x,0,z);m.rotation.y=ry||0;m.castShadow=true;m.receiveShadow=true;g.add(m);return m}
+  const rimM=M(0xc9c4ba,{roughness:.7}),acM=M(0xb9c0c8,{metalness:.5,roughness:.4}),podM=M(0x2b3440,{metalness:.5,roughness:.2});
+  function bld(g,w,h,d,side,roof,x,z,ry){const m=new T.Mesh(boxUV(w,h,d,4.6,3.4),[side,side,roof,roof,side,side]);m.position.set(x,0,z);m.rotation.y=ry||0;m.castShadow=true;m.receiveShadow=true;g.add(m);
+   if(w>4&&d>4){const t=.35,ph=.7;for(const q of[-1,1]){m.add(box(w,ph,t,rimM,0,h,q*(d/2-t/2),false));m.add(box(t,ph,d-2*t,rimM,q*(w/2-t/2),h,0,false))}
+    const n=Math.min(3,Math.floor(w*d/50)+1);for(let k=0;k<n;k++){const ax=(k-(n-1)/2)*Math.min(3.2,w/(n+1)),az=((k%2)?1:-1)*d*.18;m.add(box(1.5,.9,1.1,acM,ax,h,az));}
+    if(h>14&&w*d>90){const wt=new T.Mesh(W3.wtG||(W3.wtG=new T.CylinderGeometry(.9,.9,1.6,10)),acM);wt.position.set(w*.28,h+1.6,-d*.25);m.add(wt);m.add(box(.12,1,.12,acM,w*.28-.6,h,-d*.25,false));m.add(box(.12,1,.12,acM,w*.28+.6,h,-d*.25,false))}
+    if(side.map&&h>12){m.add(box(w+.3,3.2,d+.3,podM,0,0,0,false))}}
+   return m}
   const B0=(g,w,h,d,m,x,y,z,cast)=>{const b=box(w,h,d,m,x,y,z,cast);g.add(b);return b};
   function instG(g,geo,m,list,colors,cast){if(!list.length)return null;const im=new T.InstancedMesh(geo,m,list.length);const o=new T.Object3D(),col=new T.Color();
    list.forEach((p,k)=>{o.position.set(p.x,p.y||0,p.z);o.rotation.set(0,p.ry||0,0);o.scale.set(p.sx||1,p.sy||1,p.sz||1);o.updateMatrix();im.setMatrixAt(k,o.matrix);if(colors)im.setColorAt(k,col.set(colors[k]))});
@@ -2816,8 +2836,8 @@ function make3D(T,X){
    W3.anim=[];W3.cars=W3.cars.filter(c=>!c.dyn);seed=777;const sv=subs||0;const g=dyn=new T.Group();root.add(g);const lbl=[];W3.dlabels=lbl;
    const L2=(t,x,z,y,type,core)=>lbl.push({t,x,z,y,type,core});
    // houses
-   const HB=[],HR=[],HBc=[],HRc=[],TRx=[];const BODY=['#f4efe4','#efe3cf','#e6e9ee','#f2dcc3','#dfe7d8','#f7f1e8'],ROOF=['#c0392b','#2f5fa8','#3d7a3a','#d9822b','#7a4a2a','#8a2f2f','#3a3f4a','#b5552b'];
-   const house=(x,z,ry)=>{const w=5+rnd()*2,d=4.4+rnd()*1.6,h=2.8+rnd()*.9;HB.push({x,y:0,z,ry,sx:w,sy:h,sz:d});HBc.push(BODY[Math.floor(rnd()*BODY.length)]);HR.push({x,y:h,z,ry,sx:w+.7,sy:1.5+rnd()*.8,sz:d+.9});HRc.push(ROOF[Math.floor(rnd()*ROOF.length)]);if(rnd()<.6)TRx.push({x:x+Math.cos(ry)*5,z:z-Math.sin(ry)*5})};
+   const HB=[],HR=[],HBc=[],HRc=[],TRx=[],CHx=[];const BODY=['#f4efe4','#efe3cf','#e6e9ee','#f2dcc3','#dfe7d8','#f7f1e8'],ROOF=['#c0392b','#2f5fa8','#3d7a3a','#d9822b','#7a4a2a','#8a2f2f','#3a3f4a','#b5552b'];
+   const house=(x,z,ry)=>{const w=5+rnd()*2,d=4.4+rnd()*1.6,h=2.8+rnd()*.9;HB.push({x,y:0,z,ry,sx:w,sy:h,sz:d});HBc.push(BODY[Math.floor(rnd()*BODY.length)]);HR.push({x,y:h,z,ry,sx:w+.7,sy:1.5+rnd()*.8,sz:d+.9});CHx.push({x:x+Math.cos(ry)*w*.28,y:h+.3,z:z-Math.sin(ry)*w*.28,sx:.7,sy:1.9,sz:.7});HRc.push(ROOF[Math.floor(rnd()*ROOF.length)]);if(rnd()<.6)TRx.push({x:x+Math.cos(ry)*5,z:z-Math.sin(ry)*5})};
    const rowH=(z,x0,x1,arr)=>{for(let x=x0;x<=x1;x+=10){for(const s of[-1,1]){const zz=z+s*7.5;arr.push([x+rnd()*1.2,zz,s>0?0:Math.PI])}}};
    const S1=[];rowH(230,-38,146,S1);rowH(282,-38,146,S1);S1.sort((a,b)=>Math.hypot(a[0]-96,a[1]-180)-Math.hypot(b[0]-96,b[1]-180));
    const okS=p=>!(p[0]>2&&p[0]<30&&p[1]<212)&&!(p[0]>56&&p[0]<94&&p[1]<220)&&Math.abs(p[0]-96)>5&&Math.abs(p[0]-53)>5&&Math.abs(p[0]+46)>5;
@@ -2827,23 +2847,23 @@ function make3D(T,X){
    else{bpLot(g,'w_res',-110,-246,280,150);L2('RIVERSIDE HEIGHTS',-110,-246,14,'w_res')}
    const roofG=sh(W3.roofG||(W3.roofG=(()=>{const p=[-.5,0,-.5,.5,0,-.5,.5,1,0, -.5,0,-.5,.5,1,0,-.5,1,0, .5,0,.5,-.5,0,.5,-.5,1,0, .5,0,.5,-.5,1,0,.5,1,0, -.5,0,-.5,-.5,1,0,-.5,0,.5, .5,0,-.5,.5,0,.5,.5,1,0];const gg=new T.BufferGeometry();gg.setAttribute('position',new T.Float32BufferAttribute(p,3));gg.computeVertexNormals();return gg})()));
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
-   instG(g,bodyG,mt.bodyT,HB,HBc);instG(g,roofG,mt.roofT,HR,HRc);
+   instG(g,bodyG,houseM,HB,HBc);instG(g,bodyG,mt.brick,CHx);instG(g,roofG,mt.roofT,HR,HRc);
    instG(g,sh(new T.IcosahedronGeometry(1.5,0)),M(0xffffff,{flatShading:true}),TRx.map(p=>({x:p.x,y:2.2,z:p.z})),TRx.map(()=>['#4f8a3c','#5c9445','#3f7a34'][Math.floor(rnd()*3)]));
    // apartments (Maple Grove)
    {const slots=[];for(let x=-30;x<=140;x+=17)slots.push([x,256]);const n=Math.min(slots.length,3+Math.floor(sv/12));for(let k=0;k<n;k++){const[x,z]=slots[k];if(Math.abs(x-96)<8||Math.abs(x-53)<8)continue;const h=8+((k*7)%5)*2.4+Math.min(10,sv/150);bld(g,11,h,11,AM[k%AM.length],mat.roof,x,z);B0(g,3,1,2,mat.steel,x+2,h,z)}}
    // the city: downtown, offices, flats and houses between the main buildings
-   {const cg=coreG(),C3=cityFill(),NB=[],NBc=[],NR=[],NRc=[],TT=[],TTc=[],CA=[],CAc=[],PD=[],PDc=[];const gr=.78+.22*Math.min(1,sv/3000);
+   {const cg=coreG(),C3=cityFill(),CA2=[],NB=[],NBc=[],NR=[],NRc=[],TT=[],TTc=[],CA=[],CAc=[],PD=[],PDc=[];const gr=.78+.22*Math.min(1,sv/3000);
     for(const bl of C3.blocks){if(bl.type==='lot')continue;const x0=U(bl.x0)-.6,x1=U(bl.x1)+.6,z0=U(bl.y0)-.6,z1=U(bl.y1)+.6;PD.push({x:(x0+x1)/2,y:.01,z:(z0+z1)/2,sx:x1-x0,sy:.3,sz:z1-z0});PDc.push(bl.type==='res'?'#7fae5c':'#d9d4c8')}
     for(const f of C3.items){const x=U(f.x),z=U(f.y);
      if(f.k==='tree'){const s=U(f.r)/1.1;TT.push({x,y:.3+2.1*s,z,sx:s*1.2,sy:s,sz:s*1.2,ry:rnd()*3});TTc.push(['#4f8a3c','#3f7a34','#5c9445','#6a9c45'][Math.floor(rnd()*4)]);continue}
      if(f.k==='car'){CA.push({x,y:.3,z,sx:1.8,sy:1.3,sz:4});CAc.push(f.col);continue}
      if(f.k==='park'){B0(cg,U(f.w),.06,U(f.h),mat.lotAsph,x,.3,z,false);continue}
      const w=U(f.w),d=U(f.h);
-     if(f.k==='house'){const h=2.9+f.w%3*.2;NB.push({x,y:.3,z,sx:w,sy:h,sz:d});NBc.push(f.body);NR.push({x,y:.3+h,z,sx:w+.7,sy:1.7,sz:d+.9});NRc.push(f.roof)}
+     if(f.k==='house'){const h=2.9+f.w%3*.2;NB.push({x,y:.3,z,sx:w,sy:h,sz:d,ry:f.ang||0});NBc.push(f.body);CA2.push({x:x+w*.28,y:.3+h+.3,z,sx:.7,sy:1.9,sz:.7});NR.push({x,y:.3+h,z,sx:w+.7,sy:1.7,sz:d+.9});NRc.push(f.roof)}
      else if(f.k==='tower'){const h=(18+Math.max(0,1-f.d/.2)*22+f.f*10)*gr,m=TM[Math.floor(f.f*TM.length)];if(f.f>.6){bld(cg,w,h*.65,d,m,mat.roof,x,z);const t2=bld(cg,w*.72,h*.35,d*.72,m,mat.roof,x,z);t2.position.y=h*.65}else bld(cg,w,h,d,m,mat.roof,x,z);B0(cg,w*.3,1.3,d*.3,mat.steel,x,h,z)}
      else if(f.k==='mid'){const h=(8+f.f*10)*gr;bld(cg,w,h,d,TM[1+Math.floor(f.f*3)],mat.roof,x,z);B0(cg,w*.4,1,d*.3,mat.steel,x,h,z)}
      else{const h=5+f.f*7;bld(cg,w,h,d,AM[Math.floor(f.f*AM.length)],mat.roof,x,z);B0(cg,w*.85,.25,1.3,M(['#d93a2f','#2e7d4f','#2f6fd9','#e8b931'][Math.floor(f.f*4)]),x,2.6,z+d/2+.65,false)}}
-    instG(cg,bodyG,mt.bodyT,PD,PDc,false);instG(cg,bodyG,mt.bodyT,NB,NBc);instG(cg,roofG,mt.roofT,NR,NRc);instG(cg,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),CA,CAc);
+    instG(cg,bodyG,mt.bodyT,PD,PDc,false);instG(cg,bodyG,houseM,NB,NBc);instG(cg,bodyG,mt.brick,CA2);instG(cg,roofG,mt.roofT,NR,NRc);instG(cg,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),CA,CAc);
     instG(cg,sh(W3.trG||(W3.trG=new T.IcosahedronGeometry(1.3,0))),M(0xffffff,{flatShading:true}),TT,TTc);instG(cg,sh(W3.tkG||(W3.tkG=new T.CylinderGeometry(.14,.2,1.6,5).translate(0,-1.4,0))),mat.trunk,TT.map(p=>({x:p.x,y:p.y,z:p.z})))}
    // industrial zone
    {const slots=[];for(const z of[-268,-212,-182])for(let x=100;x<=320;x+=30)if(Math.abs(x-205)>16)slots.push([x,z]);slots.sort((a,b)=>Math.abs(a[0]-205)+Math.abs(a[1]+150)-Math.abs(b[0]-205)-Math.abs(b[1]+150));
