@@ -2711,21 +2711,34 @@ function make3D(T,X){
    for(const l of lines){if(x<l.bb[0]-l.hw-m||x>l.bb[2]+l.hw+m||z<l.bb[1]-l.hw-m||z>l.bb[3]+l.hw+m)continue;for(let i=0;i<l.P.length-1;i++)if(segD(x,z,l.P[i],l.P[i+1])<l.hw+m)return false}return true}
   // ---- bridges (SimCity-style steel arches over the river) ----
   const brs=[];
-  function bridge(x,w,col){const zc=riverZ(x),span=riverW(x)+12,Lr=14,H=2.6,half=span/2+Lr;const g=new T.Group();g.userData.anchor=[x,zc];root.add(g);
-   B0(g,w+1.2,.7,span,mt.stone,x,H-.7,zc);B0(g,w,.06,span,mat.asphalt,x,H,zc,false);
-   for(const s of[-1,1]){const hyp=Math.hypot(Lr,H);const r=new T.Mesh(BOX,mat.asphalt);r.scale.set(w,.3,hyp);r.position.set(x,H/2-.12,zc+s*(span/2+Lr/2));r.rotation.x=s*Math.atan2(H,Lr);r.receiveShadow=true;g.add(r);
-    const r2=new T.Mesh(BOX,mt.stone);r2.scale.set(w+1.2,.6,hyp);r2.position.set(x,H/2-.55,zc+s*(span/2+Lr/2));r2.rotation.x=s*Math.atan2(H,Lr);g.add(r2);
-    for(const q of[-1,1]){B0(g,.2,1,span,mt.white,x+q*(w/2+.45),H,zc,false)}
-    B0(g,2.4,H,2.4,mt.stone,x+s*0,0,zc+s*span*.22)}
+  function bridge(x,w,col){const zc=riverZ(x),span=riverW(x)+12,Lr=14,H=2.6,half=span/2+Lr,ang=Math.atan2(H,Lr),hyp=Math.hypot(Lr,H);const g=new T.Group();g.userData.anchor=[x,zc];root.add(g);
+   const ex=w/2+1.15,DW=2*ex+.5,lineM=mat.dash,swM=mat.pad,railM=mt.white;
+   // deck: stone girder, asphalt, raised sidewalks, painted lines
+   B0(g,DW,.8,span,mt.stone,x,H-.8,zc);B0(g,w,.08,span,mat.asphalt,x,H,zc,false);
+   for(const q of[-1,1]){B0(g,1.1,.28,span,swM,x+q*(w/2+.55),H,zc,false);B0(g,.12,.02,span,lineM,x+q*(w/2-.35),H+.08,zc,false);B0(g,.14,1,span,railM,x+q*ex,H+.28,zc,false);for(let z=zc-span/2+1;z<=zc+span/2-1;z+=2.2)B0(g,.12,1,.12,railM,x+q*ex,H+.28,z,false)}
+   for(let z=zc-span/2+1.5;z<zc+span/2-1;z+=3.6)B0(g,.16,.02,1.8,lineM,x,H+.08,z,false);
+   // approach ramps: solid stone embankment + asphalt + sidewalks, rails and lines following the slope
+   const ramp=(gm,mt2,wd,ht,ox,yo,s,t0,len)=>{const m=new T.Mesh(gm||BOX,mt2);const tc=t0+len/2;m.scale.set(wd,ht,len*hyp);m.position.set(x+ox,H*(1-tc)+yo,zc+s*(span/2+Lr*tc));m.rotation.x=s*ang;m.receiveShadow=true;m.castShadow=ht>.5;g.add(m);return m};
+   for(const s of[-1,1]){
+    const sh=new T.Shape();sh.moveTo(0,0);sh.lineTo(Lr,0);sh.lineTo(0,H);sh.lineTo(0,0);const wg=new T.ExtrudeGeometry(sh,{depth:DW,bevelEnabled:false});wg.translate(0,0,-DW/2);wg.rotateY(s>0?-Math.PI/2:Math.PI/2);
+    const wm=new T.Mesh(wg,mt.stone);wm.position.set(x,-.02,zc+s*span/2);wm.receiveShadow=true;wm.castShadow=true;g.add(wm);
+    ramp(null,mat.asphalt,w,.3,0,-.12,s,0,1);
+    for(const q of[-1,1]){ramp(null,swM,1.1,.3,q*(w/2+.55),.02,s,0,1);ramp(null,railM,.14,.9,q*ex,.55,s,0,.92);ramp(null,lineM,.12,.04,q*(w/2-.35),.04,s,0,1)}
+    for(let t=.06;t<.96;t+=.13)ramp(null,lineM,.16,.04,0,.04,s,t,.06);
+    B0(g,DW+.4,1.6,.8,mt.stone,x,0,zc+s*(span/2-.4))}
+   // piers in the river
+   for(const s of[-1,1]){B0(g,DW-.6,H-.8,2.2,mt.stone,x,-.2,zc+s*span*.22);B0(g,DW+.2,.4,2.8,mt.stone,x,H-1.2,zc+s*span*.22)}
+   // steel arches with hangers
    const peak=Math.min(14,span*.32);
-   for(const q of[-1,1]){const xx=x+q*(w/2+.45);const cv=new T.QuadraticBezierCurve3(new T.Vector3(xx,H,zc-span/2+1.5),new T.Vector3(xx,H+peak*2,zc),new T.Vector3(xx,H,zc+span/2-1.5));
+   for(const q of[-1,1]){const xx=x+q*ex;const cv=new T.QuadraticBezierCurve3(new T.Vector3(xx,H+.2,zc-span/2+1.5),new T.Vector3(xx,H+peak*2,zc),new T.Vector3(xx,H+.2,zc+span/2-1.5));
     const tb=new T.Mesh(new T.TubeGeometry(cv,40,.45,8,false),col);tb.castShadow=true;tb.userData.wc=1;g.add(tb);
-    for(let t=.1;t<.91;t+=.1){const p=cv.getPoint(t);const hh=p.y-H;if(hh<.5)continue;const hg=new T.Mesh(new T.CylinderGeometry(.07,.07,hh,5),mt.white);hg.position.set(xx,H+hh/2,p.z);g.add(hg)}}
-   for(const t of[.35,.5,.65]){const p=new T.QuadraticBezierCurve3(new T.Vector3(0,H,zc-span/2+1.5),new T.Vector3(0,H+peak*2,zc),new T.Vector3(0,H,zc+span/2-1.5)).getPoint(t);B0(g,w+.9,.3,.3,col,x,p.y-.15,p.z,false)}
-   for(const s of[-1,1])for(const q of[-1,1]){const lp=new T.Mesh(new T.CylinderGeometry(.08,.08,2.2,6),mat.dark);lp.position.set(x+q*(w/2+.45),H+1.1,zc+s*span*.4);g.add(lp);const lb=new T.Mesh(new T.SphereGeometry(.2,8,6),mat.lamp);lb.position.set(lp.position.x,H+2.25,lp.position.z);g.add(lb)}
+    for(let t=.1;t<.91;t+=.1){const p=cv.getPoint(t);const hh=p.y-H;if(hh<.5)continue;const hg=new T.Mesh(new T.CylinderGeometry(.07,.07,hh,5),mt.white);hg.position.set(xx,H+hh/2,p.z);g.add(hg)}
+    for(const s of[-1,1])B0(g,1.4,.9,1.4,col,xx,H-.1,zc+s*(span/2-1.5))}
+   for(const t of[.35,.5,.65]){const p=new T.QuadraticBezierCurve3(new T.Vector3(0,H,zc-span/2+1.5),new T.Vector3(0,H+peak*2,zc),new T.Vector3(0,H,zc+span/2-1.5)).getPoint(t);B0(g,2*ex+.9,.3,.3,col,x,p.y-.15,p.z,false)}
+   for(const s of[-1,1])for(const q of[-1,1]){const lp=new T.Mesh(new T.CylinderGeometry(.08,.08,2.4,6),mat.dark);lp.position.set(x+q*ex,H+1.5,zc+s*span*.4);g.add(lp);const lb=new T.Mesh(new T.SphereGeometry(.22,8,6),mat.lamp);lb.position.set(lp.position.x,H+2.75,lp.position.z);g.add(lb)}
    const b={x,w,zc,span,Lr,H,half,g};brs.push(b);return b}
   const deckY=(x,z)=>{for(const b of brs){if(Math.abs(x-b.x)>b.w/2+1.5)continue;const dz=Math.abs(z-b.zc);if(dz>b.half)continue;return dz<b.span/2?b.H:b.H*(b.half-dz)/b.Lr}return 0};
-  const cutRiver=(P,x)=>{const zc=riverZ(x),half=(riverW(x)+12)/2+14;const a=P.filter(p=>p[1]>zc+half),b=P.filter(p=>p[1]<zc-half);return[a,b]};
+  const cutRiver=(P,x)=>{const zc=riverZ(x),half=(riverW(x)+12)/2+14;const a=P.filter(p=>p[1]>zc+half),b=P.filter(p=>p[1]<zc-half);if(a.length&&a[0][1]>a[a.length-1][1])a.push([x,zc+half]);else a.unshift([x,zc+half]);if(b.length&&b[0][1]>b[b.length-1][1])b.unshift([x,zc-half]);else b.push([x,zc-half]);return[a,b]};
   const vline=(x,z0,z1)=>{const P=[];const st=z1>z0?4:-4;for(let z=z0;st>0?z<=z1:z>=z1;z+=st)P.push([x,z]);return P};
   const hline=(z,x0,x1)=>{const P=[];const st=x1>x0?4:-4;for(let x=x0;st>0?x<=x1:x>=x1;x+=st)P.push([x,z]);return P};
   function road(P,w,y,g,dash,closed){ribbon(P,w,y||.012,mat.asphalt,closed,g);if(!g)addLine(P,w/2);if(dash){const L=[];along(P,4,0,(x,z,a)=>{L.push({x,y:.035,z,ry:a,sx:.18,sz:1.6})},closed);instG(g||root,sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2)),mat.dash,L,null,false)}}
