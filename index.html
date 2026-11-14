@@ -522,6 +522,8 @@ function giveUp(c){
 function atNode(c){
  const n=nodes[c.to];
  if(!c.siren&&lightState(n,axisOf(c))!=='g'){c.waitRed=true;return}
+ // roundabouts: give way to the cars already going round (at most 2 inside), so the circle never locks up
+ if(n.round&&!c.siren){let inside=0;for(const o of cars)if(o!==c&&o.roundNode===c.to&&!o.removed)inside++;if(inside>=2){c.waitRed=true;return}c.roundNode=c.to}
  c.waitRed=false;
  if(c.task&&c.task.type==='chase')c.route=[];
  if(c.task&&!c.route.length)planRoute(c);
@@ -566,6 +568,7 @@ function stepCar(c,dt){
   if(d<=mv){c.x=p.x;c.y=p.y;mv-=d;c.pts.shift();if(c.state==='road')wear(c,d);if(p.cb)p.cb()}
   else{c.x+=dx/d*mv;c.y+=dy/d*mv;if(c.state==='road')wear(c,mv);mv=0}
  }
+ if(c.roundNode!=null){const rn=nodes[c.roundNode];if(!rn||c.state!=='road'||Math.hypot(c.x-rn.x,c.y-rn.y)>HALF+22&&c.to!==c.roundNode)c.roundNode=null}
  if(c.state==='road'){
   const atRed=c.waitRed||(tgt&&tgt.stop&&c.pts.length===1&&lightState(nodes[c.to],axisOf(c))!=='g');
   if(c.v<2&&!atRed){c.stuck+=dt;if(c.stuck>4){c.ghost=1.6;c.stuck=0}}else c.stuck=0;
@@ -3060,6 +3063,6 @@ ownerTools();
 setTimeout(()=>{newsSeed();parkRanger()},1500);setInterval(newsSummary,55000);
 setInterval(()=>{fetch('state.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;if(SUBS_OVR===null&&Number.isFinite(+j.subs)&&+j.subs!==subs)setSubs(+j.subs);if(j.roles&&typeof j.roles==='object')for(const k in j.roles)ROLES[k.toLowerCase()]=String(j.roles[k]).toLowerCase();if(Array.isArray(j.names)){let add=0;for(const raw of j.names){const n=String(raw).trim().slice(0,24);if(n&&!WALL.some(x=>x.toLowerCase()===n.toLowerCase())){WALL.push(n);add++}}if(add){assignDrivers();assignJobs();WALL.slice(-add).forEach(n=>{const jb=jobOf(n);news(jb?`Welcome, ${n}! The city's newest ${jb}`:`Welcome, ${n}! Now looking for a job`,'people',`${n} joined Motoropolis from the comments.`)})}}}).catch(()=>{})},120000);
 if(location.hostname==='localhost')window.__mtpBuild=()=>buildPage(STATE);
-if(location.hostname==='localhost'){window.__R3=()=>R3;window.__dbg={emergStart:()=>emergStart(),emerg:()=>emerg&&{cx:emerg.car.x/10,cz:emerg.car.y/10,type:emerg.type,t:emerg.t,arrived:emerg.arrived,d:Math.hypot(emerg.resp.x-emerg.car.x,emerg.resp.y-emerg.car.y)},sim:()=>simTime,speed:v=>{speed=v},cars:()=>cars.filter(c=>c.kind==='fire'||c.kind==='amb').map(c=>[c.kind,Math.round(c.x),Math.round(c.y),c.state,c.ttl])}}
+if(location.hostname==='localhost'){window.__R3=()=>R3;window.__jam=()=>{const st={},tk={};let slow=0;for(const c of cars){if(c.removed||c.hidden)continue;st[c.state]=(st[c.state]||0)+1;if(c.state==='road'&&c.v<3){slow++;const k=(c.task?c.task.type+':'+(c.task.b?c.task.b.type:''):'free')+(c.waitRed?'/red':'')+(c.arrestT>0?'/stop':'');tk[k]=(tk[k]||0)+1}}return JSON.stringify({sim:simTime|0,n:cars.length,st,slow,tk,q:Object.fromEntries(buildings.map(b=>[b.type,b.slots.filter(s=>s.car).length+'/'+b.slots.length]))})};window.__dbg={emergStart:()=>emergStart(),emerg:()=>emerg&&{cx:emerg.car.x/10,cz:emerg.car.y/10,type:emerg.type,t:emerg.t,arrived:emerg.arrived,d:Math.hypot(emerg.resp.x-emerg.car.x,emerg.resp.y-emerg.car.y)},sim:()=>simTime,speed:v=>{speed=v},cars:()=>cars.filter(c=>c.kind==='fire'||c.kind==='amb').map(c=>[c.kind,Math.round(c.x),Math.round(c.y),c.state,c.ttl])}}
 })();
 </script></body></html>
