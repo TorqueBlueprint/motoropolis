@@ -1,0 +1,33 @@
+name: Launch the new world (15 Nov 2026, 17:00 Lisbon)
+
+on:
+  schedule:
+    - cron: "0 17 15 11 *"   # 17:00 UTC = 17:00 Lisbon in November
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-state
+  cancel-in-progress: false
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Only on launch day or later in 2026
+        id: gate
+        run: |
+          if [ "$(date -u +%Y)" != "2026" ] && [ "${{ github.event_name }}" = "schedule" ]; then echo "go=no" >> $GITHUB_OUTPUT; else echo "go=yes" >> $GITHUB_OUTPUT; fi
+      - name: Promote the world to the live city
+        if: steps.gate.outputs.go == 'yes'
+        run: |
+          python3 tools/promote_world.py
+          if git diff --quiet; then echo "nothing to do"; exit 0; fi
+          git config user.name "motoropolis-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Launch: the new Motoropolis world is live"
+          for i in 1 2 3; do git pull --rebase && git push && break; sleep 10; done
