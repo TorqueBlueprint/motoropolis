@@ -304,8 +304,12 @@ const MODELS=[
  {n:'Electric city car',len:26,wid:14,price:27900,v:[80,95]},
  {n:'Sports car 3.0 turbo',len:30,wid:16,price:68500,v:[105,125],sport:true},
  {n:'1978 classic',len:31,wid:15,price:14500,v:[70,85],classic:true},
- {n:'Pickup 2.2',len:34,wid:16,price:32500,v:[80,95],pickup:true}
+ {n:'Pickup 2.2',len:34,wid:16,price:32500,v:[80,95],pickup:true},
+ {n:'Hot hatch 2.0 turbo',len:32,wid:15,price:45900,v:[100,120],glb:'hothatch'}
 ];
+// low-poly car models (no logos, no brand names): file in assets/cars, body colour cell in the palette texture
+const CAR_GLB={hothatch:{file:'hothatch.glb',len:4.59,cell:[16,0,8,8]}};
+const ASSET_BASE=/\/(world|remake)\//.test(location.pathname)?'../':'';
 const COLORS=['#d93a2f','#2f6fd9','#f2f2ee','#22252b','#9aa3ad','#e8b931','#2e8b57','#7a3fb0','#e8742a','#5a6b7d','#b5272d','#3fa7c4','#c9c3b5'];
 const FAULTS=[
  {n:'Flat tire',k:'tire',t:5,c:25,w:3},
@@ -1939,7 +1943,14 @@ function make3D(T,X){
   const g=new T.ExtrudeGeometry(profile(type,L),{depth:Wd-.16,bevelEnabled:true,bevelThickness:.08,bevelSize:.08,bevelSegments:3,curveSegments:10});g.translate(0,0,-(Wd-.16)/2);g.rotateY(-Math.PI/2);return XGEO[k]=g}
  const glassX=()=>mat.carGlass;
  function wheelX(g,x,z,r){const w=new T.Mesh(WHEEL,mat.tire);w.scale.set(1.05,r/.3,r/.3);w.position.set(x,r,z);g.add(w);const rim=new T.Mesh(WHEEL,mat.chrome);rim.scale.set(1.12,r/.3*.62,r/.3*.62);rim.position.set(x,r,z);g.add(rim)}
- function carMeshX(c){if(c.kind==='tow')return null;const g=new T.Group(),L=c.len/10,Wd=c.wid/10*.94,body=colMat(c.color),m=c.m||{};const add=(w,h,d,mt,x,y,z,cast)=>{const b=box(w,h,d,mt,x,y,z,cast);g.add(b);return b};
+ const GLBMAT={};
+ function glbCar(c,key){const src=X.cars[key],cfg=CAR_GLB[key],L=c.len/10;const g=new T.Group();const m=src.clone(true);const s=L/cfg.len;m.scale.setScalar(s);
+  const col=c.color||'#2f6fd9',mk=key+col;
+  m.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;if(o.material&&o.material.map&&o.material.name==='Car_Main'){if(!GLBMAT[mk]){const base=o.material,img=base.map.image;const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;const x=cv.getContext('2d');x.drawImage(img,0,0);
+     const[cx,cy,cw,ch]=cfg.cell,k=img.width/64;x.fillStyle=col;x.fillRect(cx*k,cy*k,cw*k,ch*k);const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;t.flipY=base.map.flipY;t.magFilter=T.NearestFilter;t.minFilter=T.NearestFilter;t.generateMipmaps=false;
+     const nm=base.clone();nm.map=t;nm.metalness=Math.min(nm.metalness,.5);GLBMAT[mk]=nm}o.material=GLBMAT[mk]}});
+  g.add(m);const tl=box(L*.5,.08,.05,mat.tailOff,0,.62*s*cfg.len/4.4,-L/2+.02,false);tl.visible=false;g.add(tl);g.userData.tl=tl;return g}
+ function carMeshX(c){if(c.kind==='tow')return null;if(c.m&&c.m.glb&&X.cars&&X.cars[c.m.glb])return glbCar(c,c.m.glb);const g=new T.Group(),L=c.len/10,Wd=c.wid/10*.94,body=colMat(c.color),m=c.m||{};const add=(w,h,d,mt,x,y,z,cast)=>{const b=box(w,h,d,mt,x,y,z,cast);g.add(b);return b};
   if(c.kind==='bus'){add(Wd,2.3,L*.98,body,0,.35,0);add(Wd*1.01,.85,L*.86,mat.carGlass,0,1.35,-.02,false);add(Wd*1.01,.6,L*.06,mat.carGlass,0,1.3,L*.47,false);add(Wd*.98,.12,L*.94,M(0xeef3fb),0,2.66,0,false);
    add(Wd*1.02,.16,L*.98,M(0xeef3fb),0,1.05,0,false);const sg=add(Wd*.7,.3,.05,M(0x111111,{emissive:0xffb000,emissiveIntensity:1.2}),0,2.2,L*.49+.01,false);
    for(const z of[-L*.32,L*.32])for(const x of[-1,1])wheelX(g,x*Wd/2,z,.42);
@@ -3028,10 +3039,11 @@ function make3D(T,X){
   if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,CW,CH)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
  syncBuildings();if(X)decorateRoofs(scene);
- return{frame,reset,resize,cam,renderer,camera,enterIn,exitIn,mode:()=>mode,setOnMode:f=>{onMode=f}};
+ return{scene,frame,reset,resize,cam,renderer,camera,enterIn,exitIn,mode:()=>mode,setOnMode:f=>{onMode=f}};
 }
 async function loadR3(){
- try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}}if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T,X);return R3}
+ try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}
+  if(X){X.cars={};try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld=new GLTFLoader();await Promise.all(Object.entries(CAR_GLB).map(async([k,v])=>{try{const g=await ld.loadAsync(ASSET_BASE+'assets/cars/'+v.file);X.cars[k]=g.scene}catch(e){console.warn('car model',k,e)}}))}catch(e){console.warn('gltf loader unavailable',e)}}}if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T,X);return R3}
  catch(e){console.warn('3D view unavailable',e);R3=null;return null}
 }
 const vMsg=$('vMsg'),v3b=$('v3d'),v2b=$('v2d'),vRes=$('vReset');
