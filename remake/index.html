@@ -1120,6 +1120,8 @@ function drawNight(n){
  const Pi=B.pista;glow(Pi.x0+Pi.w/2,Pi.y0+Pi.h/2,160,'255,255,240',.18*n);
  ctx.globalCompositeOperation='source-over';
 }
+let VW=CW,VH=CH;const HUDS=WORLD?CW/1920:1;
+function hudScaled(f){if(HUDS===1){f();return}ctx.save();ctx.scale(HUDS,HUDS);VW=CW/HUDS;VH=CH/HUDS;try{f()}finally{ctx.restore();VW=CW;VH=CH}}
 function drawHUD(){
  const name=chan();
  ctx.save();ctx.textAlign='left';ctx.textBaseline='alphabetic';
@@ -1138,27 +1140,27 @@ function drawHUD(){
   ctx.fillStyle='#262b34';rrect(ctx,40,176,434,8,4);ctx.fill();ctx.fillStyle='#ff7a1a';rrect(ctx,40,176,Math.max(8,434*pr),8,4);ctx.fill();
  }else{ctx.font="800 26px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.fillText('ALL MILESTONES REACHED!',40,163)}
  const chips=[['SUBSCRIBERS',sv.toLocaleString('en-US'),true],['ON THE ROAD',String(cars.filter(c=>c.state==='road'&&c.kind==='car').length)],['REPAIRS',String(stats.repairs)],['REVENUE',eur(stats.money)]];
- let x=CW-22;ctx.textAlign='right';let subsX=0,subsW=0;
+ let x=VW-22;ctx.textAlign='right';let subsX=0,subsW=0;
  for(let k=chips.length-1;k>=0;k--){const[l,v,hl]=chips[k];ctx.font=`700 ${hl?38:30}px 'Barlow Condensed', sans-serif`;const w=Math.max(ctx.measureText(v).width,hl?120:90)+28;x-=w;
   ctx.fillStyle=hl?'#ff7a1a':'rgba(16,19,24,.86)';rrect(ctx,x,18,w,70,8);ctx.fill();ctx.fillStyle=hl?'#1d0f02':'#fff';ctx.fillText(v,x+w-14,hl?78:74);ctx.font="600 13px 'Barlow', sans-serif";ctx.fillStyle=hl?'#3d1d04':'#9aa3ae';ctx.fillText(l,x+w-14,38);
   if(hl){subsX=x;subsW=w}x-=10}
- if(sv>MAXCARS){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,CW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,CW-32,114)}
+ if(sv>MAXCARS){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
  if(subToast){const k=subToast.t/3;ctx.globalAlpha=1-k*k;ctx.font="800 34px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(16,19,24,.9)';const ty=118+k*40;ctx.strokeText(subToast.text,subsX+subsW/2,ty);ctx.fillText(subToast.text,subsX+subsW/2,ty);ctx.globalAlpha=1}
  // call to action
  ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;
- const bxw=cw2+150,bxx=CW-22-bxw,bxy=CH-22-58;ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,bxx,bxy,bxw,58,10);ctx.fill();
+ const bxw=cw2+150,bxx=VW-22-bxw,bxy=VH-22-58;ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,bxx,bxy,bxw,58,10);ctx.fill();
  ctx.fillStyle='#e8322a';rrect(ctx,bxx+12,bxy+12,112,34,6);ctx.fill();ctx.fillStyle='#fff';ctx.font="800 18px 'Barlow Condensed', sans-serif";ctx.textAlign='center';ctx.fillText('SUBSCRIBE',bxx+68,bxy+35);
  ctx.textAlign='left';ctx.font="800 22px 'Barlow Condensed', sans-serif";ctx.fillStyle='#fff';ctx.fillText(cta,bxx+136,bxy+37);
  const rows=ticker.slice(0,4);
- if(rows.length){ctx.textAlign='left';const h=rows.length*30+16;ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,CH-22-h,760,h,10);ctx.fill();
-  rows.forEach((r,i)=>{const y=CH-22-h+30+i*30;ctx.fillStyle=r.kind==='ok'?'#5cc98a':r.kind==='bad'?'#ff5a4f':'#6cb6ff';ctx.fillRect(38,y-14,5,18);
+ if(rows.length){ctx.textAlign='left';const h=rows.length*30+16;ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,VH-22-h,760,h,10);ctx.fill();
+  rows.forEach((r,i)=>{const y=VH-22-h+30+i*30;ctx.fillStyle=r.kind==='ok'?'#5cc98a':r.kind==='bad'?'#ff5a4f':'#6cb6ff';ctx.fillRect(38,y-14,5,18);
    ctx.font="500 15px 'JetBrains Mono', monospace";ctx.fillStyle='#9aa3ae';ctx.fillText(r.time,52,y);
    ctx.font="500 18px 'Barlow', sans-serif";ctx.fillStyle=`rgba(238,240,242,${i===0?1:.82})`;let txt=r.text;while(ctx.measureText(txt).width>640&&txt.length>10)txt=txt.slice(0,-2);if(txt!==r.text)txt=txt.trim()+'…';ctx.fillText(txt,112,y)})}
  ctx.restore();
 }
 function drawCeleb(){
  if(!celeb)return;const t=celeb.t,a=Math.min(1,t/.35)*Math.min(1,(4.5-t)/.5),sc=.85+.15*Math.min(1,t/.35);
- ctx.save();ctx.globalAlpha=Math.max(0,a);ctx.translate(CW/2,CH/2-40);ctx.scale(sc,sc);
+ ctx.save();ctx.globalAlpha=Math.max(0,a);ctx.translate(VW/2,VH/2-40);ctx.scale(sc,sc);
  const w=760,h=170;ctx.fillStyle='rgba(16,19,24,.94)';rrect(ctx,-w/2,-h/2,w,h,14);ctx.fill();ctx.fillStyle='#ff7a1a';ctx.fillRect(-w/2,-h/2,w,8);
  ctx.textAlign='center';ctx.textBaseline='middle';
  ctx.fillStyle='#ffb36b';ctx.font="700 22px 'Barlow Condensed', sans-serif";ctx.fillText('NEW BUILDING IN TOWN',0,-46);
@@ -1191,8 +1193,8 @@ function draw(){
  drawPeopleNames();
  drawNewCars();
  drawSelected();
- if(showHud&&!trailer)drawHUD();
- if(!trailer)drawCeleb();
+ if(showHud&&!trailer)hudScaled(drawHUD);
+ if(!trailer)hudScaled(drawCeleb);
 }
 
 // ---------- UI ----------
@@ -2132,7 +2134,7 @@ function make3D(T,X){
    const og=groups.oficina;if(og){const hits=ray.intersectObject(og,true);if(hits.length){enterIn('oficina');return}}const lg=groups.lavagem;if(lg&&isOpen('lavagem')){const h2=ray.intersectObject(lg,true);if(h2.length){enterIn('lavagem');return}}const rg=groups.reboques;if(rg&&isOpen('reboques')){const h3=ray.intersectObject(rg,true);if(h3.length){enterIn('reboques');return}}}
   selected=best;updateCard()}
  // ---------- labels drawn on the HUD canvas ----------
- function pill(text,x,y,size,bg,fg,stroke){hctx.font=`700 ${size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
+ function pill(text,x,y,size,bg,fg,stroke){hctx.font=`700 ${size*=(hud.width===CW?HUDS:1),size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
  function drawLabels(){
   hctx.textAlign='center';hctx.textBaseline='middle';if(WORLD&&W3.labelsDraw)W3.labelsDraw();const sz=clamp(2600/cam.dist,13,26),near=cam.dist<200;
   const items=[];
@@ -2971,7 +2973,7 @@ function make3D(T,X){
  function frame(dt){resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,CW,CH);cur.labels()}
   else{syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);applyNight(false);placeCam();RENDER(scene);
-  hctx.clearRect(0,0,CW,CH);drawLabels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)drawHUD();if(!trailer)drawCeleb()}finally{ctx=keep}}
+  hctx.clearRect(0,0,CW,CH);drawLabels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
   if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,CW,CH)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
  syncBuildings();if(X)decorateRoofs(scene);
