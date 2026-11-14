@@ -2429,9 +2429,12 @@ function make3D(T,X){
  // ===== TIRE SHOP =====
  const TS={built:false,home:STD_HOME};
  function buildTires(){const R=room({title:'TIRES · ALIGNMENT',sbg:'#22252b',trim:0x22252b,wall:0x2d3a4a,recep:'RECEPTION'});TS.S=R.S;
-  const tireG=new T.TorusGeometry(.56,.27,10,28),treadM=M(0x1a1b1f,{roughness:.95}),wallTx=M(0x2a2c31,{roughness:.8}),rimM=mat.chrome;
-  const tyre=(x,y,z,rx,ry,rim)=>{const g=new T.Group();const t=new T.Mesh(tireG,treadM);t.castShadow=true;g.add(t);for(let k=0;k<14;k++){const a=k/14*Math.PI*2;const b=box(.12,.09,.5,wallTx,Math.cos(a)*.82,Math.sin(a)*.82-.045,0,false);b.rotation.z=a;g.add(b)}
-   if(rim){const r=new T.Mesh(new T.CylinderGeometry(.42,.42,.3,16),rimM);r.rotation.x=Math.PI/2;g.add(r);for(let k=0;k<5;k++){const sp=box(.1,.36,.06,rimM,0,0,.16,false);sp.rotation.z=k/5*Math.PI*2;g.add(sp)}}
+  // car tyre: rounded-square profile turned on a lathe (axis along z), fine tread grooves, chrome alloy rims on some
+  const tireG=(()=>{const P=[[.44,-.24],[.6,-.25],[.72,-.235],[.79,-.2],[.81,-.12],[.81,.12],[.79,.2],[.72,.235],[.6,.25],[.44,.24]].map(p=>new T.Vector2(p[0],p[1]));const g=new T.LatheGeometry(P,36);g.rotateX(Math.PI/2);return g})();
+  const treadM=M(0x1b1c20,{roughness:.92}),grooveM=M(0x0c0d0f,{roughness:1}),rimM=mat.chrome;const grooveG=new T.TorusGeometry(.812,.012,4,40);
+  const tyre=(x,y,z,rx,ry,rim)=>{const g=new T.Group();const t=new T.Mesh(tireG,treadM);t.castShadow=true;g.add(t);for(const gz of[-.08,0,.08]){const gr=new T.Mesh(grooveG,grooveM);gr.position.z=gz;g.add(gr)}
+   if(rim){const r=new T.Mesh(new T.CylinderGeometry(.45,.45,.34,20),rimM);r.rotation.x=Math.PI/2;g.add(r);const hub=new T.Mesh(new T.CylinderGeometry(.1,.1,.4,10),M(0x5a6068,{metalness:.8,roughness:.3}));hub.rotation.x=Math.PI/2;g.add(hub);for(let k=0;k<5;k++){const sp=box(.09,.34,.05,M(0x8a95a3,{metalness:.8,roughness:.25}),0,0,.18,false);sp.rotation.z=k/5*Math.PI*2;g.add(sp)}}
+   else{const d=new T.Mesh(new T.CircleGeometry(.44,20),M(0x2a2c31));d.position.z=.2;g.add(d)}
    g.position.set(x,y,z);g.rotation.set(rx||0,ry||0,0);R.add(g);return g};
   for(let c=0;c<8;c++)for(let r=0;r<4;r++)tyre(-24+c*1.8,.95+r*1.7,-10.2,0,0,r===3&&c%2===0);
   // tyre stacks, tire changer, wheel balancer and alignment computer
