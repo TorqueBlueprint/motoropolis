@@ -436,7 +436,7 @@ const MILESTONES=[
  {n:1000,type:'pista',label:'Race track'}
 ];
 const MS={};for(const m of MILESTONES)MS[m.type]=m;
-const MAXCARS=60;
+const MAXCARS=WORLD?400:150; // 1 subscriber = 1 car (up to what the streets can hold)
 let subs=null;
 const isOpen=type=>subs!==null&&subs>=MS[type].n;
 // world test page: extra unlocks outside the core city
