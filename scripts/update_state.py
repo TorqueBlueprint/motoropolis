@@ -9,7 +9,8 @@ HANDLE = os.environ.get("YT_HANDLE", "TorqueBlueprint")
 MAX_VIDEOS = 50
 MAX_NAME = 24
 ROLE_MAP = {"police": "police", "cop": "police", "officer": "police", "thief": "thief", "robber": "thief",
-            "lawyer": "lawyer", "attorney": "lawyer", "judge": "judge"}
+            "lawyer": "lawyer", "attorney": "lawyer", "judge": "judge", "busdriver": "bus", "bus": "bus"}
+WORKSHOP_RE = re.compile(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(police|cop|officer|thief|robber|lawyer|attorney|judge|bus[\s_-]*driver|bus)?", re.I)
 STATE = os.path.join(os.path.dirname(__file__), "..", "state.json")
 
 
@@ -46,7 +47,7 @@ def main():
     for vid in vids:
         token = None
         while True:
-            params = dict(part="snippet", videoId=vid, maxResults=100, textFormat="plainText")
+            params = dict(part="snippet,replies", videoId=vid, maxResults=100, textFormat="plainText")
             if token:
                 params["pageToken"] = token
             try:
@@ -55,22 +56,31 @@ def main():
                 print("skip", vid, e)
                 break
             for th in res.get("items", []):
-                top = th["snippet"]["topLevelComment"]["snippet"]
-                m = re.search(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(police|cop|officer|thief|robber|lawyer|attorney|judge)?", top.get("textDisplay", ""), re.I)
-                if not m:
-                    continue
-                if top.get("authorChannelId", {}).get("value") == ch["id"]:
-                    continue  # skip the channel's own comments
-                nm = top.get("authorDisplayName", "").lstrip("@").strip()[:MAX_NAME]
-                if nm and nm.lower() not in seen:
-                    names.append(nm)
-                    seen.add(nm.lower())
-                if nm and m.group(1):
-                    role = ROLE_MAP[m.group(1).lower()]
-                    # comments come newest first, so the first role seen in this run is the latest choice
-                    if nm not in got_role:
-                        roles[nm] = role
-                        got_role.add(nm)
+                # the comment itself plus its replies (people often answer under another comment)
+                snips = [th["snippet"]["topLevelComment"]["snippet"]]
+                rep = th.get("replies", {}).get("comments", [])
+                if th["snippet"].get("totalReplyCount", 0) > len(rep):
+                    try:
+                        rep = api("comments", part="snippet", parentId=th["id"], maxResults=100, textFormat="plainText").get("items", [])
+                    except Exception as e:
+                        print("replies skip", e)
+                snips += [r["snippet"] for r in reversed(rep)]  # newest reply first
+                for top in snips:
+                    m = WORKSHOP_RE.search(top.get("textDisplay", ""))
+                    if not m:
+                        continue
+                    if top.get("authorChannelId", {}).get("value") == ch["id"]:
+                        continue  # skip the channel's own comments
+                    nm = top.get("authorDisplayName", "").lstrip("@").strip()[:MAX_NAME]
+                    if nm and nm.lower() not in seen:
+                        names.append(nm)
+                        seen.add(nm.lower())
+                    if nm and m.group(1):
+                        role = ROLE_MAP[re.sub(r"[\s_-]+", "", m.group(1).lower())]
+                        # comments come newest first, so the first role seen in this run is the latest choice
+                        if nm not in got_role:
+                            roles[nm] = role
+                            got_role.add(nm)
             token = res.get("nextPageToken")
             if not token:
                 break
