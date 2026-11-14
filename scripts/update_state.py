@@ -56,7 +56,7 @@ def main():
                 break
             for th in res.get("items", []):
                 top = th["snippet"]["topLevelComment"]["snippet"]
-                m = re.search(r"\bworkshop\b[\s:,.!-]*(police|cop|officer|thief|robber|lawyer|attorney|judge)?", top.get("textDisplay", ""), re.I)
+                m = re.search(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(police|cop|officer|thief|robber|lawyer|attorney|judge)?", top.get("textDisplay", ""), re.I)
                 if not m:
                     continue
                 if top.get("authorChannelId", {}).get("value") == ch["id"]:
