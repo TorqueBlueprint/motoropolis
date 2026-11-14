@@ -2165,7 +2165,7 @@ function make3D(T,X){
   const S=IN.scene;S.background=new T.Color(0x0b1626);S.fog=new T.Fog(0x0b1626,70,140);
   S.add(new T.HemisphereLight(0xdfe9ff,0x2a2f38,.75));
   const key=new T.DirectionalLight(0xfff3e0,1.6);key.position.set(14,26,22);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-32,right:32,top:20,bottom:-20,near:2,far:80});key.shadow.bias=-.0006;S.add(key);
-  const RW=56,RD=24,RH=9,X0=-RW/2,Z0=-RD/2;
+  const RW=56,RD=24,RH=14,X0=-RW/2,Z0=-RD/2;
   const add=(o)=>{S.add(o);return o};
   const B2=(w,h,d,m,x,y,z,cast)=>add(box(w,h,d,m,x,y,z,cast));
   // floor with painted bays
@@ -2176,13 +2176,14 @@ function make3D(T,X){
   const wallM=M(0x1d3b5c,{roughness:.9}),wallM2=M(0x16304d,{roughness:.9});
   B2(RW,RH,.5,wallM,0,0,Z0,true);B2(.5,RH,RD,wallM2,X0,0,0,true);B2(.5,RH,RD,wallM2,-X0,0,0,true);
   for(let y=1;y<RH;y+=1.2)B2(RW-.2,.05,.05,M(0x24476d),0,y,Z0+.3,false);
-  B2(RW,.5,.6,M(0xff7a1a),0,RH-1.6,Z0+.5,false);
+  B2(RW,.5,.6,M(0xff7a1a),0,RH-3.1,Z0+.5,false);
   // ceiling beams + lamps
   const lampM=M(0xfff6d6,{emissive:0xfff6d6,emissiveIntensity:1.2});
   for(let k=0;k<5;k++){const x=-16+k*8;const pl=new T.PointLight(0xfff1d0,40,22,1.6);pl.position.set(x,RH-1,-2);add(pl)}
   // big sign + wall of mechanics
-  add(sign('TORQUEBLUEPRINT REPAIR SHOP',22,2,'#ff7a1a','#1d0f02',0,RH-2.8,Z0+.4,0));
-  IN.board=new T.Group();IN.board.position.set(-15,4.2,Z0+.45);add(IN.board);IN.boardKey='';
+  add(sign('TORQUEBLUEPRINT REPAIR SHOP',22,2,'#ff7a1a','#1d0f02',0,RH-1.5,Z0+.4,0));
+  // the wall of mechanics runs along the back wall above the lifts, so nothing stands in front of it
+  IN.board=new T.Group();IN.board.position.set(0,7.75,Z0+.45);add(IN.board);IN.boardKey='';
   // lifts (one per city lift slot)
   for(let k=0;k<5;k++){const x=-16+k*8,g=new T.Group();g.position.set(x,0,-2);
    for(const dx of[-2.6,2.6]){g.add(box(.55,5.2,.55,mat.yellow,dx,0,0));g.add(box(.9,.15,.9,mat.dark,dx,0,0,false))}
@@ -2208,18 +2209,24 @@ function make3D(T,X){
    gear(5000,'DYNO',()=>{const g=G();g.add(box(4.6,.3,2.4,mat.dark,0,0,0));for(const dz of[-.6,.6]){const r=new T.Mesh(new T.CylinderGeometry(.35,.35,2,16),mat.chrome);r.rotation.x=Math.PI/2;r.position.set(dz*2.2,.35,0);g.add(r)}g.add(box(.2,2.4,.2,mat.dark,3,0,-1.4));g.add(box(1.6,1,.15,M(0x071a2d,{emissive:0x3ee08f,emissiveIntensity:.4}),3,2.4,-1.4,false));return g},22,4)];
   IN.built=true;
  }
- function boardTex(names){const c=document.createElement('canvas');c.width=1024;c.height=640;const x=c.getContext('2d');x.fillStyle='#5a3d22';x.fillRect(0,0,1024,640);
-  x.fillStyle='rgba(0,0,0,.35)';for(let i=12;i<1024;i+=22)for(let j=12;j<640;j+=22){x.beginPath();x.arc(i,j,2.5,0,Math.PI*2);x.fill()}
-  x.fillStyle='#ffd34d';x.fillRect(212,18,600,74);x.fillStyle='#071a2d';x.font="800 50px 'Barlow Condensed','Arial Narrow',sans-serif";x.textAlign='center';x.textBaseline='middle';x.fillText('WALL OF MECHANICS',512,57);
-  const shown=names.slice(0,16);if(!shown.length){x.fillStyle='#eef3fb';x.font="700 44px 'Barlow Condensed',sans-serif";x.fillText('Comment WORKSHOP to get your name here',512,360)}
-  shown.forEach((n,i)=>{const col=i%2,row=Math.floor(i/2);const px=40+col*482,py=118+row*62;x.fillStyle='#e9b531';x.fillRect(px,py,462,50);x.fillStyle='#2b1f05';x.font="800 34px 'Barlow Condensed',sans-serif";x.fillText(n.length>22?n.slice(0,21)+'…':n,px+231,py+27)});
-  if(names.length>16){x.fillStyle='#ffd34d';x.font="800 30px 'Barlow Condensed',sans-serif";x.fillText(`+${names.length-16} more mechanics`,512,618)}
+ const BOARD_ROWS=5,BOARD_COLS=14,BOARD_PER=BOARD_ROWS*BOARD_COLS;
+ function boardTex(names,page,pages){const W=4096,H=448,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.fillStyle='#5a3d22';x.fillRect(0,0,W,H);
+  x.fillStyle='rgba(0,0,0,.35)';for(let i=14;i<W;i+=26)for(let j=14;j<H;j+=26){x.beginPath();x.arc(i,j,3,0,Math.PI*2);x.fill()}
+  x.textAlign='center';x.textBaseline='middle';x.fillStyle='#ffd34d';x.fillRect(W/2-560,10,1120,62);x.fillStyle='#071a2d';x.font="800 50px 'Barlow Condensed','Arial Narrow',sans-serif";x.fillText(`WALL OF MECHANICS · ${names.length} IN THE CITY`,W/2,42);
+  if(pages>1){x.fillStyle='#ffd34d';x.font="800 34px 'Barlow Condensed',sans-serif";x.textAlign='right';x.fillText(`PAGE ${page+1}/${pages}`,W-30,42);x.textAlign='center'}
+  if(!names.length){x.fillStyle='#eef3fb';x.font="700 64px 'Barlow Condensed',sans-serif";x.fillText('Comment WORKSHOP to get your name here',W/2,260);}
+  const shown=names.slice(page*BOARD_PER,(page+1)*BOARD_PER),n=shown.length;
+  const cols=Math.max(1,Math.min(BOARD_COLS,Math.ceil(n/BOARD_ROWS))),rows=Math.min(BOARD_ROWS,Math.max(1,Math.ceil(n/cols))),gw=(W-40)/cols,gh=(H-96)/BOARD_ROWS;
+  const font=Math.min(56,gh*.62,gw/7.5);
+  shown.forEach((nm,i)=>{const col=Math.floor(i/rows),row=i%rows;const px=20+col*gw+6,py=86+row*gh+5,w=gw-12,h=gh-10;x.fillStyle='#e9b531';x.fillRect(px,py,w,h);x.fillStyle='rgba(0,0,0,.18)';x.fillRect(px,py+h-5,w,5);
+   x.fillStyle='#2b1f05';let f=font;x.font=`800 ${f}px 'Barlow Condensed','Arial Narrow',sans-serif`;while(x.measureText(nm).width>w-16&&f>18){f-=2;x.font=`800 ${f}px 'Barlow Condensed','Arial Narrow',sans-serif`}
+   let t=nm;while(x.measureText(t).width>w-16&&t.length>4)t=t.slice(0,-2)+'…';x.fillText(t,px+w/2,py+h/2+2)});
   const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return t}
  function syncInterior(dt){
   const sv=subs||0;
   // wall of mechanics
-  const key=WALL.join('|');if(key!==IN.boardKey){IN.boardKey=key;while(IN.board.children.length)IN.board.remove(IN.board.children[0]);
-   IN.board.add(box(12.4,8,.3,mat.dark,0,-4,0,false));const pm2=new T.Mesh(new T.PlaneGeometry(12,7.5),new T.MeshStandardMaterial({map:boardTex(WALL),roughness:.8}));pm2.position.z=.2;IN.board.add(pm2)}
+  const pages=Math.max(1,Math.ceil(WALL.length/BOARD_PER)),page=Math.floor(simTime/8)%pages;const key=WALL.join('|')+'#'+page;if(key!==IN.boardKey){IN.boardKey=key;while(IN.board.children.length){const o=IN.board.children[0];IN.board.remove(o);if(o.material&&o.material.map){o.material.map.dispose();o.material.dispose()}}
+   IN.board.add(box(44.8,5,.3,mat.dark,0,-2.5,0,false));const pm2=new T.Mesh(new T.PlaneGeometry(44,4.8),new T.MeshStandardMaterial({map:boardTex(WALL,page,pages),roughness:.8}));pm2.position.z=.2;IN.board.add(pm2)}
   // bolts, crates, pallets
   const nb=sv%100;if(nb!==IN.boltN){IN.boltN=nb;if(IN.bolts)IN.scene.remove(IN.bolts);const im=new T.InstancedMesh(IN.boltGeo,IN.boltMat,Math.max(1,nb));const o=new T.Object3D();
    for(let i=0;i<nb;i++){const a=i*2.399,r=.62*Math.sqrt((i%9+.5)/9);o.position.set(-23+Math.cos(a)*r,1.82+Math.floor(i/9)*.1,-8.5+Math.sin(a)*r);o.rotation.set(Math.random()*.4,a,0);o.updateMatrix();im.setMatrixAt(i,o.matrix)}
