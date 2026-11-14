@@ -14,7 +14,7 @@ banner = ('<div style="position:sticky;top:0;z-index:50;background:#2f6fd9;color
           '<a style="color:#ffd34d" href="./">real subs</a></div>')
 s = s.replace("<body>", "<body>" + banner, 1)
 s = s.replace("all the way to a race track at 1,000.", "all the way to a fire station, an airport and a Grand Prix at 10,000.", 1)
-s = s.replace(".screen{position:relative;width:100%;max-width:100%;aspect-ratio:1920/1380;", ".screen{position:relative;width:100%;max-width:100%;aspect-ratio:2560/2020;", 1)
+s = s.replace(".screen{position:relative;width:100%;max-width:100%;aspect-ratio:1920/1380;", ".screen{position:relative;width:100%;max-width:100%;aspect-ratio:3400/2580;", 1)
 os.makedirs(os.path.join(ROOT, "world"), exist_ok=True)
 open(os.path.join(ROOT, "world", "index.html"), "w", encoding="utf-8").write(s)
 print("world/index.html built", len(s))
