@@ -1636,7 +1636,8 @@ for(let k=0;k<26;k++)mkPed(null,k+WALL.length);
 // strollers and joggers on the loop path of Motoropolis Park
 const PARK_LOOP=(()=>{const b=B.park;return{x0:b.x0+26,y0:b.y0+26,x1:b.x1-26,y1:b.y1-26}})();
 for(let k=0;k<9;k++){const p=mkPed(null,k+90);p.loop={...PARK_LOOP};p.s=k*140;p.v=(k%3===0?rr(26,32):rr(8,12))*(k%2?-1:1);Object.assign(p,pedPos(p))}
-function parkRanger(){const n=staffOf('park','Park Ranger',0);if(!n)return;const p=peds.find(q=>q.name===n);if(p&&p.loop.x0!==PARK_LOOP.x0){p.loop={...PARK_LOOP};p.col='#2e7d4f';Object.assign(p,pedPos(p))}}
+function parkRanger(){for(const q of peds){if(q.name&&jobOf(q.name)==='Homeless'&&q.loop.x0!==PARK_LOOP.x0){q.loop={...PARK_LOOP};q.v=rr(4,6)*(R()<.5?-1:1);q.col='#7a6a55';Object.assign(q,pedPos(q))}}
+ const n=staffOf('park','Park Ranger',0);if(!n)return;const p=peds.find(q=>q.name===n);if(p&&p.loop.x0!==PARK_LOOP.x0){p.loop={...PARK_LOOP};p.col='#2e7d4f';Object.assign(p,pedPos(p))}}
 function stepPeds(dt){for(const p of peds){
  if(p.pause>0){p.pause-=dt;continue}
  if(R()<dt*.025)p.pause=rr(1.5,4);
@@ -1651,6 +1652,7 @@ function assignJobs(){const slots=[];for(const m of ALL_MS){if(!isOpen(m.type))c
  for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k});
  const nj={},used=new Set(),want={police:['Police Officer','Detective'],lawyer:['Lawyer'],judge:['Judge','Lawyer'],bus:['Bus Driver']};
  for(const n of WALL){const r=ROLE_OF(n);if(!want[r])continue;const i=slots.findIndex((q,k)=>!used.has(k)&&want[r].includes(q.title));if(i>=0){nj[n]=slots[i];used.add(i)}}
+ {let h=0;for(const n of WALL)if(ROLE_OF(n)==='homeless')nj[n]={b:'park',title:'Homeless',k:h++,free:1}}
  let k=0;for(const n of WALL){if(nj[n]||ROLE_OF(n)==='thief')continue;while(k<slots.length&&used.has(k))k++;if(k>=slots.length)break;nj[n]=slots[k];used.add(k);k++}
  JOBS=nj;const sig=WALL.length+'|'+slots.length+'|'+Object.keys(ROLES).length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs();renderCrime()}}
 function JOB_SLOTS(){let n=0;for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];for(const m of ALL_MS)if(isOpen(m.type))for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];return n}
@@ -2098,7 +2100,7 @@ function make3D(T,X){
  function personMesh0(col,skin,hair){const g=new T.Group();const legs=[];for(const dx of[-.11,.11]){const l=new T.Mesh(PG.leg,pm('#2c3442'));l.position.set(dx,.5,0);l.castShadow=true;g.add(l);legs.push(l)}
   const b=new T.Mesh(PG.body,pm(col));b.position.y=1.02;b.castShadow=true;g.add(b);const h=new T.Mesh(PG.head,pm(skin));h.position.y=1.52;h.castShadow=true;g.add(h);const hr=new T.Mesh(PG.hair,pm(hair));hr.position.y=1.56;g.add(hr);
   g.userData.legs=legs;return g}
- const JOBCOL={'Mechanic':'#1d4fb8','Receptionist':'#1d4fb8','Tow Truck Driver':'#f2a51a','Dispatcher':'#f2a51a','Inspector':'#e8b931','Crusher Operator':'#e8b931','Police Officer':'#141a28','Detective':'#141a28','Lawyer':'#22252b','Judge':'#22252b','Car Salesman':'#22252b','Park Ranger':'#2e7d4f','Newspaper Vendor':'#2e7d4f','Cashier':'#d93a2f','Fuel Attendant':'#d93a2f'};
+ const JOBCOL={'Homeless':'#7a6a55','Mechanic':'#1d4fb8','Receptionist':'#1d4fb8','Tow Truck Driver':'#f2a51a','Dispatcher':'#f2a51a','Inspector':'#e8b931','Crusher Operator':'#e8b931','Police Officer':'#141a28','Detective':'#141a28','Lawyer':'#22252b','Judge':'#22252b','Car Salesman':'#22252b','Park Ranger':'#2e7d4f','Newspaper Vendor':'#2e7d4f','Cashier':'#d93a2f','Fuel Attendant':'#d93a2f'};
  const pedMeshes=peds.map(p=>{const jc=X&&p.name&&jobOf(p.name)?JOBCOL[jobOf(p.name)]:null;const g=personMesh(jc||p.col,p.skin,p.hair);g.scale.setScalar(p.name?1.08:1);scene.add(g);return g});
  const mech=[];for(let k=0;k<5;k++){const g=personMesh('#1d4fb8','#f0c9a0','#2b1d14');g.visible=false;scene.add(g);mech.push(g)}
  function syncPeople(){
