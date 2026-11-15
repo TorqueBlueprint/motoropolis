@@ -41,7 +41,7 @@ def main():
     names = list(state.get("names", []))
     seen = {n.lower() for n in names}
     roles = dict(state.get("roles", {}))
-    got_role = set()
+    latest = {}  # name -> (time, role) of their newest WORKSHOP <role> comment
     uploads = ch["contentDetails"]["relatedPlaylists"]["uploads"]
     vids = [i["contentDetails"]["videoId"] for i in api("playlistItems", part="contentDetails", playlistId=uploads, maxResults=MAX_VIDEOS).get("items", [])]
     for vid in vids:
@@ -77,13 +77,15 @@ def main():
                         seen.add(nm.lower())
                     if nm and m.group(1):
                         role = ROLE_MAP[re.sub(r"[\s_-]+", "", m.group(1).lower())]
-                        # comments come newest first, so the first role seen in this run is the latest choice
-                        if nm not in got_role:
-                            roles[nm] = role
-                            got_role.add(nm)
+                        # the most recent comment wins, across every video (an edited comment counts from its edit time)
+                        when = top.get("updatedAt") or top.get("publishedAt") or ""
+                        if nm not in latest or when > latest[nm][0]:
+                            latest[nm] = (when, role)
             token = res.get("nextPageToken")
             if not token:
                 break
+    for nm, (_, role) in latest.items():
+        roles[nm] = role
 
     # public subscribers (needs the channel owner's OAuth refresh token)
     cid, csec, rtok = (os.environ.get(k, "").strip() for k in ("YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN"))
