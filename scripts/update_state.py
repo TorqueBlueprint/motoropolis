@@ -8,9 +8,22 @@ KEY = os.environ.get("YT_API_KEY", "").strip()
 HANDLE = os.environ.get("YT_HANDLE", "TorqueBlueprint")
 MAX_VIDEOS = 50
 MAX_NAME = 24
-ROLE_MAP = {"police": "police", "cop": "police", "officer": "police", "thief": "thief", "robber": "thief",
-            "lawyer": "lawyer", "attorney": "lawyer", "judge": "judge", "busdriver": "bus", "bus": "bus", "homeless": "homeless", "taxi": "taxi", "garbage": "garbage"}
-WORKSHOP_RE = re.compile(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(police|cop|officer|thief|robber|lawyer|attorney|judge|bus[\s_-]*driver|bus|homeless|taxi|garbage)?", re.I)
+# every city job can be picked with "WORKSHOP <job>"; the newest comment wins
+JOB_TITLES = ['Bus Driver', 'Taxi Driver', 'Garbage Truck Driver', 'Garbage Collector', 'Reporter', 'Newspaper Vendor', 'Park Ranger', 'Detective', 'Court Clerk', 'Mechanic', 'Receptionist', 'Tow Truck Driver', 'Dispatcher', 'Cashier', 'Fuel Attendant', 'Tire Technician', 'Wash Attendant', 'Inspector', 'Parking Attendant', 'Warehouse Worker', 'Parts Van Driver', 'Car Salesman', 'Crusher Operator', 'Assembly Worker', 'Race Driver', 'Pit Crew', 'Real Estate Agent', 'Firefighter', 'Fire Chief', 'Doctor', 'Paramedic', 'Nurse', 'Footballer', 'Coach', 'Shopkeeper', 'Security Guard', 'Train Driver', 'Station Master', 'Toll Operator', 'Pilot', 'Air Traffic Controller', 'Flight Attendant', 'Event Host', 'DJ', 'Ship Captain', 'Crane Operator', 'Mayor', 'Architect', 'GP Driver']
+ROLE_MAP = {"police": "police", "cop": "police", "officer": "police", "policeofficer": "police", "thief": "thief", "robber": "thief",
+            "lawyer": "lawyer", "attorney": "lawyer", "judge": "judge", "bus": "bus", "busdriver": "bus", "homeless": "homeless",
+            "taxi": "taxi", "taxidriver": "taxi", "garbage": "garbage"}
+for _t in JOB_TITLES:
+    ROLE_MAP.setdefault(re.sub(r"[^a-z]", "", _t.lower()), re.sub(r"[^a-z]", "", _t.lower()))
+ROLE_MAP.update({"tow": "towtruckdriver", "towtruck": "towtruckdriver", "towdriver": "towtruckdriver", "tire": "tiretechnician", "tyre": "tiretechnician",
+                 "tiretech": "tiretechnician", "tyretechnician": "tiretechnician", "wash": "washattendant", "carwash": "washattendant",
+                 "salesman": "carsalesman", "carseller": "carsalesman", "carsales": "carsalesman", "racer": "racedriver", "fireman": "firefighter",
+                 "doc": "doctor", "journalist": "reporter", "garbageman": "garbagecollector", "captain": "shipcaptain", "f1driver": "gpdriver",
+                 "trucker": "garbagetruckdriver", "security": "securityguard", "guard": "securityguard", "clerk": "courtclerk", "parker": "parkingattendant",
+                 "ranger": "parkranger", "realtor": "realestateagent", "stewardess": "flightattendant", "steward": "flightattendant"})
+_alts = sorted(ROLE_MAP, key=len, reverse=True)
+_pat = "|".join(r"[\s_-]?".join(re.escape(ch) for ch in a) for a in _alts)
+WORKSHOP_RE = re.compile(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(?:as\s+(?:an?\s+)?|an?\s+)?(" + _pat + r")?(?![a-z])", re.I)
 STATE = os.path.join(os.path.dirname(__file__), "..", "state.json")
 
 
