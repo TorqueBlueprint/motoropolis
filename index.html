@@ -207,7 +207,7 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
   </section>
   <div class="screen" id="screen">
     <canvas id="city" width="1920" height="1380" aria-label="Live map of the city of Motoropolis"></canvas>
-    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button></div>
+    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button></div>
     <p class="v-msg" id="vMsg" hidden="" aria-live="polite"></p>
   </div>
   <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click any building to step inside it in 3D (locked ones show a blueprint preview).</p>
@@ -281,7 +281,9 @@ const APP0=document.getElementById('app').innerHTML;
 const CSS0=document.getElementById('css').textContent;
 const SRC0=document.currentScript.textContent;
 const HEAD_TOP="<title>Motoropolis by TorqueBlueprint</title>\n<meta name=\"claude:viewport-fit-sides\" content=\"cover\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap\">";
-const WORLD=document.documentElement.dataset.world!=='0';const CW=WORLD?3640:1920,CH=WORLD?1980:1380,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
+const WORLD=document.documentElement.dataset.world!=='0';
+// graphics quality: high / medium / low. Phones start on medium, computers on high; the viewer's choice is remembered.
+const QUAL=(()=>{let q=null;try{q=localStorage.getItem('mtp-quality')}catch(e){}if(q==='high'||q==='medium'||q==='low')return q;const phone=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<760;return phone?'medium':'high'})();const CW=WORLD?3640:1920,CH=WORLD?1980:1380,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
 const REMAKE=document.documentElement.dataset.remake!=='0';
 const CANAL_I=REMAKE&&!WORLD?2:-1;const ROUND_IJ=REMAKE?[[1,1],[3,3],[1,3]]:[];
 const XS=WORLD?[100,530,960,1390,1820,2250,2680,3110,3540]:[100,530,960,1390,1820],YS=WORLD?[100,400,700,1000,1300,1600,1900]:[100,400,700,1000,1300],NX=XS.length,NY=YS.length,GAPX=0,GAPY=0;
@@ -1730,8 +1732,8 @@ screenEl.insertBefore(hud,C.nextSibling);screenEl.insertBefore(c3,hud);
 const hctx=hud.getContext('2d');
 function hasGL(){try{const t=document.createElement('canvas');return !!(window.WebGLRenderingContext&&(t.getContext('webgl2')||t.getContext('webgl')))}catch(e){return false}}
 function make3D(T,X){
- const renderer=new T.WebGLRenderer({canvas:c3,antialias:true,powerPreference:'high-performance'});
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.outputColorSpace=T.SRGBColorSpace;
+ const renderer=new T.WebGLRenderer({canvas:c3,antialias:QUAL!=='low',powerPreference:'high-performance'});
+ renderer.shadowMap.enabled=QUAL!=='low';renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.outputColorSpace=T.SRGBColorSpace;
  const scene=new T.Scene();const camera=new T.PerspectiveCamera(34,16/9,1,WORLD?3400:1600);
  const U=v=>v/10,XS3=XS.map(U),YS3=YS.map(U),H3=U(HALF),CX=U(CW/2),CZ=U((YS[0]+YS[NY-1])/2);
  const M=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.85,metalness:0},o||{}));
@@ -2147,7 +2149,7 @@ function make3D(T,X){
    if(sx>8){const v=new T.Mesh(new T.CylinderGeometry(.14,.14,1.1,8),mat.grey);v.position.set(o.position.x+sx*.36,top+.55,o.position.z-sz*.3);add.push([o.parent,v]);add.push([o.parent,box(sx*.3,.06,.06,mat.grey,o.position.x-sx*.15,top+.08,o.position.z+sz*.38,false)])}});
   for(const[p,a]of add)p.add(a)}
  if(X){
-  sun.shadow.mapSize.set(4096,4096);
+  sun.shadow.mapSize.set(QUAL==='high'?4096:QUAL==='medium'?2048:1024,QUAL==='high'?4096:QUAL==='medium'?2048:1024);
   worldMap(mat.asphalt,canvasTex(256,(x,s)=>{noise(x,s,'#34373e',5200,'#2b2e34','#41454d');x.strokeStyle='rgba(20,22,26,.6)';x.lineWidth=1;for(let k=0;k<5;k++){x.beginPath();let px=Math.random()*s,py=Math.random()*s;x.moveTo(px,py);for(let q=0;q<6;q++){px+=Math.random()*30-15;py+=Math.random()*30-15;x.lineTo(px,py)}x.stroke()}}),.06);
   const concrete=(base,a,b)=>canvasTex(256,(x,s)=>{noise(x,s,base,3800,a,b);x.strokeStyle='rgba(0,0,0,.13)';x.lineWidth=2;for(let k=0;k<=s;k+=64){x.beginPath();x.moveTo(k,0);x.lineTo(k,s);x.stroke();x.beginPath();x.moveTo(0,k);x.lineTo(s,k);x.stroke()}});
   worldMap(mat.pad,concrete('#d8d2c5','#cdc6b8','#e2ddd1'),.09);worldMap(mat.curb,concrete('#c4bdb0','#b8b1a3','#cfc9bd'),.12);
@@ -2945,7 +2947,7 @@ function make3D(T,X){
   const AMBK=X&&X.cars?MODELS.filter(m=>m.glb&&X.cars[m.glb]):[],AMBB=X&&X.cars?['van','garbage','tow'].filter(k=>X.cars[k]):[];
   function mkCar(col,g,big){if(AMBK.length){let c;if(big&&AMBB.length){const k=AMBB[Math.floor(rnd()*AMBB.length)];c=glbCar({len:{van:38,garbage:62,tow:46}[k],color:col},k)}else{const m=AMBK[Math.floor(rnd()*AMBK.length)];c=glbCar({len:m.len,color:m.taxi?'#f2b81d':col},m.glb)}c.scale.multiplyScalar(1.25);(g||root).add(c);return c}
    const c=new T.Group();const b=new T.Mesh(carBody,colMat(col));b.castShadow=true;c.add(b);const k=new T.Mesh(carCab,mat.carGlass);c.add(k);if(big)c.scale.set(1.2,1.5,2);(g||root).add(c);return c}
-  function traffic(P,closed,n,speed,g,both,list,rig){const p=mkPath(P,closed);for(let k=0;k<n;k++){for(const dir of both?[1,-1]:[1]){const car={p,s:(k+rnd()*.5)/n*p.len,v:speed*(.85+rnd()*.3),dir,off:dir>0?2:-2,g:mkCar(CCOL[Math.floor(rnd()*CCOL.length)],g,rnd()<.12),rig};(list||W3.cars).push(car)}}}
+  function traffic(P,closed,n,speed,g,both,list,rig){const p=mkPath(P,closed);n=Math.max(1,Math.round(n*(QUAL==='high'?1:QUAL==='medium'?.6:.3)));for(let k=0;k<n;k++){for(const dir of both?[1,-1]:[1]){const car={p,s:(k+rnd()*.5)/n*p.len,v:speed*(.85+rnd()*.3),dir,off:dir>0?2:-2,g:mkCar(CCOL[Math.floor(rnd()*CCOL.length)],g,rnd()<.12),rig};(list||W3.cars).push(car)}}}
   traffic(RING,true,9,15,null,true);traffic(AVE,false,4,14,null,true);traffic(hline(230,-46,152),false,2,10,null,true);for(const x of conN)traffic(vline(x,-34,-150),false,2,12,null,true);traffic(hline(70,-30,-186),false,2,13,null,true);traffic(vline(-60,70,-154),false,2,12,null,true);traffic(hline(176,222,404),false,2,11,null,true);
   // ---- labels ----
   const lab=(t,x,z,y,type)=>W3.labels.push({t,x,z,y:y||8,type});
@@ -3104,7 +3106,7 @@ function make3D(T,X){
   for(const m of trunks){m.updateMatrixWorld(true);if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();const by=m.geometry.boundingBox.min.y;for(let i=0;i<m.count;i++){m.getMatrixAt(i,_tm);_tm.premultiply(m.matrixWorld);_tm.decompose(_tp,_tq,_ts);const k=key(_tp.x,_tp.z),y=_tp.y+by*_ts.y;if(!tb.has(k)||tb.get(k)>y)tb.set(k,y)}}
   const BRD=X.trees.filter(t=>!t.pine),PIN=X.trees.filter(t=>t.pine),poles=W3P.poles;
   for(const m of leaves){m.updateMatrixWorld(true);if(!m.geometry.boundingBox)m.geometry.computeBoundingBox();const top=m.geometry.boundingBox.max.y,pine=m.geometry.type==='ConeGeometry',pool=pine?PIN:BRD;
-   const stride=Math.max(1,Math.ceil(m.count/1400)),buckets=pool.map(()=>[]);let found=0;
+   const stride=Math.max(1,Math.ceil(m.count/(QUAL==='high'?1400:QUAL==='medium'?700:300))),buckets=pool.map(()=>[]);let found=0;
    for(let i=0;i<m.count;i++){m.getMatrixAt(i,_tm);_tm.premultiply(m.matrixWorld);_tm.decompose(_tp,_tq,_ts);const g=tb.get(key(_tp.x,_tp.z));if(g===undefined)continue;found++;if(i%stride)continue;
     let near=false;for(const q of poles)if(Math.abs(q[0]-_tp.x)<2.8&&Math.abs(q[1]-_tp.z)<2.8){near=true;break}if(near)continue;
     const H=Math.max(1.5,(_tp.y+top*_ts.y-g)*(stride>1?1.25:1.12)),h=Math.abs(Math.sin(_tp.x*12.9898+_tp.z*78.233)*43758.5);buckets[Math.floor(h%1*pool.length)].push([_tp.x,g,_tp.z,H,(h*7)%6.283])}
@@ -3115,7 +3117,7 @@ function make3D(T,X){
  // ---------- frame ----------
  let W0=0,H0=0;
  function resize(){const w=c3.clientWidth||screenEl.clientWidth,h=c3.clientHeight||screenEl.clientHeight;if(!w||!h)return;if(w===W0&&h===H0)return;W0=w;H0=h;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,w>1100?1.5:2));renderer.setSize(w,h,false);if(composer){composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h)}camera.aspect=w/h;camera.updateProjectionMatrix()}
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,QUAL==='low'?1:QUAL==='medium'?1.25:(w>1100?1.5:2)));renderer.setSize(w,h,false);if(composer){composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h)}camera.aspect=w/h;camera.updateProjectionMatrix()}
  if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe(screenEl);
  function frame(dt){if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,CW,CH);cur.labels()}
@@ -3128,7 +3130,9 @@ function make3D(T,X){
 }
 async function loadR3(){
  try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}
-  if(X){X.cars={};try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld=new GLTFLoader();
+  if(X){X.cars={};try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld0=new GLTFLoader();const GZ=typeof DecompressionStream!=='undefined';
+   // models are shipped twice: .glb.gz (about 2.5x smaller, unpacked in the browser) and plain .glb for older browsers
+   const ld={loadAsync:async u=>{if(GZ){try{const r=await fetch(u+'.gz');if(r.ok){const buf=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return await ld0.parseAsync(buf,u.slice(0,u.lastIndexOf('/')+1))}}catch(e){}}return ld0.loadAsync(u)}};
    try{const[SU,gm]=await Promise.all([import(ADDON('utils/SkeletonUtils.js')),ld.loadAsync(ASSET_BASE+'assets/people/man.glb')]);const bb=new T.Box3().setFromObject(gm.scene);X.man={scene:gm.scene,clone:SU.clone,h:bb.max.y-bb.min.y,y0:bb.min.y}}catch(e){console.warn('person model',e)}
    if(WORLD){try{const norm=sc=>{sc.updateMatrixWorld(true);let mesh=null;sc.traverse(o=>{if(o.isMesh&&!mesh)mesh=o});const g=mesh.geometry.clone().applyMatrix4(mesh.matrixWorld);g.computeBoundingBox();const b=g.boundingBox;return{g,m:mesh.material,b}};
      const tr=await Promise.all([1,2,3,4,5,6,7,8,9,10].map(n=>ld.loadAsync(ASSET_BASE+'assets/world/tree'+n+'.glb')));X.trees=tr.map((t,i)=>{const o=norm(t.scene),b=o.b,h=b.max.y-b.min.y;o.g.translate(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);o.g.scale(1/h,1/h,1/h);o.pine=[0,1,7,8].includes(i);return o});
@@ -3138,6 +3142,8 @@ async function loadR3(){
  catch(e){console.warn('3D view unavailable',e);R3=null;return null}
 }
 const vMsg=$('vMsg'),v3b=$('v3d'),v2b=$('v2d'),vRes=$('vReset');
+{const QN={high:'High',medium:'Medium',low:'Low'},QS={high:'HQ',medium:'MQ',low:'LQ'},ORD=['high','medium','low'];$('vQualT').textContent=QN[QUAL];$('vQualS').textContent=QS[QUAL];
+ $('vQual').addEventListener('click',()=>{const nx=ORD[(ORD.indexOf(QUAL)+1)%3];try{localStorage.setItem('mtp-quality',nx)}catch(e){}location.reload()})}
 function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function readStore(k){try{return localStorage.getItem(k)}catch(e){return null}}
 async function setView(want3d,save){
