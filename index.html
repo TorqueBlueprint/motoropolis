@@ -1798,9 +1798,22 @@ function make3D(T,X){
   const f3=new T.Mesh(new T.CylinderGeometry(.25,.4,1.6,10),pathM);f3.position.set(L.cx,Y0+1.2,L.cz);g.add(f3);const f4=new T.Mesh(new T.CylinderGeometry(.9,.5,.25,14),pathM);f4.position.set(L.cx,Y0+2,L.cz);g.add(f4);
   KQ.spray=new T.Mesh(new T.ConeGeometry(.8,1.3,14,1,true),M(0xbfe8ff,{transparent:true,opacity:.55,roughness:.1}));KQ.spray.position.set(L.cx,Y0+2.7,L.cz);g.add(KQ.spray);}
   for(const[x,z,r]of[[.07,.85,0],[.9,.5,Math.PI/2],[.6,.17,0],[.35,.75,0]]){const bx=L.x0+L.w*x,bz=L.z0+L.d*z;const bg=new T.Group();bg.add(box(2.4,.12,.7,benchM,0,.45,0));bg.add(box(2.4,.6,.1,benchM,0,.55,-.32));for(const dx of[-1,1])bg.add(box(.1,.45,.6,mat.dark,dx,0,0));bg.position.set(bx,Y0,bz);bg.rotation.y=r;g.add(bg)}
-  {const px=L.x0+L.w*.72,pz=L.z0+L.d*.72;g.add(box(7,.05,4.6,M(0xe6b25a),px+.8,Y0+.06,pz+1.6,false));
-   for(const dx of[-1.6,1.6])g.add(box(.18,2.6,.18,mat.red,px+dx,Y0,pz));g.add(box(3.6,.18,.18,mat.red,px,Y0+2.6,pz));for(const dx of[-.8,.8]){g.add(box(.04,1.8,.04,mat.dark,px+dx,Y0+.8,pz));g.add(box(.6,.08,.3,mat.blue,px+dx,Y0+.75,pz))}
-   const sl=box(.9,.12,3.4,mat.yellow,px+3.2,Y0+.9,pz+2.2);sl.rotation.x=.45;g.add(sl);g.add(box(1,1.8,1,mat.blue,px+3.2,Y0,pz+.2))}
+  // playground: swing set, slide tower with roof and ladder, spring rider and seesaw on a soft mat
+  {const px=L.x0+L.w*.72,pz=L.z0+L.d*.72;const red=mat.red,blue=mat.blue,yel=mat.yellow,steel=M(0x8a939c,{metalness:.5,roughness:.4});
+   const cyl=(r,h,m,x,y,z,rx,rz)=>{const c=new T.Mesh(new T.CylinderGeometry(r,r,h,8),m);c.position.set(x,y,z);c.rotation.set(rx||0,0,rz||0);c.castShadow=true;g.add(c);return c};
+   const matG=new T.Mesh(new T.BoxGeometry(7,.06,4.6),M(0xc0573e));matG.position.set(px+.8,Y0+.06,pz+1.6);matG.receiveShadow=true;g.add(matG);
+   // swing set: A-frames at both ends, top bar, two seats on chains
+   const sx=px-.2,sz=pz+.5;for(const dx of[-1.7,1.7])for(const dz of[-1,1])cyl(.07,2.85,red,sx+dx,Y0+1.35,sz+dz*.42,dz*.32,0);cyl(.08,3.6,red,sx,Y0+2.7,sz,0,Math.PI/2);
+   for(const dx of[-.75,.75]){for(const dd of[-.2,.2])cyl(.015,1.95,steel,sx+dx+dd,Y0+1.7,sz,0,0);g.add(box(.55,.07,.3,blue,sx+dx,Y0+.68,sz))}
+   // slide tower
+   const tx=px+3.1,tz=pz+.6;for(const dx of[-.55,.55])for(const dz of[-.55,.55])cyl(.07,2.7,blue,tx+dx,Y0+1.35,tz+dz,0,0);g.add(box(1.25,.12,1.25,yel,tx,Y0+1.45,tz));
+   for(const dx of[-.55,.55])g.add(box(.05,.45,1.1,red,tx+dx,Y0+1.57,tz-.05));g.add(box(1.1,.45,.05,red,tx,Y0+1.57,tz-.55));
+   const roof=new T.Mesh(new T.ConeGeometry(1.05,.9,4),red);roof.rotation.y=Math.PI/4;roof.position.set(tx,Y0+3.15,tz);roof.castShadow=true;g.add(roof);
+   for(const dz of[-.3,.3])cyl(.035,1.7,steel,tx-.8,Y0+.8,tz+dz,0,.25);for(let i=0;i<5;i++)cyl(.025,.6,steel,tx-.68-i*.08,Y0+.25+i*.3,tz,Math.PI/2,0);
+   const ch=new T.Group();ch.position.set(tx,Y0+1.45,tz+.62);ch.rotation.x=.62;g.add(ch);const sl=box(.85,.06,2.7,yel,0,0,1.35);ch.add(sl);for(const dx of[-.42,.42])ch.add(box(.06,.22,2.7,yel,dx,0,1.35));sl.castShadow=true;
+   // spring rider and seesaw
+   const rx=px-2.0,rz=pz+2.9;cyl(.1,.5,steel,rx,Y0+.3,rz,0,0);g.add(box(.35,.35,.85,M(0x3ee08f),rx,Y0+.55,rz));g.add(box(.28,.4,.28,M(0x3ee08f),rx,Y0+.85,rz+.42));g.add(box(.5,.05,.06,steel,rx,Y0+1.05,rz+.3));
+   const ssx=px+.9,ssz=pz+3.1;g.add(box(.25,.45,.25,steel,ssx,Y0,ssz));const pl=box(3.2,.08,.32,yel,0,0,0);pl.position.set(ssx,Y0+.5,ssz);pl.rotation.z=.16;g.add(pl);for(const dx of[-1.4,1.4]){const h=cyl(.03,.35,red,ssx+dx,Y0+.62+dx*.11,ssz,0,Math.PI/2);h.rotation.x=Math.PI/2}}
   const tl=[],lf=[],lc=[];for(const[x,z,s]of[[.04,.07,1.3],[.95,.08,1.4],[.05,.92,1.4],[.95,.92,1.3],[.12,.6,1.5],[.55,.8,1.2],[.82,.28,1.5],[.62,.22,1.1],[.2,.86,1.1],[.42,.08,1],[.9,.62,1.2]]){const x2=L.x0+L.w*x,z2=L.z0+L.d*z;tl.push([x2,Y0+.7*s,z2,0,0,0,s]);lf.push([x2,Y0+2.1*s,z2,.3,.6,0,s]);lc.push(['#4f8a3c','#3f7a34','#5c9445','#467f38'][Math.floor(rnd()*4)])}
   inst(new T.CylinderGeometry(.18,.25,1.4,6),mat.trunk,tl,true);inst(new T.IcosahedronGeometry(1.25,0),M(0xffffff,{flatShading:true}),lf,true,lc);
   g.add(sign('MOTOROPOLIS PARK',9,1.3,'#2e7d4f','#fff',L.cx,Y0+1.3,L.z0+.5,0));for(const dx of[-4.2,4.2])g.add(box(.2,1.4,.2,mat.dark,L.cx+dx,Y0,L.z0+.5));
@@ -3167,8 +3180,8 @@ function make3D(T,X){
     const r1=new T.Mesh(BOX,ribbon);r1.scale.set(s*1.02,s*.82,.09);r1.position.y=s*.4;g.add(r1);const r2=r1.clone();r2.scale.set(.09,s*.82,s*1.02);g.add(r2);
     g.position.set(Math.cos(a)*r,0,Math.sin(a)*r);g.rotation.y=a*1.7;gifts.add(g);XMS.giftPos.push([n,L.cx+Math.cos(a)*r,L.cz+Math.sin(a)*r,s])})}
   // Christmas market along the park's main path: eight stalls, each selling something different
-  const stallsAt=[[.22,.62],[.31,.62],[.40,.62],[.60,.38],[.69,.38],[.78,.38],[.22,.38],[.40,.38]];XMS.stalls=[];
-  const STRIPE=[0xd93a2f,0x2e7d4f,0x2f6fd9,0xd93a2f,0x8e44ad,0x2e7d4f,0xf2a51a,0xd93a2f],wood=M(0x8a5a32),wood2=M(0x6b4423),glow=new T.MeshBasicMaterial({color:0xffc56b,toneMapped:false}),gGreen=M(0x1f6b3a,{flatShading:true}),bowM=M(0xd93a2f);
+  const stallsAt=[[.217,.588],[.298,.588],[.723,.588],[.809,.588],[.723,.412],[.809,.412],[.434,.792]];XMS.stalls=[];
+  const STRIPE=[0xd93a2f,0x2e7d4f,0x2f6fd9,0xd93a2f,0x8e44ad,0x2e7d4f,0xf2a51a],wood=M(0x8a5a32),wood2=M(0x6b4423),glow=new T.MeshBasicMaterial({color:0xffc56b,toneMapped:false}),gGreen=M(0x1f6b3a,{flatShading:true}),bowM=M(0xd93a2f);
   const stallTops=[];
   stallsAt.forEach(([fx,fz],k)=>{const g=new T.Group(),x=L.x0+L.w*fx,z=L.z0+L.d*fz;g.position.set(x,Y,z);g.rotation.y=fz>.5?Math.PI:0;
    g.add(box(2.6,.95,1.3,wood,0,0,0));for(let i=0;i<5;i++)g.add(box(.04,.9,.02,wood2,-1.04+i*.52,.02,.66));g.add(box(2.75,.08,1.45,wood2,0,.95,0));
@@ -3189,12 +3202,11 @@ function make3D(T,X){
    for(const dx of[-1.25,1.25]){stallTops.push(g.localToWorld(new T.Vector3(dx,2.3,.8)))}});
   // strings of lights across the market, sagging between the stalls
   {const lb=[],lc=[];let n=0;const sag=(a,b)=>{const steps=Math.max(6,Math.round(a.distanceTo(b)/.35));for(let i=1;i<steps;i++){const t=i/steps,p=a.clone().lerp(b,t);p.y-=Math.sin(t*Math.PI)*.45;lb.push([p.x,p.y,p.z,.85]);lc.push(PAL[n++%PAL.length])}};
-   for(let k=0;k+3<stallTops.length;k+=2){sag(stallTops[k+1],stallTops[k+2])}
-   const row1=[0,1,2].map(k=>stallTops[k*2+1]),row2=[3,4,5].map(k=>stallTops[k*2]);for(let k=0;k<3;k++)if(row1[k]&&row2[2-k])sag(row1[k],row2[2-k]);
+   const T2=i=>stallTops[i*2],T1=i=>stallTops[i*2+1];sag(T1(0),T2(1));sag(T1(2),T2(3));sag(T1(4),T2(5));sag(T2(2),T2(4));sag(T1(3),T1(5));sag(T2(3),T1(4));
    XMS.lights=bulbs(lb,lc,bulbB)}
   // snowmen around the park
   const coal=M(0x1b1b1b),snowW=M(0xf6f9fc),carrot=M(0xf07a1a);
-  [[.08,.3,0.6],[.5,.92,3.1],[.92,.78,-2.2],[.3,.12,1.2],[.55,.55,2.5]].forEach(([fx,fz,ry],k)=>{const g=new T.Group();g.position.set(L.x0+L.w*fx,Y,L.z0+L.d*fz);g.rotation.y=ry;
+  [[.08,.3,0.6],[.5,.92,3.1],[.92,.78,-2.2],[.3,.12,1.2],[.62,.92,2.5]].forEach(([fx,fz,ry],k)=>{const g=new T.Group();g.position.set(L.x0+L.w*fx,Y,L.z0+L.d*fz);g.rotation.y=ry;
    [[.75,.7],[.55,1.75],[.38,2.55]].forEach(([r,y])=>{const b=new T.Mesh(new T.SphereGeometry(r,14,10),snowW);b.position.y=y;g.add(b)});
    const hat=new T.Mesh(new T.CylinderGeometry(.27,.27,.45,12),coal);hat.position.y=3.07;g.add(hat);const brim=new T.Mesh(new T.CylinderGeometry(.42,.42,.05,14),coal);brim.position.y=2.86;g.add(brim);g.add(box(.56,.07,.56,M([0xd93a2f,0x2e7d4f,0x2f6fd9][k%3]),0,2.92,0));
    const nose=new T.Mesh(new T.ConeGeometry(.07,.38,8),carrot);nose.rotation.x=Math.PI/2;nose.position.set(0,2.58,.52);g.add(nose);
@@ -3212,9 +3224,9 @@ function make3D(T,X){
     const wr=new T.Mesh(new T.TorusGeometry(.28,.09,6,12),gGreen);wr.position.set(0,2.35,.1);g.add(wr);g.add(box(.18,.16,.06,bowM,0,2.08,.18));scene.add(g)}}
   // snow on the benches, little lit pines and piles of presents by the stalls
   for(const[fx,fz,r]of[[.07,.85,0],[.9,.5,Math.PI/2],[.6,.17,0],[.35,.75,0]]){const s=box(2.3,.07,.62,snowW,0,0,0);s.position.set(L.x0+L.w*fx,Y+.57,L.z0+L.d*fz);s.rotation.y=r;scene.add(s)}
-  {const lb=[],lc=[];let n=0;for(const[fx,fz]of[[.16,.5],[.46,.5],[.54,.5],[.84,.5],[.16,.22],[.84,.8]]){const x=L.x0+L.w*fx,z=L.z0+L.d*fz;for(const[r,h,y]of[[.75,1.2,.2],[.55,1.0,.9],[.35,.8,1.5]]){const c=new T.Mesh(new T.ConeGeometry(r,h,8),gGreen);c.position.set(x,Y+y+h/2,z);c.castShadow=true;scene.add(c)}
+  {const lb=[],lc=[];let n=0;for(const[fx,fz]of[[.62,.75],[.92,.3],[.15,.75],[.5,.2],[.38,.82]]){const x=L.x0+L.w*fx,z=L.z0+L.d*fz;for(const[r,h,y]of[[.75,1.2,.2],[.55,1.0,.9],[.35,.8,1.5]]){const c=new T.Mesh(new T.ConeGeometry(r,h,8),gGreen);c.position.set(x,Y+y+h/2,z);c.castShadow=true;scene.add(c)}
     for(let i=0;i<14;i++){const u=i/14,a=i*2.4;lb.push([x+Math.cos(a)*(.7-u*.5),Y+.4+u*1.9,z+Math.sin(a)*(.7-u*.5),.7]);lc.push(PAL[n++%PAL.length])}}XMS.pineLights=bulbs(lb,lc,bulbA)}
-  stallsAt.forEach(([fx,fz],k)=>{if(k%2)return;const x=L.x0+L.w*fx+1.6,z=L.z0+L.d*fz+(fz>.5?-1.1:1.1);for(let i=0;i<3;i++){const s=.3+.1*((k+i)%3);const b=box(s,s*.8,s,M([0xd93a2f,0x2f6fd9,0x2e7d4f,0xffd34d][(k+i)%4]),x+(i%2)*.35,Y+(i===2?.32:0),z+(i>0?.3:0));b.castShadow=true;scene.add(b)}});
+  [[.867,.6],[.867,.4],[.49,.8]].forEach(([fx,fz],k)=>{const x=L.x0+L.w*fx,z=L.z0+L.d*fz;for(let i=0;i<3;i++){const sz=.3+.1*((k+i)%3);const b=box(sz,sz*.8,sz,M([0xd93a2f,0x2f6fd9,0x2e7d4f,0xffd34d][(k+i)%4]),x+(i%2)*.35,Y+(i===2?.32:0),z+(i>0?.3:0));b.castShadow=true;scene.add(b)}});
   // Santa's sleigh flies a loop over the city: modelled here in low poly (sleigh, Santa, presents, four reindeer)
   const sleigh=new T.Group();scene.add(sleigh);const XLEG=[];
   if(X&&X.xsl&&X.xrd){const A=new T.Group();sleigh.add(A);const sm=X.xsl.clone(true);A.add(sm);const sb=new T.Box3().setFromObject(sm),front=sb.max.z;const rb=new T.Box3().setFromObject(X.xrd),RS=.68,rlen=(rb.max.x-rb.min.x)*RS,GAP=.06,SP=.32;
