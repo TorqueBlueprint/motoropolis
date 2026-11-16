@@ -845,7 +845,7 @@ function shed(x,y,w,h,floor){g.fillStyle='rgba(0,0,0,.22)';g.fillRect(x+3,y+5,w+
  const sg=g.createLinearGradient(0,y,0,y+24);sg.addColorStop(0,'rgba(0,0,0,.26)');sg.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=sg;g.fillRect(x,y,w,24);
  const sg2=g.createLinearGradient(x,0,x+18,0);sg2.addColorStop(0,'rgba(0,0,0,.18)');sg2.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=sg2;g.fillRect(x,y,18,h)}
 function drawBackground(){
- {const gg=g.createLinearGradient(0,0,CW,CH);gg.addColorStop(0,'#88af5d');gg.addColorStop(1,'#6e9951');g.fillStyle=gg;g.fillRect(0,0,CW,CH);
+ {const gg=g.createLinearGradient(0,0,CW,CH);gg.addColorStop(0,XMAS?'#f1f5f9':'#88af5d');gg.addColorStop(1,XMAS?'#dde6ee':'#6e9951');g.fillStyle=gg;g.fillRect(0,0,CW,CH);
   g.save();g.rotate(-.5);for(let k=-40;k<90;k++){g.fillStyle=k%2?'rgba(255,255,255,.04)':'rgba(0,0,0,.035)';g.fillRect(-900,k*34,3600,34)}g.restore();
   for(let k=0;k<2600;k++){g.fillStyle=R()<.5?'rgba(40,80,30,.16)':'rgba(215,238,150,.14)';g.fillRect(R()*CW,R()*CH,2,2)}
   for(let k=0;k<70;k++){const x=R()*CW,y=R()*CH;if(x>XS[0]-HALF-20&&x<XS[NX-1]+HALF+20&&y>YS[0]-HALF-20&&y<YS[NY-1]+HALF+20)continue;g.fillStyle=pick(['#f4e36a','#ffffff','#f29ac0']);for(let q=0;q<5;q++)g.fillRect(x+rr(-8,8),y+rr(-8,8),2,2)}}
@@ -854,7 +854,7 @@ function drawBackground(){
  for(const b of buildings){const X=b.x0-12,Y=b.y0-12,Wd=b.w+24,Hd=b.h+24;g.fillStyle='#b7b1a4';g.fillRect(X,Y,Wd,Hd);g.fillStyle='#cdc7bb';g.fillRect(X+2,Y+2,Wd-4,Hd-4);
   g.strokeStyle='rgba(0,0,0,.08)';g.lineWidth=1;g.beginPath();for(let k=X+12;k<X+Wd;k+=12){g.moveTo(k,Y);g.lineTo(k,Y+12);g.moveTo(k,Y+Hd-12);g.lineTo(k,Y+Hd)}for(let k=Y+12;k<Y+Hd;k+=12){g.moveTo(X,k);g.lineTo(X+12,k);g.moveTo(X+Wd-12,k);g.lineTo(X+Wd,k)}g.stroke();
   g.fillStyle='#d6d1c6';g.fillRect(b.x0,b.y0,b.w,b.h)}
- if(WORLD){const C2=cityFill();for(const bl of C2.blocks){if(bl.type==='lot')continue;g.fillStyle=bl.type==='res'?'#7fae5c':'#cdc7bb';g.fillRect(bl.x0-6,bl.y0-6,bl.x1-bl.x0+12,bl.y1-bl.y0+12)}
+ if(WORLD){const C2=cityFill();for(const bl of C2.blocks){if(bl.type==='lot')continue;g.fillStyle=bl.type==='res'?(XMAS?'#e8eef4':'#7fae5c'):'#cdc7bb';g.fillRect(bl.x0-6,bl.y0-6,bl.x1-bl.x0+12,bl.y1-bl.y0+12)}
   for(const f of C2.items){if(f.k==='tree'){tree(f.x,f.y,f.r);continue}if(f.k==='car'){g.fillStyle=f.col;g.fillRect(f.x-8,f.y-16,16,32);continue}g.save();g.translate(f.x,f.y);if(f.ang)g.rotate(f.ang);
    if(f.k==='park'){g.fillStyle='#8f949b';g.fillRect(-f.w/2,-f.h/2,f.w,f.h);g.restore();continue}g.fillStyle='rgba(0,0,0,.25)';g.fillRect(-f.w/2+7,-f.h/2+8,f.w,f.h);
    if(f.k==='house'){g.fillStyle=f.roof;g.fillRect(-f.w/2,-f.h/2,f.w,f.h);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(-f.w/2,0,f.w,f.h/2);g.fillStyle='rgba(255,255,255,.25)';g.fillRect(-f.w/2,-1,f.w,2)}
@@ -926,7 +926,7 @@ function drawBuildingsStatic(){
  b=B.lavagem;g.fillStyle='#cfd6d9';g.fillRect(b.x0,b.y0,b.w,b.h);
  for(const s of b.slots){g.fillStyle='#2f6f8f';g.fillRect(s.x-60,s.y-30,120,6);g.fillRect(s.x-60,s.y+24,120,6)}
  // park
- b=B.park;{const x0=b.x0,y0=b.y0,w=b.w,h=b.h;g.fillStyle='#6fa34e';g.fillRect(x0,y0,w,h);g.fillStyle='rgba(255,255,255,.05)';for(let k=0;k<w;k+=24)g.fillRect(x0+k,y0,12,h);
+ b=B.park;{const x0=b.x0,y0=b.y0,w=b.w,h=b.h;g.fillStyle=XMAS?'#e9eff5':'#6fa34e';g.fillRect(x0,y0,w,h);g.fillStyle='rgba(255,255,255,.05)';for(let k=0;k<w;k+=24)g.fillRect(x0+k,y0,12,h);
   g.strokeStyle='#e3d6b4';g.lineWidth=14;g.lineJoin='round';rrect(g,x0+26,y0+26,w-52,h-52,40);g.stroke();
   g.beginPath();g.moveTo(x0+w/2,y0);g.lineTo(x0+w/2,y0+26);g.stroke();g.beginPath();g.moveTo(x0+26,y0+h/2);g.lineTo(x0+w-26,y0+h/2);g.stroke();
   g.fillStyle='#4f9bd1';g.beginPath();g.ellipse(x0+w*.3,y0+h*.3,44,24,0,0,TAU);g.fill();g.strokeStyle='#d8cfb4';g.lineWidth=4;g.stroke();g.fillStyle='rgba(255,255,255,.35)';g.beginPath();g.ellipse(x0+w*.3-12,y0+h*.3-6,16,6,0,0,TAU);g.fill();
@@ -3000,7 +3000,7 @@ function make3D(T,X){
    {const slots=[];for(let x=-30;x<=140;x+=17)slots.push([x,256]);const n=Math.min(slots.length,3+Math.floor(sv/12));for(let k=0;k<n;k++){const[x,z]=slots[k];if(Math.abs(x-96)<8||Math.abs(x-53)<8)continue;const h=8+((k*7)%5)*2.4+Math.min(10,sv/150);bld(g,11,h,11,AM[k%AM.length],mat.roof,x,z);B0(g,3,1,2,mat.steel,x+2,h,z)}}
    // the city: downtown, offices, flats and houses between the main buildings
    {const cg=coreG(),C3=cityFill(),CA2=[],NB=[],NBc=[],NR=[],NRc=[],TT=[],TTc=[],CA=[],CAc=[],PD=[],PDc=[];const gr=.78+.22*Math.min(1,sv/3000);
-    for(const bl of C3.blocks){if(bl.type==='lot')continue;const x0=U(bl.x0)-.6,x1=U(bl.x1)+.6,z0=U(bl.y0)-.6,z1=U(bl.y1)+.6;PD.push({x:(x0+x1)/2,y:.01,z:(z0+z1)/2,sx:x1-x0,sy:.3,sz:z1-z0});PDc.push(bl.type==='res'?'#7fae5c':'#d9d4c8')}
+    for(const bl of C3.blocks){if(bl.type==='lot')continue;const x0=U(bl.x0)-.6,x1=U(bl.x1)+.6,z0=U(bl.y0)-.6,z1=U(bl.y1)+.6;PD.push({x:(x0+x1)/2,y:.01,z:(z0+z1)/2,sx:x1-x0,sy:.3,sz:z1-z0});PDc.push(bl.type==='res'?(XMAS?'#e6edf3':'#7fae5c'):'#d9d4c8')}
     for(const f of C3.items){const x=U(f.x),z=U(f.y);
      if(f.k==='tree'){const s=U(f.r)/1.1;TT.push({x,y:.3+2.1*s,z,sx:s*1.2,sy:s,sz:s*1.2,ry:rnd()*3});TTc.push(['#4f8a3c','#3f7a34','#5c9445','#6a9c45'][Math.floor(rnd()*4)]);continue}
      if(f.k==='car'){CA.push({x,y:.3,z,sx:1.8,sy:1.3,sz:4});CAc.push(f.col);continue}
@@ -3213,16 +3213,16 @@ function make3D(T,X){
    for(let k=0;k<show;k++){let y=sp[k*3+1]-dt*sv[k]*fall/hgt*(boost>0?1.6:1);if(y<0)y+=1;sp[k*3+1]=y;p[k*3]=cam.tx+sp[k*3]*span+Math.sin(st*.7+k)*.6;p[k*3+1]=y*hgt;p[k*3+2]=cam.tz+sp[k*3+2]*span}
    sGeo.setDrawRange(0,show);sGeo.attributes.position.needsUpdate=true;
    // sleigh loop
-   {const RXs=(XS3[NX-1]-XS3[0])*.55,RZs=(YS3[NY-1]-YS3[0])*.55,w=st/45*Math.PI*2,x=CX+Math.cos(w)*RXs,z=CZ+Math.sin(w)*RZs;sleigh.position.set(x,34+2*Math.sin(st*1.3),z);sleigh.rotation.y=Math.atan2(-Math.sin(w)*RXs,Math.cos(w)*RZs);sleigh.rotation.z=.08*Math.sin(st*1.3)}
+   {const RXs=75,RZs=50,w=st/40*Math.PI*2,x=92+Math.cos(w)*RXs,z=75+Math.sin(w)*RZs;sleigh.position.set(x,26+2*Math.sin(st*1.3),z);sleigh.rotation.y=Math.atan2(-Math.sin(w)*RXs,Math.cos(w)*RZs);sleigh.rotation.z=.08*Math.sin(st*1.3)}
    // ground snow (new buildings get it too)
    snowT-=dt;if(snowT<=0){snowT=4;snowify()}
    // the light truck
    if(WORLD&&W3.cars&&W3.cars.length&&(!truckCar||!W3.cars.includes(truckCar))){truckCar=W3.cars.find(c=>!c.rig)||W3.cars[0];if(truckCar){truckCar.g.children.forEach(ch=>ch.visible=false);truckCar.g.add(makeTruck())}}};
-  XMS.labels=()=>{const sv0=subs||0;const near=Math.hypot(cam.tx-L.cx,cam.tz-L.cz)<70&&cam.dist<130;
+  XMS.labels=()=>{const sv0=subs||0;{const q=toHud(sleigh.position.x,sleigh.position.y+5,sleigh.position.z);if(q&&q.x>-60&&q.x<hud.width+60&&q.y>0&&q.y<hud.height)pill('🎅 SANTA',q.x,q.y,clamp(2600/cam.dist,12,20),'rgba(179,38,30,.92)','#ffffff')}const near=Math.hypot(cam.tx-L.cx,cam.tz-L.cz)<70&&cam.dist<130;
    const s=toHud(L.cx,Y+11*tree.scale.y,L.cz);if(s&&cam.dist<260)pill(sv0>=150?'🎄 MOTOROPOLIS CHRISTMAS TREE':'🎄 CHRISTMAS TREE · STAR AT 150 SUBS',s.x,s.y,clamp(2600/cam.dist,13,24),'rgba(179,38,30,.92)','#ffffff');
    if(near&&cam.dist<70){const sz=clamp(1500/cam.dist,10,16),G=XMS.giftPos,per=8,pg=Math.floor(performance.now()/2600)%Math.max(1,Math.ceil(G.length/per));for(const[n,x,z,sc]of G.slice(pg*per,pg*per+per)){const q=toHud(x,Y+sc*tree.scale.y+.5,z);if(q&&q.x>-40&&q.x<hud.width+40&&q.y>0&&q.y<hud.height)pill('🎁 '+n,q.x,q.y,sz,'rgba(16,19,24,.78)','#ffd34d')}}
    for(const g of [0,1,2,3]){const st0=XMS.stalls[g];if(!st0||cam.dist>110)continue;const wp=new T.Vector3();st0.parent.getWorldPosition(wp);const q=toHud(wp.x,Y+3.2,wp.z);if(q&&g===0)pill('CHRISTMAS MARKET',q.x,q.y,clamp(2000/cam.dist,11,18),'rgba(46,125,79,.92)','#ffffff')}};
-  if(mat.grass2)mat.grass2.color.lerp(snowC,.86);snowify();if(location.hostname==='localhost')window.__XMS={park:[L.cx,L.cz],sleigh:()=>[sleigh.position.x,sleigh.position.z],truck:()=>truckCar&&[truckCar.g.position.x,truckCar.g.position.z],night:v=>{lightMode=v?'noite':'auto'}};
+  if(mat.grass2)mat.grass2.color.lerp(snowC,.86);snowify();if(location.hostname==='localhost')window.__XMS={park:[L.cx,L.cz],sleigh:()=>[sleigh.position.x,sleigh.position.z,sleigh.position.y,sleigh.visible,sleigh.parent===scene],truck:()=>truckCar&&[truckCar.g.position.x,truckCar.g.position.z],night:v=>{lightMode=v?'noite':'auto'}};
  }
  function frame(dt){if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,hud.width,hud.height);cur.labels()}
