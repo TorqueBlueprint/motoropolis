@@ -42,7 +42,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .check{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--fg);cursor:pointer}
 .check input{accent-color:var(--accent);width:16px;height:16px}
 .screen{position:relative;width:100%;max-width:100%;aspect-ratio:3640/1980;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#2a2f36}
-.screen:fullscreen{border:0;border-radius:0;background:#000}
+.screen:fullscreen{border:0;border-radius:0;background:#000;aspect-ratio:auto}
+.screen.fsfake{position:fixed;inset:0;z-index:60;width:100vw;height:100vh;height:100dvh;max-width:none;aspect-ratio:auto;border:0;border-radius:0;background:#000}
+body.fs-lock{overflow:hidden}
+#hud3d{object-fit:fill}
 canvas{display:block;width:100%;height:100%;cursor:pointer;object-fit:contain}
 .screen.vertical{aspect-ratio:9/16;width:min(100%,calc(78vh * 9 / 16));margin-inline:auto;background:#0d0f13}
 .promo{border-top-style:dashed}
@@ -207,7 +210,7 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
   </section>
   <div class="screen" id="screen">
     <canvas id="city" width="1920" height="1380" aria-label="Live map of the city of Motoropolis"></canvas>
-    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button></div>
+    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button><button type="button" id="vFull" aria-label="Full screen"><span class="lg" id="vFullT">⛶ Full screen</span><span class="sm" id="vFullS">⛶</span></button></div>
     <p class="v-msg" id="vMsg" hidden="" aria-live="polite"></p>
   </div>
   <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click any building to step inside it in 3D (locked ones show a blueprint preview).</p>
@@ -1164,7 +1167,8 @@ function drawNight(n){
  ctx.globalCompositeOperation='source-over';
 }
 let VW=CW,VH=CH;const HUDS=WORLD?CW/1920:1;
-function hudScaled(f){if(HUDS===1){f();return}ctx.save();ctx.scale(HUDS,HUDS);VW=CW/HUDS;VH=CH/HUDS;try{f()}finally{ctx.restore();VW=CW;VH=CH}}
+let HUDSC=HUDS;const hudSc=(cw,ch)=>cw/ch<1.2?Math.min(HUDS,cw/1000):HUDS;
+function hudScaled(f){const cw=ctx.canvas.width,ch=ctx.canvas.height,sc=hudSc(cw,ch);if(sc===1){VW=cw;VH=ch;try{f()}finally{VW=CW;VH=CH}return}ctx.save();ctx.scale(sc,sc);VW=cw/sc;VH=ch/sc;try{f()}finally{ctx.restore();VW=CW;VH=CH}}
 function drawHUD(){
  const name=chan();
  ctx.save();ctx.textAlign='left';ctx.textBaseline='alphabetic';
@@ -1183,15 +1187,15 @@ function drawHUD(){
   ctx.fillStyle='#262b34';rrect(ctx,40,176,434,8,4);ctx.fill();ctx.fillStyle='#ff7a1a';rrect(ctx,40,176,Math.max(8,434*pr),8,4);ctx.fill();
  }else{ctx.font="800 26px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.fillText('ALL MILESTONES REACHED!',40,163)}
  const chips=[['SUBSCRIBERS',sv.toLocaleString('en-US'),true],['ON THE ROAD',String(cars.filter(c=>c.state==='road'&&c.kind==='car').length)],['REPAIRS',String(stats.repairs)],['REVENUE',eur(stats.money)]];
- let x=VW-22;ctx.textAlign='right';let subsX=0,subsW=0;
+ const NARROW=VW<1300,chY=NARROW?205:18;let x=VW-22;ctx.textAlign='right';let subsX=0,subsW=0;
  for(let k=chips.length-1;k>=0;k--){const[l,v,hl]=chips[k];ctx.font=`700 ${hl?38:30}px 'Barlow Condensed', sans-serif`;const w=Math.max(ctx.measureText(v).width,hl?120:90)+28;x-=w;
-  ctx.fillStyle=hl?'#ff7a1a':'rgba(16,19,24,.86)';rrect(ctx,x,18,w,70,8);ctx.fill();ctx.fillStyle=hl?'#1d0f02':'#fff';ctx.fillText(v,x+w-14,hl?78:74);ctx.font="600 13px 'Barlow', sans-serif";ctx.fillStyle=hl?'#3d1d04':'#9aa3ae';ctx.fillText(l,x+w-14,38);
+  ctx.fillStyle=hl?'#ff7a1a':'rgba(16,19,24,.86)';rrect(ctx,x,chY,w,70,8);ctx.fill();ctx.fillStyle=hl?'#1d0f02':'#fff';ctx.fillText(v,x+w-14,chY+(hl?60:56));ctx.font="600 13px 'Barlow', sans-serif";ctx.fillStyle=hl?'#3d1d04':'#9aa3ae';ctx.fillText(l,x+w-14,chY+20);
   if(hl){subsX=x;subsW=w}x-=10}
  if(sv>MAXCARS){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
  if(subToast){const k=subToast.t/3;ctx.globalAlpha=1-k*k;ctx.font="800 34px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(16,19,24,.9)';const ty=118+k*40;ctx.strokeText(subToast.text,subsX+subsW/2,ty);ctx.fillText(subToast.text,subsX+subsW/2,ty);ctx.globalAlpha=1}
  // call to action
  ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;
- const bxw=cw2+150,bxx=VW-22-bxw,bxy=VH-22-58;ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,bxx,bxy,bxw,58,10);ctx.fill();
+ const bxw=cw2+150,bxx=VW-22-bxw,bxy=VH-22-58-(NARROW?170:0);ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,bxx,bxy,bxw,58,10);ctx.fill();
  ctx.fillStyle='#e8322a';rrect(ctx,bxx+12,bxy+12,112,34,6);ctx.fill();ctx.fillStyle='#fff';ctx.font="800 18px 'Barlow Condensed', sans-serif";ctx.textAlign='center';ctx.fillText('SUBSCRIBE',bxx+68,bxy+35);
  ctx.textAlign='left';ctx.font="800 22px 'Barlow Condensed', sans-serif";ctx.fillStyle='#fff';ctx.fillText(cta,bxx+136,bxy+37);
  const rows=ticker.slice(0,4);
@@ -2211,7 +2215,7 @@ function make3D(T,X){
  c3.addEventListener('keydown',e=>{const k=e.key;let h=true;if(k==='ArrowLeft')cam.yaw+=.08;else if(k==='ArrowRight')cam.yaw-=.08;else if(k==='ArrowUp')cam.pitch+=.05;else if(k==='ArrowDown')cam.pitch-=.05;else if(k==='+'||k==='=')cam.dist*=.9;else if(k==='-')cam.dist*=1.1;else h=false;if(h){e.preventDefault();idle=0;clampCam()}});
  c3.tabIndex=0;
  const v3=new T.Vector3();
- function toHud(x,y,z){v3.set(x,y,z).project(camera);if(v3.z>1||v3.z<-1)return null;return{x:(v3.x+1)/2*CW,y:(1-v3.y)/2*CH}}
+ function toHud(x,y,z){v3.set(x,y,z).project(camera);if(v3.z>1||v3.z<-1)return null;return{x:(v3.x+1)/2*hud.width,y:(1-v3.y)/2*hud.height}}
  const ray=new T.Raycaster(),ndc=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-Y0),hit=new T.Vector3();
  function clickAt(cx,cy){if(trailer||mode==='in')return;const r=c3.getBoundingClientRect(),hx=(cx-r.left)/r.width*CW,hy=(cy-r.top)/r.height*CH;
   let best=null,bd=40*40;for(const c of cars){if(c.hidden||c.removed)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+.7,g.position.z);if(!s)continue;const d=(s.x-hx)**2+(s.y-hy)**2;if(d<bd){bd=d;best=c}}
@@ -2219,7 +2223,7 @@ function make3D(T,X){
    const og=groups.oficina;if(og){const hits=ray.intersectObject(og,true);if(hits.length){enterIn('oficina');return}}const lg=groups.lavagem;if(lg&&isOpen('lavagem')){const h2=ray.intersectObject(lg,true);if(h2.length){enterIn('lavagem');return}}const rg=groups.reboques;if(rg&&isOpen('reboques')){const h3=ray.intersectObject(rg,true);if(h3.length){enterIn('reboques');return}}}
   selected=best;updateCard()}
  // ---------- labels drawn on the HUD canvas ----------
- function pill(text,x,y,size,bg,fg,stroke){hctx.font=`700 ${size*=(hud.width===CW?HUDS:1),size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
+ function pill(text,x,y,size,bg,fg,stroke){hctx.font=`700 ${size*=(hud.height===CH?HUDSC:1),size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
  function drawLabels(){
   hctx.textAlign='center';hctx.textBaseline='middle';if(WORLD&&W3.labelsDraw)W3.labelsDraw();const sz=clamp(2600/cam.dist,13,26),near=cam.dist<200;
   const items=[];
@@ -2335,7 +2339,7 @@ function make3D(T,X){
   const s=toHud(-23,4.6,-8.5);if(s)pill('1 BOLT = 1 SUBSCRIBER',s.x,s.y,sz*.85,'rgba(16,19,24,.85)','#ffd34d');
   hctx.globalAlpha=1;
   // header
-  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE TORQUEBLUEPRINT REPAIR SHOP',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,CW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,CW/2,89);
+  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE TORQUEBLUEPRINT REPAIR SHOP',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,hud.width/2,89);
  }
  // ---------- 3D interior: the car wash ----------
  const WS={scene:new T.Scene(),built:false,lanes:[],home:{tx:0,tz:-1,yaw:.32,pitch:.36,dist:44}};
@@ -2386,7 +2390,7 @@ function make3D(T,X){
   for(const[name,x,col]of WS.stages){const s=toHud(x,6.6,-4.2);if(s)pill(name,s.x,s.y,sz,'#'+col.toString(16).padStart(6,'0'),'#071a2d')}
   WS.lanes.forEach(L=>{if(!L.id)return;const c=cars.find(q=>q.id===L.id);if(!c)return;const s=toHud(L.car.position.x,3.4,L.z);if(s)pill(c.driver?'★ '+c.driver:c.plate,s.x,s.y,sz,c.driver?'rgba(255,122,26,.95)':'#fafafa',c.driver?'#1d0f02':'#111')});
   if(!WS.lanes.some(L=>L.id)){const s=toHud(0,2,0);if(s)pill('Waiting for the next dirty car…',s.x,s.y,sz,'rgba(16,19,24,.85)','#c8defa')}
-  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE MOTOROPOLIS CAR WASH',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,CW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,CW/2,89)}
+  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE MOTOROPOLIS CAR WASH',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,hud.width/2,89)}
  // ---------- 3D interior: 24h towing depot ----------
  const TW={scene:new T.Scene(),built:false,bays:[],home:{tx:0,tz:-1,yaw:-.3,pitch:.38,dist:44}};
  function buildTow(){
@@ -2444,7 +2448,7 @@ function make3D(T,X){
    if(bay.id)pill(`TRUCK ${t.plate} · READY`,p.x,p.y,sz,'rgba(16,19,24,.85)','#5cc98a');
    else{const tk=t.task;const txt=tk&&tk.type==='tow'?`OUT ON A CALL → ${tk.target.plate}`:tk&&tk.type==='deliver'?'TOWING TO THE REPAIR SHOP':'ON THE WAY BACK';pill(txt,p.x,p.y,sz,'rgba(242,165,26,.95)','#1d0f02')}});
   if(!isOpen('reboques')){const p=toHud(0,3,0);if(p)pill('THE TOW DEPOT OPENS AT 10 SUBS',p.x,p.y,sz,'rgba(15,47,92,.92)','#c8defa')}
-  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE 24H TOWING DEPOT',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,CW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,CW/2,89)}
+  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE 24H TOWING DEPOT',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,hud.width/2,89)}
  // ---------- 3D interiors: the rest of the city ----------
  function room(o){const S=new T.Scene();const RW=o.w||52,RD=o.d||22,RH=o.h||9,X0=-RW/2,Z0=-RD/2;
   S.background=new T.Color(o.bg||0x0b1626);S.fog=new T.Fog(o.bg||0x0b1626,70,140);S.add(new T.HemisphereLight(0xeef4ff,0x262b33,.75));
@@ -2482,7 +2486,7 @@ function make3D(T,X){
    const rp=personMesh('#22252b','#f0c9a0','#2b1d14');rp.scale.setScalar(1.45);rp.position.set(dx-.2,0,dz-1.3);add(rp);
    for(let k=0;k<3;k++){const cx=dx-9+k*1.5;B2(1.1,.12,1.1,FURN.seat,cx,.85,10.4,false);B2(1.1,1,.15,FURN.seat,cx,.85,10.95,false);B2(.1,.85,.1,FURN.dark,cx,0,10.4,false)}
    B2(1.6,.6,1,FURN.wood,dx-4.3,0,10.4);{const wc=new T.Mesh(new T.CylinderGeometry(.35,.35,.9,12),M(0x9fd0ff,{transparent:true,opacity:.7}));wc.position.set(dx-11.6,2.05,10.6);add(wc);B2(.8,1.6,.8,FURN.white,dx-11.6,0,10.6)}}}
- function header(t){hctx.font="800 30px 'Barlow Condensed', sans-serif";const w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,CW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.textAlign='center';hctx.fillText(t,CW/2,89)}
+ function header(t){hctx.font="800 30px 'Barlow Condensed', sans-serif";const w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.textAlign='center';hctx.fillText(t,hud.width/2,89)}
  function lockedNote(type){if(isOpen(type))return;const m=MS[type];const p=toHud(0,4,2);if(p)pill(`BLUEPRINT PREVIEW · OPENS AT ${m.n.toLocaleString('en-US')} SUBS`,p.x,p.y,24,'rgba(15,47,92,.94)','#c8defa','#9fd0ff')}
  // mirror the cars parked in a building's slots into an interior
  function mirror(slots,holders,scale,place){slots.forEach((s,k)=>{const h=holders[k];if(!h)return;const c=s.car&&!s.car.removed&&(s.car.state==='service')?s.car:null;const id=c?c.id:null;
@@ -3116,14 +3120,14 @@ function make3D(T,X){
   for(const m of trunks){m.visible=false;m.userData.tf=1}}
  // ---------- frame ----------
  let W0=0,H0=0;
- function resize(){const w=c3.clientWidth||screenEl.clientWidth,h=c3.clientHeight||screenEl.clientHeight;if(!w||!h)return;if(w===W0&&h===H0)return;W0=w;H0=h;
+ function resize(){const w=c3.clientWidth||screenEl.clientWidth,h=c3.clientHeight||screenEl.clientHeight;if(!w||!h)return;if(w===W0&&h===H0)return;W0=w;H0=h;{const hw=Math.max(400,Math.round(CH*w/h));if(hud.width!==hw||hud.height!==CH){hud.width=hw;hud.height=CH}HUDSC=hudSc(hw,CH)}
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,QUAL==='low'?1:QUAL==='medium'?1.25:(w>1100?1.5:2)));renderer.setSize(w,h,false);if(composer){composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h)}camera.aspect=w/h;camera.updateProjectionMatrix()}
  if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe(screenEl);
  function frame(dt){if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
-  if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,CW,CH);cur.labels()}
+  if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,hud.width,hud.height);cur.labels()}
   else{syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);applyNight(false);placeCam();RENDER(scene);
-  hctx.clearRect(0,0,CW,CH);drawLabels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
-  if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,CW,CH)}}
+  hctx.clearRect(0,0,hud.width,hud.height);drawLabels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
+  if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,hud.width,hud.height)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
  syncBuildings();if(X)decorateRoofs(scene);
  return{scene,frame,reset,resize,cam,renderer,camera,enterIn,exitIn,mode:()=>mode,setOnMode:f=>{onMode=f}};
@@ -3142,6 +3146,14 @@ async function loadR3(){
  catch(e){console.warn('3D view unavailable',e);R3=null;return null}
 }
 const vMsg=$('vMsg'),v3b=$('v3d'),v2b=$('v2d'),vRes=$('vReset');
+{// full screen: real full screen where the browser allows it (Android, computers), otherwise the city fills the window (iPhone)
+ const fb=$('vFull'),scr=$('screen'),canReal=!!(document.fullscreenEnabled&&scr.requestFullscreen);let fake=false;
+ const isFs=()=>fake||document.fullscreenElement===scr;
+ const label=()=>{const on=isFs();$('vFullT').textContent=on?'✕ Exit full screen':'⛶ Full screen';$('vFullS').textContent=on?'✕':'⛶';fb.setAttribute('aria-pressed',on)};
+ const setFake=on=>{fake=on;scr.classList.toggle('fsfake',on);document.body.classList.toggle('fs-lock',on);label()};
+ fb.addEventListener('click',async()=>{if(isFs()){if(fake)setFake(false);else{try{await document.exitFullscreen()}catch(e){}}return}
+  if(canReal){try{await scr.requestFullscreen({navigationUI:'hide'});try{if(matchMedia('(pointer:coarse)').matches)await screen.orientation.lock('landscape')}catch(e){}label();return}catch(e){}}setFake(true)});
+ document.addEventListener('fullscreenchange',label);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fake)setFake(false)});}
 {const QN={high:'High',medium:'Medium',low:'Low'},QS={high:'HQ',medium:'MQ',low:'LQ'},ORD=['high','medium','low'];$('vQualT').textContent=QN[QUAL];$('vQualS').textContent=QS[QUAL];
  $('vQual').addEventListener('click',()=>{const nx=ORD[(ORD.indexOf(QUAL)+1)%3];try{localStorage.setItem('mtp-quality',nx)}catch(e){}location.reload()})}
 function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
