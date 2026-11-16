@@ -3220,9 +3220,9 @@ function make3D(T,X){
    if(WORLD&&W3.cars&&W3.cars.length&&(!truckCar||!W3.cars.includes(truckCar))){truckCar=W3.cars.find(c=>!c.rig)||W3.cars[0];if(truckCar){truckCar.g.children.forEach(ch=>ch.visible=false);truckCar.g.add(makeTruck())}}};
   XMS.labels=()=>{const sv0=subs||0;const near=Math.hypot(cam.tx-L.cx,cam.tz-L.cz)<70&&cam.dist<130;
    const s=toHud(L.cx,Y+11*tree.scale.y,L.cz);if(s&&cam.dist<260)pill(sv0>=150?'🎄 MOTOROPOLIS CHRISTMAS TREE':'🎄 CHRISTMAS TREE · STAR AT 150 SUBS',s.x,s.y,clamp(2600/cam.dist,13,24),'rgba(179,38,30,.92)','#ffffff');
-   if(near&&cam.dist<70){const sz=clamp(1500/cam.dist,10,16);for(const[n,x,z,sc]of XMS.giftPos){const q=toHud(x,Y+sc*tree.scale.y+.5,z);if(q&&q.x>-40&&q.x<hud.width+40&&q.y>0&&q.y<hud.height)pill('🎁 '+n,q.x,q.y,sz,'rgba(16,19,24,.78)','#ffd34d')}}
+   if(near&&cam.dist<70){const sz=clamp(1500/cam.dist,10,16),G=XMS.giftPos,per=8,pg=Math.floor(performance.now()/2600)%Math.max(1,Math.ceil(G.length/per));for(const[n,x,z,sc]of G.slice(pg*per,pg*per+per)){const q=toHud(x,Y+sc*tree.scale.y+.5,z);if(q&&q.x>-40&&q.x<hud.width+40&&q.y>0&&q.y<hud.height)pill('🎁 '+n,q.x,q.y,sz,'rgba(16,19,24,.78)','#ffd34d')}}
    for(const g of [0,1,2,3]){const st0=XMS.stalls[g];if(!st0||cam.dist>110)continue;const wp=new T.Vector3();st0.parent.getWorldPosition(wp);const q=toHud(wp.x,Y+3.2,wp.z);if(q&&g===0)pill('CHRISTMAS MARKET',q.x,q.y,clamp(2000/cam.dist,11,18),'rgba(46,125,79,.92)','#ffffff')}};
-  snowify();if(location.hostname==='localhost')window.__XMS={park:[L.cx,L.cz]};
+  if(mat.grass2)mat.grass2.color.lerp(snowC,.86);snowify();if(location.hostname==='localhost')window.__XMS={park:[L.cx,L.cz],sleigh:()=>[sleigh.position.x,sleigh.position.z],truck:()=>truckCar&&[truckCar.g.position.x,truckCar.g.position.z],night:v=>{lightMode=v?'noite':'auto'}};
  }
  function frame(dt){if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,hud.width,hud.height);cur.labels()}
