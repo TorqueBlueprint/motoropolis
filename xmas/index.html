@@ -3166,15 +3166,55 @@ function make3D(T,X){
     const s=.55+((k*37)%5)*.08,g=new T.Group();const b=new T.Mesh(BOX,M([0xd93a2f,0x2f6fd9,0x2e7d4f,0xf2a51a,0x8e44ad,0xffffff][k%6]));b.scale.set(s,s*.8,s);b.position.y=s*.4;b.castShadow=true;g.add(b);
     const r1=new T.Mesh(BOX,ribbon);r1.scale.set(s*1.02,s*.82,.09);r1.position.y=s*.4;g.add(r1);const r2=r1.clone();r2.scale.set(.09,s*.82,s*1.02);g.add(r2);
     g.position.set(Math.cos(a)*r,0,Math.sin(a)*r);g.rotation.y=a*1.7;gifts.add(g);XMS.giftPos.push([n,L.cx+Math.cos(a)*r,L.cz+Math.sin(a)*r,s])})}
-  // Christmas market along the park's main path
-  const stallsAt=[[.2,.62],[.32,.62],[.68,.38],[.8,.38]];XMS.stalls=[];
+  // Christmas market along the park's main path: eight stalls, each selling something different
+  const stallsAt=[[.22,.62],[.31,.62],[.40,.62],[.60,.38],[.69,.38],[.78,.38],[.22,.38],[.40,.38]];XMS.stalls=[];
+  const STRIPE=[0xd93a2f,0x2e7d4f,0x2f6fd9,0xd93a2f,0x8e44ad,0x2e7d4f,0xf2a51a,0xd93a2f],wood=M(0x8a5a32),wood2=M(0x6b4423),glow=new T.MeshBasicMaterial({color:0xffc56b,toneMapped:false}),gGreen=M(0x1f6b3a,{flatShading:true}),bowM=M(0xd93a2f);
+  const stallTops=[];
   stallsAt.forEach(([fx,fz],k)=>{const g=new T.Group(),x=L.x0+L.w*fx,z=L.z0+L.d*fz;g.position.set(x,Y,z);g.rotation.y=fz>.5?Math.PI:0;
-   const wood=M(0x8a5a32);g.add(box(2.6,.9,1.3,wood,0,0,0));for(const dx of[-1.2,1.2])g.add(box(.12,2.2,.12,wood,dx,0,-.55));
-   for(let i=0;i<4;i++)g.add(box(.65,.12,1.8,M(i%2?0xffffff:0xd93a2f),-0.975+i*.65,2.2,-.2));
-   g.add(box(2.4,.25,.05,M(0xffd34d),0,1.75,.45));
-   const lamp=new T.PointLight(0xffb366,0,9,1.6);lamp.position.set(0,1.8,.6);g.add(lamp);XMS.stalls.push(lamp);
-   const sb=[],sc=[];for(let i=0;i<9;i++){sb.push([-1.2+i*.3,2.12,.6,.8]);sc.push(PAL[(i+k)%PAL.length])}const im=bulbs(sb,sc,bulbA);scene.remove(im);g.add(im);
-   scene.add(g)});
+   g.add(box(2.6,.95,1.3,wood,0,0,0));for(let i=0;i<5;i++)g.add(box(.04,.9,.02,wood2,-1.04+i*.52,.02,.66));g.add(box(2.75,.08,1.45,wood2,0,.95,0));
+   for(const dx of[-1.25,1.25]){g.add(box(.13,2.3,.13,wood,dx,0,-.55));g.add(box(.13,2.0,.13,wood,dx,0,.55))}
+   g.add(box(2.7,1.3,.08,wood2,0,.95,-.62));
+   for(let i=0;i<6;i++)g.add(box(.47,.1,1.9,M(i%2?0xffffff:STRIPE[k]),-1.175+i*.47,2.25,-.15));
+   for(let i=0;i<6;i++){const sc=new T.Mesh(new T.CylinderGeometry(.235,.235,.06,10,1,false,0,Math.PI),M(i%2?0xffffff:STRIPE[k]));sc.rotation.set(Math.PI/2,0,Math.PI/2);sc.position.set(-1.175+i*.47,2.2,.8);g.add(sc)}
+   const sign=box(1.6,.38,.06,M(STRIPE[k]),0,2.42,.82);g.add(sign);g.add(box(1.7,.06,.07,M(0xffd34d),0,2.42,.83));
+   // goods on the counter
+   const goods=[[0xc8873e,0xf4e1c1],[0x8b4513,0xffffff],[0xd93a2f,0x2e7d4f],[0xffd34d,0x2f6fd9],[0xffffff,0xd93a2f],[0x2e7d4f,0xffd34d],[0xf2a51a,0x8e44ad],[0xc8873e,0xd93a2f]][k];
+   for(let i=0;i<7;i++){const gx=-1.05+i*.35;const t=(k+i)%3;let o;if(t===0){o=new T.Mesh(new T.CylinderGeometry(.09,.08,.18,8),M(goods[i%2]));o.position.set(gx,1.08,.25)}else if(t===1){o=new T.Mesh(new T.SphereGeometry(.11,8,6),M(goods[i%2]));o.position.set(gx,1.1,.25)}else{o=box(.2,.2,.2,M(goods[i%2]),gx,.99,.25)}g.add(o)}
+   // pine garland with bows along the front
+   for(let i=0;i<11;i++){const s=new T.Mesh(new T.IcosahedronGeometry(.12,0),gGreen);s.position.set(-1.2+i*.24,1.92-.12*Math.sin(i/10*Math.PI),.82);g.add(s)}for(const dx of[-1.2,0,1.2]){g.add(box(.16,.16,.06,bowM,dx,1.78,.85))}
+   const lanternA=new T.Mesh(new T.SphereGeometry(.13,8,6),glow);lanternA.position.set(-.9,1.75,.55);g.add(lanternA);const lanternB=lanternA.clone();lanternB.position.x=.9;g.add(lanternB);
+   const sb=[],sc=[];for(let i=0;i<11;i++){sb.push([-1.25+i*.25,2.13,.85,.8]);sc.push(PAL[(i+k)%PAL.length])}const im=bulbs(sb,sc,bulbA);scene.remove(im);g.add(im);
+   const tag=new T.Object3D();g.add(tag);XMS.stalls.push(tag);
+   g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});scene.add(g);g.updateMatrixWorld(true);
+   for(const dx of[-1.25,1.25]){stallTops.push(g.localToWorld(new T.Vector3(dx,2.3,.8)))}});
+  // strings of lights across the market, sagging between the stalls
+  {const lb=[],lc=[];let n=0;const sag=(a,b)=>{const steps=Math.max(6,Math.round(a.distanceTo(b)/.35));for(let i=1;i<steps;i++){const t=i/steps,p=a.clone().lerp(b,t);p.y-=Math.sin(t*Math.PI)*.45;lb.push([p.x,p.y,p.z,.85]);lc.push(PAL[n++%PAL.length])}};
+   for(let k=0;k+3<stallTops.length;k+=2){sag(stallTops[k+1],stallTops[k+2])}
+   const row1=[0,1,2].map(k=>stallTops[k*2+1]),row2=[3,4,5].map(k=>stallTops[k*2]);for(let k=0;k<3;k++)if(row1[k]&&row2[2-k])sag(row1[k],row2[2-k]);
+   XMS.lights=bulbs(lb,lc,bulbB)}
+  // snowmen around the park
+  const coal=M(0x1b1b1b),snowW=M(0xf6f9fc),carrot=M(0xf07a1a);
+  [[.08,.3,0.6],[.5,.92,3.1],[.92,.78,-2.2],[.3,.12,1.2],[.55,.55,2.5]].forEach(([fx,fz,ry],k)=>{const g=new T.Group();g.position.set(L.x0+L.w*fx,Y,L.z0+L.d*fz);g.rotation.y=ry;
+   [[.75,.7],[.55,1.75],[.38,2.55]].forEach(([r,y])=>{const b=new T.Mesh(new T.SphereGeometry(r,14,10),snowW);b.position.y=y;g.add(b)});
+   const hat=new T.Mesh(new T.CylinderGeometry(.27,.27,.45,12),coal);hat.position.y=3.07;g.add(hat);const brim=new T.Mesh(new T.CylinderGeometry(.42,.42,.05,14),coal);brim.position.y=2.86;g.add(brim);g.add(box(.56,.07,.56,M([0xd93a2f,0x2e7d4f,0x2f6fd9][k%3]),0,2.92,0));
+   const nose=new T.Mesh(new T.ConeGeometry(.07,.38,8),carrot);nose.rotation.x=Math.PI/2;nose.position.set(0,2.58,.52);g.add(nose);
+   for(const dx of[-.13,.13]){const e=new T.Mesh(new T.SphereGeometry(.045,6,5),coal);e.position.set(dx,2.7,.33);g.add(e)}for(let i=0;i<3;i++){const b=new T.Mesh(new T.SphereGeometry(.05,6,5),coal);b.position.set(0,1.55+i*.22,.53);g.add(b)}
+   const sf=new T.Mesh(new T.TorusGeometry(.4,.09,6,14),M([0xd93a2f,0x2e7d4f,0x2f6fd9][k%3]));sf.rotation.x=Math.PI/2;sf.position.y=2.2;g.add(sf);g.add(box(.18,.6,.05,sf.material,.2,1.65,.38));
+   for(const sd of[-1,1]){const a=new T.Mesh(new T.CylinderGeometry(.03,.04,.9,5),wood2);a.position.set(sd*.8,1.95,0);a.rotation.z=sd*-1.0;g.add(a)}
+   g.traverse(o=>{if(o.isMesh)o.castShadow=true});scene.add(g)});
+  // skaters on the ice rink
+  XMS.skaters=[];{const cx=L.x0+L.w*.3,cz=L.z0+L.d*.3;[['#d93a2f','#f1c7a5'],['#2f6fd9','#d9a27e'],['#2e7d4f','#f5d3b8'],['#8e44ad','#a8714f'],['#f2a51a','#f1c7a5']].forEach(([c,sk],k)=>{let p;try{p=personMesh(c,sk,'#3a2414')}catch(e){p=null}if(!p)return;scene.add(p);XMS.skaters.push({p,ph:k/5*Math.PI*2,cx,cz,rx:3.2-(k%2)*.8,rz:1.6-(k%2)*.4,sp:.45+(k%3)*.08,dir:k%2?-1:1})})}
+  // old street lamps with wreaths along the paths
+  {const iron=M(0x1f2a24,{metalness:.4,roughness:.5});const ix0=L.x0+2.6,ix1=L.x0+L.w-2.6,iz0=L.z0+2.6,iz1=L.z0+L.d-2.6;
+   const pts=[[ix0,iz0],[ix1,iz0],[ix0,iz1],[ix1,iz1],[(ix0+ix1)/2-6,iz0],[(ix0+ix1)/2+6,iz1],[ix0,(iz0+iz1)/2-4],[ix1,(iz0+iz1)/2+4]];
+   for(const[x,z]of pts){const g=new T.Group();g.position.set(x+.9,Y,z+.9);const pole=new T.Mesh(new T.CylinderGeometry(.07,.11,3.2,8),iron);pole.position.y=1.6;g.add(pole);g.add(box(.36,.1,.36,iron,0,3.2,0));
+    const lan=new T.Mesh(new T.CylinderGeometry(.17,.13,.42,6),glow);lan.position.y=3.5;g.add(lan);const cap=new T.Mesh(new T.ConeGeometry(.25,.25,6),iron);cap.position.y=3.84;g.add(cap);
+    const wr=new T.Mesh(new T.TorusGeometry(.28,.09,6,12),gGreen);wr.position.set(0,2.35,.1);g.add(wr);g.add(box(.18,.16,.06,bowM,0,2.08,.18));scene.add(g)}}
+  // snow on the benches, little lit pines and piles of presents by the stalls
+  for(const[fx,fz,r]of[[.07,.85,0],[.9,.5,Math.PI/2],[.6,.17,0],[.35,.75,0]]){const s=box(2.3,.07,.62,snowW,0,0,0);s.position.set(L.x0+L.w*fx,Y+.57,L.z0+L.d*fz);s.rotation.y=r;scene.add(s)}
+  {const lb=[],lc=[];let n=0;for(const[fx,fz]of[[.16,.5],[.46,.5],[.54,.5],[.84,.5],[.16,.22],[.84,.8]]){const x=L.x0+L.w*fx,z=L.z0+L.d*fz;for(const[r,h,y]of[[.75,1.2,.2],[.55,1.0,.9],[.35,.8,1.5]]){const c=new T.Mesh(new T.ConeGeometry(r,h,8),gGreen);c.position.set(x,Y+y+h/2,z);c.castShadow=true;scene.add(c)}
+    for(let i=0;i<14;i++){const u=i/14,a=i*2.4;lb.push([x+Math.cos(a)*(.7-u*.5),Y+.4+u*1.9,z+Math.sin(a)*(.7-u*.5),.7]);lc.push(PAL[n++%PAL.length])}}XMS.pineLights=bulbs(lb,lc,bulbA)}
+  stallsAt.forEach(([fx,fz],k)=>{if(k%2)return;const x=L.x0+L.w*fx+1.6,z=L.z0+L.d*fz+(fz>.5?-1.1:1.1);for(let i=0;i<3;i++){const s=.3+.1*((k+i)%3);const b=box(s,s*.8,s,M([0xd93a2f,0x2f6fd9,0x2e7d4f,0xffd34d][(k+i)%4]),x+(i%2)*.35,Y+(i===2?.32:0),z+(i>0?.3:0));b.castShadow=true;scene.add(b)}});
   // Santa's sleigh flies a loop over the city: modelled here in low poly (sleigh, Santa, presents, four reindeer)
   const sleigh=new T.Group();scene.add(sleigh);const XLEG=[];
   if(X&&X.xsl&&X.xrd){const A=new T.Group();sleigh.add(A);const sm=X.xsl.clone(true);A.add(sm);const sb=new T.Box3().setFromObject(sm),front=sb.max.z;const rb=new T.Box3().setFromObject(X.xrd),RS=.68,rlen=(rb.max.x-rb.min.x)*RS,GAP=.06,SP=.32;
@@ -3246,7 +3286,7 @@ function make3D(T,X){
   XMS.sync=dt=>{st+=dt;const nv=nightLevel();
    // blinking garlands, brighter at night
    blinkT-=dt;if(blinkT<=0){blinkT=.7;blink^=1}const kDay=.62+.38*nv;bulbA.color.setScalar(kDay*1.25);bulbB.color.setScalar(kDay*1.25);XMS.gA.visible=!blink||nv<.3;XMS.gB.visible=!!blink||nv<.3;
-   for(const l of XMS.stalls)l.intensity=nv*14;
+   glow.color.setRGB(1,.77*(.7+.3*nv),.42*(.7+.3*nv));
    // tree size and lights follow the subscribers
    const sv0=subs||0;const sig=Math.floor(sv0/5)+'';if(sig!==tSig){tSig=sig;const g=.75+.55*clamp(sv0/1000,0,1);tree.scale.setScalar(g);if(!XT)treeBulbs(Math.round(clamp(30+sv0*.9,30,320)))}
    star.visible=sv0>=150;star.rotation.y+=dt*1.2;
@@ -3259,6 +3299,7 @@ function make3D(T,X){
    sGeo.setDrawRange(0,show);sGeo.attributes.position.needsUpdate=true;
    // sleigh loop
    if(!XMS.freeze){const RXs=75,RZs=50,w=st/40*Math.PI*2,x=92+Math.cos(w)*RXs,z=75+Math.sin(w)*RZs;sleigh.position.set(x,26+2*Math.sin(st*1.3),z);sleigh.rotation.y=Math.atan2(-Math.sin(w)*RXs,Math.cos(w)*RZs);sleigh.rotation.z=.08*Math.sin(st*1.3)}
+   for(const q of XMS.skaters){const a=q.ph+st*q.sp*q.dir;q.p.position.set(q.cx+Math.cos(a)*q.rx,Y+.08,q.cz+Math.sin(a)*q.rz);q.p.rotation.y=Math.atan2(-Math.sin(a)*q.rx*q.dir,Math.cos(a)*q.rz*q.dir);q.p.rotation.z=.12*q.dir}
    if(XMS.RD){for(const[w]of XMS.RD){w.position.y=.12+.035*Math.sin(st*5+w.userData.ph);w.rotation.x=.08*Math.sin(st*5+w.userData.ph+1);for(const[o,sg]of w.userData.legs)o.rotation.z=sg*.5*Math.sin(st*7+w.userData.ph)}XMS.reins()}
    for(const[o,ph]of XLEG){if(ph==null){o.position.y=.9+.12*Math.sin(st*7+o.userData.bob)}else o.rotation.x=.75*Math.sin(st*7+ph)}
    // ground snow (new buildings get it too)
@@ -3268,7 +3309,7 @@ function make3D(T,X){
   XMS.labels=()=>{const sv0=subs||0;{const q=toHud(sleigh.position.x,sleigh.position.y+5,sleigh.position.z);if(q&&q.x>-60&&q.x<hud.width+60&&q.y>0&&q.y<hud.height)pill('🎅 SANTA',q.x,q.y,clamp(2600/cam.dist,12,20),'rgba(179,38,30,.92)','#ffffff')}const near=Math.hypot(cam.tx-L.cx,cam.tz-L.cz)<70&&cam.dist<130;
    const s=toHud(L.cx,Y+11*tree.scale.y,L.cz);if(s&&cam.dist<260)pill(sv0>=150?'🎄 MOTOROPOLIS CHRISTMAS TREE':'🎄 CHRISTMAS TREE · STAR AT 150 SUBS',s.x,s.y,clamp(2600/cam.dist,13,24),'rgba(179,38,30,.92)','#ffffff');
    if(near&&cam.dist<70){const sz=clamp(1500/cam.dist,10,16),G=XMS.giftPos,per=8,pg=Math.floor(performance.now()/2600)%Math.max(1,Math.ceil(G.length/per));for(const[n,x,z,sc]of G.slice(pg*per,pg*per+per)){const q=toHud(x,Y+sc*tree.scale.y+.5,z);if(q&&q.x>-40&&q.x<hud.width+40&&q.y>0&&q.y<hud.height)pill('🎁 '+n,q.x,q.y,sz,'rgba(16,19,24,.78)','#ffd34d')}}
-   for(const g of [0,1,2,3]){const st0=XMS.stalls[g];if(!st0||cam.dist>110)continue;const wp=new T.Vector3();st0.parent.getWorldPosition(wp);const q=toHud(wp.x,Y+3.2,wp.z);if(q&&g===0)pill('CHRISTMAS MARKET',q.x,q.y,clamp(2000/cam.dist,11,18),'rgba(46,125,79,.92)','#ffffff')}};
+   for(const g of [0]){const st0=XMS.stalls[g];if(!st0||cam.dist>110)continue;const wp=new T.Vector3();st0.parent.getWorldPosition(wp);const q=toHud(wp.x,Y+3.2,wp.z);if(q&&g===0)pill('CHRISTMAS MARKET',q.x,q.y,clamp(2000/cam.dist,11,18),'rgba(46,125,79,.92)','#ffffff')}};
   if(mat.grass2)mat.grass2.color.lerp(snowC,.86);snowify();if(location.hostname==='localhost')window.__XMS={park:[L.cx,L.cz],sleigh:()=>[sleigh.position.x,sleigh.position.z,sleigh.position.y,sleigh.visible,sleigh.parent===scene],truck:()=>truckCar&&[truckCar.g.position.x,truckCar.g.position.z],night:v=>{lightMode=v?'noite':'auto'},sleighAt:(x,y,z,r)=>{XMS.freeze=1;sleigh.position.set(x,y,z);sleigh.rotation.set(0,r||0,0)}};
  }
  function frame(dt){if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
