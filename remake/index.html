@@ -3174,7 +3174,7 @@ function make3D(T,X){
   // Santa's sleigh flies a loop over the city: modelled here in low poly (sleigh, Santa, presents, four reindeer)
   const sleigh=new T.Group();scene.add(sleigh);const XLEG=[];
   if(X&&X.xsl&&X.xrd){const A=new T.Group();sleigh.add(A);const sm=X.xsl.clone(true);A.add(sm);const sb=new T.Box3().setFromObject(sm),front=sb.max.z;const rb=new T.Box3().setFromObject(X.xrd),RS=.68,rlen=(rb.max.x-rb.min.x)*RS,GAP=.06,SP=.32;
-   const RD=[];for(let k=0;k<4;k++){const g=X.xrd.clone(true);g.rotation.y=Math.PI/2;g.scale.setScalar(RS);const w=new T.Group();w.add(g);const row=Math.floor(k/2),side=k%2?1:-1;w.position.set(side*SP/2,.12,front+GAP+rlen/2+row*(rlen+GAP));w.userData.ph=k*1.37;A.add(w);RD.push([w,g])}
+   const RD=[];for(let k=0;k<4;k++){const g=X.xrd.clone(true);g.rotation.y=Math.PI/2;g.scale.setScalar(RS);const w=new T.Group();w.add(g);const row=Math.floor(k/2),side=k%2?1:-1;w.position.set(side*SP/2,.12,front+GAP+rlen/2+row*(rlen+GAP));w.userData.ph=k*1.37;w.userData.legs=[['legFL',1],['legBR',1],['legFR',-1],['legBL',-1]].map(([n,sg])=>[g.getObjectByName(n),sg]).filter(q=>q[0]);A.add(w);RD.push([w,g])}
    const rm=M(0x5a2e17),reins=[null,null],_c=new T.Vector3();
    XMS.reins=()=>{A.updateMatrixWorld(true);const col=RD.map(([w,g])=>A.worldToLocal(g.localToWorld(_c.set(-.2,.6,0)).clone()));for(const i of[0,1]){const sd=i?1:-1;const geo=new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(sd*.12,.42,.12),col[i],col[2+i]],false,'catmullrom',.1),24,.006,5,false);if(reins[i]){reins[i].geometry.dispose();reins[i].geometry=geo}else{reins[i]=new T.Mesh(geo,rm);A.add(reins[i])}}};
    XMS.RD=RD;XMS.reins();A.traverse(o=>{if(o.isMesh)o.castShadow=true});A.updateMatrixWorld(true);const ab=new T.Box3().setFromObject(A),asz=ab.getSize(new T.Vector3()),k=16/Math.max(asz.x,asz.z);A.scale.setScalar(k);A.position.set(-(ab.min.x+ab.max.x)/2*k,-ab.min.y*k,-(ab.min.z+ab.max.z)/2*k)}
@@ -3255,7 +3255,7 @@ function make3D(T,X){
    sGeo.setDrawRange(0,show);sGeo.attributes.position.needsUpdate=true;
    // sleigh loop
    if(!XMS.freeze){const RXs=75,RZs=50,w=st/40*Math.PI*2,x=92+Math.cos(w)*RXs,z=75+Math.sin(w)*RZs;sleigh.position.set(x,26+2*Math.sin(st*1.3),z);sleigh.rotation.y=Math.atan2(-Math.sin(w)*RXs,Math.cos(w)*RZs);sleigh.rotation.z=.08*Math.sin(st*1.3)}
-   if(XMS.RD){for(const[w]of XMS.RD){w.position.y=.12+.035*Math.sin(st*5+w.userData.ph);w.rotation.x=.08*Math.sin(st*5+w.userData.ph+1)}XMS.reins()}
+   if(XMS.RD){for(const[w]of XMS.RD){w.position.y=.12+.035*Math.sin(st*5+w.userData.ph);w.rotation.x=.08*Math.sin(st*5+w.userData.ph+1);for(const[o,sg]of w.userData.legs)o.rotation.z=sg*.5*Math.sin(st*7+w.userData.ph)}XMS.reins()}
    for(const[o,ph]of XLEG){if(ph==null){o.position.y=.9+.12*Math.sin(st*7+o.userData.bob)}else o.rotation.x=.75*Math.sin(st*7+ph)}
    // ground snow (new buildings get it too)
    snowT-=dt;if(snowT<=0){snowT=4;snowify()}
