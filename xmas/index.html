@@ -3193,8 +3193,7 @@ function make3D(T,X){
   const snow=new T.Points(sGeo,sMat);snow.frustumCulled=false;scene.add(snow);
   let st=0,boost=0,lastSubs=null,lastOpen=null,blinkT=0,blink=0,snowT=0,truckCar=null;
   // the light truck: one of the cars on the ring roads becomes a truck covered in lights
-  function makeTruck(){if(X&&X.xtruck){const g=new T.Group(),m=X.xtruck.clone(true);m.rotation.y=-Math.PI/2;const w=new T.Group();w.add(m);w.updateMatrixWorld(true);const bb=new T.Box3().setFromObject(w),sz=bb.getSize(new T.Vector3()),k=11/Math.max(sz.x,sz.z);w.scale.setScalar(k);w.position.set(-(bb.min.x+bb.max.x)/2*k,-bb.min.y*k,-(bb.min.z+bb.max.z)/2*k);w.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});g.add(w);
-   const hh=sz.y*k,hw=Math.min(sz.x,sz.z)*k/2,L2=11/2,lb=[],lc=[];let n=0;for(let z=-L2+.3;z<L2*.45;z+=.5)for(const x of[-hw-.03,hw+.03]){lb.push([x,hh+.02,z,.8]);lc.push(PAL[n++%PAL.length])}const im=bulbs(lb,lc,bulbA);scene.remove(im);g.add(im);g.userData.xmasTruck=true;return g}
+  function makeTruck(){if(X&&X.xtruck){const g=new T.Group(),m=X.xtruck.clone(true);m.rotation.y=-Math.PI/2;const w=new T.Group();w.add(m);w.updateMatrixWorld(true);const bb=new T.Box3().setFromObject(w),sz=bb.getSize(new T.Vector3()),k=11/Math.max(sz.x,sz.z);w.scale.setScalar(k);w.position.set(-(bb.min.x+bb.max.x)/2*k,-bb.min.y*k,-(bb.min.z+bb.max.z)/2*k);w.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});g.add(w);g.userData.xmasTruck=true;return g}
    const g=new T.Group(),red=M(0xb3261e),wh=M(0xf4f4f4);g.add(box(2.3,2.3,5.4,red,0,.55,-.9));g.add(box(2.2,1.7,1.9,wh,0,.55,2.6));g.add(box(2,.6,.06,M(0x9fd3ff),0,1.65,3.56));
    for(const[x,z]of[[-1.05,2.4],[1.05,2.4],[-1.05,-1.9],[1.05,-1.9],[-1.05,-.4],[1.05,-.4]]){const w=new T.Mesh(new T.CylinderGeometry(.45,.45,.3,10),mat.dark);w.rotation.z=Math.PI/2;w.position.set(x,.45,z);g.add(w)}
    const lb=[],lc=[];let n=0;for(let z=-3.5;z<=1.7;z+=.42)for(const y of[.75,1.5,2.25,2.85]){for(const x of[-1.17,1.17]){lb.push([x,y,z,.9]);lc.push(PAL[n++%PAL.length])}}
@@ -3219,7 +3218,7 @@ function make3D(T,X){
    // ground snow (new buildings get it too)
    snowT-=dt;if(snowT<=0){snowT=4;snowify()}
    // the light truck
-   if(WORLD&&W3.cars&&W3.cars.length&&(!truckCar||!W3.cars.includes(truckCar))){truckCar=W3.cars.find(c=>!c.rig)||W3.cars[0];if(truckCar){truckCar.g.children.forEach(ch=>ch.visible=false);truckCar.g.add(makeTruck())}}};
+   if(WORLD&&W3.cars&&W3.cars.length&&(!truckCar||!W3.cars.includes(truckCar))){truckCar=W3.cars.find(c=>!c.rig)||W3.cars[0];if(truckCar){truckCar.g.children.forEach(ch=>ch.visible=false);const tg=makeTruck();truckCar.g.add(tg);tg.scale.x*=-1}}};
   XMS.labels=()=>{const sv0=subs||0;{const q=toHud(sleigh.position.x,sleigh.position.y+5,sleigh.position.z);if(q&&q.x>-60&&q.x<hud.width+60&&q.y>0&&q.y<hud.height)pill('🎅 SANTA',q.x,q.y,clamp(2600/cam.dist,12,20),'rgba(179,38,30,.92)','#ffffff')}const near=Math.hypot(cam.tx-L.cx,cam.tz-L.cz)<70&&cam.dist<130;
    const s=toHud(L.cx,Y+11*tree.scale.y,L.cz);if(s&&cam.dist<260)pill(sv0>=150?'🎄 MOTOROPOLIS CHRISTMAS TREE':'🎄 CHRISTMAS TREE · STAR AT 150 SUBS',s.x,s.y,clamp(2600/cam.dist,13,24),'rgba(179,38,30,.92)','#ffffff');
    if(near&&cam.dist<70){const sz=clamp(1500/cam.dist,10,16),G=XMS.giftPos,per=8,pg=Math.floor(performance.now()/2600)%Math.max(1,Math.ceil(G.length/per));for(const[n,x,z,sc]of G.slice(pg*per,pg*per+per)){const q=toHud(x,Y+sc*tree.scale.y+.5,z);if(q&&q.x>-40&&q.x<hud.width+40&&q.y>0&&q.y<hud.height)pill('🎁 '+n,q.x,q.y,sz,'rgba(16,19,24,.78)','#ffd34d')}}
