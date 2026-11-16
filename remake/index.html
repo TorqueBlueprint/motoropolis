@@ -3149,11 +3149,12 @@ function make3D(T,X){
   // the city Christmas tree: grows with the channel, the star goes on at 150 subscribers
   const tree=new T.Group();tree.position.set(L.cx,Y,L.cz);scene.add(tree);
   const needle=M(0x1f6b3a,{flatShading:true}),trunk=M(0x5a3b22);
-  {const tr=new T.Mesh(new T.CylinderGeometry(.35,.45,1.2,8),trunk);tr.position.y=.6;tr.castShadow=true;tree.add(tr);
+  const XT=X&&X.xtree;if(XT){const m=XT.clone(true);const w=new T.Group();w.add(m);w.updateMatrixWorld(true);const bb=new T.Box3().setFromObject(w),sz=bb.getSize(new T.Vector3()),k=8.2/sz.y;w.scale.setScalar(k);w.position.set(-(bb.min.x+bb.max.x)/2*k,-bb.min.y*k,-(bb.min.z+bb.max.z)/2*k);w.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});tree.add(w)}
+  else{const tr=new T.Mesh(new T.CylinderGeometry(.35,.45,1.2,8),trunk);tr.position.y=.6;tr.castShadow=true;tree.add(tr);
    [[3.2,2.6,1.2],[2.6,2.4,2.9],[2.0,2.2,4.4],[1.3,2.0,5.8]].forEach(([r,h,y])=>{const c=new T.Mesh(new T.ConeGeometry(r,h,9),needle);c.position.y=y+h/2-.2;c.castShadow=true;c.receiveShadow=true;tree.add(c)});
    const pot=new T.Mesh(new T.CylinderGeometry(1.1,1.3,.5,12),M(0xb3261e));pot.position.y=.25;tree.add(pot)}
   const starShape=new T.Shape();for(let k=0;k<10;k++){const a=k/10*Math.PI*2+Math.PI/2,r=k%2?.32:.75;k?starShape.lineTo(Math.cos(a)*r,Math.sin(a)*r):starShape.moveTo(Math.cos(a)*r,Math.sin(a)*r)}
-  const star=new T.Mesh(new T.ExtrudeGeometry(starShape,{depth:.18,bevelEnabled:false}),new T.MeshBasicMaterial({color:0xffd34d,toneMapped:false}));star.position.y=8.05;star.geometry.center();tree.add(star);
+  const star=new T.Mesh(new T.ExtrudeGeometry(starShape,{depth:.18,bevelEnabled:false}),new T.MeshBasicMaterial({color:0xffd34d,toneMapped:false}));star.position.y=XT?8.6:8.05;star.geometry.center();tree.add(star);
   let tBulbs=null,tSig='';
   function treeBulbs(nb){if(tBulbs){tree.remove(tBulbs);tBulbs.dispose()}const list=[],cs=[];let s=7;const rnd2=()=>(s=(s*16807)%2147483647)/2147483647;
    for(let k=0;k<nb;k++){const u=rnd2(),y=1.2+u*6.4,r=3.1*(1-u*.88)+.05,a=rnd2()*Math.PI*2;list.push([Math.cos(a)*r,y,Math.sin(a)*r,1.1]);cs.push(PAL[k%PAL.length])}
@@ -3247,7 +3248,7 @@ function make3D(T,X){
    blinkT-=dt;if(blinkT<=0){blinkT=.7;blink^=1}const kDay=.62+.38*nv;bulbA.color.setScalar(kDay*1.25);bulbB.color.setScalar(kDay*1.25);XMS.gA.visible=!blink||nv<.3;XMS.gB.visible=!!blink||nv<.3;
    for(const l of XMS.stalls)l.intensity=nv*14;
    // tree size and lights follow the subscribers
-   const sv0=subs||0;const sig=Math.floor(sv0/5)+'';if(sig!==tSig){tSig=sig;const g=.75+.55*clamp(sv0/1000,0,1);tree.scale.setScalar(g);treeBulbs(Math.round(clamp(30+sv0*.9,30,320)))}
+   const sv0=subs||0;const sig=Math.floor(sv0/5)+'';if(sig!==tSig){tSig=sig;const g=.75+.55*clamp(sv0/1000,0,1);tree.scale.setScalar(g);if(!XT)treeBulbs(Math.round(clamp(30+sv0*.9,30,320)))}
    star.visible=sv0>=150;star.rotation.y+=dt*1.2;
    const ws=WALL.length+'|'+(WALL[WALL.length-1]||'');if(ws!==gSig){gSig=ws;buildGifts()}
    // more snow when someone subscribes, a blizzard when a milestone opens
@@ -3288,7 +3289,7 @@ async function loadR3(){
    if(WORLD){try{const norm=sc=>{sc.updateMatrixWorld(true);let mesh=null;sc.traverse(o=>{if(o.isMesh&&!mesh)mesh=o});const g=mesh.geometry.clone();for(const k in g.attributes){const at=g.attributes[k];if(at.normalized||!(at.array instanceof Float32Array)){const n=at.count,sz=at.itemSize,fa=new Float32Array(n*sz);for(let i=0;i<n;i++)for(let c=0;c<sz;c++)fa[i*sz+c]=at.getComponent(i,c);g.setAttribute(k,new T.BufferAttribute(fa,sz))}}g.applyMatrix4(mesh.matrixWorld);g.computeBoundingBox();const b=g.boundingBox;return{g,m:mesh.material,b}};
      const tr=await Promise.all([1,2,3,4,5,6,7,8,9,10].map(n=>ld.loadAsync(ASSET_BASE+'assets/world/tree'+n+'.glb')));X.trees=tr.map((t,i)=>{const o=norm(t.scene),b=o.b,h=b.max.y-b.min.y;o.g.translate(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);o.g.scale(1/h,1/h,1/h);o.pine=[0,1,7,8].includes(i);return o});
      const tl=await ld.loadAsync(ASSET_BASE+'assets/world/tlight.glb');const o=norm(tl.scene);const P=o.g.attributes.position;let px=0,pz=0,c=0;for(let i=0;i<P.count;i++)if(P.getY(i)<2){px+=P.getX(i);pz+=P.getZ(i);c++}px/=c;pz/=c;o.g.translate(-px,-o.b.min.y,-pz);o.g.computeBoundingBox();o.front=o.g.boundingBox.max.z;o.hx=(o.g.boundingBox.min.x+o.g.boundingBox.max.x)/2;o.m.emissiveIntensity=.12;X.tlight=o}catch(e){console.warn('world props',e)}
-     if(XMAS){try{const g=await ld.loadAsync(ASSET_BASE+'assets/world/xmas_truck.glb');X.xtruck=g.scene}catch(e){console.warn('xmas truck',e)}try{const[a,b]=await Promise.all([ld.loadAsync(ASSET_BASE+'assets/world/xmas_sleigh.glb'),ld.loadAsync(ASSET_BASE+'assets/world/xmas_reindeer.glb')]);X.xsl=a.scene;X.xrd=b.scene}catch(e){console.warn('xmas sleigh',e)}}}
+     if(XMAS){try{const g=await ld.loadAsync(ASSET_BASE+'assets/world/xmas_truck.glb');X.xtruck=g.scene}catch(e){console.warn('xmas truck',e)}try{X.xtree=(await ld.loadAsync(ASSET_BASE+'assets/world/xmas_tree.glb')).scene}catch(e){console.warn('xmas tree',e)}try{const[a,b]=await Promise.all([ld.loadAsync(ASSET_BASE+'assets/world/xmas_sleigh.glb'),ld.loadAsync(ASSET_BASE+'assets/world/xmas_reindeer.glb')]);X.xsl=a.scene;X.xrd=b.scene}catch(e){console.warn('xmas sleigh',e)}}}
    await Promise.all(Object.entries(CAR_GLB).map(async([k,v])=>{try{const g=await ld.loadAsync(ASSET_BASE+'assets/cars/'+v.file);if(v.yaw!=null){g.scene.rotation.y=(v.yaw-90)*Math.PI/180;g.scene.updateMatrixWorld(true)}const bb=new T.Box3().setFromObject(g.scene,v.yaw!=null),sz=bb.getSize(new T.Vector3());v.len=Math.max(sz.x,sz.z);v.h=sz.y;v.y0=bb.min.y;v.cx=(bb.min.x+bb.max.x)/2;v.cz=(bb.min.z+bb.max.z)/2;if(v.rot==null)v.rot=(sz.x>sz.z?Math.PI/2:0)+(v.flip?Math.PI:0);
    if(v.fix)g.scene.traverse(o=>{if(!o.isMesh||!o.material)return;const f=v.fix[o.material.name];if(!f)return;const m=o.material;m.color.setHex(f[0]);m.map=null;if(f[1]){m.emissive.setHex(f[0]);m.emissiveIntensity=1.2}if(f[2]){m.transparent=true;m.opacity=f[2]}m.metalness=Math.min(m.metalness,.4);m.needsUpdate=true});X.cars[k]=g.scene}catch(e){console.warn('car model',k,e)}}))}catch(e){console.warn('gltf loader unavailable',e)}}}if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T,X);return R3}
  catch(e){console.warn('3D view unavailable',e);R3=null;return null}
