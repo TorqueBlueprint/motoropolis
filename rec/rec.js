@@ -73,7 +73,7 @@
     const view = document.createElement('canvas'); // what the viewer sees while it records
     if (record) {
       const stream = comp.captureStream(0); track = stream.getVideoTracks()[0];
-      const types = ['video/mp4;codecs=avc1.640028', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+      const types = ['video/mp4;codecs=avc1.640028', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
       const mime = types.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t));
       if (!mime) { st.innerHTML = '<span class="bad">This browser cannot record video. Please use Chrome or Edge.</span>'; return }
       rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 24e6 }); rec.ondataavailable = e => e.data.size && chunks.push(e.data); rec.start(1000)
@@ -91,7 +91,8 @@
     }
     bar.style.width = '100%';
     if (rec) {
-      await new Promise(r => { rec.onstop = r; rec.stop() }); const blob = new Blob(chunks, { type: rec.mimeType }); const ext = rec.mimeType.includes('mp4') ? 'mp4' : 'webm';
+      await new Promise(r => setTimeout(r, 300)); if (track && track.requestFrame) track.requestFrame(); await new Promise(r => { rec.onstop = r; rec.stop() }); const blob = new Blob(chunks, { type: rec.mimeType }); const ext = rec.mimeType.includes('mp4') ? 'mp4' : 'webm';
+      if (blob.size < 20000) { st.innerHTML = '<span class="bad">The recording came out empty (' + rec.mimeType + '). Try Chrome or Edge, or tell Claude.</span>'; window.__MANUAL = false; $('rGo').disabled = $('rPv').disabled = false; return }
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `motoropolis-${NAME}-${total}f.${ext}`; document.body.appendChild(a); a.click();
       st.innerHTML = `<span class="ok">Done! The video was downloaded (${(blob.size / 1e6).toFixed(1)} MB, ${total} frames).</span> Send it to Claude.` + (slow > total * .1 ? ` <span class="bad">Your PC fell behind on ${slow} frames; that is fine, Claude fixes the timing.</span>` : '')
     } else st.textContent = 'Preview finished.';
