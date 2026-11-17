@@ -71,7 +71,15 @@
     H2.trailer(true); H2.hud(false); H2.light(SH.light || 'dia'); window.__MANUAL = true; snapMini();
     const total = SH.shots.reduce((a, s) => a + Math.round(s.dur * FPS), 0); let F = 0, rec = null, chunks = [], track = null, slow = 0;
     const view = document.createElement('canvas'); // what the viewer sees while it records
-    if (record) {
+    let enc = null, mux = null, encErr = null;
+    if (record && window.VideoEncoder && window.MP4Mux) {
+      for (const codec of ['avc1.640034', 'avc1.640033', 'avc1.64002a', 'avc1.4d0034']) {
+        const cfg = { codec, width: W, height: H, bitrate: 40e6, framerate: FPS, avc: { format: 'avc' } };
+        try { const sup = await VideoEncoder.isConfigSupported(cfg); if (!sup.supported) continue } catch (e) { continue }
+        mux = new MP4Mux(W, H, FPS); enc = new VideoEncoder({ output: (ch, meta) => mux.add(ch, meta), error: e => { encErr = e } }); enc.configure(cfg); break
+      }
+    }
+    if (record && !enc) {
       const stream = comp.captureStream(0); track = stream.getVideoTracks()[0];
       const types = ['video/mp4;codecs=avc1.640028', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
       const mime = types.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t));
@@ -83,14 +91,19 @@
       const n = Math.round(S.dur * FPS), sst = {};
       if (S.follow) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = H2.pick(S.follow.glb, used); if (c) { sst.id = c.id; used.push(c.id) } else H2.step(2) } }
       for (let k = 0; k < n; k++, F++) {
-        const due = t0 + F * 1000 / FPS; const now = performance.now(); if (now < due) await new Promise(r => setTimeout(r, due - now)); else if (now - due > 1000 / FPS) slow++;
+        const due = t0 + F * 1000 / FPS; const now = performance.now(); if (enc) { if (enc.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 4)); else if (F % 30 === 0) await new Promise(r => setTimeout(r, 0)) } else if (now < due) await new Promise(r => setTimeout(r, due - now)); else if (now - due > 1000 / FPS) slow++;
         const t = k / FPS; H2.step(1 / FPS); const cam = camAt(S, t, sst); Object.assign(R.cam, { tx: cam.tx, tz: cam.tz, yaw: cam.yaw, pitch: cam.pitch, dist: cam.dist });
-        if (cam.fov && R.camera.fov !== cam.fov) { R.camera.fov = cam.fov; R.camera.updateProjectionMatrix() } R.frame(1 / FPS); compose(S, t); if (track && track.requestFrame) track.requestFrame();
+        if (cam.fov && R.camera.fov !== cam.fov) { R.camera.fov = cam.fov; R.camera.updateProjectionMatrix() } R.frame(1 / FPS); compose(S, t); if (enc) { const fr = new VideoFrame(comp, { timestamp: Math.round(F * 1e6 / FPS), duration: Math.round(1e6 / FPS) }); enc.encode(fr, { keyFrame: F % FPS === 0 }); fr.close() } else if (track && track.requestFrame) track.requestFrame();
         if (F % 6 === 0) { bar.style.width = (100 * F / total).toFixed(1) + '%'; st.textContent = (record ? 'Recording… ' : 'Preview… ') + Math.round(100 * F / total) + '%' }
       }
     }
     bar.style.width = '100%';
-    if (rec) {
+    if (enc) {
+      st.textContent = 'Saving video…'; await enc.flush(); enc.close();
+      let blob = null; try { if (encErr) throw encErr; blob = mux.finish() } catch (e) { st.innerHTML = '<span class="bad">Recording failed: ' + e.message + '. Tell Claude.</span>'; window.__MANUAL = false; $('rGo').disabled = $('rPv').disabled = false; return }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `motoropolis-${NAME}-${total}f-60fps.mp4`; document.body.appendChild(a); a.click();
+      st.innerHTML = `<span class="ok">Done! The video was downloaded (${(blob.size / 1e6).toFixed(1)} MB, ${total} frames, smooth ${FPS} fps).</span> Send it to Claude.`
+    } else if (rec) {
       await new Promise(r => setTimeout(r, 300)); if (track && track.requestFrame) track.requestFrame(); await new Promise(r => { rec.onstop = r; rec.stop() }); const blob = new Blob(chunks, { type: rec.mimeType }); const ext = rec.mimeType.includes('mp4') ? 'mp4' : 'webm';
       if (blob.size < 20000) { st.innerHTML = '<span class="bad">The recording came out empty (' + rec.mimeType + '). Try Chrome or Edge, or tell Claude.</span>'; window.__MANUAL = false; $('rGo').disabled = $('rPv').disabled = false; return }
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `motoropolis-${NAME}-${total}f.${ext}`; document.body.appendChild(a); a.click();
@@ -102,7 +115,7 @@
     if (!NAME) { info.innerHTML = '<span class="bad">No shot list. Open this page with ?s=NAME.</span>'; return }
     try { SH = await (await fetch('shots/' + NAME + '.json?v=' + Date.now(), { cache: 'no-store' })).json() } catch (e) { info.innerHTML = '<span class="bad">Shot list "' + NAME + '" not found.</span>'; return }
     const dur = SH.shots.reduce((a, s) => a + s.dur, 0);
-    info.innerHTML = `<b>${SH.title || NAME}</b><br>${SH.shots.length} shots · ${dur.toFixed(1)} s · 1080×1920 · ${FPS} fps<br>Press RECORD and wait about ${Math.ceil(dur)} seconds. The video downloads by itself.`;
+    info.innerHTML = `<b>${SH.title || NAME}</b><br>${SH.shots.length} shots · ${dur.toFixed(1)} s · 1080×1920 · ${FPS} fps<br>Press RECORD and wait until it says Done (it may take longer than the video; every frame is kept). The video downloads by itself.`;
     const wait = () => new Promise(r => { const k = () => window.__H && window.__H.R3() ? r() : setTimeout(k, 300); k() }); await wait();
     window.__H.step(SH.warmup || 40); $('rGo').disabled = $('rPv').disabled = false; $('rGo').onclick = () => run(true); $('rPv').onclick = () => run(false)
   }

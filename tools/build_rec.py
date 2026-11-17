@@ -21,7 +21,7 @@ R("if(location.hostname==='localhost')window.__mtpBuild=",
   "pos:id=>{const c=cars.find(q=>q.id===id);return c?{x:c.x/10,z:c.y/10,a:c.ang,v:c.v}:null}};\n"
   "if(location.hostname==='localhost')window.__mtpBuild=")
 i = s.rindex("</body>")
-s = s[:i] + '<script src="rec.js?v=3"></script>' + s[i:]
+s = s[:i] + '<script src="mp4mux.js?v=1"></script><script src="rec.js?v=4"></script>' + s[i:]
 os.makedirs(os.path.join(ROOT, "rec", "shots"), exist_ok=True)
 open(os.path.join(ROOT, "rec", "index.html"), "w", encoding="utf-8").write(s)
 print("rec/index.html built", len(s))
