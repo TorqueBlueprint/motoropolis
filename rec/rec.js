@@ -1,7 +1,7 @@
 // Motoropolis recorder: films a Short from a shot list on the viewer's own GPU.
 // rec/?s=<shots file name>  (files live in rec/shots/<name>.json)
 (function () {
-  const W = 1080, H = 1920, FPS = 30, PI = Math.PI;
+  const W = 1080, H = 1920, FPS = 60, PI = Math.PI;
   const E = x => x < 0 ? 0 : x > 1 ? 1 : (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
   const L = (a, b, k) => a + (b - a) * k;
   const qs = new URLSearchParams(location.search), NAME = (qs.get('s') || '').replace(/[^a-z0-9_-]/gi, '');
@@ -76,7 +76,7 @@
       const types = ['video/mp4;codecs=avc1.640028', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
       const mime = types.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t));
       if (!mime) { st.innerHTML = '<span class="bad">This browser cannot record video. Please use Chrome or Edge.</span>'; return }
-      rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 24e6 }); rec.ondataavailable = e => e.data.size && chunks.push(e.data); rec.start(1000)
+      rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 40e6 }); rec.ondataavailable = e => e.data.size && chunks.push(e.data); rec.start(1000)
     }
     const used = []; const t0 = performance.now();
     for (const S of SH.shots) {
@@ -102,7 +102,7 @@
     if (!NAME) { info.innerHTML = '<span class="bad">No shot list. Open this page with ?s=NAME.</span>'; return }
     try { SH = await (await fetch('shots/' + NAME + '.json?v=' + Date.now(), { cache: 'no-store' })).json() } catch (e) { info.innerHTML = '<span class="bad">Shot list "' + NAME + '" not found.</span>'; return }
     const dur = SH.shots.reduce((a, s) => a + s.dur, 0);
-    info.innerHTML = `<b>${SH.title || NAME}</b><br>${SH.shots.length} shots · ${dur.toFixed(1)} s · 1080×1920 · 30 fps<br>Press RECORD and wait about ${Math.ceil(dur)} seconds. The video downloads by itself.`;
+    info.innerHTML = `<b>${SH.title || NAME}</b><br>${SH.shots.length} shots · ${dur.toFixed(1)} s · 1080×1920 · ${FPS} fps<br>Press RECORD and wait about ${Math.ceil(dur)} seconds. The video downloads by itself.`;
     const wait = () => new Promise(r => { const k = () => window.__H && window.__H.R3() ? r() : setTimeout(k, 300); k() }); await wait();
     window.__H.step(SH.warmup || 40); $('rGo').disabled = $('rPv').disabled = false; $('rGo').onclick = () => run(true); $('rPv').onclick = () => run(false)
   }
