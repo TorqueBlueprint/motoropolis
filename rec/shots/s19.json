@@ -1,0 +1,61 @@
+{
+ "title": "Short 19 \u00b7 Turbo cool-down \u00b7 end card",
+ "shots": [
+  {
+   "end": true,
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.941592653589793,
+     "pitch": 1.0,
+     "dist": 300
+    },
+    "to": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.441592653589793,
+     "pitch": 1.0,
+     "dist": 300
+    },
+    "ease": false
+   },
+   "txt": [
+    {
+     "t0": 0.1,
+     "until": 2.5,
+     "y": 290,
+     "lines": [
+      [
+       "DID YOU GET IT",
+       92,
+       "#ffffff"
+      ],
+      [
+       "RIGHT?",
+       130,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 2.6,
+     "y": 290,
+     "lines": [
+      [
+       "EVERY SUBSCRIBER",
+       92,
+       "#ffffff"
+      ],
+      [
+       "ADDS A CAR",
+       120,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ],
+   "dur": 10.0
+  }
+ ]
+}
