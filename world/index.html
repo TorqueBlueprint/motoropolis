@@ -3343,7 +3343,7 @@ function make3D(T,X){
   // ===== inside Santa's workshop: the elves make the toys =====
   if(XSTB){const SW={built:false,home:{...STD_HOME,yaw:.2,dist:34}};
    const toyC=[0xd93a2f,0x2f6fd9,0x2e7d4f,0xffd34d,0x8e44ad,0xff7a1a];
-   async function loadSW(R){const NM=['fireplace','shelf','tree','bench','wrap','belt','sack','horse','elf','desk','santa','sofa'],G={};
+   async function loadSW(R){const NM=['fireplace','shelf','tree','bench','wrap','belt','sack','horse','elf','desk','santa','sofa','gifts'],G={};
     await Promise.all(NM.map(async n=>{G[n]=(await X.ld.loadAsync(ASSET_BASE+'assets/world/xsw_'+n+'.glb')).scene}));
     const put=(n,dim,val,x,z,ry=0,y=0)=>{const src=G[n],bb=new T.Box3().setFromObject(src),sz=bb.getSize(new T.Vector3()),k=val/sz[dim];const o=src.clone();o.scale.setScalar(k);o.position.set(-(bb.min.x+bb.max.x)/2*k,-bb.min.y*k,-(bb.min.z+bb.max.z)/2*k);
      o.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true}});const g=new T.Group();g.add(o);g.position.set(x,y,z);g.rotation.y=ry;R.add(g);g.userData.sz=sz.clone().multiplyScalar(k);return g};
@@ -3367,9 +3367,9 @@ function make3D(T,X){
     R.B2(4.6,1.4,2.6,M(0x9a6a3c),3.6,0,1.2);R.B2(4.8,.15,2.8,M(0x6b4423),3.6,1.4,1.2);put('wrap','x',4.2,3.6,1.2,Math.PI,1.55);elf(3.6,1.2-1.3-.3,0,'wrap');
     SW.beltG=put('belt','x',6.4,17.2,4.6,-Math.PI/2);SW.horse=put('horse','y',2.9,-20.6,3.2,.7);
     put('sack','y',2.6,21.6,8.2,-.4);put('sack','y',2.2,19.2,9,.3);put('sack','y',2,-21.8,8.8,.5);
-    ambSW(R);SW.models=true}
+    ambSW(R,G);SW.models=true}
    // life in the workshop: fire glow and sparks, snow outside the windows, twinkling string lights, a toy train, the rocking horse and the toy machine at work
-   function ambSW(R){const L=SW.L={h:[],k:[],p:[]};R.S.traverse(o=>{if(o.isHemisphereLight)L.h.push([o,o.intensity]);else if(o.isDirectionalLight)L.k.push([o,o.intensity]);else if(o.isPointLight)L.p.push([o,o.intensity])});
+   function ambSW(R,G){const L=SW.L={h:[],k:[],p:[]};R.S.traverse(o=>{if(o.isHemisphereLight)L.h.push([o,o.intensity]);else if(o.isDirectionalLight)L.k.push([o,o.intensity]);else if(o.isPointLight)L.p.push([o,o.intensity])});
     const fl=new T.PointLight(0xff7a1a,60,26,1.5);fl.position.set(17.4,1.4,-6.6);R.add(fl);SW.fl=fl;
     const pts=(n,col,size)=>{const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(new Float32Array(n*3),3));const m=new T.Points(g,new T.PointsMaterial({color:col,size,transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false}));m.frustumCulled=false;R.add(m);return{g,a:g.attributes.position,s:[...Array(n)].map(()=>[Math.random(),Math.random(),Math.random()])}};
     SW.spk=pts(36,0xffb347,.16);SW.snow=pts(160,0xffffff,.12);SW.snow.m=SW.snow.g;
@@ -3379,25 +3379,30 @@ function make3D(T,X){
     const im=new T.InstancedMesh(new T.SphereGeometry(.13,8,6),new T.MeshBasicMaterial({toneMapped:false}),lp.length);const d=new T.Object3D();lp.forEach((q,i)=>{d.position.set(q[0],q[1],q[2]);d.updateMatrix();im.setMatrixAt(i,d.matrix);im.setColorAt(i,new T.Color(PAL[i%PAL.length]))});R.add(im);SW.lp={im,n:lp.length,c:new T.Color()};
     {const wire=new T.Line(new T.BufferGeometry().setFromPoints(lp.slice(0,61).map(q=>new T.Vector3(q[0],q[1]+.12,q[2]))),new T.LineBasicMaterial({color:0x1f3b26}));R.add(wire)}
     // Santa's nice list (Wall of Mechanics names) behind his desk, and a countdown calendar
-    {const c=document.createElement('canvas');c.width=512;c.height=1024;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,1024);g.addColorStop(0,'#f6ecd2');g.addColorStop(1,'#e9d6ad');x.fillStyle=g;x.fillRect(0,0,512,1024);
-     x.strokeStyle='#b3261e';x.lineWidth=10;x.strokeRect(14,14,484,996);x.fillStyle='#b3261e';x.font='900 58px "Barlow Condensed",Arial';x.textAlign='center';x.fillText("SANTA'S",256,92);x.fillText('NICE LIST',256,150);
-     x.fillStyle='#1f6b3a';x.font='700 26px "Barlow Condensed",Arial';x.fillText('Comment WORKSHOP to join',256,190);x.strokeStyle='#b3261e';x.lineWidth=3;x.beginPath();x.moveTo(60,208);x.lineTo(452,208);x.stroke();
-     const N=WALL.slice(0,60),cols=N.length>22?2:1,rows=Math.ceil(N.length/cols)||1,fs=Math.max(18,Math.min(38,Math.floor(780/rows)-4));x.font=`600 ${fs}px "Barlow Condensed",Arial`;x.textAlign='left';
-     N.forEach((n,i)=>{const cx=cols===2?(i<rows?44:272):70,cy=240+(i%rows)*(780/rows)+fs;x.fillStyle='#2e7d4f';x.fillText('✓',cx,cy);x.fillStyle='#3a2a1c';x.fillText(n.length>18?n.slice(0,17)+'…':n,cx+fs*.9,cy,(cols===2?196:380)-fs*.9)});
-     const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;const m=new T.Mesh(new T.PlaneGeometry(3,6),new T.MeshStandardMaterial({map:t,roughness:.9}));m.position.set(6.6,5.15,-10.66);R.add(m);
-     const rod=new T.Mesh(new T.CylinderGeometry(.09,.09,3.4,10),M(0x8a5a35));rod.rotation.z=Math.PI/2;rod.position.set(6.6,8.18,-10.6);R.add(rod);const rod2=rod.clone();rod2.position.y=2.12;R.add(rod2)}
-    {const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#fffaf0';x.fillRect(0,0,512,512);x.fillStyle='#b3261e';x.fillRect(0,0,512,120);x.fillStyle='#fff';x.textAlign='center';x.font='900 50px "Barlow Condensed",Arial';x.fillText('DAYS TO CHRISTMAS',256,80,470);
+    {const par=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#f3e6c6';x.fillRect(0,0,w,h);return[c,x]};const tex=c=>{const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return t};
+     const bg=new T.Mesh(new T.PlaneGeometry(4.4,6.5),new T.MeshStandardMaterial({color:0xf3e6c6,roughness:.95}));bg.position.set(6.6,5.1,-10.68);R.add(bg);
+     const fr=new T.Mesh(new T.PlaneGeometry(4.2,6.3),new T.MeshBasicMaterial({color:0xb3261e}));fr.position.set(6.6,5.1,-10.675);R.add(fr);const in2=new T.Mesh(new T.PlaneGeometry(4.0,6.1),new T.MeshStandardMaterial({color:0xf3e6c6,roughness:.95}));in2.position.set(6.6,5.1,-10.67);R.add(in2);
+     {const[c,x]=par(1024,384);x.textAlign='center';x.fillStyle='#b3261e';x.font='900 150px "Barlow Condensed",Arial';x.fillText("SANTA'S NICE LIST",512,170,980);x.fillStyle='#1f6b3a';x.font='700 70px "Barlow Condensed",Arial';x.fillText('Comment WORKSHOP to join',512,280,960);x.fillStyle='#b3261e';x.fillRect(80,320,864,8);
+      const m=new T.Mesh(new T.PlaneGeometry(3.9,1.46),new T.MeshStandardMaterial({map:tex(c),roughness:.9}));m.position.set(6.6,7.42,-10.66);R.add(m)}
+     {const N=WALL.slice(0,120),rows=Math.max(1,Math.ceil(N.length/2)),RP=96,[c,x]=par(1024,rows*RP);x.font='700 66px "Barlow Condensed",Arial';x.textAlign='left';
+      N.forEach((n,i)=>{const cx=i<rows?30:540,cy=(i%rows)*RP+70;x.fillStyle='#2e7d4f';x.fillText('✓',cx,cy);x.fillStyle='#3a2a1c';x.fillText(n,cx+56,cy,440)});
+      const t=tex(c),VIS=11;t.wrapT=T.RepeatWrapping;if(rows>VIS)t.repeat.y=VIS/rows;const m=new T.Mesh(new T.PlaneGeometry(3.9,4.4),new T.MeshStandardMaterial({map:t,roughness:.9}));m.position.set(6.6,4.4,-10.66);R.add(m);SW.list={t,rows,VIS}}
+     const rod=new T.Mesh(new T.CylinderGeometry(.1,.1,4.8,10),M(0x8a5a35));rod.rotation.z=Math.PI/2;rod.position.set(6.6,8.4,-10.6);R.add(rod);const rod2=rod.clone();rod2.position.y=1.85;R.add(rod2)}
+    {const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.scale(2,2);c.width=c.height=1024;x.setTransform(2,0,0,2,0,0);x.fillStyle='#fffaf0';x.fillRect(0,0,512,512);x.fillStyle='#b3261e';x.fillRect(0,0,512,120);x.fillStyle='#fff';x.textAlign='center';x.font='900 50px "Barlow Condensed",Arial';x.fillText('DAYS TO CHRISTMAS',256,80,470);
      const now=new Date();let xm=new Date(now.getFullYear(),11,25);if(now>new Date(now.getFullYear(),11,26))xm=new Date(now.getFullYear()+1,11,25);const days=Math.max(0,Math.ceil((xm-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/864e5));
      x.fillStyle=days?'#1f6b3a':'#b3261e';x.font=`900 ${days?260:110}px "Barlow Condensed",Arial`;x.fillText(days?String(days):'MERRY',256,days?380:300);if(!days)x.fillText('XMAS!',256,420);x.fillStyle='#7a5a3a';x.font='700 40px "Barlow Condensed",Arial';x.fillText('DECEMBER 25',256,478);
-     const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;const m=new T.Mesh(new T.PlaneGeometry(2.6,2.6),new T.MeshStandardMaterial({map:t,roughness:.8}));m.position.set(-1.8,5,-10.66);R.add(m);const fr=R.B2(2.9,2.9,.12,M(0x6b4423),-1.8,3.55,-10.74,false)}
+     const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;const m=new T.Mesh(new T.PlaneGeometry(2.6,2.6),new T.MeshStandardMaterial({map:t,roughness:.8}));m.position.set(-1.8,5,-10.66);R.add(m);const fr=R.B2(2.9,2.9,.12,M(0x6b4423),-1.8,3.55,-10.74,false)}
     // toy train circling the Christmas tree
     {const tg=new T.Group();tg.position.set(-21.2,0,-7);R.add(tg);const tr=new T.Mesh(new T.TorusGeometry(2.4,.06,6,64),M(0x6b4423));tr.rotation.x=Math.PI/2;tr.position.y=.06;tg.add(tr);
      const car=(c,eng)=>{const g=new T.Group();const b=new T.Mesh(new T.BoxGeometry(.75,.42,.42),M(c));b.position.y=.33;g.add(b);if(eng){const ch=new T.Mesh(new T.CylinderGeometry(.09,.11,.3,8),M(0x22252b));ch.position.set(.22,.68,0);g.add(ch);const cab=new T.Mesh(new T.BoxGeometry(.3,.3,.44),M(0x1f6b3a));cab.position.set(-.22,.66,0);g.add(cab)}else{const gift=new T.Mesh(new T.BoxGeometry(.32,.26,.3),M(PAL[(c>>3)%PAL.length]));gift.position.y=.67;g.add(gift)}for(const x of[-.22,.22])for(const z of[-.22,.22]){const w=new T.Mesh(new T.CylinderGeometry(.11,.11,.06,10),M(0x22252b));w.rotation.x=Math.PI/2;w.position.set(x,.12,z);g.add(w)}g.traverse(o=>{if(o.isMesh)o.castShadow=true});tg.add(g);return g};
      SW.train=[car(0xd93a2f,1),car(0x2f6fd9),car(0xffd34d),car(0x2e7d4f)]}
+    // gift models (four kinds) used on the belt, in the pile and on the toy train
+    const GIFT=[];if(G.gifts){G.gifts.updateMatrixWorld(true);G.gifts.traverse(o=>{if(o.isMesh&&/Gift_0[1-4]/.test(o.name)){const g=o.geometry.clone();g.applyMatrix4(o.matrixWorld);g.computeBoundingBox();const b=g.boundingBox,sz=b.getSize(new T.Vector3()),k=1/Math.max(sz.x,sz.y,sz.z);g.translate(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);g.scale(k,k,k);GIFT.push({g,m:o.material})}})}
+    const gift=(i,s)=>{if(!GIFT.length)return null;const q=GIFT[i%GIFT.length],m=new T.Mesh(q.g,q.m);m.scale.setScalar(s);m.castShadow=true;return m};
     // presents riding the toy machine's belt and dropping into a pile at the end
     if(SW.beltG){const bg=SW.beltG,h=bg.userData.sz.y,w=bg.userData.sz.x;SW.bp={y:h*.52,x0:w*.2,x1:-w*.48,list:[]};const pg=new T.Group();pg.rotation.y=bg.rotation.y;pg.position.copy(bg.position);R.add(pg);SW.bp.g=pg;
-     for(let k=0;k<5;k++){const s=.38+(k%3)*.1,g=new T.Group();const b=new T.Mesh(new T.BoxGeometry(s,s,s),M(PAL[(k*3+1)%PAL.length]));b.position.y=s/2;g.add(b);const r1=new T.Mesh(new T.BoxGeometry(s*1.02,s*1.02,s*.18),M(0xffd34d));r1.position.y=s/2;g.add(r1);g.traverse(o=>{if(o.isMesh)o.castShadow=true});pg.add(g);SW.bp.list.push({g,ph:k/5,s})}
-     for(let k=0;k<7;k++){const s=.4+(k%3)*.12,b=new T.Mesh(new T.BoxGeometry(s,s,s),M(PAL[(k*5+2)%PAL.length]));b.position.set(-w*.5-.7-(k%3)*.45,s/2+(k>3?.45:0),(k%2?.35:-.35)+(k>4?.2:0));b.rotation.y=k*.7;b.castShadow=true;pg.add(b)}}}
+     for(let k=0;k<5;k++){const s=.5+(k%3)*.12,g=new T.Group();const gm=gift(k,s);if(gm){gm.rotation.y=k*.9;g.add(gm)}else{const b=new T.Mesh(new T.BoxGeometry(s,s,s),M(PAL[(k*3+1)%PAL.length]));b.position.y=s/2;g.add(b)}g.traverse(o=>{if(o.isMesh)o.castShadow=true});pg.add(g);SW.bp.list.push({g,ph:k/5,s})}
+     for(let k=0;k<7;k++){const s=.55+(k%3)*.15,gm=gift(k+1,s),b=gm||new T.Mesh(new T.BoxGeometry(s,s,s),M(PAL[(k*5+2)%PAL.length]));b.position.set(-w*.5-.7-(k%3)*.5,(gm?0:s/2)+(k>3?.5:0),(k%2?.4:-.4)+(k>4?.2:0));b.rotation.y=k*.7;b.castShadow=true;pg.add(b)}}}
    function buildSanta(){const R=room({title:"SANTA'S WORKSHOP · NORTH POLE BRANCH",titleW:30,sbg:'#b3261e',trim:0x1f6b3a,wall:0x6b2a1e,wall2:0x5a2318,floor:0x8a5a35,h:12});SW.S=R.S;
     SW.fire=[];SW.toys=[];SW.belt=[];SW.elves=[];SW.melves=[];
     SW.santa=mkP(SW.S,'#c0392b',200);putP(SW.santa,{x:13.2,z:-2.6,ang:-.4},false);
@@ -3433,6 +3438,7 @@ function make3D(T,X){
      {const a=SW.spk.a;SW.spk.s.forEach((q,i)=>{const u=(t*.45+q[0])%1;a.setXYZ(i,17.4+(q[1]-.5)*1.6+Math.sin(t*3+i)*.15*u,.9+u*4.2,-8.2+(q[2]-.5)*.6+u*.4)});a.needsUpdate=true}
      {const a=SW.snow.a,W=[[-25.55,-5],[-25.55,2],[25.55,-5],[25.55,2]];SW.snow.s.forEach((q,i)=>{const w=W[i%4],u=(t*.12+q[0])%1;a.setXYZ(i,w[0],5.5-u*3.05,w[1]+(q[1]-.5)*4.3+Math.sin(t*1.3+i)*.12)});a.needsUpdate=true}
      {const L2=SW.lp,on=Math.floor(t*2.2);for(let i=0;i<L2.n;i++){L2.c.set(PAL[i%PAL.length]);if((i+on)%3===0)L2.c.multiplyScalar(.25);L2.im.setColorAt(i,L2.c)}L2.im.instanceColor.needsUpdate=true}
+     if(SW.list&&SW.list.rows>SW.list.VIS){const L3=SW.list,rep=L3.VIS/L3.rows;L3.t.offset.y=((((1-rep)-t*.45/L3.rows)%1)+1)%1}
      SW.train.forEach((c,k)=>{const a=t*.55-k*.36;c.position.set(Math.cos(a)*2.4,0,Math.sin(a)*2.4);c.rotation.y=-a-Math.PI/2});
      if(SW.horse)SW.horse.children[0].rotation.z=.13*Math.sin(t*2.1);
      if(SW.bp)SW.bp.list.forEach((p,k)=>{const cy=Math.floor(t*.16+p.ph),u=(t*.16+p.ph)%1,B=SW.bp;p.name=WALL.length?WALL[(cy*5+k*7)%WALL.length]:null;p.u=u;let x,y;if(u<.8){x=B.x0+(B.x1-B.x0)*(u/.8);y=B.y}else{const v=(u-.8)/.2;x=B.x1-v*1.2;y=Math.max(0,B.y-B.y*v*v)}p.g.position.set(x,y,0);p.g.visible=u<.97})}
@@ -3441,7 +3447,7 @@ function make3D(T,X){
      if(m.kind==='hammer'){B.RightForeArm.rotation.z=R0.RightForeArm.z-.7*up;B.LeftForeArm.rotation.z=R0.LeftForeArm.z+.08*Math.sin(ph*.5)}
      else{const w=Math.sin(t*2.6+k);B.RightForeArm.rotation.z=R0.RightForeArm.z-.3*Math.max(0,w);B.LeftForeArm.rotation.z=R0.LeftForeArm.z+.3*Math.max(0,-w)}
      if(B.Head)B.Head.rotation.x=R0.Head.x+.12*Math.sin(t*2.2+k);if(B.Spine1)B.Spine1.rotation.x=R0.Spine1.x+.05*up})}
-   function labelsSanta(){staffTag(SW.santaM||SW.santa,'park','Santa',0,4.6);if(SW.bp){const v=new T.Vector3();SW.bp.list.forEach(p=>{if(p.name&&p.g.visible&&p.u<.9){p.g.getWorldPosition(v);tag(v.x,v.y+p.s+.45,v.z,'🎁 '+p.name,'rgba(179,38,30,.9)','#fff')}})}SW.elves.forEach((e,k)=>staffTag(e,'park','Elf',k,3.1));header("INSIDE SANTA'S WORKSHOP")}
+   function labelsSanta(){staffTag(SW.santaM||SW.santa,'park','Santa',0,4.6);if(SW.bp){const v=new T.Vector3();SW.bp.list.forEach((p,k)=>{if(k%2===0&&p.name&&p.g.visible&&p.u>.04&&p.u<.85){p.g.getWorldPosition(v);tag(v.x,v.y+p.s+.45,v.z,'🎁 '+p.name,'rgba(179,38,30,.9)','#fff')}})}SW.elves.forEach((e,k)=>staffTag(e,'park','Elf',k,3.1));header("INSIDE SANTA'S WORKSHOP")}
    INTS.santa={get scene(){return SW.S},build:buildSanta,isBuilt:()=>SW.built,sync:syncSanta,labels:labelsSanta,home:SW.home}}
   // Santa's sleigh flies a loop over the city: modelled here in low poly (sleigh, Santa, presents, four reindeer)
   const sleigh=new T.Group();scene.add(sleigh);const XLEG=[];
