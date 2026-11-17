@@ -3353,10 +3353,10 @@ function make3D(T,X){
     // four workbenches with an elf each, a wrapping table, the toy machine, sacks and the rocking horse
     const elf=(x,z,ry,kind)=>{const e=X.SUc(G.elf);e.scale.setScalar(2.6/.68);e.traverse(m=>{if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});const g=new T.Group();g.add(e);g.position.set(x,0,z);g.rotation.y=ry;g.userData.base=ry;R.add(g);
      const B={};e.traverse(o=>{if(o.isBone){const m=o.name.match(/(LeftArm|LeftForeArm|RightArm|RightForeArm|Head|Spine1)$/);if(m)B[m[1]]=o}});
-     if(B.RightArm){B.RightArm.rotation.z-=.8;B.RightForeArm.rotation.z-=1.2;B.LeftArm.rotation.z+=.8;B.LeftForeArm.rotation.z+=1.1}
+     if(B.RightArm){B.RightArm.rotation.z-=1.3;B.RightForeArm.rotation.z-=.45;B.LeftArm.rotation.z+=1.3;B.LeftForeArm.rotation.z+=.45}
      const R0={};for(const k in B)R0[k]=B[k].rotation.clone();SW.melves.push({g,B,R0,kind});SW.elves.push(g);return g};
-    [[-13,-1.6],[-4,-1.6],[-13,4.4],[-4,4.4]].forEach(([x,z])=>{const b=put('bench','x',3.6,x,z);elf(x,z+b.userData.sz.z/2+.55,Math.PI,'hammer')});
-    R.B2(4.6,1.4,2.6,M(0x9a6a3c),3.6,0,1.2);R.B2(4.8,.15,2.8,M(0x6b4423),3.6,1.4,1.2);put('wrap','x',4.2,3.6,1.2,0,1.55);elf(3.6,1.2+1.3+.55,Math.PI,'wrap');
+    [[-13,-1.6],[-4,-1.6],[-13,4.4],[-4,4.4]].forEach(([x,z])=>{const b=put('bench','x',3.6,x,z);elf(x,z+b.userData.sz.z/2+.3,Math.PI,'hammer')});
+    R.B2(4.6,1.4,2.6,M(0x9a6a3c),3.6,0,1.2);R.B2(4.8,.15,2.8,M(0x6b4423),3.6,1.4,1.2);put('wrap','x',4.2,3.6,1.2,0,1.55);elf(3.6,1.2+1.3+.3,Math.PI,'wrap');
     put('belt','x',6.4,17.2,4.6,-Math.PI/2);put('horse','y',2.9,-20.6,3.2,.7);
     put('sack','y',2.6,21.6,8.2,-.4);put('sack','y',2.2,19.2,9,.3);put('sack','y',2,-21.8,8.8,.5);
     SW.models=true}
