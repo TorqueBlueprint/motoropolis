@@ -3356,7 +3356,7 @@ function make3D(T,X){
     put('tree','y',6.4,-21.2,-7);put('fireplace','x',7.6,17.4,-9.2);{// armchair only (the set's own little desk is cut away), Santa sitting in it waving, and his new writing desk beside him
      put('sofa','x',5.6,12.2,-7,-.25);
      const sg=G.santa;const wave={};sg.traverse(o=>{if(o.isBone){const m=o.name.match(/(RightForeArm|RightHand|Head)$/);if(m){wave[m[1]]=o;wave[m[1]+'0']=o.rotation.clone()}}if(o.isMesh){o.castShadow=true;o.frustumCulled=false}});sg.updateMatrixWorld(true);
-     const sb=new T.Box3().setFromObject(sg),sk=3.2/(sb.max.y-sb.min.y),sw=new T.Group();sw.add(sg);sg.scale.setScalar(sk);sg.position.set(-(sb.min.x+sb.max.x)/2*sk,-sb.min.y*sk+.15,-(sb.min.z+sb.max.z)/2*sk);sw.position.set(12.2,.7,-7+.7);sw.rotation.y=-.25;R.add(sw);
+     const sb=new T.Box3().setFromObject(sg),sk=3.2/(sb.max.y-sb.min.y),sw=new T.Group();sw.add(sg);sg.scale.setScalar(sk);sg.position.set(-(sb.min.x+sb.max.x)/2*sk,-sb.min.y*sk+.15,-(sb.min.z+sb.max.z)/2*sk);sw.position.set(12.2+.08,.75,-7+1.1);sw.rotation.y=-.25;R.add(sw);
      SW.santa.visible=false;SW.santaM=sw;SW.wave=wave;put('desk','x',4.4,6.6,-7,.2)}
     // four workbenches with an elf each, a wrapping table, the toy machine, sacks and the rocking horse
     const elf=(x,z,ry,kind)=>{const e=X.SUc(G.elf);e.scale.setScalar(2.6/.68);e.traverse(m=>{if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});const g=new T.Group();g.add(e);g.position.set(x,0,z);g.rotation.y=ry;g.userData.base=ry;R.add(g);
