@@ -324,7 +324,12 @@ const MODELS=[
  {n:'German rear-engine turbo coupe',len:32,wid:16,price:250000,v:[112,130],sport:true,glb:'rearturbo'},
  {n:'Japanese RWD coupe 2.4',len:31,wid:15,price:32000,v:[100,118],sport:true,glb:'rwd24'},
  {n:'1983 Japanese hatchback coupe 1.6',len:30,wid:15,price:35000,v:[98,116],classic:true,sport:true,glb:'ae86'},
- {n:'1987 Italian twin-turbo supercar',len:31,wid:16,price:2500000,v:[114,132],classic:true,sport:true,glb:'f40'}
+ {n:'1987 Italian twin-turbo supercar',len:31,wid:16,price:2500000,v:[114,132],classic:true,sport:true,glb:'f40'},
+ {n:'American twin-turbo V8 hypercar',len:33,wid:16,price:2100000,v:[116,134],sport:true,glb:'venom'},
+ {n:'German F1-engine hypercar',len:33,wid:16,price:2700000,v:[115,133],sport:true,glb:'amgone'},
+ {n:'British hybrid hypercar',len:32,wid:16,price:1350000,v:[115,133],sport:true,glb:'p1'},
+ {n:'1961 British grand tourer',len:31,wid:15,price:180000,v:[98,116],classic:true,glb:'etype'},
+ {n:'1992 American V10 roadster',len:31,wid:16,price:70000,v:[106,124],classic:true,sport:true,glb:'viper'}
 ];
 // low-poly car models (no logos, no brand names): file in assets/cars, body colour cell in the palette texture
 const CAR_GLB={hothatch:{file:'hothatch.glb',len:4.59,cell:[16,0,8,8]},gt12:{file:'gt12.glb',len:4.64,cell:[8,0,8,8]},v8sport:{file:'v8sport.glb',len:4.64,cell:[24,0,8,8]},sportsaloon:{file:'sportsaloon.glb',len:2.99,cell:[8,0,8,8]},
@@ -332,7 +337,7 @@ const CAR_GLB={hothatch:{file:'hothatch.glb',len:4.59,cell:[16,0,8,8]},gt12:{fil
  saloon90:{file:'saloon90.glb',paint:'Car_paint',fix:{blackplastic:[0x16181c],matt:[0x2a2c30],yellow_glow:[0xffb000,1],transparent:[0x1d2a38,0,.6],white_glow:[0xfff4d0,1],red_glow:[0xcc1010,1],windshield:[0x1d2a38,0,.75],disc:[0x777c82],brake_color:[0xd93a2f],rims_color:[0xb8bec6],rubber:[0x151517]}},
  police:{file:'cs_police_sedan.glb',yaw:49.9,flip:1,keep:1},bus:{file:'cs_citybus.glb',keep:1},tow:{file:'cs_towtruck.glb',yaw:19.9,flip:1,keep:1},fire:{file:'cs_fire_truck.glb',yaw:-55,flip:1,keep:1},amb:{file:'cs_ambulance.glb',yaw:19.7,keep:1,lenK:1.36},
  offroad:{file:'offroad.glb',flip:1,paint:['Material.003']},coupe85:{file:'coupe85.glb',paint:['Body'],tint:1},sedan98:{file:'sedan98.glb',keep:1},fastback65:{file:'fastback65.glb',flip:1,paint:['CarPrimaryColor']},
- midv10:{file:'midv10.glb',paint:['body']},jgt98:{file:'jgt98.glb',paint:['wigeon']},awd99:{file:'awd99.glb',paint:['body']},rearturbo:{file:'rearturbo.glb',flip:1,paint:['New_Material']},rwd24:{file:'rwd24.glb',paint:['cuerpo']},ae86:{file:'ae86.glb',flip:1,keep:1},f40:{file:'f40.glb',keep:1},
+ midv10:{file:'midv10.glb',paint:['body']},jgt98:{file:'jgt98.glb',paint:['wigeon']},awd99:{file:'awd99.glb',paint:['body']},rearturbo:{file:'rearturbo.glb',flip:1,paint:['New_Material']},rwd24:{file:'rwd24.glb',paint:['cuerpo']},ae86:{file:'ae86.glb',flip:1,keep:1},f40:{file:'f40.glb',keep:1},venom:{file:'venom.glb',paint:['hen_venom_paint']},amgone:{file:'amgone.glb',keep:1},p1:{file:'p1.glb',keep:1},etype:{file:'etype.glb',paint:['body']},viper:{file:'viper.glb',keep:1},
  garbage:{file:'cs_garbage_truck.glb',yaw:55.3,keep:1},taxi:{file:'cs_taxi.glb',yaw:-50,keep:1},van:{file:'cs_postvan.glb',yaw:-20.5,keep:1}};
 const ASSET_BASE=/\/(world|remake|xmas|perf|rec)\//.test(location.pathname)?'../':'';
 const COLORS=['#d93a2f','#2f6fd9','#f2f2ee','#22252b','#9aa3ad','#e8b931','#2e8b57','#7a3fb0','#e8742a','#5a6b7d','#b5272d','#3fa7c4','#c9c3b5'];
