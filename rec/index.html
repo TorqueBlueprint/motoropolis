@@ -3012,6 +3012,7 @@ function make3D(T,X){
    const roofG=sh(W3.roofG||(W3.roofG=(()=>{const p=[-.5,0,-.5,.5,0,-.5,.5,1,0, -.5,0,-.5,.5,1,0,-.5,1,0, .5,0,.5,-.5,0,.5,-.5,1,0, .5,0,.5,-.5,1,0,.5,1,0, -.5,0,-.5,-.5,1,0,-.5,0,.5, .5,0,-.5,.5,0,.5,.5,1,0];const gg=new T.BufferGeometry();gg.setAttribute('position',new T.Float32BufferAttribute(p,3));gg.computeVertexNormals();return gg})()));
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
    instG(g,bodyG,houseM,HB,HBc);instG(g,bodyG,mt.brick,CHx);instG(g,roofG,mt.roofT,HR,HRc);
+   if(XMAS){W3.xmasHouses=HR.map(r=>({x:WX(r.x),z:WZ(r.z),ry:r.ry,sx:r.sx,sz:r.sz,y:r.y,sy:r.sy}));W3.xmasSig=(W3.xmasSig||0)+1}
    instG(g,sh(new T.IcosahedronGeometry(1.5,0)),M(0xffffff,{flatShading:true}),TRx.map(p=>({x:p.x,y:2.2,z:p.z})),TRx.map(()=>['#4f8a3c','#5c9445','#3f7a34'][Math.floor(rnd()*3)]));
    // apartments (Maple Grove)
    {const slots=[];for(let x=-30;x<=140;x+=17)slots.push([x,256]);const n=Math.min(slots.length,3+Math.floor(sv/12));for(let k=0;k<n;k++){const[x,z]=slots[k];if(Math.abs(x-96)<8||Math.abs(x-53)<8)continue;const h=8+((k*7)%5)*2.4+Math.min(10,sv/150);bld(g,11,h,11,AM[k%AM.length],mat.roof,x,z);B0(g,3,1,2,mat.steel,x+2,h,z)}}
@@ -3284,6 +3285,7 @@ function make3D(T,X){
     for(const sd of[-1,1]){const cd=new T.Mesh(new T.CylinderGeometry(.06,.06,.3,8),white);cd.position.copy(P(sd*w*.3,.3+1.25,fz));scene.add(cd);const fl=new T.Mesh(new T.SphereGeometry(.07,6,5),winG);fl.position.copy(P(sd*w*.3,.3+1.47,fz));scene.add(fl);cand.push(fl)}
     for(const sd of[-1,1]){const p=P(sd*.75,0,d/2+.45);cane(scene,p.x,p.z,.9,ry+(sd>0?Math.PI:0)).position.y=Y}hi++}
    XMS.roofLights=bulbs(lb,lc,bulbA);
+
    // --- the garden band between the two rows: inflatables, light reindeer, lit pines ---
    const gz=(U(XSTB.y0)+U(XSTB.y1))/2,gx0=sx1+1.5,gx1=U(XSTB.x1)-1.5;
    const infl=(kind,x,z,ry)=>{const g=new T.Group();g.position.set(x,Y,z);g.rotation.y=ry;const sm=(r,m,px,py,pz,sy)=>{const o=new T.Mesh(new T.SphereGeometry(r,14,10),m);o.position.set(px,py,pz);if(sy)o.scale.y=sy;o.castShadow=true;g.add(o);return o};
@@ -3318,6 +3320,16 @@ function make3D(T,X){
    // smoke puffs from Santa's chimney
    for(let i=0;i<6;i++){const s=new T.Mesh(new T.SphereGeometry(.35,8,6),new T.MeshStandardMaterial({color:0xdddddd,transparent:true,opacity:.6,depthWrite:false}));scene.add(s);XMS.smoke.push({s,ph:i/6})}
   }
+  // ===== roof lights on every house in the city =====
+  const cityBulbG=new T.OctahedronGeometry(.12,0);
+  function roofLightList(list){const lb=[],lc=[];const SC=[[0xfff1c1],PAL,[0x6cb6ff,0xffffff],[0xff3b30,0x2ecc71],[0xfff1c1,0xffd34d],[0xd62828,0xffffff]];let hi=0;
+   for(const r of list){const sc=SC[hi++%SC.length],c=Math.cos(r.ry||0),s=Math.sin(r.ry||0);let n=0;const P=(lx,ly,lz)=>[r.x+lx*c+lz*s,ly,r.z-lx*s+lz*c];
+    const seg=(a,b)=>{const L2=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]),st=Math.max(3,Math.round(L2/.55));for(let i=0;i<=st;i++){const u=i/st;lb.push([a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u,1]);lc.push(sc[n++%sc.length])}};
+    const hx=r.sx/2,hz=r.sz/2,yb=r.y,yt=r.y+r.sy;seg(P(-hx,yb,hz),P(hx,yb,hz));seg(P(-hx,yb,-hz),P(hx,yb,-hz));for(const ex of[-1,1]){seg(P(ex*hx,yb,hz),P(ex*hx,yt,0));seg(P(ex*hx,yb,-hz),P(ex*hx,yt,0))}}
+   return[lb,lc]}
+  function cityBulbs(lb,lc){const im=new T.InstancedMesh(cityBulbG,bulbA,Math.max(1,lb.length));lb.forEach((p,k)=>{o3.position.set(p[0],p[1],p[2]);o3.scale.setScalar(1);o3.updateMatrix();im.setMatrixAt(k,o3.matrix);im.setColorAt(k,col.setHex(lc[k]))});im.count=lb.length;im.frustumCulled=false;scene.add(im);return im}
+  if(QUAL!=='low'){const xb=cityFill().xst;const core=cityFill().items.filter(f=>f.k==='house'&&!(xb&&f.x>=xb.x0&&f.x<=xb.x1&&f.y>=xb.y0&&f.y<=xb.y1)).map(f=>{const h=2.9+f.w%3*.2;return{x:U(f.x),z:U(f.y),ry:f.ang||0,sx:U(f.w)+.7,sz:U(f.h)+.9,y:.3+h,sy:1.7}});const[a,b]=roofLightList(core);XMS.coreRoofLights=cityBulbs(a,b)}
+  XMS.w3sig=-1;XMS.w3Lights=null;
   // ===== inside Santa's workshop: the elves make the toys =====
   if(XSTB){const SW={built:false,home:{...STD_HOME,yaw:.2,dist:34}};
    const toyC=[0xd93a2f,0x2f6fd9,0x2e7d4f,0xffd34d,0x8e44ad,0xff7a1a];
@@ -3433,6 +3445,7 @@ function make3D(T,X){
    // sleigh loop
    if(!XMS.freeze){const RXs=75,RZs=50,w=st/40*Math.PI*2,x=92+Math.cos(w)*RXs,z=75+Math.sin(w)*RZs;sleigh.position.set(x,26+2*Math.sin(st*1.3),z);sleigh.rotation.y=Math.atan2(-Math.sin(w)*RXs,Math.cos(w)*RZs);sleigh.rotation.z=.08*Math.sin(st*1.3)}
    if(XMS.carousel)XMS.carousel.rotation.y+=dt*.35;
+   if(QUAL!=='low'&&WORLD&&W3.xmasHouses&&XMS.w3sig!==W3.xmasSig){XMS.w3sig=W3.xmasSig;if(XMS.w3Lights){scene.remove(XMS.w3Lights);XMS.w3Lights.dispose()}const[a,b]=roofLightList(W3.xmasHouses);XMS.w3Lights=cityBulbs(a,b)}
    if(XMS.chim)for(const q of XMS.smoke){if(!q.s)continue;const u=(st*.25+q.ph)%1;q.s.position.set(XMS.chim.x+Math.sin(u*5+q.ph*9)*.3*u,XMS.chim.y+u*3.5,XMS.chim.z+u*.6);q.s.scale.setScalar(.6+u*1.4);q.s.material.opacity=.55*(1-u)}
    if(XMS.carolRoute){const R2=XMS.carolRoute;let per=0;const segs=[];for(let i=0;i<R2.length;i++){const a=R2[i],b=R2[(i+1)%R2.length],l=Math.hypot(b[0]-a[0],b[1]-a[1]);segs.push([a,b,l]);per+=l}
     for(const c of XMS.carolers){let d=((st*.55+c.off*1.1)%per+per)%per;for(const[a,b,l]of segs){if(d<=l){const u=d/l;c.p.position.set(a[0]+(b[0]-a[0])*u,Y+Math.abs(Math.sin(st*5+c.off))*.04,a[1]+(b[1]-a[1])*u);c.p.rotation.y=Math.atan2(b[0]-a[0],b[1]-a[1]);break}d-=l}}}
