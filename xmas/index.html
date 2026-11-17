@@ -3355,17 +3355,17 @@ function make3D(T,X){
     for(const x of[-16.6,-12.6,-8.6])put('shelf','y',6.2,x,-9.6);
     put('tree','y',6.4,-21.2,-7);put('fireplace','x',7.6,17.4,-9.2);{// armchair only (the set's own little desk is cut away), Santa sitting in it waving, and his new writing desk beside him
      put('sofa','x',5.6,12.2,-7,-.25);
-     const sp=split(G.santa,f=>!(f[0]>.74&&f[1]>.44&&f[1]<.74)),sg=new T.Group(),wave=new T.Group();sg.add(sp.a);
-     const bx=sp.box,pv=new T.Vector3(bx.min.x+(bx.max.x-bx.min.x)*.86,bx.min.y+(bx.max.y-bx.min.y)*.47,(bx.min.z+bx.max.z)/2).applyMatrix4(sp.mw);wave.position.copy(pv);sp.b.matrix.premultiply(new T.Matrix4().makeTranslation(-pv.x,-pv.y,-pv.z));wave.add(sp.b);sg.add(wave);sg.updateMatrixWorld(true);
-     const sb=new T.Box3().setFromObject(sg),sk=3.2/(sb.max.y-sb.min.y),sw=new T.Group();sw.add(sg);sg.scale.setScalar(sk);sg.position.set(-(sb.min.x+sb.max.x)/2*sk,-sb.min.y*sk+.15,-(sb.min.z+sb.max.z)/2*sk);sw.position.set(12.2+.15,.95,-7+.75);sw.rotation.y=-.25;R.add(sw);
+     const sp=split(G.santa,f=>!(f[0]<.27&&f[1]>.62)),sg=new T.Group(),wave=new T.Group();sg.add(sp.a);
+     const bx=sp.box,pv=new T.Vector3(bx.min.x+(bx.max.x-bx.min.x)*.28,bx.min.y+(bx.max.y-bx.min.y)*.66,(bx.min.z+bx.max.z)/2).applyMatrix4(sp.mw);wave.position.copy(pv);sp.b.matrix.premultiply(new T.Matrix4().makeTranslation(-pv.x,-pv.y,-pv.z));wave.add(sp.b);sg.add(wave);sg.updateMatrixWorld(true);
+     const sb=new T.Box3().setFromObject(sg),sk=3.2/(sb.max.y-sb.min.y),sw=new T.Group();sw.add(sg);sg.scale.setScalar(sk);sg.position.set(-(sb.min.x+sb.max.x)/2*sk,-sb.min.y*sk+.15,-(sb.min.z+sb.max.z)/2*sk);sw.position.set(12.2,.7,-7+.7);sw.rotation.y=-.25;R.add(sw);
      SW.santa.visible=false;SW.santaM=sw;SW.wave=wave;put('desk','x',4.4,6.6,-7,.2)}
     // four workbenches with an elf each, a wrapping table, the toy machine, sacks and the rocking horse
     const elf=(x,z,ry,kind)=>{const e=X.SUc(G.elf);e.scale.setScalar(2.6/.68);e.traverse(m=>{if(m.isMesh){m.castShadow=true;m.frustumCulled=false}});const g=new T.Group();g.add(e);g.position.set(x,0,z);g.rotation.y=ry;g.userData.base=ry;R.add(g);
      const B={};e.traverse(o=>{if(o.isBone){const m=o.name.match(/(LeftArm|LeftForeArm|RightArm|RightForeArm|Head|Spine1)$/);if(m)B[m[1]]=o}});
      if(B.RightArm){B.RightArm.rotation.z-=1.3;B.RightForeArm.rotation.z-=.45;B.LeftArm.rotation.z+=1.3;B.LeftForeArm.rotation.z+=.45}
      const R0={};for(const k in B)R0[k]=B[k].rotation.clone();SW.melves.push({g,B,R0,kind});SW.elves.push(g);return g};
-    [[-13,-1.6],[-4,-1.6],[-13,4.4],[-4,4.4]].forEach(([x,z])=>{const b=put('bench','x',3.6,x,z);elf(x,z-b.userData.sz.z/2-.3,0,'hammer')});
-    R.B2(4.6,1.4,2.6,M(0x9a6a3c),3.6,0,1.2);R.B2(4.8,.15,2.8,M(0x6b4423),3.6,1.4,1.2);put('wrap','x',4.2,3.6,1.2,0,1.55);elf(3.6,1.2-1.3-.3,0,'wrap');
+    [[-13,-1.6],[-4,-1.6],[-13,4.4],[-4,4.4]].forEach(([x,z])=>{const b=put('bench','x',3.6,x,z,Math.PI);elf(x,z-b.userData.sz.z/2-.3,0,'hammer')});
+    R.B2(4.6,1.4,2.6,M(0x9a6a3c),3.6,0,1.2);R.B2(4.8,.15,2.8,M(0x6b4423),3.6,1.4,1.2);put('wrap','x',4.2,3.6,1.2,Math.PI,1.55);elf(3.6,1.2-1.3-.3,0,'wrap');
     put('belt','x',6.4,17.2,4.6,-Math.PI/2);put('horse','y',2.9,-20.6,3.2,.7);
     put('sack','y',2.6,21.6,8.2,-.4);put('sack','y',2.2,19.2,9,.3);put('sack','y',2,-21.8,8.8,.5);
     SW.models=true}
@@ -3399,7 +3399,7 @@ function make3D(T,X){
    function syncSanta(){if(!SW.built)return;const t=simTime;SW.fire.forEach((f,i)=>{f.scale.y=1+.18*Math.sin(t*9+i*2);f.scale.x=1+.1*Math.sin(t*7+i)});SW.santa.rotation.y=.25+.15*Math.sin(t*.5);
     SW.elves.forEach((e,k)=>{e.position.y=.06*Math.abs(Math.sin(t*4+k));e.rotation.y=e.userData.base+.25*Math.sin(t*2+k*1.3)});SW.toys.forEach((o,k)=>o.rotation.y=t*6+k);
     SW.belt.forEach((b,k)=>{const x=-21+((t*2.2+k*34/12)%34);b.position.x=x});
-    if(SW.wave)SW.wave.rotation.z=.28*Math.sin(t*6);if(SW.santaM)SW.santaM.position.y=.02*Math.sin(t*1.6);
+    if(SW.wave)SW.wave.rotation.z=.22*Math.sin(t*6);if(SW.santaM)SW.santaM.position.y=.02*Math.sin(t*1.6);
     SW.melves.forEach((m,k)=>{const B=m.B,R0=m.R0;if(!B.RightArm)return;const ph=t*5.5+k*1.9,up=Math.max(0,Math.sin(ph));
      if(m.kind==='hammer'){B.RightArm.rotation.x=R0.RightArm.x+.15+.75*up;B.RightForeArm.rotation.z=R0.RightForeArm.z-.35*up;B.LeftForeArm.rotation.z=R0.LeftForeArm.z+.08*Math.sin(ph*.5)}
      else{const w=Math.sin(t*2.6+k);B.RightArm.rotation.x=R0.RightArm.x+.25*w;B.LeftArm.rotation.x=R0.LeftArm.x-.25*w;B.RightForeArm.rotation.z=R0.RightForeArm.z-.2*Math.max(0,w);B.LeftForeArm.rotation.z=R0.LeftForeArm.z+.2*Math.max(0,-w)}
