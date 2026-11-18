@@ -1,0 +1,758 @@
+{
+ "title": "Short 20 \u00b7 New people & cars (main city)",
+ "light": "dia",
+ "warmup": 60,
+ "shots": [
+  {
+   "name": "hook",
+   "dur": 3.5,
+   "cam": {
+    "from": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.541592653589793,
+     "pitch": 0.75,
+     "dist": 70,
+     "fov": 50
+    },
+    "to": {
+     "tx": 72,
+     "tz": 86,
+     "yaw": 2.791592653589793,
+     "pitch": 0.55,
+     "dist": 34,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 330,
+     "lines": [
+      [
+       "MOTOROPOLIS",
+       92,
+       "#ffffff"
+      ],
+      [
+       "JUST GOT REAL PEOPLE",
+       96,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ],
+   "follow": {
+    "ped": "^(Cashier|Receptionist|Fuel Attendant)$",
+    "phi": 0.9,
+    "pitch": 0.55,
+    "dist": 16,
+    "sweep": 0.4
+   }
+  },
+  {
+   "name": "beforeafter",
+   "dur": 4.0,
+   "oldUntil": 1.9,
+   "cam": {
+    "from": {
+     "tx": 70,
+     "tz": 86,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.42,
+     "dist": 20,
+     "fov": 50
+    },
+    "to": {
+     "tx": 72,
+     "tz": 86,
+     "yaw": 2.991592653589793,
+     "pitch": 0.4,
+     "dist": 17,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "until": 1.85,
+     "y": 330,
+     "lines": [
+      [
+       "BEFORE",
+       130,
+       "#9aa3ae"
+      ]
+     ]
+    },
+    {
+     "t0": 1.95,
+     "y": 330,
+     "lines": [
+      [
+       "NOW",
+       140,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ],
+   "follow": {
+    "ped": "^(Taxi Driver|Bus Driver)$",
+    "phi": -0.6,
+    "pitch": 0.32,
+    "dist": 7,
+    "sweep": -0.3
+   }
+  },
+  {
+   "name": "POLICE OFFICER",
+   "dur": 2.6,
+   "follow": {
+    "ped": "^Police Officer$",
+    "phi": 0.5,
+    "pitch": 0.28,
+    "dist": 5.2,
+    "sweep": 0.3
+   },
+   "cam": {
+    "from": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "to": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "EVERY NAME IS A",
+       74,
+       "#ffffff"
+      ],
+      [
+       "REAL SUBSCRIBER",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "POLICE OFFICER",
+       100,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "MECHANIC",
+   "dur": 2.6,
+   "follow": {
+    "ped": "^Mechanic$",
+    "phi": -0.5,
+    "pitch": 0.28,
+    "dist": 5.2,
+    "sweep": -0.3
+   },
+   "cam": {
+    "from": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "to": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "EVERY NAME IS A",
+       74,
+       "#ffffff"
+      ],
+      [
+       "REAL SUBSCRIBER",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "MECHANIC",
+       100,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "REPORTER",
+   "dur": 2.6,
+   "follow": {
+    "ped": "^Reporter$",
+    "phi": 0.55,
+    "pitch": 0.28,
+    "dist": 5.2,
+    "sweep": 0.3
+   },
+   "cam": {
+    "from": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "to": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "EVERY NAME IS A",
+       74,
+       "#ffffff"
+      ],
+      [
+       "REAL SUBSCRIBER",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "REPORTER",
+       100,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "TOW TRUCK DRIVER",
+   "dur": 2.6,
+   "follow": {
+    "ped": "^Tow Truck Driver$",
+    "phi": -0.45,
+    "pitch": 0.28,
+    "dist": 5.2,
+    "sweep": -0.3
+   },
+   "cam": {
+    "from": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "to": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "EVERY NAME IS A",
+       74,
+       "#ffffff"
+      ],
+      [
+       "REAL SUBSCRIBER",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "TOW TRUCK DRIVER",
+       100,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "HOMELESS",
+   "dur": 2.6,
+   "follow": {
+    "ped": "^Homeless$",
+    "phi": 0.5,
+    "pitch": 0.28,
+    "dist": 5.2,
+    "sweep": 0.3
+   },
+   "cam": {
+    "from": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "to": {
+     "tx": 75,
+     "tz": 85,
+     "yaw": 2.741592653589793,
+     "pitch": 0.5,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "EVERY NAME IS A",
+       74,
+       "#ffffff"
+      ],
+      [
+       "REAL SUBSCRIBER",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "HOMELESS",
+       100,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "charger",
+   "dur": 2.4,
+   "follow": {
+    "glb": "charger",
+    "phi": 0.55,
+    "pitch": 0.3,
+    "dist": 9.5,
+    "sweep": 0.25
+   },
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "to": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "NEW CARS",
+       100,
+       "#ffffff"
+      ],
+      [
+       "IN THE CITY",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "DODGE CHARGER",
+       110,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "urus",
+   "dur": 2.4,
+   "follow": {
+    "glb": "urus",
+    "phi": -0.6,
+    "pitch": 0.3,
+    "dist": 9.5,
+    "sweep": -0.25
+   },
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "to": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "NEW CARS",
+       100,
+       "#ffffff"
+      ],
+      [
+       "IN THE CITY",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "LAMBORGHINI URUS",
+       96,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "evo9",
+   "dur": 2.4,
+   "follow": {
+    "glb": "evo9",
+    "phi": 0.7,
+    "pitch": 0.3,
+    "dist": 9.5,
+    "sweep": 0.25
+   },
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "to": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "NEW CARS",
+       100,
+       "#ffffff"
+      ],
+      [
+       "IN THE CITY",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "LANCER EVO IX",
+       110,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "f40",
+   "dur": 2.4,
+   "follow": {
+    "glb": "f40",
+    "phi": -0.5,
+    "pitch": 0.3,
+    "dist": 9.5,
+    "sweep": -0.25
+   },
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "to": {
+     "tx": 96,
+     "tz": 80,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.7,
+     "dist": 120,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "NEW CARS",
+       100,
+       "#ffffff"
+      ],
+      [
+       "IN THE CITY",
+       92,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 0,
+     "y": 1600,
+     "lines": [
+      [
+       "FERRARI F40",
+       110,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "workshop",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": 80,
+     "tz": 70,
+     "yaw": 3.641592653589793,
+     "pitch": 0.55,
+     "dist": 70,
+     "fov": 52
+    },
+    "to": {
+     "tx": 92,
+     "tz": 70,
+     "yaw": 3.3415926535897933,
+     "pitch": 0.55,
+     "dist": 70,
+     "fov": 52
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 330,
+     "lines": [
+      [
+       "COMMENT",
+       100,
+       "#ffffff"
+      ],
+      [
+       "\"WORKSHOP\"",
+       120,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 1.2,
+     "y": 1580,
+     "lines": [
+      [
+       "GET YOUR NAME",
+       76,
+       "#ffffff"
+      ],
+      [
+       "& A JOB IN THE CITY",
+       76,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "end",
+   "end": true,
+   "dur": 7.0,
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.941592653589793,
+     "pitch": 1.0,
+     "dist": 300,
+     "fov": 50
+    },
+    "to": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.541592653589793,
+     "pitch": 1.0,
+     "dist": 300,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.1,
+     "until": 3.4,
+     "y": 290,
+     "lines": [
+      [
+       "WHAT SHOULD",
+       92,
+       "#ffffff"
+      ],
+      [
+       "COME NEXT?",
+       120,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 3.5,
+     "y": 290,
+     "lines": [
+      [
+       "EVERY SUBSCRIBER",
+       92,
+       "#ffffff"
+      ],
+      [
+       "ADDS A CAR",
+       120,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}

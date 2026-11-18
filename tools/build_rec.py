@@ -9,7 +9,7 @@ def R(a, b):
     assert a in s, a[:60]
     s = s.replace(a, b, 1)
 R("<html>", '<html data-rec="1">')
-R("<head>", "<head><script>try{localStorage.setItem('mtp-view','3d')}catch(e){}</script>")
+R("<head>", "<head><script>try{localStorage.setItem('mtp-view','3d')}catch(e){}if(/[?&]xmas=1/.test(location.search))document.documentElement.dataset.xmas='1'</script>")
 s = s.replace("'state.json?v='", "'../state.json?v='")
 R("<title>Motoropolis by TorqueBlueprint</title>", "<title>Motoropolis · Recorder</title>")
 R("function loop(ts){", "function loop(ts){if(window.__MANUAL){requestAnimationFrame(loop);return}")
@@ -21,7 +21,7 @@ R("if(location.hostname==='localhost')window.__mtpBuild=",
   "pos:id=>{const c=cars.find(q=>q.id===id);return c?{x:c.x/10,z:c.y/10,a:c.ang,v:c.v}:null}};\n"
   "if(location.hostname==='localhost')window.__mtpBuild=")
 i = s.rindex("</body>")
-s = s[:i] + '<script src="mp4mux.js?v=1"></script><script src="rec.js?v=4"></script>' + s[i:]
+s = s[:i] + '<script src="mp4mux.js?v=1"></script><script src="rec.js?v=5"></script>' + s[i:]
 os.makedirs(os.path.join(ROOT, "rec", "shots"), exist_ok=True)
 open(os.path.join(ROOT, "rec", "index.html"), "w", encoding="utf-8").write(s)
 print("rec/index.html built", len(s))

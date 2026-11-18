@@ -1,0 +1,137 @@
+{
+ "title": "Short 20 \u00b7 Christmas spoiler (open with &xmas=1)",
+ "light": "dia",
+ "warmup": 60,
+ "shots": [
+  {
+   "name": "snow",
+   "dur": 2.2,
+   "cam": {
+    "from": {
+     "tx": 72,
+     "tz": 95,
+     "yaw": 3.041592653589793,
+     "pitch": 0.5,
+     "dist": 45,
+     "fov": 50
+    },
+    "to": {
+     "tx": 72,
+     "tz": 92,
+     "yaw": 3.241592653589793,
+     "pitch": 0.42,
+     "dist": 32,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 330,
+     "lines": [
+      [
+       "BUT WAIT...",
+       110,
+       "#ffffff"
+      ]
+     ]
+    },
+    {
+     "t0": 0.9,
+     "y": 1600,
+     "lines": [
+      [
+       "SOMETHING IS COMING",
+       84,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "market",
+   "dur": 2.2,
+   "cam": {
+    "from": {
+     "tx": 70,
+     "tz": 86,
+     "yaw": 3.491592653589793,
+     "pitch": 0.4,
+     "dist": 22,
+     "fov": 50
+    },
+    "to": {
+     "tx": 76,
+     "tz": 86,
+     "yaw": 3.041592653589793,
+     "pitch": 0.38,
+     "dist": 18,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 330,
+     "lines": [
+      [
+       "IN DECEMBER",
+       110,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "ask",
+   "dur": 3.6,
+   "cam": {
+    "from": {
+     "tx": 74,
+     "tz": 88,
+     "yaw": 2.641592653589793,
+     "pitch": 0.6,
+     "dist": 60,
+     "fov": 50
+    },
+    "to": {
+     "tx": 74,
+     "tz": 88,
+     "yaw": 3.041592653589793,
+     "pitch": 0.7,
+     "dist": 80,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 330,
+     "lines": [
+      [
+       "CHRISTMAS IN",
+       96,
+       "#ffffff"
+      ],
+      [
+       "MOTOROPOLIS? \ud83c\udf84",
+       110,
+       "#3ee08f"
+      ]
+     ]
+    },
+    {
+     "t0": 0.6,
+     "y": 1000,
+     "bubble": "YES OR NO?",
+     "bubbleTop": "\ud83d\udcac TELL ME IN THE COMMENTS"
+    }
+   ]
+  }
+ ]
+}
