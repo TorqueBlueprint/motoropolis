@@ -44,10 +44,10 @@
     }
    ],
    "follow": {
-    "ped": "^(Cashier|Receptionist|Fuel Attendant)$",
-    "phi": 0.9,
-    "pitch": 0.55,
-    "dist": 16,
+    "ped": "^Bus Driver$",
+    "phi": 0.8,
+    "pitch": 0.42,
+    "dist": 11,
     "sweep": 0.4
    }
   },
@@ -100,7 +100,7 @@
     }
    ],
    "follow": {
-    "ped": "^(Taxi Driver|Bus Driver)$",
+    "ped": "^(Wash Attendant|Tire Technician)$",
     "phi": -0.6,
     "pitch": 0.32,
     "dist": 7,
