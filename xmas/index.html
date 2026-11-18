@@ -2158,10 +2158,11 @@ function make3D(T,X){
   const bb=new T.Box3().setFromObject(m,true),h=bb.max.y-bb.min.y,sc=1.8/h;m.scale.multiplyScalar(sc);m.position.y=-bb.min.y*sc;g.updateMatrixWorld(true);
   const rig={},wq=new T.Quaternion();for(const k in B){B[k].getWorldQuaternion(wq);rig[k]={b:B[k],q0:B[k].quaternion.clone(),ax:new T.Vector3(1,0,0).applyQuaternion(wq.clone().invert()).normalize()}}
   g.userData.rig=rig;g.userData.rigS=-1;g.userData.legs=[new T.Object3D(),new T.Object3D()];return g}
+ if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__WK={walk:(...a)=>walkPose(...a),job:(...a)=>personJob(...a),js:f=>jobScene(f)};
  function walkPose(g,t,on){const r=g.userData.rig;if(!r)return false;const A=(k,v)=>{const q=r[k];if(!q)return;WQ.setFromAxisAngle(q.ax,v);q.b.quaternion.copy(q.q0).multiply(WQ)};
   if(!on){for(const k in r)r[k].b.quaternion.copy(r[k].q0);return true}
   const f=Math.sin(t),c=Math.cos(t),kn=x=>x>0?x*x*(3-2*x):0;
-  const S=g.userData.rigS||1;A('UpperLegL',-.42*f*S);A('UpperLegR',.42*f*S);A('LowerLegL',.12+.75*kn(c));A('LowerLegR',.12+.75*kn(-c));
+  const S=g.userData.rigS||1;A('UpperLegL',-.42*f*S);A('UpperLegR',.42*f*S);A('LowerLegL',.12+.75*kn(c*S));A('LowerLegR',.12+.75*kn(-c*S));
   A('UpperArmL',.3*f*S);A('UpperArmR',-.3*f*S);A('LowerArmL',-.25);A('LowerArmR',-.25);return true}
  function personMeshX(col,skin,hair){const fit0=OUTFIT[col]||'casual';if(X.man&&fit0!=='robe')return personGLB(col,skin,fit0);const g=new T.Group();const fit=fit0;
   const C={mech:['#1f2a44','#1f2a44'],hivis:['#c7e01f','#232c40'],police:['#151a26','#141821'],suit:['#22252b','#22252b'],robe:['#121214','#121214'],green:['#2e7d4f','#3b4a3a'],red:['#d93a2f','#2b2f38'],casual:[col,'#5d7fb0']}[fit];
