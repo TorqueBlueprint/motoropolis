@@ -71,7 +71,7 @@
   }
   async function run(record) {
     const H2 = window.__H, R = H2.R3(); $('rGo').disabled = $('rPv').disabled = true;
-    H2.trailer(true); H2.hud(false); H2.light(SH.light || 'dia'); window.__MANUAL = true; snapMini();
+    window.__HIDE = SH.hide || null; H2.trailer(true); H2.hud(false); H2.light(SH.light || 'dia'); window.__MANUAL = true; snapMini();
     const total = SH.shots.reduce((a, s) => a + Math.round(s.dur * FPS), 0); let F = 0, rec = null, chunks = [], track = null, slow = 0;
     const view = document.createElement('canvas'); // what the viewer sees while it records
     let enc = null, mux = null, encErr = null;

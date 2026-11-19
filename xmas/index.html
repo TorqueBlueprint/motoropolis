@@ -2282,7 +2282,7 @@ function make3D(T,X){
    const og=groups.oficina;if(og){const hits=ray.intersectObject(og,true);if(hits.length){enterIn('oficina');return}}const lg=groups.lavagem;if(lg&&isOpen('lavagem')){const h2=ray.intersectObject(lg,true);if(h2.length){enterIn('lavagem');return}}const rg=groups.reboques;if(rg&&isOpen('reboques')){const h3=ray.intersectObject(rg,true);if(h3.length){enterIn('reboques');return}}}
   selected=best;updateCard()}
  // ---------- labels drawn on the HUD canvas ----------
- function pill(text,x,y,size,bg,fg,stroke){hctx.font=`700 ${size*=(hud.height===CH?HUDSC:1),size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
+ function pill(text,x,y,size,bg,fg,stroke){if(window.__HIDE&&window.__HIDE.some(n=>String(text).includes(n)))return;hctx.font=`700 ${size*=(hud.height===CH?HUDSC:1),size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
  function drawLabels(){
   hctx.textAlign='center';hctx.textBaseline='middle';if(WORLD&&W3.labelsDraw)W3.labelsDraw();const sz=clamp(2600/cam.dist,13,26),near=cam.dist<200;
   const items=[];
