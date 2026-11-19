@@ -2151,6 +2151,49 @@ function make3D(T,X){
  // job outfits made in Tripo (Mixamo rig): loaded on demand, arms lowered from the T-pose, walk with the same walkPose as everyone else
  const JOB_GLB={'Homeless':'p_homeless','Bus Driver':'p_bus_driver','Taxi Driver':'p_bus_driver','Parts Van Driver':'p_bus_driver','Train Driver':'p_bus_driver','Station Master':'p_bus_driver','Garbage Truck Driver':'p_sanitation_worker','Garbage Collector':'p_sanitation_worker','Tow Truck Driver':'p_tow_truck_driver','Dispatcher':'p_tow_truck_driver','Crane Operator':'p_tow_truck_driver','Toll Operator':'p_tow_truck_driver','Receptionist':'p_friendly_salesperson','Cashier':'p_friendly_salesperson','Car Salesman':'p_friendly_salesperson','Real Estate Agent':'p_friendly_salesperson','Shopkeeper':'p_friendly_salesperson','Event Host':'p_friendly_salesperson','Fuel Attendant':'p_gas_station_attendant','Wash Attendant':'p_gas_station_attendant','Parking Attendant':'p_gas_station_attendant','Police Officer':'p_police_officer','Security Guard':'p_police_officer','Detective':'p_detective','Firefighter':'p_firefighter','Fire Chief':'p_firefighter','Park Ranger':'p_park_ranger','Court Clerk':'p_office_worker','Mayor':'p_office_worker','Architect':'p_office_worker','Lawyer':'p_office_worker','Judge':'p_office_worker','Inspector':'p_office_worker','Reporter':'p_news_reporter','Newspaper Vendor':'p_news_reporter','Market Vendor':'p_christmas_market_vendor','Mechanic':'p_car_mechanic','Tire Technician':'p_car_mechanic','Crusher Operator':'p_car_mechanic','Assembly Worker':'p_car_mechanic','Warehouse Worker':'p_car_mechanic','Pit Crew':'p_car_mechanic'},CIV_GLB=['p_young_man_civil','p_young_woman_civil'],JOBP={};
  const jobScene=f=>JOBP[f]||(JOBP[f]=X.ld.loadAsync(ASSET_BASE+'assets/people/'+f+'.glb').then(g=>{g.scene.userData.clip=g.animations[0]||null;return g.scene}));
+
+ // ---- football: 22 animated Mixamo players (assets/world/player.glb) ----
+ function stadPlayers(g,P0,caps,ball,OP){OP=OP||{};const HL=OP.HL||20,HW=OP.HW||12.5,PH=OP.ph||1.55,SC=HL/20;
+  const go=async()=>{let n=0;while(!X.SUc&&n++<100)await new Promise(r=>setTimeout(r,200));if(!X.SUc)return;
+   const gl=await X.ld.loadAsync(ASSET_BASE+'assets/world/player.glb');const CL={};gl.animations.forEach(a=>CL[a.name]=a);
+   const kit=(hex)=>{const m0=[];gl.scene.traverse(o=>{if(o.isMesh)m0.push(o.material)});const m=m0[0].clone();const c=new T.Color(hex);
+    m.onBeforeCompile=sh=>{sh.uniforms.kitC={value:c};sh.fragmentShader='uniform vec3 kitC;\n'+sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 cc=diffuseColor.rgb;float mx=max(cc.r,max(cc.g,cc.b)),mn=min(cc.r,min(cc.g,cc.b));float w=smoothstep(.06,.0,mx-mn)*smoothstep(.35,.6,mx);diffuseColor.rgb=mix(cc,kitC*(mx*1.15),w);}')};m.customProgramCacheKey=()=>'kit'+hex;return m};
+   const KITS=[kit(0xd93a2f),kit(0x2f6fd9),kit(0x111111)];
+   const bb=new T.Box3().setFromObject(gl.scene);const K=PH/(bb.max.y-bb.min.y);
+   // 4-4-2, x along pitch (−20..20), z across (−12.5..12.5)
+   const F=[[-18.5,0],[-13,-8],[-13,-3],[-13,3],[-13,8],[-6,-8],[-6,-3],[-6,3],[-6,8],[-1.5,-3],[-1.5,3]].map(([a,b])=>[a*SC,b*HW/12.5]);
+   const P=[];const ld=(team,k)=>{const o=X.SUc(gl.scene);o.scale.setScalar(K);const mat=k===0?KITS[2]:KITS[team];o.traverse(m=>{if(m.isMesh){m.material=mat;m.castShadow=true;m.frustumCulled=false}});
+    const h=new T.Group();h.add(o);(OP.parent||g).add(h);const side=team?1:-1;const home=new T.Vector3(P0.x+F[k][0]*(team?-1:1),0,P0.z+F[k][1]);
+    h.position.copy(home);h.rotation.y=team?-Math.PI/2:Math.PI/2;const mx=new T.AnimationMixer(o);const A={};for(const nm in CL)A[nm]=mx.clipAction(CL[nm]);
+    for(const nm of['Kick_Soccerball','Soccer_Header','Soccer_Tackle','Goalkeeper_Diving_Save','Goalkeeper_Catch','Victory','Disappointed']){A[nm].setLoop(T.LoopOnce);A[nm].clampWhenFinished=true}
+    const cur=k===0?'Goalkeeper_Idle':'Breathing_Idle';A[cur].play();mx.update(Math.random()*3);return{h,mx,A,cur,home,team,k,v:new T.Vector3(),busy:0}};
+   for(let t=0;t<2;t++)for(let k=0;k<11;k++)P.push(ld(t,k));
+   caps.forEach(c=>c.visible=false);const FB={P,ball,score:[0,0]};if(OP.onGoal)FB.onGoal=OP.onGoal;if(!OP.inside)W3.fb=FB;if(location.hostname==='localhost')window.__FB=FB;
+   const play=(p,nm,fade=.25)=>{if(p.cur===nm)return;const a=p.A[nm];a.reset().play();p.A[p.cur].crossFadeTo(a,fade,false);p.cur=nm};
+   const bp=new T.Vector3(P0.x,.25,P0.z),bv=new T.Vector3();let owner=null,ot=0,tq=0;const tmp=new T.Vector3();
+   const step=(t,dt)=>{dt=Math.min(dt||.016,.05);
+    // ball: rolls with friction, bounces inside pitch
+    bp.addScaledVector(bv,dt);bv.multiplyScalar(Math.pow(.55,dt));
+    if(Math.abs(bp.x-P0.x)>HL-.5){if(Math.abs(bp.z-P0.z)<3*SC){const tm=bp.x>P0.x?0:1;FB.score[tm]++;FB.onGoal&&FB.onGoal(FB.score,tm);for(const p of P){if(p.k){play(p,p.team===tm?'Victory':'Disappointed',.2);p.busy=2.4}}bp.set(P0.x,.25,P0.z);bv.set(0,0,0)}else{bv.x*=-.6;bp.x=P0.x+Math.sign(bp.x-P0.x)*(HL-.5)}}
+    if(Math.abs(bp.z-P0.z)>HW-.5){bv.z*=-.6;bp.z=P0.z+Math.sign(bp.z-P0.z)*(HW-.5)}
+    ball.position.copy(bp);ball.rotation.x+=bv.z*dt*2;ball.rotation.z-=bv.x*dt*2;
+    // nearest player of each team chases; the rest hold shape shifted toward the ball
+    const near=[null,null];for(const p of P){if(p.k===0)continue;const d=p.h.position.distanceToSquared(bp);if(!near[p.team]||d<near[p.team].d)near[p.team]={p,d}}
+    for(const p of P){const side=p.team?-1:1;let tg;
+     if(p.k===0){tg=tmp.set(P0.x-side*(HL-1.5),0,P0.z+T.MathUtils.clamp(bp.z-P0.z,-3,3)*.8)}
+     else if(near[p.team].p===p){tg=tmp.copy(bp);tg.y=0}
+     else{tg=tmp.set(p.home.x+(bp.x-P0.x)*.55,0,p.home.z+(bp.z-P0.z)*.35)}
+     const d=tmp.sub(p.h.position);d.y=0;const L=d.length();const fast=near[p.team].p===p&&L>3;const sp=p.busy>0?0:(L<.4?0:Math.min(L*1.4,fast?7:3.6));
+     p.v.lerp(d.normalize().multiplyScalar(sp),Math.min(1,dt*4));p.h.position.addScaledVector(p.v,dt);
+     const vs=p.v.length();if(vs>.3){const ry=Math.atan2(p.v.x,p.v.z);let dr=ry-p.h.rotation.y;dr=Math.atan2(Math.sin(dr),Math.cos(dr));p.h.rotation.y+=dr*Math.min(1,dt*8)}
+     if(p.busy>0){p.busy-=dt;if(p.busy<=0)play(p,p.k===0?'Goalkeeper_Idle':'Breathing_Idle',.3)}
+     else if(vs>4.5){play(p,'Sprint');p.A.Sprint.timeScale=vs/6.5}else if(vs>.5){play(p,'Jog_Forward');p.A.Jog_Forward.timeScale=vs/3}else play(p,p.k===0?'Goalkeeper_Idle':'Breathing_Idle',.4);
+     // kick when close to the ball
+     if(p.busy<=0&&p.k>0&&p.h.position.distanceTo(bp)<.9&&t>tq){tq=t+.6;play(p,'Kick_Soccerball',.12);p.busy=.55;const gx=P0.x+(p.team?-HL:HL);const shoot=Math.abs(gx-bp.x)<12*SC;const aim=tmp.set(gx-bp.x,0,(P0.z+(Math.random()-.5)*(shoot?5*SC:HW*1.6))-bp.z);aim.normalize().multiplyScalar(shoot?16*Math.sqrt(SC):(7+Math.random()*5)*Math.sqrt(SC));bv.copy(aim)}
+     if(p.k===0&&p.busy<=0&&Math.abs(bp.x-p.h.position.x)<2.5&&bv.length()>8){play(p,Math.abs(bp.z-p.h.position.z)>1.2?'Goalkeeper_Diving_Save':'Goalkeeper_Catch',.1);p.busy=1.6;bv.multiplyScalar(-.3)}
+     p.mx.update(dt)}
+   };if(OP.inside)OP.inside.step=step;else W3.anim.push(step)};
+  go().catch(e=>console.warn('players',e))}
  function personJob(src){const g=new T.Group();const m=X.SUc(src);g.add(m);m.updateMatrixWorld(true);const B={},MAP={LeftUpLeg:'UpperLegL',RightUpLeg:'UpperLegR',LeftLeg:'LowerLegL',RightLeg:'LowerLegR',LeftArm:'UpperArmL',RightArm:'UpperArmR',LeftForeArm:'LowerArmL',RightForeArm:'LowerArmR',Spine:'Spine',Spine1:'Spine1',Neck:'Neck'};
   m.traverse(o=>{if(o.isBone){const k=o.name.match(/(LeftUpLeg|RightUpLeg|LeftLeg|RightLeg|LeftArm|RightArm|LeftForeArm|RightForeArm|Spine|Spine1|Neck)$/);if(k)B[MAP[k[1]]]=o}if(o.isMesh){o.castShadow=true;o.frustumCulled=false}});
   const a=new T.Vector3(),b=new T.Vector3(),q=new T.Quaternion(),pq=new T.Quaternion();
@@ -2688,7 +2731,38 @@ function make3D(T,X){
   if(RT.timer<=0){RT.timer=.5;const x=RT.screenC.getContext('2d');x.fillStyle='#071a2d';x.fillRect(0,0,1024,512);x.fillStyle='#ff7a1a';x.font="800 56px 'Barlow Condensed',sans-serif";x.textAlign='left';x.textBaseline='middle';x.fillText('LIVE TIMING',36,56);
    [...race].sort((a,b)=>(b.laps+b.t)-(a.laps+a.t)).forEach((r,i)=>{const y=150+i*110;x.fillStyle=r.col;x.fillRect(36,y-40,80,80);x.fillStyle='#111';x.font="800 48px 'Barlow Condensed',sans-serif";x.textAlign='center';x.fillText(String(r.num),76,y+2);x.textAlign='left';x.fillStyle='#fff';x.fillText(`P${i+1}`,150,y);x.fillStyle='#c8defa';x.font="700 44px 'JetBrains Mono',monospace";x.fillText(`LAP ${r.laps+1}`,330,y);x.fillText(`${Math.round(r.t*100)}%`,700,y)});RT.screenT.needsUpdate=true}}
  function labelsPits(){lockedNote('pista');header('INSIDE THE RACE TRACK PIT GARAGE')}
- const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},news:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}},police:{get scene(){return PS.S},build:buildPolice,isBuilt:()=>PS.built,sync:syncPolice,labels:labelsPolice,get home(){return PS.home}},court:{get scene(){return CT.S},build:buildCourt,isBuilt:()=>CT.built,sync:syncCourt,labels:labelsCourt,get home(){return CT.home}}};let cur=INTS.oficina;
+
+ // ---- STADIUM interior (hidden: only reachable from the recorder / localhost tests until it is announced) ----
+ const SD={built:false,home:{tx:0,tz:2,yaw:.55,pitch:.42,dist:62},step:null};
+ function buildStadium(){const S=new T.Scene();SD.S=S;SD.built=true;S.background=new T.Color(0x8fb8e0);S.fog=new T.Fog(0x8fb8e0,140,260);
+  S.add(new T.HemisphereLight(0xeef4ff,0x3a4a30,1.1));const key=new T.DirectionalLight(0xfff3e0,1.6);key.position.set(30,60,25);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-40,right:40,top:30,bottom:-30,near:5,far:160});key.shadow.bias=-.0005;S.add(key);
+  const HL=20.5,HW=14.5;
+  // grass apron under everything
+  const ap=new T.Mesh(new T.PlaneGeometry(80,60),M(0x3b7d34,{roughness:.95}));ap.rotation.x=-Math.PI/2;ap.position.y=-.02;ap.receiveShadow=true;S.add(ap);
+  // stands: four tiered blocks with seats and a crowd
+  const seatC=[0xd93a2f,0x2f6fd9];const crowd=[];
+  const stand=(len,x,z,ry,col)=>{const g=new T.Group();g.position.set(x,0,z);g.rotation.y=ry;S.add(g);
+   for(let r=0;r<8;r++){const st=box(len,1,1.6,M(r%2?0xc9ced6:0xb8bec8),0,r*1+.5,r*1.6+.8,true);g.add(st);const sr=box(len,.35,.5,M(col),0,r*1+1.15,r*1.6+.5,false);g.add(sr);for(let k=0;k<len/0.9;k++)if(Math.random()<.78)crowd.push({g,x:-len/2+.45+k*.9,y:r*1+1.6,z:r*1.6+.55})}
+   const bk=box(len,9.5,.6,M(0x2a2f38),0,4.75,13.3,true);g.add(bk);const rf=box(len+2,.4,8,M(0xe8ecf1),0,10.2,10,true);g.add(rf);return g};
+  stand(50,0,-HW-3,Math.PI,seatC[0]);stand(50,0,HW+3,0,seatC[1]);stand(36,-HL-3.5,0,-Math.PI/2,seatC[0]);stand(36,HL+3.5,0,Math.PI/2,seatC[1]);
+  // crowd as one instanced mesh of little people-blocks
+  const cg=new T.BoxGeometry(.45,.75,.35);const cm=new T.MeshStandardMaterial({roughness:.8});const IM=new T.InstancedMesh(cg,cm,crowd.length);const mm=new T.Matrix4(),v=new T.Vector3(),q=new T.Quaternion(),one=new T.Vector3(1,1,1),cc=new T.Color();
+  const pal=[0xd93a2f,0x2f6fd9,0xf4f1e6,0x222428,0xf2b81d,0x3ee08f,0x7a3fb0,0xff7a1a];
+  crowd.forEach((c,i)=>{c.g.updateMatrixWorld(true);v.set(c.x,c.y,c.z).applyMatrix4(c.g.matrixWorld);q.setFromEuler(new T.Euler(0,c.g.rotation.y,0));mm.compose(v,q,one);IM.setMatrixAt(i,mm);IM.setColorAt(i,cc.setHex(pal[(Math.random()*pal.length)|0]))});S.add(IM);SD.crowd={IM,list:crowd,base:crowd.map((c,i)=>{const m=new T.Matrix4();IM.getMatrixAt(i,m);return m})};
+  // floodlights
+  for(const[a,b]of[[1,1],[1,-1],[-1,1],[-1,-1]]){const p=new T.Mesh(new T.CylinderGeometry(.35,.45,26,8),mat.steel);p.position.set(a*(HL+9),13,b*(HW+9));S.add(p);const h=box(5,2.4,.6,mat.lamp,a*(HL+9),26.5,b*(HW+9),false);h.lookAt(0,0,0);S.add(h)}
+  // scoreboard
+  const sb=document.createElement('canvas');sb.width=512;sb.height=160;const sbt=new T.CanvasTexture(sb);sbt.colorSpace=T.SRGBColorSpace;const sbm=new T.Mesh(new T.PlaneGeometry(14,4.4),new T.MeshBasicMaterial({map:sbt}));sbm.position.set(0,16,-HW-17.5);S.add(sbm);S.add(box(14.8,5,.4,mat.dark,0,16,-HW-17.8,false));
+  const draw=(sc)=>{const c=sb.getContext('2d');c.fillStyle='#0c0f14';c.fillRect(0,0,512,160);c.font="800 34px 'Barlow Condensed',sans-serif";c.textAlign='center';c.fillStyle='#ff7a1a';c.fillText('MOTOROPOLIS LEAGUE',256,40);c.font="800 64px 'Barlow Condensed',sans-serif";c.fillStyle='#ff5a4f';c.fillText('RED',110,120);c.fillStyle='#ffffff';c.fillText(sc[0]+' - '+sc[1],256,120);c.fillStyle='#5aa2ff';c.fillText('BLUE',402,120);sbt.needsUpdate=true};draw([0,0]);
+  // pitch model
+  X.ld.loadAsync(ASSET_BASE+'assets/world/field.glb').then(gf=>{const f=gf.scene;f.rotation.y=Math.PI/2;f.traverse(o=>{if(o.isMesh){o.receiveShadow=true;const c=o.material.color.getHex();if(c===0x27b811)o.material.color.setHex(0x3f8f37);if(c===0x07e057)o.material.color.setHex(0x4ea443);o.material.roughness=.9}});S.add(f)}).catch(e=>console.warn('field',e));
+  const ball=new T.Mesh(new T.SphereGeometry(.22,14,10),M(0xffffff));ball.castShadow=true;S.add(ball);
+  stadPlayers(S,new T.Vector3(0,0,0),[],ball,{HL,HW,ph:1.8,inside:SD,parent:S,onGoal:sc=>{draw(sc);SD.cheer=2}})}
+ function syncStadium(dt){if(SD.step)SD.step(simTime,dt);
+  if(SD.crowd){const {IM,base}=SD.crowd;const m=new T.Matrix4(),tr=new T.Matrix4();const amp=SD.cheer>0?.5:.06;if(SD.cheer>0)SD.cheer-=dt;
+   for(let i=0;i<base.length;i+=1){const hop=Math.max(0,Math.sin(simTime*(SD.cheer>0?9:2)+i*1.7))*amp;tr.makeTranslation(0,hop,0);m.multiplyMatrices(tr,base[i]);IM.setMatrixAt(i,m)}IM.instanceMatrix.needsUpdate=true}}
+ function labelsStadium(){header('INSIDE MOTOROPOLIS STADIUM')}
+ const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},news:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}},police:{get scene(){return PS.S},build:buildPolice,isBuilt:()=>PS.built,sync:syncPolice,labels:labelsPolice,get home(){return PS.home}},court:{get scene(){return CT.S},build:buildCourt,isBuilt:()=>CT.built,sync:syncCourt,labels:labelsCourt,get home(){return CT.home}},stadium:{get scene(){return SD.S},build:buildStadium,isBuilt:()=>SD.built,sync:syncStadium,labels:labelsStadium,get home(){return SD.home}}};let cur=INTS.oficina;
  // ===== NEWS KIOSK (Motoropolis Daily) =====
  const NK={built:false,v:-1,home:{...STD_HOME,yaw:.1,dist:40}};
  function frontPage(){const c=NK.cv,x=c.getContext('2d'),W=c.width,H=c.height;x.fillStyle='#f4f1e6';x.fillRect(0,0,W,H);x.fillStyle='#1c1d20';
@@ -3098,7 +3172,7 @@ function make3D(T,X){
     for(const[a,b]of[[1,1],[1,-1],[-1,1],[-1,-1]]){const p=new T.Mesh(new T.CylinderGeometry(.3,.3,18,6),mat.steel);p.position.set(x+a*31,9,z+b*22);g.add(p);B0(g,4,1.6,.6,mat.lamp,x+a*31,18,z+b*22,false)}
     const sb=document.createElement('canvas');sb.width=512;sb.height=160;const sbt=new T.CanvasTexture(sb);sbt.colorSpace=T.SRGBColorSpace;const sbm=new T.Mesh(new T.PlaneGeometry(14,4.4),new T.MeshBasicMaterial({map:sbt}));sbm.position.set(x,13,z+29.5);g.add(sbm);B0(g,14.6,5,.4,mat.dark,x,10.8,z+29.2,false);
     W3.board={c:sb,t:sbt,last:''};const pl=[];for(let k=0;k<10;k++){const m=new T.Mesh(sh(W3.plG||(W3.plG=new T.CapsuleGeometry(.35,.9,3,6))),k<5?M(0xd93a2f):M(0x2f6fd9));m.position.y=.9;g.add(m);pl.push(m)}const ball=new T.Mesh(new T.SphereGeometry(.35,10,8),mt.white);g.add(ball);
-    const P0=pitch.position;W3.anim.push(t=>{const x=P0.x,z=P0.z;const bx=x+Math.sin(t*.7)*15,bz=z+Math.sin(t*1.3)*8;ball.position.set(bx,.4,bz);pl.forEach((m,k)=>{const side=k<5?-1:1,hx=x+side*(6+(k%5)*3);m.position.x+=((bx*.4+hx*.6)+Math.sin(t+k)*2-m.position.x)*.03;m.position.z+=((bz*.5+(z+((k%5)-2)*4)*.5)-m.position.z)*.03})});L2('STADIUM · MOTOROPOLIS LEAGUE',x,z,16,'w_stad')}
+    const P0=pitch.position;W3.anim.push(t=>{if(W3.fb)return;const x=P0.x,z=P0.z;const bx=x+Math.sin(t*.7)*15,bz=z+Math.sin(t*1.3)*8;ball.position.set(bx,.4,bz);pl.forEach((m,k)=>{const side=k<5?-1:1,hx=x+side*(6+(k%5)*3);m.position.x+=((bx*.4+hx*.6)+Math.sin(t+k)*2-m.position.x)*.03;m.position.z+=((bz*.5+(z+((k%5)-2)*4)*.5)-m.position.z)*.03})});if(X&&X.ld)stadPlayers(g,P0,pl,ball);L2('STADIUM · MOTOROPOLIS LEAGUE',x,z,16,'w_stad')}
    else{W3.board=null;bpLot(g,'w_stad',190,263,74,56);L2('STADIUM',190,263,10,'w_stad')}
    // mall + first tower
    if(open('w_mall')){const x=275,z=210;bld(g,46,9,22,AM[0],mat.roof,x,z);B0(g,46.4,.15,1.2,mt.glassB,x,4,z-11.2,false);for(let q=0;q<4;q++)B0(g,8,6,.3,mt.glassB,x-16+q*10.6,0,z-11.1,false);g.add(sign('MOTOROPOLIS MALL',22,2.6,'#ff7a1a','#1d0f02',x,10.8,z-11.3,0));
