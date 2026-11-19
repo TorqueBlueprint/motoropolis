@@ -2157,7 +2157,7 @@ function make3D(T,X){
   const go=async()=>{let n=0;while(!X.SUc&&n++<100)await new Promise(r=>setTimeout(r,200));if(!X.SUc)return;
    const gl=await X.ld.loadAsync(ASSET_BASE+'assets/world/player.glb');const CL={};gl.animations.forEach(a=>CL[a.name]=a);
    const kit=(hex)=>{const m0=[];gl.scene.traverse(o=>{if(o.isMesh)m0.push(o.material)});const m=m0[0].clone();const c=new T.Color(hex);
-    m.onBeforeCompile=sh=>{sh.uniforms.kitC={value:c};sh.fragmentShader='uniform vec3 kitC;\n'+sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 cc=diffuseColor.rgb;float mx=max(cc.r,max(cc.g,cc.b)),mn=min(cc.r,min(cc.g,cc.b));float w=smoothstep(.06,.0,mx-mn)*smoothstep(.35,.6,mx);diffuseColor.rgb=mix(cc,kitC*(mx*1.15),w);}')};m.customProgramCacheKey=()=>'kit'+hex;return m};
+    m.onBeforeCompile=sh=>{sh.uniforms.kitC={value:c};sh.fragmentShader='uniform vec3 kitC;\n'+sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 cc=diffuseColor.rgb;float mx=max(cc.r,max(cc.g,cc.b)),mn=min(cc.r,min(cc.g,cc.b));float w=smoothstep(.14,.04,mx-mn)*smoothstep(.22,.45,mx);diffuseColor.rgb=mix(cc,kitC*min(1.,mx*1.35),w);}')};m.customProgramCacheKey=()=>'kit'+hex;return m};
    const KITS=[kit(0xd93a2f),kit(0x2f6fd9),kit(0x111111)];
    const bb=new T.Box3().setFromObject(gl.scene);const K=PH/(bb.max.y-bb.min.y);
    // 4-4-2, x along pitch (−20..20), z across (−12.5..12.5)
