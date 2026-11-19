@@ -20,8 +20,9 @@ R("if(location.hostname==='localhost')window.__mtpBuild=",
   "pick:(g,ex)=>{let best=null,bs=-1;for(const c of cars){if(c.kind!=='car'||!c.m||c.m.glb!==g||c.state!=='road'||c.hidden||c.removed||c.task||(ex&&ex.includes(c.id)))continue;if(c.v>bs){bs=c.v;best=c}}return best?{id:best.id}:null},"
   "pos:id=>{const c=cars.find(q=>q.id===id);return c?{x:c.x/10,z:c.y/10,a:c.ang,v:c.v}:null}};\n"
   "if(location.hostname==='localhost')window.__mtpBuild=")
+s = s.replace("if(location.hostname==='localhost')window.__XMS=", "window.__XMS=")
 i = s.rindex("</body>")
-s = s[:i] + '<script src="mp4mux.js?v=1"></script><script src="rec.js?v=5"></script>' + s[i:]
+s = s[:i] + '<script src="mp4mux.js?v=1"></script><script src="rec.js?v=6"></script>' + s[i:]
 os.makedirs(os.path.join(ROOT, "rec", "shots"), exist_ok=True)
 open(os.path.join(ROOT, "rec", "index.html"), "w", encoding="utf-8").write(s)
 print("rec/index.html built", len(s))

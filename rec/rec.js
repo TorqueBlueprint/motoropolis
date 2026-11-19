@@ -56,7 +56,10 @@
   function camAt(S, t, st) {
     const u = S.dur ? t / S.dur : 0;
     if (S.follow && st.id != null) { const q = S.follow.ped ? window.__PEDH.pos(st.id) : window.__H.pos(st.id); if (q) { const f = S.follow; if (st.ya == null) st.ya = q.a; let da = q.a - st.ya; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI; st.ya += da * .08; const ph = f.phi + (f.sweep || 0) * (u - .5); return { tx: q.x, tz: q.z, yaw: PI / 2 - (st.ya + ph), pitch: f.pitch || .3, dist: f.dist || 9.5, fov: f.fov || 50 } } }
-    const a = S.cam.from, b = S.cam.to || a, k = S.cam.ease === false ? u : E(u); const o = {}; for (const key of ['tx', 'tz', 'yaw', 'pitch', 'dist', 'fov']) o[key] = L(a[key] ?? 50, b[key] ?? a[key] ?? 50, k); return o
+    if (S.xms && window.__XMS && window.__XMS[S.xms]) { const q = window.__XMS[S.xms](); if (q) { const x = q[0], z = q[1], y = S.xms === 'sleigh' ? (q[2] || 0) : 0, f = S.follow || {};
+      if (st.px != null) { const dx = x - st.px, dz = z - st.pz; if (dx * dx + dz * dz > 1e-5) { const ry = Math.atan2(dx, dz); if (st.ry == null) st.ry = ry; let d = ry - st.ry; while (d > PI) d -= 2 * PI; while (d < -PI) d += 2 * PI; st.ry += d * .06 } } st.px = x; st.pz = z;
+      const ph = (f.phi || 0) + (f.sweep || 0) * (u - .5); return { tx: x, tz: z, ty: y * (f.ty == null ? 1 : f.ty), yaw: (st.ry || 0) - ph, pitch: f.pitch || .3, dist: f.dist || 20, fov: f.fov || 50 } } }
+    const a = S.cam.from, b = S.cam.to || a, k = S.cam.ease === false ? u : E(u); const o = {}; for (const key of ['tx', 'tz', 'yaw', 'pitch', 'dist', 'fov']) o[key] = L(a[key] ?? 50, b[key] ?? a[key] ?? 50, k); o.ty = L(a.ty || 0, b.ty ?? a.ty ?? 0, k); return o
   }
   function snapMini() {
     const H2 = window.__H, R = H2.R3(); Object.assign(R.cam, { tx: 96, tz: 72, yaw: PI - .25, pitch: .9, dist: 300 }); R.camera.fov = 40; R.camera.updateProjectionMatrix(); R.frame(1 / 30);
@@ -89,11 +92,15 @@
     const used = [], usedP = []; const t0 = performance.now();
     for (const S of SH.shots) {
       const n = Math.round(S.dur * FPS), sst = {};
+      if (S.night != null) H2.light(S.night ? 'noite' : (SH.light || 'dia'));
+      if (S.inside && R.mode() !== 'in') { R.enterIn(S.inside); for (let q = 0; q < 40; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
+      if (!S.inside && R.mode() === 'in') { R.exitIn(); for (let q = 0; q < 40; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
+      if (S.xms) { for (let q = 0; q < 3; q++) { H2.step(1 / FPS); camAt(S, 0, sst) } }
       if (S.follow && S.follow.ped) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = window.__PEDH && window.__PEDH.pick(S.follow.ped, usedP); if (c != null) { sst.id = c; usedP.push(c) } else H2.step(2) } }
       else if (S.follow) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = H2.pick(S.follow.glb, used); if (c) { sst.id = c.id; used.push(c.id) } else H2.step(2) } }
       for (let k = 0; k < n; k++, F++) {
         const due = t0 + F * 1000 / FPS; const now = performance.now(); if (enc) { if (enc.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 4)); else if (F % 30 === 0) await new Promise(r => setTimeout(r, 0)) } else if (now < due) await new Promise(r => setTimeout(r, due - now)); else if (now - due > 1000 / FPS) slow++;
-        const t = k / FPS; if (S.oldUntil != null && window.__PEDH) window.__PEDH.old(t < S.oldUntil); H2.step(1 / FPS); const cam = camAt(S, t, sst); Object.assign(R.cam, { tx: cam.tx, tz: cam.tz, yaw: cam.yaw, pitch: cam.pitch, dist: cam.dist });
+        const t = k / FPS; if (S.oldUntil != null && window.__PEDH) window.__PEDH.old(t < S.oldUntil); H2.step(1 / FPS); const cam = camAt(S, t, sst); Object.assign(R.cam, { tx: cam.tx, tz: cam.tz, ty: cam.ty || 0, yaw: cam.yaw, pitch: cam.pitch, dist: cam.dist });
         if (cam.fov && R.camera.fov !== cam.fov) { R.camera.fov = cam.fov; R.camera.updateProjectionMatrix() } R.frame(1 / FPS); compose(S, t); if (S.oldUntil != null) { const d = Math.abs(t - S.oldUntil); if (d < .18) { cx.fillStyle = `rgba(255,255,255,${(1 - d / .18) * .85})`; cx.fillRect(0, 0, W, H) } } if (enc) { const fr = new VideoFrame(comp, { timestamp: Math.round(F * 1e6 / FPS), duration: Math.round(1e6 / FPS) }); enc.encode(fr, { keyFrame: F % FPS === 0 }); fr.close() } else if (track && track.requestFrame) track.requestFrame();
         if (F % 6 === 0) { bar.style.width = (100 * F / total).toFixed(1) + '%'; st.textContent = (record ? 'Recording… ' : 'Preview… ') + Math.round(100 * F / total) + '%' }
       }
