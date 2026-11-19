@@ -2920,6 +2920,15 @@ function make3D(T,X){
   const riverZ=x=>-96+20*Math.sin((x+60)*.0105)+7*Math.sin(x*.027+1),riverW=x=>x<-300?34+Math.min(70,(-300-x)*.42):34;
   const RP=[];for(let x=-760;x<=960;x+=6)RP.push([x,riverZ(x)]);
   ribbon(RP,p=>riverW(p[0])+12,.045,mt.sand);ribbon(RP,p=>riverW(p[0]),.16,mt.water);
+   // nicer water (photo texture, glossier) and a fisherman in a little aluminium boat on the river
+   if(X&&X.ld){new T.TextureLoader().load(ASSET_BASE+'assets/world/water.jpg',tx=>{tx.colorSpace=T.SRGBColorSpace;tx.wrapS=tx.wrapT=T.MirroredRepeatWrapping;tx.repeat.copy(W3.waterTex.repeat);tx.repeat.multiplyScalar(1.5);mt.water.map=tx;W3.waterTex=tx;mt.water.roughness=.18;mt.water.metalness=.08;mt.water.needsUpdate=true});
+    const fx=118,fz=riverZ(fx)+riverW(fx)*.18,ang=Math.atan2(riverZ(fx+4)-riverZ(fx-4),8);
+    Promise.all([X.ld.loadAsync(ASSET_BASE+'assets/world/boat.glb'),X.ld.loadAsync(ASSET_BASE+'assets/world/fisherman.glb')]).then(([bg,fg])=>{
+     const g=new T.Group(),hull=bg.scene;let bb=new T.Box3().setFromObject(hull);const sz=bb.getSize(new T.Vector3());const k=4.2/Math.max(sz.x,sz.z);hull.scale.setScalar(k);bb=new T.Box3().setFromObject(hull);hull.position.set(-(bb.min.x+bb.max.x)/2,-bb.min.y-.12,-(bb.min.z+bb.max.z)/2);g.add(hull);
+     const fm=fg.scene;const mx=fg.animations.length?new T.AnimationMixer(fm):null;if(mx){mx.clipAction(fg.animations[0]).play();mx.update(.01)}fm.updateMatrixWorld(true);let fb=new T.Box3().setFromObject(fm,true);const fk=1.7/(fb.max.y-fb.min.y);fm.scale.setScalar(fk);fm.updateMatrixWorld(true);fb=new T.Box3().setFromObject(fm,true);fm.position.set(0,-fb.min.y+.05,0);g.add(fm);g.updateMatrixWorld(true);{let hip=null;fm.traverse(o=>{if(!hip&&o.isBone&&/hips?$/i.test(o.name))hip=o});if(hip){const hv=hip.getWorldPosition(new T.Vector3());fm.position.x-=hv.x;fm.position.z-=hv.z}}
+     g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.frustumCulled=false}});
+     g.position.set(W3.WX(fx),.16,W3.WZ(fz));g.rotation.y=-ang+Math.PI/2;scene.add(g);
+     W3.fish={g,mx,y0:.16,r0:g.rotation.y};if(location.hostname==='localhost')window.__FISH=W3.fish}).catch(e=>console.warn('boat',e))}
   // ---- reserved areas (no forest) ----
   const rects=[],lines=[];const blockR=(x0,z0,x1,z1)=>rects.push([x0,z0,x1,z1]);
   const addLine=(P,hw)=>{let a=1e9,b=1e9,c=-1e9,d=-1e9;for(const p of P){a=Math.min(a,p[0]);b=Math.min(b,p[1]);c=Math.max(c,p[0]);d=Math.max(d,p[1])}lines.push({P,hw,bb:[a,b,c,d]})};
@@ -3150,7 +3159,7 @@ function make3D(T,X){
   const spray=new T.Mesh(new T.CylinderGeometry(.12,.5,1,8,1,true),mt.spray);spray.visible=false;scene.add(spray);
   const tmp={},v1=new T.Vector3(),v2=new T.Vector3();let wt=0;
   W3.sync=(dt)=>{const sv=subs||0;const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()||{}).type;if(sig!==dsig){dsig=sig;rebuild()}
-   wt+=dt;W3.waterTex.offset.set(wt*.01,wt*.004);for(const m of W3.tmats)m.emissiveIntensity=mat.win.emissiveIntensity*.75;
+   wt+=dt;W3.waterTex.offset.set(wt*.01,wt*.004);if(W3.fish){const F=W3.fish;if(F.mx)F.mx.update(dt);F.g.position.y=F.y0+.06*Math.sin(wt*1.6);F.g.rotation.z=.03*Math.sin(wt*1.1);F.g.rotation.y=F.r0+.05*Math.sin(wt*.3)}for(const m of W3.tmats)m.emissiveIntensity=mat.win.emissiveIntensity*.75;
    for(const c of W3.cars){c.s+=c.v*dt*c.dir;atPath(c.p,c.s,c.off,tmp);if(c.rig){c.g.position.set(tmp.x+c.rig[0],0,tmp.z+c.rig[1]);c.g.rotation.y=tmp.ry+(c.dir<0?Math.PI:0)}else{atPath(c.p,c.s,0,tmp);const px=tmp.x,pz=tmp.z,x0=WX(px),z0=WZ(pz);atPath(c.p,c.s+1,0,tmp);let hx=WX(tmp.x)-x0,hz=WZ(tmp.z)-z0;const hl=Math.hypot(hx,hz)||1;hx/=hl;hz/=hl;const o=c.off>0?1.55:-1.55;c.g.position.set(x0-hz*o,deckY(px,pz),z0+hx*o);c.g.rotation.y=Math.atan2(hx,hz)+(c.dir<0?Math.PI:0)}}
    for(const a of W3.anim)a(wt,dt);
    if(W3.board&&simTime-(W3.board.at||-99)>1){W3.board.at=simTime;const L=LEAGUE;const txt=L.home+' '+L.hs+' - '+L.as+' '+L.away+'|'+L.min;if(txt!==W3.board.last){W3.board.last=txt;const x=W3.board.c.getContext('2d');x.fillStyle='#0b0e13';x.fillRect(0,0,512,160);x.fillStyle='#ffd34d';x.font="800 30px 'Barlow Condensed',sans-serif";x.textAlign='center';x.fillText('MOTOROPOLIS LEAGUE · '+(L.min>=90?'FULL TIME':L.min+"'"),256,40);x.fillStyle='#fff';x.font="800 50px 'Barlow Condensed',sans-serif";x.fillText(`${L.home.toUpperCase()} ${L.hs}-${L.as} ${L.away.toUpperCase()}`,256,112);W3.board.t.needsUpdate=true}}
