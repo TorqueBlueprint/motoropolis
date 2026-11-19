@@ -93,7 +93,7 @@
     for (const S of SH.shots) {
       const n = Math.round(S.dur * FPS), sst = {};
       if (S.night != null) H2.light(S.night ? 'noite' : (SH.light || 'dia'));
-      if (S.inside && R.mode() !== 'in') { R.enterIn(S.inside); for (let q = 0; q < 40; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
+      if (S.inside && R.mode() !== 'in') { R.enterIn(S.inside); st.textContent = 'Loading the inside…'; for (let q = 0; q < 150; q++) { H2.step(1 / 30); R.frame(1 / 30); await new Promise(z => setTimeout(z, 30)) } }
       if (!S.inside && R.mode() === 'in') { R.exitIn(); for (let q = 0; q < 40; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
       if (S.xms) { for (let q = 0; q < 3; q++) { H2.step(1 / FPS); camAt(S, 0, sst) } }
       if (S.follow && S.follow.ped) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = window.__PEDH && window.__PEDH.pick(S.follow.ped, usedP); if (c != null) { sst.id = c; usedP.push(c) } else H2.step(2) } }
