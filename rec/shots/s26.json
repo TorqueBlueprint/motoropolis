@@ -1,0 +1,455 @@
+{
+ "title": "Short · The Christmas city is LIVE (open with &xmas=1)",
+ "light": "dia",
+ "warmup": 60,
+ "hide": [
+  "Hunter-is-gay-af"
+ ],
+ "shots": [
+  {
+   "name": "hook",
+   "dur": 4.0,
+   "cam": {
+    "from": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 2.441592653589793,
+     "pitch": 1.05,
+     "dist": 260,
+     "fov": 50
+    },
+    "to": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 2.791592653589793,
+     "pitch": 0.8,
+     "dist": 170,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 330,
+     "lines": [
+      [
+       "THE CHRISTMAS CITY",
+       84,
+       "#ffffff"
+      ],
+      [
+       "IS LIVE NOW 🎄",
+       116,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "market",
+   "dur": 5.0,
+   "cam": {
+    "from": {
+     "tx": 70,
+     "tz": 92,
+     "yaw": 3.641592653589793,
+     "pitch": 0.42,
+     "dist": 45,
+     "fov": 50
+    },
+    "to": {
+     "tx": 74.5,
+     "tz": 86,
+     "yaw": 2.941592653589793,
+     "pitch": 0.38,
+     "dist": 34,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "THE CHRISTMAS",
+       90,
+       "#ffffff"
+      ],
+      [
+       "MARKET IS OPEN",
+       96,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 1.8,
+     "y": 1580,
+     "lines": [
+      [
+       "THE TREE GROWS WITH",
+       70,
+       "#ffffff"
+      ],
+      [
+       "EVERY SUBSCRIBER",
+       80,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "star",
+   "dur": 4.0,
+   "cam": {
+    "from": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 3.041592653589793,
+     "pitch": 0.1,
+     "dist": 17,
+     "fov": 50,
+     "ty": 3
+    },
+    "to": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 3.291592653589793,
+     "pitch": 0.04,
+     "dist": 15,
+     "fov": 50,
+     "ty": 6
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "AT 150 SUBS",
+       110,
+       "#ffd34d"
+      ],
+      [
+       "THE STAR LIGHTS UP ⭐",
+       84,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "gifts",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 2.641592653589793,
+     "pitch": 0.32,
+     "dist": 12,
+     "fov": 50,
+     "ty": 1
+    },
+    "to": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 3.441592653589793,
+     "pitch": 0.28,
+     "dist": 11,
+     "fov": 50,
+     "ty": 1
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "COMMENT \"WORKSHOP\"",
+       84,
+       "#ffffff"
+      ],
+      [
+       "GET YOUR GIFT",
+       96,
+       "#ffd34d"
+      ],
+      [
+       "UNDER THE TREE 🎁",
+       90,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "houses",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": 21.4,
+     "tz": 81.2,
+     "yaw": 3.741592653589793,
+     "pitch": 0.32,
+     "dist": 34,
+     "fov": 50
+    },
+    "to": {
+     "tx": 21.4,
+     "tz": 89.8,
+     "yaw": 2.8415926535897933,
+     "pitch": 0.3,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "SANTA'S WORKSHOP",
+       90,
+       "#ffffff"
+      ],
+      [
+       "& THE GINGERBREAD HOUSE",
+       66,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "inside",
+   "dur": 5.0,
+   "inside": "santa",
+   "cam": {
+    "from": {
+     "tx": 0,
+     "tz": -1,
+     "yaw": 0.35,
+     "pitch": 0.38,
+     "dist": 42,
+     "fov": 50
+    },
+    "to": {
+     "tx": 7,
+     "tz": -2,
+     "yaw": -0.2,
+     "pitch": 0.3,
+     "dist": 26,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "WALK INSIDE",
+       96,
+       "#ffffff"
+      ],
+      [
+       "SANTA'S WORKSHOP 🎅",
+       92,
+       "#ff5a4e"
+      ]
+     ]
+    },
+    {
+     "t0": 2.0,
+     "y": 1580,
+     "lines": [
+      [
+       "JOB OPEN · ELF",
+       80,
+       "#3ee08f"
+      ],
+      [
+       "COMMENT \"WORKSHOP ELF\"",
+       62,
+       "#ffffff"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "sleigh",
+   "dur": 5.0,
+   "xms": "sleigh",
+   "follow": {
+    "phi": 0.7,
+    "pitch": 0.22,
+    "dist": 26,
+    "sweep": 0.5,
+    "ty": 1
+   },
+   "cam": {
+    "from": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 3.141592653589793,
+     "pitch": 0.6,
+     "dist": 80,
+     "fov": 50
+    },
+    "to": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 3.141592653589793,
+     "pitch": 0.6,
+     "dist": 80,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "SANTA FLIES",
+       110,
+       "#ffffff"
+      ],
+      [
+       "OVER THE CITY",
+       96,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "truck",
+   "dur": 4.5,
+   "xms": "truck",
+   "follow": {
+    "phi": 0.8,
+    "pitch": 0.3,
+    "dist": 18,
+    "sweep": -0.4
+   },
+   "cam": {
+    "from": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 3.141592653589793,
+     "pitch": 0.6,
+     "dist": 80,
+     "fov": 50
+    },
+    "to": {
+     "tx": 74.5,
+     "tz": 85,
+     "yaw": 3.141592653589793,
+     "pitch": 0.6,
+     "dist": 80,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "THE MERRY CHRISTMAS",
+       80,
+       "#ffffff"
+      ],
+      [
+       "LIGHT TRUCK 🎄",
+       100,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "end",
+   "end": true,
+   "night": false,
+   "dur": 7.0,
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.941592653589793,
+     "pitch": 1.0,
+     "dist": 300,
+     "fov": 50
+    },
+    "to": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.541592653589793,
+     "pitch": 1.0,
+     "dist": 300,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.1,
+     "until": 3.4,
+     "y": 290,
+     "lines": [
+      [
+       "THE CHRISTMAS CITY",
+       88,
+       "#ffffff"
+      ],
+      [
+       "IS LIVE · GO VISIT",
+       92,
+       "#3ee08f"
+      ]
+     ]
+    },
+    {
+     "t0": 3.5,
+     "y": 290,
+     "lines": [
+      [
+       "EVERY SUBSCRIBER",
+       92,
+       "#ffffff"
+      ],
+      [
+       "ADDS A CAR",
+       120,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}
