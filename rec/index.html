@@ -290,10 +290,10 @@ const XMAS=document.documentElement.dataset.xmas==='1';
 // performance test build (tools/build_perf.py): adaptive resolution, throttled shadows, level of detail for far cars and people
 const PERF=document.documentElement.dataset.perf==='1';const AQ={pr:1,acc:0,n:0,shEvery:2,shN:0,fps:60};
 // graphics quality: high / medium / low. Everyone starts on high; Medium/Low only if the viewer picks them (remembered).
-const QUAL=(()=>{let q=null;try{q=localStorage.getItem('mtp-quality')}catch(e){}if(q==='high'||q==='medium'||q==='low')return q;return 'high'})();const CW=WORLD?3640:1920,CH=WORLD?1980:1380,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
+const QUAL=(()=>{let q=null;try{q=localStorage.getItem('mtp-quality')}catch(e){}if(q==='high'||q==='medium'||q==='low')return q;return 'high'})();const CW=WORLD?3640:1920,CH=WORLD?1980:1680,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
 const REMAKE=document.documentElement.dataset.remake!=='0';
 const CANAL_I=REMAKE&&!WORLD?2:-1;const ROUND_IJ=REMAKE?[[1,1],[3,3],[1,3]]:[];
-const XS=WORLD?[100,530,960,1390,1820,2250,2680,3110,3540]:[100,530,960,1390,1820],YS=WORLD?[100,400,700,1000,1300,1600,1900]:[100,400,700,1000,1300],NX=XS.length,NY=YS.length,GAPX=0,GAPY=0;
+const XS=WORLD?[100,530,960,1390,1820,2250,2680,3110,3540]:[100,530,960,1390,1820],YS=WORLD?[100,400,700,1000,1300,1600,1900]:[100,400,700,1000,1300,1600],NX=XS.length,NY=YS.length,GAPX=0,GAPY=0;
 const C=document.getElementById('city');C.width=CW;C.height=CH;const octx=C.getContext('2d');
 const world=document.createElement('canvas');world.width=CW;world.height=CH;let ctx=world.getContext('2d');
 const bg=document.createElement('canvas');bg.width=CW;bg.height=CH;const g=bg.getContext('2d');
@@ -456,6 +456,8 @@ const S=Math.PI/2;
  b=mkB('news',1,3,'top',60,'Motoropolis Daily');
  b=mkB('police',2,3,'top',70,'Police station');slot(b,42,118,S);slot(b,98,118,S);
  b=mkB('court',3,3,'top',173,'Courthouse');
+ // row 5: the supermarket and its parking lot (open from day one)
+ b=mkB('market',1,4,'top',250,'Supermarket');for(let k=0;k<8;k++)slot(b,40+k*40,42,S);
 }
 const approach=s=>({x:s.x-Math.cos(s.ang)*36,y:s.y-Math.sin(s.ang)*36});
 // the news kiosk stands on the plaza in front of the Motoropolis Daily building
@@ -464,6 +466,7 @@ const inKiosk=(x,y,m=6)=>{const b=B.news;return x>=b.x0-m&&x<=b.x1+m&&y>=b.y0-m&
 // ---------- subscriber milestones ----------
 const MILESTONES=[
  {n:0,type:'oficina',label:'Repair shop'},
+ {n:0,type:'market',label:'Supermarket'},
  {n:10,type:'reboques',label:'24h Towing'},
  {n:15,type:'bomba',label:'Gas station'},
  {n:20,type:'pneus',label:'Tire shop'},
@@ -634,7 +637,7 @@ function stepCar(c,dt){
 function serviceTime(c,Bd){switch(Bd.type){
  case 'bomba':return 12;case 'lavagem':return 6;case 'pneus':return c.fault?c.fault.t:5;
  case 'oficina':return c.task&&c.task.type==='parts'?4:c.fault?c.fault.t:6;
- case 'inspecao':return 5;case 'parque':return rr(14,32);case 'stand':return rr(18,40);
+ case 'inspecao':return 5;case 'market':return rr(10,26);case 'parque':return rr(14,32);case 'stand':return rr(18,40);
  case 'sucata':return 3;case 'pecas':return rr(14,22);case 'fabrica':return 3;default:return 5}}
 function arrive(c){
  const s=c.slot;c.v=0;c.ang=s.ang;c.x=s.x;c.y=s.y;
@@ -746,6 +749,7 @@ function brain(c){
  if((c.repairs>=4||c.km>440000)&&isOpen('sucata')){c.task={type:'svc',b:B.sucata};return}
  if(c.km>=c.nextInsp&&isOpen('inspecao')){c.task={type:'svc',b:B.inspecao};return}
  if(c.dirt>80&&R()<.25&&isOpen('lavagem')){c.task={type:'svc',b:B.lavagem};return}
+ if(R()<.007&&isOpen('market')){c.task={type:'svc',b:B.market};return}
  if(R()<.006&&isOpen('parque'))c.task={type:'svc',b:B.parque};
 }
 
@@ -999,6 +1003,20 @@ function drawBuildingsStatic(){
  b=B.sucata;g.fillStyle='#9a8a6e';g.fillRect(b.x0,b.y0,b.w,b.h);
  for(let k=0;k<40;k++){g.fillStyle='rgba(60,45,30,.25)';g.beginPath();g.arc(b.x0+R()*b.w,b.y0+R()*b.h,rr(4,14),0,TAU);g.fill()}
  g.fillStyle='#4b4f55';g.fillRect(b.slots[0].x-26,b.slots[0].y-36,52,72);g.fillStyle='#2b2f36';g.fillRect(b.slots[0].x-20,b.slots[0].y-30,40,60);
+ // supermarket: store at the back, customer parking in front
+ b=B.market;{const x0=b.x0,y0=b.y0,w=b.w,h=b.h;
+  g.fillStyle='#8f949b';g.fillRect(x0,y0,w,h);
+  g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=2;for(const s2 of b.slots)g.strokeRect(s2.x-15,s2.y-26,30,52);
+  const bw=200,bh=126,bx=x0+(w-bw)/2,by=y0+h-bh-6;
+  g.fillStyle='rgba(0,0,0,.18)';g.fillRect(bx+6,by+7,bw,bh);
+  g.fillStyle='#e7eaec';g.fillRect(bx,by,bw,bh);
+  g.fillStyle='#4fa3c7';g.fillRect(bx+12,by+6,bw-24,26);
+  g.strokeStyle='#eaf4f8';g.lineWidth=3;for(let k=1;k<8;k++){g.beginPath();g.moveTo(bx+12+k*(bw-24)/8,by+6);g.lineTo(bx+12+k*(bw-24)/8,by+32);g.stroke()}
+  g.fillStyle='#d6dade';g.fillRect(bx,by+bh-18,bw,18);
+  sign(g,'SUPERMARKET',bx+bw/2-78,by+38,156,26,'#2e7d4f','#ffffff',19);
+  g.fillStyle='#c9ccd0';for(const tx of [x0+w-62,x0+w-36]){g.fillRect(tx,y0+16,18,52);g.fillStyle='rgba(60,70,80,.45)';g.fillRect(tx+3,y0+20,12,44);g.fillStyle='#c9ccd0'}
+  for(const [tx,ty] of [[x0+12,y0+12],[x0+w-14,y0+12],[x0+14,y0+h-14],[x0+w-16,y0+h-14]])tree(tx,ty,12);
+  sign(g,'P',x0+8,y0+h-46,30,30,'#1d4fb8','#fff',22)}
 }
 
 // ---------- drawing ----------
@@ -1401,7 +1419,7 @@ function stateText(c){
    if(!b)return['Parked',''];
    switch(b.type){case 'oficina':return c.kind==='van'?['Unloading parts at the repair shop'+left,'']:['On a lift at the repair shop'+left,c.fault?c.fault.n:'General service'];
     case 'bomba':return['Filling up'+left,''];case 'lavagem':return['In the car wash'+left,''];case 'pneus':return['At the tire shop'+left,c.fault&&c.fault.n];
-    case 'inspecao':return['In the inspection lane'+left,''];case 'parque':return['Parked in the parking lot',''];case 'stand':return c.isNew?[`For sale at the dealership for ${eur(c.price)}`,'']:['At the dealership',''];
+    case 'inspecao':return['In the inspection lane'+left,''];case 'market':return['Shopping at the supermarket',''];case 'parque':return['Parked in the parking lot',''];case 'stand':return c.isNew?[`For sale at the dealership for ${eur(c.price)}`,'']:['At the dealership',''];
     case 'sucata':return['Being crushed at the junkyard',''];case 'reboques':return['On standby at the tow depot',''];case 'pecas':return['Loading parts at the warehouse'+left,''];case 'fabrica':return['Fresh off the assembly line','']}
    return['Parked',''];}
  }
@@ -1892,6 +1910,25 @@ function make3D(T,X){
  L_ext();function L_ext(){for(const k in LOT){LOT[k].x1=LOT[k].x0+LOT[k].w;LOT[k].z1=LOT[k].z0+LOT[k].d}}
  const P=(L,lx,lz)=>[L.x0+lx,L.z0+lz];
  const BUILD={
+  market(L){const g=new T.Group();
+   // painted bays, kerb island and trolley bays in front of the store
+   g.add(box(L.w-.6,.05,10.8,M(0x5f656d,{roughness:.95}),L.cx,Y0,L.z0+5.3,false));
+   for(const s of B.market.slots){const x=U(s.x),z=U(s.y);for(const dx of[-1.7,1.7])g.add(box(.18,.04,5.6,mat.dash,x+dx,Y0+.08,z,false))}
+   g.add(box(L.w-2,.04,.2,mat.dash,L.cx,Y0+.08,L.z0+9.6,false));
+   for(const tx of[L.x0+L.w-4.6,L.x0+L.w-2.2]){g.add(box(1.6,.25,5.2,M(0xc9ccd0),tx,Y0,L.z0+5.4,false));g.add(box(1.5,1.9,.16,mat.steel,tx,Y0+.25,L.z0+2.9,false));g.add(box(1.7,.12,5.4,M(0xdfe3e7),tx,Y0+2.1,L.z0+5.4,false));
+    for(let k=0;k<4;k++){g.add(box(1,.8,.08,mat.steel,tx,Y0+.5,L.z0+3.6+k*.9,false));g.add(box(1,.08,.9,mat.steel,tx,Y0+.5,L.z0+4+k*.9,false))}}
+   // lamp posts
+   for(const x of[L.x0+3,L.cx-4,L.x0+L.w-8]){g.add(box(.25,6,.25,mat.steel,x,Y0,L.z0+9.1));g.add(box(1.5,.25,.6,M(0xf6f2e4,{emissive:0xfff1d0,emissiveIntensity:.8}),x,Y0+5.9,L.z0+9.1,false))}
+   // the store: 3D model, with a plain block behind it so the lot is never empty
+   const bw=23,bh=6.4,bd=9.4,cx=L.cx,cz=L.z0+L.d-bd/2-.5;
+   const stub=new T.Group();g.add(stub);
+   stub.add(box(bw,bh,bd,M(0x9fc6d8),cx,Y0,cz));stub.add(box(bw+.6,.5,bd+.6,M(0x2e7d4f),cx,Y0+bh,cz,false));
+   g.add(sign(chan()+' SUPERMARKET',13,1.7,'#2e7d4f','#ffffff',cx,Y0+bh+1.7,cz-bd/2+.3,0));
+   if(X&&X.ld)X.ld.loadAsync(ASSET_BASE+'assets/world/market.glb').then(gl=>{const m=gl.scene;m.updateMatrixWorld(true);const b0=new T.Box3().setFromObject(m),s0=b0.getSize(new T.Vector3());
+    m.scale.set(bd/s0.x,bh/s0.y,bw/s0.z);m.updateMatrixWorld(true);const b1=new T.Box3().setFromObject(m);m.position.set(-(b1.min.x+b1.max.x)/2,-b1.min.y,-(b1.min.z+b1.max.z)/2);
+    m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+    const piv=new T.Group();piv.add(m);piv.rotation.y=Math.PI/2;piv.position.set(cx,Y0,cz);g.add(piv);stub.visible=false}).catch(e=>console.warn('market',e));
+   hvac(g,cx+5,Y0+bh+.3,cz+2);hvac(g,cx-5,Y0+bh+.3,cz+2);return g},
   oficina(L){const g=new T.Group();backShop(g,L,17.1,chan()+' REPAIR SHOP','#ff7a1a','#1d0f02',[4.5,10.9,17.3,23.7,30.1]);
    for(const s of B.oficina.slots){const x=U(s.x),z=U(s.y);for(const dx of[-1.25,1.25]){g.add(box(.35,2.8,.35,mat.yellow,x+dx,Y0,z+.9));g.add(box(.14,.12,1.6,mat.yellow,x+dx*.75,Y0+.35,z))}g.add(box(2.9,.16,.35,mat.yellow,x,Y0+2.8,z+.9))}
    g.add(box(4.2,.02,3.2,mat.stripe||(mat.stripe=M(0xffd34d)),L.x0+29.6,Y0,L.z0+3,false));return g},
@@ -2344,7 +2381,7 @@ function make3D(T,X){
   if(!trailer){const O=B.oficina,s=toHud(U(O.x0+O.w/2),11.5,U(O.y0+O.h*.55));if(s){hctx.globalAlpha=.82+.18*Math.sin(simTime*3);pill('CLICK TO STEP INSIDE ▶',s.x,s.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#ff7a1a');hctx.globalAlpha=1}
    if(isOpen('lavagem')){const Lw=B.lavagem,s2=toHud(U(Lw.x0+Lw.w/2),8,U(Lw.y0+Lw.h/2));if(s2){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+1);pill('STEP INSIDE THE CAR WASH ▶',s2.x,s2.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#46c8ff');hctx.globalAlpha=1}}
    if(isOpen('reboques')){const Rb=B.reboques,s3=toHud(U(Rb.x0+Rb.w/2),9,U(Rb.y0+Rb.h*.7));if(s3){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+2);pill('STEP INSIDE THE TOW DEPOT ▶',s3.x,s3.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2a51a');hctx.globalAlpha=1}}}
-   {const LBLS={bomba:['STEP INSIDE THE GAS STATION ▶','#d93a2f',7.5,.55],pneus:['STEP INSIDE THE TIRE SHOP ▶','#9aa3ae',9,.7],inspecao:['STEP INSIDE THE INSPECTION CENTER ▶','#1d4fb8',7,.5],parque:['STEP INSIDE THE PARKING ▶','#1d4fb8',4,.5],pecas:['STEP INSIDE AUTO PARTS ▶','#c0392b',8,.5],stand:['STEP INSIDE THE DEALERSHIP ▶','#ff7a1a',8,.5],sucata:['STEP INSIDE THE JUNKYARD ▶','#a08a66',6,.5],fabrica:['STEP INSIDE THE FACTORY ▶','#ff7a1a',10,.4],pista:['STEP INSIDE THE PIT GARAGE ▶','#ff7a1a',4,.5]};
+   {const LBLS={bomba:['STEP INSIDE THE GAS STATION ▶','#d93a2f',7.5,.55],pneus:['STEP INSIDE THE TIRE SHOP ▶','#9aa3ae',9,.7],inspecao:['STEP INSIDE THE INSPECTION CENTER ▶','#1d4fb8',7,.5],parque:['STEP INSIDE THE PARKING ▶','#1d4fb8',4,.5],pecas:['STEP INSIDE AUTO PARTS ▶','#c0392b',8,.5],stand:['STEP INSIDE THE DEALERSHIP ▶','#ff7a1a',8,.5],sucata:['STEP INSIDE THE JUNKYARD ▶','#a08a66',6,.5],fabrica:['STEP INSIDE THE FACTORY ▶','#ff7a1a',10,.4],market:['STEP INSIDE THE SUPERMARKET ▶','#2e7d4f',9,.78],pista:['STEP INSIDE THE PIT GARAGE ▶','#ff7a1a',4,.5]};
     for(const k in LBLS){if(!isOpen(k))continue;const L=LBLS[k],b=B[k],sp=toHud(U(b.x0+b.w/2),L[2],U(b.y0+b.h*L[3]));if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+k.length);pill(L[0],sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',L[1]);hctx.globalAlpha=1}}
     {for(const[t2,lab,col,hh]of[['police','STEP INSIDE THE POLICE STATION ▶','#1d4fb8',9.4],['court','STEP INSIDE THE COURTHOUSE ▶','#8a6a2c',12]]){const Lc=LOT[t2],sp=toHud(Lc.cx,hh,Lc.cz-2);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+t2.length);pill(lab,sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',col);hctx.globalAlpha=1}}}
     {const Ln=LOT.news,sp=toHud(Ln.cx+3,10.6,Ln.cz-2);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+5);pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}}
@@ -2763,7 +2800,51 @@ function make3D(T,X){
   if(SD.crowd){const {IM,base}=SD.crowd;const m=new T.Matrix4(),tr=new T.Matrix4();const amp=SD.cheer>0?.5:.06;if(SD.cheer>0)SD.cheer-=dt;
    for(let i=0;i<base.length;i+=1){const hop=Math.max(0,Math.sin(simTime*(SD.cheer>0?9:2)+i*1.7))*amp;tr.makeTranslation(0,hop,0);m.multiplyMatrices(tr,base[i]);IM.setMatrixAt(i,m)}IM.instanceMatrix.needsUpdate=true}}
  function labelsStadium(){header('INSIDE MOTOROPOLIS STADIUM')}
- const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},news:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}},police:{get scene(){return PS.S},build:buildPolice,isBuilt:()=>PS.built,sync:syncPolice,labels:labelsPolice,get home(){return PS.home}},court:{get scene(){return CT.S},build:buildCourt,isBuilt:()=>CT.built,sync:syncCourt,labels:labelsCourt,get home(){return CT.home}},stadium:{get scene(){return SD.S},build:buildStadium,isBuilt:()=>SD.built,sync:syncStadium,labels:labelsStadium,get home(){return SD.home}}};let cur=INTS.oficina;
+
+ // ===== SUPERMARKET =====
+ const MK={built:false,home:{...STD_HOME,yaw:.08,pitch:.34,dist:50},sh:[],mix:null};
+ function buildMarket(){const R=room({w:50,d:28,h:12,bg:0x9ec0d8,floor:0xeceef0,wall:0xe6ebee,wall2:0xdbe2e7,trim:0x2e7d4f,sbg:'#2e7d4f',title:'MOTOROPOLIS SUPERMARKET',titleW:28,light:0xfff6e6});MK.S=R.S;
+  // aisle guides painted on the floor and a green entrance mat
+  R.B2(44,.02,.12,M(0xd7dde2),0,.02,6.4,false);
+  const mat0=new T.Mesh(new T.PlaneGeometry(9,3.4),M(0x2e7d4f,{roughness:.9}));mat0.rotation.x=-Math.PI/2;mat0.position.set(0,.03,12.4);R.add(mat0);
+  MK.people=[];MK.staff=[];
+  if(X&&X.ld)X.ld.loadAsync(ASSET_BASE+'assets/world/market_props.glb').then(gl=>{
+   const src=gl.scene;const get=n=>src.getObjectByName(n);
+   const put=(n,x,z,ry,sc)=>{const o=get(n);if(!o)return null;const h=new T.Group();const c=o.clone(true);h.add(c);h.scale.setScalar(sc||1);h.position.set(x,.04,z);h.rotation.y=ry||0;c.traverse(q=>{if(q.isMesh){q.castShadow=true;q.receiveShadow=true}});R.add(h);return h};
+   const PI=Math.PI;
+   // back wall: deli and butcher counters
+   put('showcase_meat',-17,-11.6,0,1.05);put('showcase_meat',-13.6,-11.6,0,1.05);put('showcase_cheese',-10.2,-11.6,0,1.05);put('showcase_cheese',-6.8,-11.6,0,1.05);
+   // back wall right: drinks fridges in a row
+   for(let k=0;k<5;k++)put('big_fridge',1+k*3.3,-11.9,0,1.12);
+   // left wall: milk fridges
+   for(let k=0;k<4;k++)put('fridge',-23.4,-8+k*2.2,PI/2,1);
+   // right wall: display fridges
+   for(let k=0;k<4;k++)put('stillage1',23.2,-7.5+k*2.6,-PI/2,1.25);
+   // three aisles of shelves down the middle
+   for(let a=0;a<3;a++){const x=-11+a*10.5;for(let k=0;k<7;k++){put('stillage',x-1.1,-6.5+k*1.9,PI/2,1.35);put('stillage',x+1.1,-6.5+k*1.9,-PI/2,1.35)}
+    R.add(sign(['FRESH · DAIRY','PANTRY · SNACKS','DRINKS · HOME'][a],5,.9,'#2e7d4f','#ffffff',x,6.1,-6.9,0))}
+   // checkouts across the front
+   for(let k=0;k<4;k++){const x=-12+k*8;put('cash_register',x,8.6,0,.75);put('shopping_bag',x+1.6,9.1,0,1.1)}
+   // trolleys by the entrance and a few around the shop
+   for(let k=0;k<6;k++)put('cart',-21+k*1.3,12.2,.08,.8);
+   for(const[cx,cz,cr]of[[-6,2.4,.7],[7,-2,-1.2],[15,5,2.4],[-16,4,1.1]])put('cart',cx,cz,cr,.8);
+   for(const[px,pz]of[[-23,11.4],[23,11.4],[-23,-11.4],[23,-11.4]])put('plant',px,pz,0,1.4);
+  }).catch(e=>console.warn('market props',e));
+  // staff and shoppers
+  MK.till=[0,1].map(i=>{const m=mkP(MK.S,'#2e7d4f',180+i,'civ');putP(m,{x:-12+i*16,z:7.1,ang:Math.PI},false);return m});
+  MK.deli=(()=>{const m=mkP(MK.S,'#f4f1e6',182,'civ');putP(m,{x:-12,z:-9.6,ang:0},false);return m})();
+  MK.sh=[0,1,2,3,4].map(i=>mkP(MK.S,null,183+i,'civ'));
+  MK.built=true}
+ const MKPATH=[[[0,14],[-6,6],[-6,-5],[-16,-9],[-6,-5],[-6,6],[-11,8.4],[0,14]],
+  [[0,14],[5,6],[5,-6],[12,-9],[5,-6],[5,8],[-4,8.4],[0,14]],
+  [[0,14],[-18,8],[-21,-6],[-12,-9.8],[-21,-6],[-18,8],[4,8.4],[0,14]],
+  [[0,14],[16,6],[20,-5],[20,5],[12,8.4],[0,14]],
+  [[0,14],[-6,8],[6,2],[16,-4],[20,2],[8,8.4],[0,14]]];
+ function syncMarket(){MK.till.forEach((m,k)=>{m.rotation.y=Math.PI+Math.sin(simTime*(.7+k*.3))*.5});
+  MK.deli.rotation.y=Math.sin(simTime*.6)*.6;
+  MK.sh.forEach((m,k)=>loopP(m,MKPATH[k],26+k*4,k*.19,.1))}
+ function labelsMarket(){header('INSIDE THE SUPERMARKET')}
+ const INTS={bomba:{get scene(){return GS.S},build:buildGas,isBuilt:()=>GS.built,sync:syncGas,labels:labelsGas,home:GS.home},pneus:{get scene(){return TS.S},build:buildTires,isBuilt:()=>TS.built,sync:syncTires,labels:labelsTires,home:TS.home},inspecao:{get scene(){return IC.S},build:buildInsp,isBuilt:()=>IC.built,sync:syncInsp,labels:labelsInsp,home:IC.home},parque:{get scene(){return PK.S},build:buildPark,isBuilt:()=>PK.built,sync:syncPark,labels:labelsPark,home:PK.home},pecas:{get scene(){return PW.S},build:buildParts,isBuilt:()=>PW.built,sync:syncParts,labels:labelsParts,home:PW.home},stand:{get scene(){return DS.S},build:buildDeal,isBuilt:()=>DS.built,sync:syncDeal,labels:labelsDeal,home:DS.home},sucata:{get scene(){return JY.S},build:buildJunk,isBuilt:()=>JY.built,sync:syncJunk,labels:labelsJunk,home:JY.home},fabrica:{get scene(){return FC.S},build:buildFactory,isBuilt:()=>FC.built,sync:syncFactory,labels:labelsFactory,home:FC.home},pista:{get scene(){return RT.S},build:buildPits,isBuilt:()=>RT.built,sync:syncPits,labels:labelsPits,home:RT.home},reboques:{scene:TW.scene,build:buildTow,isBuilt:()=>TW.built,sync:syncTow,labels:drawTowLabels,home:TW.home},oficina:{scene:IN.scene,build:buildInterior,isBuilt:()=>IN.built,sync:syncInterior,labels:drawInteriorLabels,home:inHome},lavagem:{scene:WS.scene,build:buildWash,isBuilt:()=>WS.built,sync:syncWash,labels:drawWashLabels,home:WS.home},news:{get scene(){return NK.S},build:buildKiosk,isBuilt:()=>NK.built,sync:syncKiosk,labels:labelsKiosk,get home(){return NK.home}},police:{get scene(){return PS.S},build:buildPolice,isBuilt:()=>PS.built,sync:syncPolice,labels:labelsPolice,get home(){return PS.home}},court:{get scene(){return CT.S},build:buildCourt,isBuilt:()=>CT.built,sync:syncCourt,labels:labelsCourt,get home(){return CT.home}},stadium:{get scene(){return SD.S},build:buildStadium,isBuilt:()=>SD.built,sync:syncStadium,labels:labelsStadium,get home(){return SD.home}},market:{get scene(){return MK.S},build:buildMarket,isBuilt:()=>MK.built,sync:syncMarket,labels:labelsMarket,get home(){return MK.home}}};let cur=INTS.oficina;
  // ===== NEWS KIOSK (Motoropolis Daily) =====
  const NK={built:false,v:-1,home:{...STD_HOME,yaw:.1,dist:40}};
  function frontPage(){const c=NK.cv,x=c.getContext('2d'),W=c.width,H=c.height;x.fillStyle='#f4f1e6';x.fillRect(0,0,W,H);x.fillStyle='#1c1d20';
