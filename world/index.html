@@ -1735,7 +1735,7 @@ function assignJobs(){const slots=[];for(const m of ALL_MS){if(!isOpen(m.type))c
  for(const j of JOB_LIST){const sl=j[1].toLowerCase().replace(/[^a-z]/g,'');if(!want[sl])want[sl]=[j[1]]}
  for(const n of WALL){const r=ROLE_OF(n);if(!want[r])continue;const i=slots.findIndex((q,k)=>!used.has(k)&&want[r].includes(q.title));if(i>=0){nj[n]=slots[i];used.add(i)}}
  {let h=0;for(const n of WALL)if(ROLE_OF(n)==='homeless')nj[n]={b:'park',title:'Homeless',k:h++,free:1}}
- const XJ=new Set(['Elf','Market Vendor']);// Christmas jobs only go to people who asked for them (WORKSHOP ELF / VENDOR)
+ const XJ=new Set(['Elf','Market Vendor','Supermarket CEO']);// these only go to people who asked for them (WORKSHOP ELF / VENDOR / SUPERMARKET CEO)
  let k=0;for(const n of WALL){if(nj[n]||ROLE_OF(n)==='thief')continue;while(k<slots.length&&(used.has(k)||XJ.has(slots[k].title)))k++;if(k>=slots.length)break;nj[n]=slots[k];used.add(k);k++}
  JOBS=nj;const sig=WALL.length+'|'+slots.length+'|'+Object.keys(ROLES).length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs();renderCrime()}}
 function JOB_SLOTS(){let n=0;for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];for(const m of ALL_MS)if(isOpen(m.type))for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];return n}
