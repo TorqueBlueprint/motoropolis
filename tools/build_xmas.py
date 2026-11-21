@@ -7,7 +7,7 @@ s = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 s = s if 'data-xmas="1"' in s[:200] else (s.replace("<html>", '<html data-xmas="1">', 1) if "<html>" in s else s.replace("<html ", '<html data-xmas="1" ', 1))
 s = s.replace("'state.json?v='", "'../state.json?v='")
 s = s.replace("<title>Motoropolis by TorqueBlueprint</title>", "<title>Motoropolis · Christmas</title>", 1)
-BANNER_ON = True
+BANNER_ON = False
 banner = ('<div style="position:sticky;top:0;z-index:50;background:#b3261e;color:#fff;font:800 14px/1.3 sans-serif;'
           'text-align:center;padding:8px 12px;letter-spacing:.05em">🎄 MOTOROPOLIS CHRISTMAS · TEST VERSION (not the live city yet)</div>')
 s = s.replace("<body>", "<body>" + banner, 1) if BANNER_ON else s
