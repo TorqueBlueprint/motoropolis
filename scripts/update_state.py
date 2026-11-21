@@ -20,10 +20,10 @@ ROLE_MAP.update({"tow": "towtruckdriver", "towtruck": "towtruckdriver", "towdriv
                  "salesman": "carsalesman", "carseller": "carsalesman", "carsales": "carsalesman", "racer": "racedriver", "fireman": "firefighter",
                  "doc": "doctor", "journalist": "reporter", "garbageman": "garbagecollector", "captain": "shipcaptain", "f1driver": "gpdriver",
                  "trucker": "garbagetruckdriver", "security": "securityguard", "guard": "securityguard", "clerk": "courtclerk", "parker": "parkingattendant",
-                 "ranger": "parkranger", "vendor": "marketvendor", "marketseller": "marketvendor", "realtor": "realestateagent", "stewardess": "flightattendant", "steward": "flightattendant", "manager": "storemanager", "ceo": "supermarketceo", "marketceo": "supermarketceo", "supermarketmanager": "storemanager", "marketmanager": "storemanager", "marketcashier": "supermarketcashier", "supermarket": "supermarketcashier"})
+                 "ranger": "parkranger", "vendor": "marketvendor", "marketseller": "marketvendor", "realtor": "realestateagent", "stewardess": "flightattendant", "steward": "flightattendant", "elves": "elf", "manager": "storemanager", "ceo": "supermarketceo", "marketceo": "supermarketceo", "supermarketmanager": "storemanager", "marketmanager": "storemanager", "marketcashier": "supermarketcashier", "supermarket": "supermarketcashier"})
 _alts = sorted(ROLE_MAP, key=len, reverse=True)
 _pat = "|".join(r"[\s_-]?".join(re.escape(ch) for ch in a) for a in _alts)
-WORKSHOP_RE = re.compile(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(?:as\s+(?:an?\s+)?|an?\s+)?(" + _pat + r")?(?![a-z])", re.I)
+WORKSHOP_RE = re.compile(r"(?<![a-z])work[\s_-]*shop+s?(?![a-z])[\s:,.!#-]*(?:as\s+(?:an?\s+)?|an?\s+)?(" + _pat + r")?(?:e?s)?(?![a-z])", re.I)
 STATE = os.path.join(os.path.dirname(__file__), "..", "state.json")
 
 
