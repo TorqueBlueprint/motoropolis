@@ -1712,8 +1712,9 @@ function mkPed(name,k){
  const b=buildings[(k*5+2)%buildings.length],o=6;
  const p={name,loop:{x0:b.x0-o,y0:b.y0-o,x1:b.x1+o,y1:b.y1+o},s:R()*1200,v:rr(10,15)*(R()<.5?-1:1),col:pick(PED_COLS),skin:pick(SKIN),hair:pick(['#2b1d14','#5a3a22','#c9a25a','#111','#8a4b2a']),pause:0,phase:R()*TAU,x:0,y:0,ang:0};
  Object.assign(p,pedPos(p));p.ang=p.v<0?p.ang+Math.PI:p.ang;peds.push(p);return p}
-WALL.slice(0,40).forEach((n,k)=>mkPed(n,k));
-for(let k=0;k<26;k++)mkPed(null,k+WALL.length);
+// every subscriber on the wall walks in the city; fewer anonymous walkers as the wall grows
+WALL.slice(0,150).forEach((n,k)=>mkPed(n,k));
+for(let k=0,na=Math.max(6,26-Math.max(0,WALL.length-40));k<na;k++)mkPed(null,k+WALL.length);
 // strollers and joggers on the loop path of Motoropolis Park
 const PARK_LOOP=(()=>{const b=B.park;return{x0:b.x0+26,y0:b.y0+26,x1:b.x1-26,y1:b.y1-26}})();
 for(let k=0;k<9;k++){const p=mkPed(null,k+90);p.loop={...PARK_LOOP};p.s=k*140;p.v=(k%3===0?rr(26,32):rr(8,12))*(k%2?-1:1);Object.assign(p,pedPos(p))}
