@@ -5,7 +5,8 @@
   python3 tools/xmas_live.py off   # back to the normal city
 
 With Christmas live, /xmas/ keeps working but loses its "test version" banner.
-After running it, rebuild every page, commit and push.
+The flag lives in src/page/shell.html (the source of the page); this script flips it there and rebuilds
+index.html and every generated page (tools/build.py). Then commit and push.
 """
 import os, re, sys
 
@@ -13,7 +14,7 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 mode = (sys.argv[1] if len(sys.argv) > 1 else "on").lower()
 assert mode in ("on", "off"), "use: xmas_live.py on|off"
 
-p = os.path.join(ROOT, "index.html")
+p = os.path.join(ROOT, "src", "page", "shell.html")
 s = open(p, encoding="utf-8").read()
 head = s[:200]
 
@@ -32,3 +33,6 @@ bx = os.path.join(ROOT, "tools", "build_xmas.py")
 b = open(bx, encoding="utf-8").read()
 b = re.sub(r'(BANNER_ON\s*=\s*)(True|False)', r'\g<1>' + ("False" if mode == "on" else "True"), b)
 open(bx, "w", encoding="utf-8").write(b)
+
+import subprocess
+subprocess.run([sys.executable, os.path.join(ROOT, "tools", "build.py")], check=True)
