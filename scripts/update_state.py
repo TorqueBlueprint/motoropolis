@@ -132,6 +132,9 @@ def main():
         return 0
     state["subs"] = subs
     state["names"] = names
+    # jobs pinned by hand stay put until they are removed from "locked"
+    for nm, role in (state.get("locked") or {}).items():
+        roles[nm] = role
     state["roles"] = roles
     state["updated"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     with open(STATE, "w", encoding="utf-8") as f:
