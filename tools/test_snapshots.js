@@ -34,7 +34,7 @@ const OUT = path.resolve(opt.out || path.join(SP, 'v2', 'snap'));
 const THREE = opt.three || process.env.THREE_LOCAL || path.join(SP, 'proto/three.module.js');
 const ADDONS = opt.addons || process.env.THREE_ADDONS || path.join(SP, 'proto/tjsrepo/examples/jsm');
 const W = +(opt.w || 1000), H = +(opt.h || 700), BATCH = +(opt.batch || 6);
-const PAGES = String(opt.pages || 'root,world').split(',').filter(Boolean);
+const PAGES = String(opt.pages || 'root,world,xmas,remake,perf,rec').split(',').filter(Boolean);
 const SIDES = opt.only ? [opt.only] : ['base', 'cand'];
 const METRICS = !!opt.metrics;
 
@@ -96,17 +96,20 @@ async function serve(dir) {
   return {port, stop: () => p.kill()};
 }
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
-const launch = () => chromium.launch({args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--js-flags=--max-old-space-size=4096']});
+const launch = () => chromium.launch({args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']});
 
 async function openPage(browser, port, pageKey, metrics) {
   const ctx = await browser.newContext({viewport: {width: W, height: H}, deviceScaleFactor: 1});
   const p = await ctx.newPage();
   const errs = [], net = {local: 0, cdn: 0, n: 0};
   p.on('pageerror', e => errs.push('pageerror: ' + e.message));
+  p.on('crash', () => log('  PAGE CRASHED (out of memory?)'));
   p.on('console', m => {if (m.type() === 'error' || m.type() === 'warning') errs.push(m.type() + ': ' + m.text().slice(0, 200))});
-  p.on('response', async r => {
-    try {const u = r.url(); if (!u.startsWith('http://localhost:')) return; const b = await r.body(); net.local += b.length; net.n++} catch (e) {}
-  });
+  if (metrics) { // bytes on the wire for the local server (CDP), CDN files are counted where they are routed
+    const cdp = await ctx.newCDPSession(p); await cdp.send('Network.enable'); const urls = {};
+    cdp.on('Network.responseReceived', e => {urls[e.requestId] = e.response.url});
+    cdp.on('Network.loadingFinished', e => {const u = urls[e.requestId] || ''; if (u.startsWith('http://localhost:')) {net.local += e.encodedDataLength; net.n++}});
+  }
   await p.addInitScript(metrics ? INIT_METRICS : INIT);
   await p.route('https://cdn.jsdelivr.net/**', r => {
     const u = r.request().url(); let f;
@@ -122,32 +125,42 @@ async function openPage(browser, port, pageKey, metrics) {
   await waitIdle(p);
   return {ctx, p, errs, net, tR3, t0};
 }
-async function waitIdle(p, ms = 1500) {
-  await p.waitForFunction(ms => window.__netIdle(ms), ms, {timeout: 600000, polling: 300}).catch(() => log('  (network not idle, continuing)'));
+async function pump(p, n) {
+  const t0 = Date.now();
+  const ft = [];
+  for (let i = 0; i < n; i++) {const t = Date.now(); await p.evaluate(() => window.__pump(1, .05)); ft.push(((Date.now() - t) / 1000).toFixed(1))}
+  if (opt.verbose) log(`  pumped ${n} frames in ${((Date.now() - t0) / 1000).toFixed(1)}s [${ft.join(' ')}]`);
 }
-// grab the 3D canvas + HUD overlay as a PNG buffer
-async function grab(p) {
-  const url = await p.evaluate(() => {
-    const R = window.__R3(), c3 = R.renderer.domElement, hud = document.getElementById('hud3d');
+async function waitIdle(p, ms = 1500) {
+  const t0 = Date.now();
+  await p.waitForFunction(ms => window.__netIdle(ms), ms, {timeout: 600000, polling: 300}).catch(() => log('  (network not idle, continuing)'));
+  if (opt.verbose) log(`  network idle after ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+}
+// render one frame (shadow map forced fresh) and grab the 3D canvas + HUD overlay in the same task (the WebGL
+// buffer is not preserved between tasks). The HUD panels with the channel numbers (top-left milestone card,
+// top-right counters) are blanked: they are not part of the city and must not appear in shared images.
+async function grab(p, view, interior) {
+  const url = await p.evaluate(([v, interior]) => {
+    const R = window.__R3(); R.reset(); if (v) Object.assign(R.cam, v);
+    window.__MANUAL = true; R.frame(1e-4); window.__MANUAL = false;
+    const c3 = R.renderer.domElement, hud = document.getElementById('hud3d');
     const x = document.createElement('canvas'); x.width = c3.width; x.height = c3.height; const g = x.getContext('2d');
-    g.drawImage(c3, 0, 0); if (hud && !hud.hidden) g.drawImage(hud, 0, 0, x.width, x.height); return x.toDataURL('image/png');
-  });
+    g.drawImage(c3, 0, 0); if (hud && !hud.hidden) g.drawImage(hud, 0, 0, x.width, x.height);
+    if (!interior) {g.fillStyle = '#000'; g.fillRect(x.width * .69, 0, x.width * .31, x.height * .095); g.fillRect(0, 0, x.width * .27, x.height * .245)}
+    return x.toDataURL('image/png');
+  }, [view || null, !!interior]);
   return Buffer.from(url.split(',')[1], 'base64');
 }
-async function shootCity(p, view) {
-  await p.evaluate(v => {const R = window.__R3(); R.reset(); if (v) Object.assign(R.cam, v); window.__MANUAL = true; for (let k = 0; k < 2; k++) R.frame(1e-4); window.__MANUAL = false}, view);
-  return grab(p);
-}
+async function shootCity(p, view) {return grab(p, view, false)}
 async function shootInterior(p, type) {
-  const ok = await p.evaluate(t => {const R = window.__R3(); if (R.mode() === 'in') return false; R.enterIn(t); return true}, type);
+  // enter: one frame of 0.71 s completes the fade (stepFade: fade += dt/.35), no simulation step in between
+  const ok = await p.evaluate(t => {const R = window.__R3(); if (R.mode() === 'in') return false; R.enterIn(t); R.frame(.71); return R.mode() === 'in'}, type);
   if (!ok) return null;
-  await p.evaluate(() => window.__pump(16, .05)); // fade out, swap, fade in
-  await waitIdle(p, 1200);                         // on-demand models for the people inside
-  await p.evaluate(() => window.__pump(8, .05));
+  await waitIdle(p, 1200);                                   // on-demand models for the people inside
+  await p.evaluate(() => {const R = window.__R3(); for (let k = 0; k < 2; k++) R.frame(.05)});
   await waitIdle(p, 800);
-  const img = await p.evaluate(() => {const R = window.__R3(); R.reset(); window.__MANUAL = true; for (let k = 0; k < 2; k++) R.frame(1e-4); window.__MANUAL = false; return R.mode()});
-  const buf = img === 'in' ? await grab(p) : null;
-  await p.evaluate(() => {window.__R3().exitIn(); window.__pump(16, .05)});
+  const buf = await grab(p, null, true);
+  await p.evaluate(() => {const R = window.__R3(); R.exitIn(); R.frame(.71)});
   return buf;
 }
 
@@ -157,8 +170,10 @@ async function runSide(side, dir) {
   try {
     for (const pg of PAGES) {
       const outDir = path.join(OUT, side); fs.mkdirSync(outDir, {recursive: true});
-      const jobs = [['city', VIEW_LIST]];
-      const ints = pg === 'root' || pg === 'world' ? INT_LIST : [];
+      const jobs = [];
+      const ints = pg === 'root' ? INT_LIST : []; // the other pages run the same interior code
+      const views = pg === 'root' || pg === 'world' ? VIEW_LIST : VIEW_LIST.slice(0, 1);
+      jobs.push(['city', views]);
       for (let i = 0; i < ints.length; i += BATCH) jobs.push(['int', ints.slice(i, i + BATCH)]);
       for (const [kind, list] of jobs) {
         if (!list.length) continue;
@@ -167,7 +182,7 @@ async function runSide(side, dir) {
           log(`[${side}] ${pg}: loading for ${kind} ${list.join(',')}`);
           const {p, errs, tR3} = await openPage(browser, srv.port, pg, false);
           log(`[${side}] ${pg}: 3D ready in ${(tR3 / 1000).toFixed(1)}s`);
-          await p.evaluate(() => window.__pump(30, .05)); // 1.5 s of simulated time, same on both sides
+          await pump(p, +(opt.frames || 8)); // simulated time, same on both sides
           await waitIdle(p);
           if (pg === 'rec') res[pg + '_hooks'] = await p.evaluate(() => ({H: !!window.__H, R3: !!window.__R3, PEDH: !!window.__PEDH, XMS: !!window.__XMS}));
           for (const name of list) {
@@ -198,8 +213,11 @@ async function runMetrics(side, dir) {
           await new Promise(r => setTimeout(r, 3000));
           const f0 = window.__frames, t0 = performance.now(); await new Promise(r => setTimeout(r, 15000));
           const fps = (window.__frames - f0) / ((performance.now() - t0) / 1000);
+          const gl = R.renderer.getContext(); const ft = [];
+          for (let k = 0; k < 4; k++) {const t = performance.now(); R.frame(1 / 60); gl.finish(); ft.push(performance.now() - t)}
+          ft.shift(); const frameMs = Math.round(ft.reduce((a, b) => a + b, 0) / ft.length);
           const i = R.renderer.info;
-          return {firstFrameMs: Math.round(window.__first3d), domContentLoadedMs: Math.round(nav.domContentLoadedEventEnd), fps: +fps.toFixed(2),
+          return {frameMs, firstFrameMs: Math.round(window.__first3d), domContentLoadedMs: Math.round(nav.domContentLoadedEventEnd), fps: +fps.toFixed(2),
             calls: i.render.calls, triangles: i.render.triangles, geometries: i.memory.geometries, textures: i.memory.textures, programs: (i.programs || []).length,
             shadowCasters: (() => {let n = 0; R.scene.traverse(o => {if (o.castShadow && (o.isMesh || o.isInstancedMesh)) n++}); return n})(),
             meshes: (() => {let n = 0; R.scene.traverse(o => {if (o.isMesh) n++}); return n})()};

@@ -111,6 +111,7 @@
     for(const s of[-1,1])B0(g,1.4,.9,1.4,col,xx,H-.1,zc+s*(span/2-1.5))}
    for(const t of[.35,.5,.65]){const p=new T.QuadraticBezierCurve3(new T.Vector3(0,H,zc-span/2+1.5),new T.Vector3(0,H+peak*2,zc),new T.Vector3(0,H,zc+span/2-1.5)).getPoint(t);B0(g,2*ex+.9,.3,.3,col,x,p.y-.15,p.z,false)}
    for(const s of[-1,1])for(const q of[-1,1]){const lp=new T.Mesh(new T.CylinderGeometry(.08,.08,2.4,6),mat.dark);lp.position.set(x+q*ex,H+1.5,zc+s*span*.4);g.add(lp);const lb=new T.Mesh(new T.SphereGeometry(.22,8,6),mat.lamp);lb.position.set(lp.position.x,H+2.75,lp.position.z);g.add(lb)}
+   batchBoxes(g);
    const b={x,w,zc,span,Lr,H,half,g};brs.push(b);return b}
   const deckY=(x,z)=>{for(const b of brs){if(Math.abs(x-b.x)>b.w/2+1.5)continue;const dz=Math.abs(z-b.zc);if(dz>b.half)continue;return dz<b.span/2?b.H:b.H*(b.half-dz)/b.Lr}return 0};
   const cutRiver=(P,x)=>{const zc=riverZ(x),half=(riverW(x)+12)/2+14;const a=P.filter(p=>p[1]>zc+half),b=P.filter(p=>p[1]<zc-half);if(a.length&&a[0][1]>a[a.length-1][1])a.push([x,zc+half]);else a.unshift([x,zc+half]);if(b.length&&b[0][1]>b[b.length-1][1])b.unshift([x,zc-half]);else b.push([x,zc-half]);return[a,b]};

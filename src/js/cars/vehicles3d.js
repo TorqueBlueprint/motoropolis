@@ -34,7 +34,7 @@
    let lift=0;if(c.state==='service'&&c.slot&&c.slot.b.type==='oficina'&&c.kind==='car'&&c.task&&c.task.type!=='parts'){const tot=c.svcTotal||6,el=tot-c.timer;lift=Math.min(1.4,el*.9,Math.max(0,c.timer)*.9)}
    g.position.set(U(c.x),g.userData.y+lift,U(c.y));g.rotation.y=Math.PI/2-c.ang;g.scale.set(1,sc,1);
    if(c.state==='towed')g.rotation.x=-.08;else g.rotation.x=0;
-   g.userData.tl.material=c.brake||c.state==='broken'?mat.tailOn:mat.tailOff}
+   g.userData.tl.material=c.brake||c.state==='broken'?mat.tailOn:mat.tailOff;lodCar(g,c)}
   for(const[id,g]of meshes)if(!seen.has(id)){scene.remove(g);meshes.delete(id)}
   // race cars
   const open=isOpen('pista'),Pi=B.pista,ax=Pi.w/2-26,ay=Pi.h/2-24,pcx=Pi.x0+Pi.w/2,pcy=Pi.y0+Pi.h/2;

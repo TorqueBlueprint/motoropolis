@@ -22,6 +22,7 @@ people/walkers.js
 people/jobs.js
 view3d/boot.js
 view3d/renderer.js
+view3d/batch.js
 roads/ground3d.js
 buildings/lots3d.js
 buildings/district3d.js
@@ -33,6 +34,7 @@ roads/remake_world.js
 cars/remake_bodies.js
 roads/street_props.js
 view3d/lights_sky.js
+view3d/lod.js
 cars/vehicles3d.js
 people/people3d.js
 people/job_models.js

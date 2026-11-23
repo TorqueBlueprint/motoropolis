@@ -3,7 +3,9 @@
 
   python3 tools/split_index.py [path/to/index.html]     # default: ./index.html -> ./src
 
-Re-runnable: the split points are anchors (the start of a line), searched in order, so a newer index.html
+It made the initial split (commit "Split the page into src/ partials"). Since then src/ is edited directly
+(new partials such as src/js/view3d/lod.js exist only in src/), so use this tool only to re-split a newer
+single-file index.html from main and then port the src/ changes on top. The split points are anchors (the start of a line), searched in order, so a newer index.html
 from main (with more code inside the sections) splits the same way. If an anchor is missing the tool stops
 and says which one. After splitting, `python3 tools/build.py --check` must report a byte-identical page.
 
