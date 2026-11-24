@@ -7,13 +7,15 @@
 src/page/shell.html  the HTML around the page (placeholders @@CSS@@ @@APP@@ @@STATE@@ @@JS@@)
 src/page/style.css   the page stylesheet          src/page/app.html   the page markup (#app)
 src/page/state.json  the fallback state embedded in the page (the live numbers come from /state.json)
+src/data/**.json    data (cars, jobs, buildings/milestones, people colours); a partial refers to a file with
+                     @@JSON:<path under src/data>@@ and the build inlines it as a compact literal
 src/manifest.txt     the order of the script partials in src/js/ (one classic-script closure, inlined)
 
 The page stays a single self-contained index.html with one inline <script> (the page rebuilds itself from
 document.currentScript, and the recorder build patches it), so GitHub Pages serves exactly what it served
 before. The other pages are still made by tools/build_<page>.py from the root index.html.
 """
-import os, sys, subprocess
+import os, re, sys, json, subprocess
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SRC = os.path.join(ROOT, "src")
@@ -29,7 +31,14 @@ def partial(name):
     # drop the leading //@ note lines
     while t.startswith("//@"):
         t = t[t.index("\n") + 1:] if "\n" in t else ""
-    return t
+    return re.sub(r"@@JSON:([A-Za-z0-9_/.-]+)@@", lambda m: inline_json(m.group(1)), t)
+
+
+def inline_json(rel):
+    v = json.loads(rd("data", *rel.split("/")))
+    out = json.dumps(v, ensure_ascii=False, separators=(",", ":"))
+    assert "</" not in out, rel
+    return out
 
 
 def assemble():

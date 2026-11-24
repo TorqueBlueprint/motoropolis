@@ -1,0 +1,30 @@
+[
+ {
+  "type": "bus",
+  "label": "City buses · Line 1"
+ },
+ {
+  "type": "taxi",
+  "label": "Motoropolis Taxis"
+ },
+ {
+  "type": "sanit",
+  "label": "Sanitation"
+ },
+ {
+  "type": "news",
+  "label": "Motoropolis Daily"
+ },
+ {
+  "type": "park",
+  "label": "Motoropolis Park"
+ },
+ {
+  "type": "police",
+  "label": "Police station"
+ },
+ {
+  "type": "court",
+  "label": "Courthouse"
+ }
+]

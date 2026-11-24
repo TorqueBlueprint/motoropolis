@@ -1,0 +1,74 @@
+[
+ {
+  "n": 100,
+  "type": "w_res",
+  "label": "Riverside Heights",
+  "w": 1
+ },
+ {
+  "n": 125,
+  "type": "w_fire",
+  "label": "Fire station",
+  "w": 1
+ },
+ {
+  "n": 200,
+  "type": "w_hosp",
+  "label": "Hospital",
+  "w": 1
+ },
+ {
+  "n": 300,
+  "type": "w_stad",
+  "label": "Football stadium",
+  "w": 1
+ },
+ {
+  "n": 400,
+  "type": "w_mall",
+  "label": "Shopping mall",
+  "w": 1
+ },
+ {
+  "n": 650,
+  "type": "w_train",
+  "label": "Train station",
+  "w": 1
+ },
+ {
+  "n": 800,
+  "type": "w_hwy",
+  "label": "Highway & tunnel",
+  "w": 1
+ },
+ {
+  "n": 1500,
+  "type": "w_air",
+  "label": "Airport",
+  "w": 1
+ },
+ {
+  "n": 2000,
+  "type": "w_arena",
+  "label": "Arena & events",
+  "w": 1
+ },
+ {
+  "n": 3000,
+  "type": "w_port",
+  "label": "Harbor",
+  "w": 1
+ },
+ {
+  "n": 5000,
+  "type": "w_tower",
+  "label": "Motoropolis Tower",
+  "w": 1
+ },
+ {
+  "n": 10000,
+  "type": "w_gp",
+  "label": "Grand Prix",
+  "w": 1
+ }
+]

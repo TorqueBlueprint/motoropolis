@@ -1,0 +1,67 @@
+[
+ {
+  "n": 0,
+  "type": "oficina",
+  "label": "Repair shop"
+ },
+ {
+  "n": 0,
+  "type": "market",
+  "label": "Supermarket"
+ },
+ {
+  "n": 10,
+  "type": "reboques",
+  "label": "24h Towing"
+ },
+ {
+  "n": 15,
+  "type": "bomba",
+  "label": "Gas station"
+ },
+ {
+  "n": 20,
+  "type": "pneus",
+  "label": "Tire shop"
+ },
+ {
+  "n": 30,
+  "type": "lavagem",
+  "label": "Car wash"
+ },
+ {
+  "n": 50,
+  "type": "inspecao",
+  "label": "Inspection center"
+ },
+ {
+  "n": 75,
+  "type": "parque",
+  "label": "Parking lot"
+ },
+ {
+  "n": 100,
+  "type": "pecas",
+  "label": "Auto parts"
+ },
+ {
+  "n": 150,
+  "type": "stand",
+  "label": "Car dealership"
+ },
+ {
+  "n": 250,
+  "type": "sucata",
+  "label": "Junkyard"
+ },
+ {
+  "n": 500,
+  "type": "fabrica",
+  "label": "Car factory"
+ },
+ {
+  "n": 1000,
+  "type": "pista",
+  "label": "Race track"
+ }
+]

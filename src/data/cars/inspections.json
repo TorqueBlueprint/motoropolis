@@ -1,0 +1,32 @@
+[
+ {
+  "n": "Loose steering",
+  "k": "warn",
+  "t": 8,
+  "c": 210
+ },
+ {
+  "n": "Misaligned headlights",
+  "k": "warn",
+  "t": 4,
+  "c": 35
+ },
+ {
+  "n": "Emissions over the limit",
+  "k": "warn",
+  "t": 9,
+  "c": 290
+ },
+ {
+  "n": "Worn brake rotors",
+  "k": "warn",
+  "t": 8,
+  "c": 240
+ },
+ {
+  "n": "Oil leak",
+  "k": "warn",
+  "t": 8,
+  "c": 170
+ }
+]

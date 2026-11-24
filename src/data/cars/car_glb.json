@@ -1,0 +1,258 @@
+{
+ "hothatch": {
+  "file": "hothatch.glb",
+  "len": 4.59,
+  "cell": [
+   16,
+   0,
+   8,
+   8
+  ]
+ },
+ "gt12": {
+  "file": "gt12.glb",
+  "len": 4.64,
+  "cell": [
+   8,
+   0,
+   8,
+   8
+  ]
+ },
+ "v8sport": {
+  "file": "v8sport.glb",
+  "len": 4.64,
+  "cell": [
+   24,
+   0,
+   8,
+   8
+  ]
+ },
+ "sportsaloon": {
+  "file": "sportsaloon.glb",
+  "len": 2.99,
+  "cell": [
+   8,
+   0,
+   8,
+   8
+  ]
+ },
+ "sport3": {
+  "file": "sport3.glb",
+  "paint": "CarPaint"
+ },
+ "saloon90": {
+  "file": "saloon90.glb",
+  "paint": "Car_paint",
+  "fix": {
+   "blackplastic": [
+    1447964
+   ],
+   "matt": [
+    2763824
+   ],
+   "yellow_glow": [
+    16756736,
+    1
+   ],
+   "transparent": [
+    1911352,
+    0,
+    0.6
+   ],
+   "white_glow": [
+    16774352,
+    1
+   ],
+   "red_glow": [
+    13373456,
+    1
+   ],
+   "windshield": [
+    1911352,
+    0,
+    0.75
+   ],
+   "disc": [
+    7830658
+   ],
+   "brake_color": [
+    14236207
+   ],
+   "rims_color": [
+    12107462
+   ],
+   "rubber": [
+    1381655
+   ]
+  }
+ },
+ "police": {
+  "file": "cs_police_sedan.glb",
+  "yaw": 49.9,
+  "flip": 1,
+  "keep": 1
+ },
+ "bus": {
+  "file": "cs_citybus.glb",
+  "keep": 1
+ },
+ "tow": {
+  "file": "cs_towtruck.glb",
+  "yaw": 19.9,
+  "flip": 1,
+  "keep": 1
+ },
+ "fire": {
+  "file": "cs_fire_truck.glb",
+  "yaw": -55,
+  "flip": 1,
+  "keep": 1
+ },
+ "amb": {
+  "file": "cs_ambulance.glb",
+  "yaw": 19.7,
+  "keep": 1,
+  "lenK": 1.36
+ },
+ "offroad": {
+  "file": "offroad.glb",
+  "flip": 1,
+  "paint": [
+   "Material.003"
+  ]
+ },
+ "coupe85": {
+  "file": "coupe85.glb",
+  "paint": [
+   "Body"
+  ],
+  "tint": 1
+ },
+ "sedan98": {
+  "file": "sedan98.glb",
+  "keep": 1
+ },
+ "fastback65": {
+  "file": "fastback65.glb",
+  "flip": 1,
+  "paint": [
+   "CarPrimaryColor"
+  ]
+ },
+ "midv10": {
+  "file": "midv10.glb",
+  "paint": [
+   "body"
+  ]
+ },
+ "jgt98": {
+  "file": "jgt98.glb",
+  "paint": [
+   "wigeon"
+  ]
+ },
+ "awd99": {
+  "file": "awd99.glb",
+  "paint": [
+   "body"
+  ]
+ },
+ "rearturbo": {
+  "file": "rearturbo.glb",
+  "flip": 1,
+  "paint": [
+   "New_Material"
+  ]
+ },
+ "rwd24": {
+  "file": "rwd24.glb",
+  "paint": [
+   "cuerpo"
+  ]
+ },
+ "ae86": {
+  "file": "ae86.glb",
+  "flip": 1,
+  "keep": 1
+ },
+ "f40": {
+  "file": "f40.glb",
+  "keep": 1
+ },
+ "venom": {
+  "file": "venom.glb",
+  "paint": [
+   "hen_venom_paint"
+  ]
+ },
+ "amgone": {
+  "file": "amgone.glb",
+  "keep": 1
+ },
+ "p1": {
+  "file": "p1.glb",
+  "keep": 1
+ },
+ "etype": {
+  "file": "etype.glb",
+  "keep": 1
+ },
+ "viper": {
+  "file": "viper.glb",
+  "keep": 1
+ },
+ "miata": {
+  "file": "miata.glb",
+  "keep": 1
+ },
+ "svj": {
+  "file": "svj.glb",
+  "keep": 1
+ },
+ "r32": {
+  "file": "r32.glb",
+  "paint": [
+   "paint"
+  ]
+ },
+ "charger": {
+  "file": "charger.glb",
+  "keep": 1
+ },
+ "challenger": {
+  "file": "challenger.glb",
+  "paint": [
+   "carpaint.001"
+  ]
+ },
+ "urus": {
+  "file": "urus.glb",
+  "flip": 1,
+  "keep": 1
+ },
+ "evo9": {
+  "file": "evo9.glb",
+  "paint": [
+   "mM_CarPaint_Max_002",
+   "mM_CarPaintNormal_Max1"
+  ]
+ },
+ "garbage": {
+  "file": "cs_garbage_truck.glb",
+  "yaw": 55.3,
+  "keep": 1
+ },
+ "taxi": {
+  "file": "cs_taxi.glb",
+  "yaw": -50,
+  "keep": 1
+ },
+ "van": {
+  "file": "cs_postvan.glb",
+  "yaw": -20.5,
+  "keep": 1
+ }
+}

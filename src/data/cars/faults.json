@@ -1,0 +1,111 @@
+[
+ {
+  "n": "Flat tire",
+  "k": "tire",
+  "t": 5,
+  "c": 25,
+  "w": 3
+ },
+ {
+  "n": "Bald tire",
+  "k": "tire",
+  "t": 6,
+  "c": 140,
+  "w": 1.5
+ },
+ {
+  "n": "Worn brake pads",
+  "k": "warn",
+  "t": 7,
+  "c": 90,
+  "w": 2
+ },
+ {
+  "n": "Check engine light",
+  "k": "warn",
+  "t": 6,
+  "c": 60,
+  "w": 1.5
+ },
+ {
+  "n": "Blown exhaust",
+  "k": "warn",
+  "t": 7,
+  "c": 180,
+  "w": 1
+ },
+ {
+  "n": "Worn shocks",
+  "k": "warn",
+  "t": 9,
+  "c": 320,
+  "w": 1
+ },
+ {
+  "n": "Dead battery",
+  "k": "tow",
+  "t": 5,
+  "c": 110,
+  "w": 2
+ },
+ {
+  "n": "Snapped timing belt",
+  "k": "tow",
+  "t": 14,
+  "c": 550,
+  "w": 1
+ },
+ {
+  "n": "Blown head gasket",
+  "k": "tow",
+  "t": 16,
+  "c": 900,
+  "w": 0.6,
+  "smoke": true
+ },
+ {
+  "n": "Failed alternator",
+  "k": "tow",
+  "t": 9,
+  "c": 320,
+  "w": 1
+ },
+ {
+  "n": "Failed starter motor",
+  "k": "tow",
+  "t": 8,
+  "c": 250,
+  "w": 1
+ },
+ {
+  "n": "Worn-out clutch",
+  "k": "tow",
+  "t": 12,
+  "c": 480,
+  "w": 1
+ },
+ {
+  "n": "Failed turbo",
+  "k": "tow",
+  "t": 12,
+  "c": 850,
+  "w": 0.7,
+  "smoke": true
+ },
+ {
+  "n": "Leaking radiator",
+  "k": "tow",
+  "t": 8,
+  "c": 280,
+  "w": 0.9,
+  "smoke": true
+ },
+ {
+  "n": "Failed water pump",
+  "k": "tow",
+  "t": 9,
+  "c": 260,
+  "w": 0.9,
+  "smoke": true
+ }
+]

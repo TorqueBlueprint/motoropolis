@@ -11,7 +11,7 @@ function mkB(type,i,j,side,doorX,name){
  buildings.push(b);B[type]=b;return b;
 }
 // world page: the main buildings are spread over a bigger city grid; every other block is downtown, offices, flats or houses
-const WMAP={bomba:[6,0],fabrica:[7,0],oficina:[2,1],lavagem:[0,1],news:[3,1],stand:[5,1],park:[1,2],parque:[2,2],pecas:[6,2],reboques:[0,3],pneus:[7,3],police:[2,4],inspecao:[5,4],pista:[0,5],court:[4,5],sucata:[7,5]};
+const WMAP=@@JSON:buildings/world_map.json@@;
 const TOWER_BLOCK=[4,2];
 let _city=null;function cityFill(){if(_city)return _city;_city={blocks:[],items:[]};if(!WORLD)return _city;const XBL=XMAS&&B.park?[B.park.i-1,B.park.j]:null;let sd=9091;const r=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
  const used=new Set(buildings.map(b=>b.i+','+b.j));used.add(TOWER_BLOCK.join(','));

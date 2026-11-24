@@ -2,8 +2,8 @@
 //@ closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt; //@ lines are dropped by tools/build.py
 // ---------- people: the Wall of Mechanics walks the sidewalks and drives the cars ----------
 const WALL=(()=>{const out=[];for(const raw of(Array.isArray(STATE.names)?STATE.names:[])){const n=String(raw).trim().slice(0,24);if(n&&!out.some(x=>x.toLowerCase()===n.toLowerCase()))out.push(n)}return out})();
-const PED_COLS=['#ff7a1a','#2f6fd9','#5cc98a','#e8b931','#d93a2f','#7a3fb0','#3fa7c4','#f2f2ee','#3a4150','#b5272d'];
-const SKIN=['#f1c7a5','#d9a27e','#a8714f','#7a4b32','#f5d3b8','#c68a62'];
+const PED_COLS=@@JSON:people/shirt_colors.json@@;
+const SKIN=@@JSON:people/skin_tones.json@@;
 const peds=[];
 function pedPos(p){const r=p.loop,w=r.x1-r.x0,h=r.y1-r.y0,P=2*(w+h);let s=((p.s%P)+P)%P;
  if(s<w)return{x:r.x0+s,y:r.y0,ang:0};s-=w;if(s<h)return{x:r.x1,y:r.y0+s,ang:Math.PI/2};s-=h;if(s<w)return{x:r.x1-s,y:r.y1,ang:Math.PI};s-=w;return{x:r.x0,y:r.y1-s,ang:-Math.PI/2}}

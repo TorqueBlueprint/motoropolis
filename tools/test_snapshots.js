@@ -13,7 +13,8 @@
  *
  * Options: --base DIR (default /home/claude/motoropolis)  --cand DIR (default: the repo holding this file)
  *          --out DIR  --pages list  --interiors all|none|a,b  --views all|none|a,b  --only base|cand
- *          --batch N (interiors per page load, default 6)  --w 1000 --h 700  --three FILE --addons DIR
+ *          --query 'lod=cars:250' (appended to every page URL)  --frames N (simulation frames before the shots, default 8)
+ *          --verbose  --batch N (interiors per page load, default 6)  --w 1000 --h 700  --three FILE --addons DIR
  * Needs a local copy of three r169 (the CDN is routed to it): --three .../three.module.js, --addons .../examples/jsm
  * (or env THREE_LOCAL / THREE_ADDONS). Fonts from Google are stubbed with empty CSS on both sides.
  * Only the localhost hooks (window.__R3) are used, so nothing in the pages has to change for the test.
@@ -119,7 +120,7 @@ async function openPage(browser, port, pageKey, metrics) {
   });
   await p.route('https://fonts.googleapis.com/**', r => r.fulfill({status: 200, contentType: 'text/css', body: ''}));
   const t0 = Date.now();
-  await p.goto(`http://localhost:${port}${PAGE_URL[pageKey]}`, {waitUntil: 'load', timeout: 300000});
+  await p.goto(`http://localhost:${port}${PAGE_URL[pageKey]}${opt.query ? '?' + opt.query : ''}`, {waitUntil: 'load', timeout: 300000});
   await p.waitForFunction(() => window.__R3 && window.__R3(), null, {timeout: 900000, polling: 500});
   const tR3 = Date.now() - t0;
   await waitIdle(p);
@@ -215,7 +216,9 @@ async function runMetrics(side, dir) {
           const fps = (window.__frames - f0) / ((performance.now() - t0) / 1000);
           const gl = R.renderer.getContext(); const ft = [];
           for (let k = 0; k < 4; k++) {const t = performance.now(); R.frame(1 / 60); gl.finish(); ft.push(performance.now() - t)}
-          ft.shift(); const frameMs = Math.round(ft.reduce((a, b) => a + b, 0) / ft.length);
+          for (let k = 0; k < 4; k++) {const t = performance.now(); R.frame(1 / 60); gl.finish(); ft.push(performance.now() - t)}
+          ft.shift(); // frames with and without a shadow-map update alternate (adaptive shadow throttling)
+          const frameMs = {min: Math.round(Math.min(...ft)), max: Math.round(Math.max(...ft)), avg: Math.round(ft.reduce((a, b) => a + b, 0) / ft.length)};
           const i = R.renderer.info;
           return {frameMs, firstFrameMs: Math.round(window.__first3d), domContentLoadedMs: Math.round(nav.domContentLoadedEventEnd), fps: +fps.toFixed(2),
             calls: i.render.calls, triangles: i.render.triangles, geometries: i.memory.geometries, textures: i.memory.textures, programs: (i.programs || []).length,
