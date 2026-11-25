@@ -14,7 +14,9 @@ const XMAS=document.documentElement.dataset.xmas==='1'&&(document.documentElemen
 // performance test build (tools/build_perf.py): adaptive resolution, throttled shadows, level of detail for far cars and people
 const PERF=document.documentElement.dataset.perf==='1';const AQ={pr:1,acc:0,n:0,shEvery:2,shN:0,fps:60};
 // graphics quality: high / medium / low. Everyone starts on high; Medium/Low only if the viewer picks them (remembered).
-const QUAL=(()=>{let q=null;try{q=localStorage.getItem('mtp-quality')}catch(e){}if(q==='high'||q==='medium'||q==='low')return q;return 'high'})();const CW=WORLD?3640:1920,CH=WORLD?1980:1680,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
+const QUAL=(()=>{let q=null;try{q=localStorage.getItem('mtp-quality')}catch(e){}if(q==='high'||q==='medium'||q==='low')return q;
+ // phones and tablets (touch, no hover) start on Medium unless the viewer picked a quality; desktops and the recorder start on High
+ try{if(document.documentElement.dataset.rec!=='1'&&matchMedia('(hover:none) and (pointer:coarse)').matches)return 'medium'}catch(e){}return 'high'})();const CW=WORLD?3640:1920,CH=WORLD?1980:1680,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
 const REMAKE=document.documentElement.dataset.remake!=='0';
 // city-v2 phase 1 (city structure): on by default on this branch; ?city=1 shows the phase-0 city for comparison
 const CITY2=!/[?&]city=1\b/.test(location.search);
