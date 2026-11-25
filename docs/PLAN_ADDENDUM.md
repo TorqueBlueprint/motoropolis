@@ -61,3 +61,18 @@ Regular costs such as fuel and breakdowns keep coins flowing out, so the currenc
 - Search for your name, or open the page with `?me=<name>`.
 - It shows your car, coins, transactions, job and level, drag times and predictions.
 - It is read-only and needs no login.
+
+## Phase 1B — Organic city layout
+
+To be done after the performance work and before Phase 2. Seen from above, the city looks like a rectangle of blocks; this phase makes it look organic.
+
+- **Curved roads:** a riverside and coast road, winding roads up the hills, and a diagonal avenue cutting through the grid.
+- **Districts with their own street shapes:**
+  - Old Town: crooked, narrow streets.
+  - Residential: curved streets and cul-de-sacs.
+  - Downtown: a grid.
+- **Edges that fade out** instead of a straight boundary: suburbs, farms and fields, a highway leaving to the horizon, and industry by the port.
+- **An irregular coast:** beaches, a bay, and a cape with the lighthouse.
+- **The city visibly grows outward** with each unlock.
+- **Must keep working:** traffic, lots, milestones, `state.json`, roles and locked jobs.
+- **Static-geometry merging stays a load-time step** driven by the city data (chunked). There are no hand-baked merged files, so it keeps working when the layout changes.
