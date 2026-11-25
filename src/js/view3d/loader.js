@@ -19,7 +19,10 @@ function startLazy(X){const q=X.lazyQ.sort((a,b)=>a.pri-b.pri);let left=q.length
  requestAnimationFrame(()=>requestAnimationFrame(kick));setTimeout(kick,250)}
 async function loadR3(){
  try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}
-  if(X){X.cars={};X.lazyQ=[];X.lazyFill={};X.lazyHooks={};X.ready1=LAZY_EAGER?Promise.resolve():new Promise(r=>{X._ready1=r});try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld0=new GLTFLoader();const GZ=typeof DecompressionStream!=='undefined';
+  if(X){X.cars={};X.lazyQ=[];X.lazyFill={};X.lazyHooks={};X.ready1=LAZY_EAGER?Promise.resolve():new Promise(r=>{X._ready1=r});try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld0=new GLTFLoader();
+   // people, world and Christmas models are Draco-compressed (optimised in Blender); the decoder comes from the same CDN as three
+   try{const{DRACOLoader}=await import(ADDON('loaders/DRACOLoader.js'));const dl=new DRACOLoader();dl.setDecoderPath(ADDON('libs/draco/gltf/'));ld0.setDRACOLoader(dl)}catch(e){console.warn('draco loader unavailable',e)}
+   const GZ=typeof DecompressionStream!=='undefined';
    // models are shipped twice: .glb.gz (about 2.5x smaller, unpacked in the browser) and plain .glb for older browsers
    const ld={loadAsync:async u=>{if(GZ){try{const r=await fetch(u+'.gz');if(r.ok){const buf=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return await ld0.parseAsync(buf,u.slice(0,u.lastIndexOf('/')+1))}}catch(e){}}return ld0.loadAsync(u)}};X.ld=ld;
    try{const[SU,gm]=await Promise.all([import(ADDON('utils/SkeletonUtils.js')),ld.loadAsync(ASSET_BASE+'assets/people/man.glb')]);const bb=new T.Box3().setFromObject(gm.scene);X.SUc=SU.clone;X.man={scene:gm.scene,clone:SU.clone,h:bb.max.y-bb.min.y,y0:bb.min.y}}catch(e){console.warn('person model',e)}

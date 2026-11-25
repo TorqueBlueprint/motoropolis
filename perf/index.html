@@ -285,8 +285,9 @@ const CSS0=document.getElementById('css').textContent;
 const SRC0=document.currentScript.textContent;
 const HEAD_TOP="<title>Motoropolis by TorqueBlueprint</title>\n<meta name=\"claude:viewport-fit-sides\" content=\"cover\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap\">";
 const WORLD=document.documentElement.dataset.world!=='0';
-// Christmas city: only on pages built with data-xmas="1" (see tools/build_xmas.py)
-const XMAS=document.documentElement.dataset.xmas==='1';
+// Christmas city: the xmas page always (data-xmas-always, see tools/build_xmas.py) and ?xmas=1; the other pages
+// built with data-xmas="1" show it only for the season, until the end of December 2026
+const XMAS=document.documentElement.dataset.xmas==='1'&&(document.documentElement.dataset.xmasAlways==='1'||/[?&]xmas=1/.test(location.search)||Date.now()<new Date(2027,0,1).getTime());
 // performance test build (tools/build_perf.py): adaptive resolution, throttled shadows, level of detail for far cars and people
 const PERF=document.documentElement.dataset.perf==='1';const AQ={pr:1,acc:0,n:0,shEvery:2,shN:0,fps:60};
 // graphics quality: high / medium / low. Everyone starts on high; Medium/Low only if the viewer picks them (remembered).
@@ -3974,7 +3975,10 @@ function startLazy(X){const q=X.lazyQ.sort((a,b)=>a.pri-b.pri);let left=q.length
  requestAnimationFrame(()=>requestAnimationFrame(kick));setTimeout(kick,250)}
 async function loadR3(){
  try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}
-  if(X){X.cars={};X.lazyQ=[];X.lazyFill={};X.lazyHooks={};X.ready1=LAZY_EAGER?Promise.resolve():new Promise(r=>{X._ready1=r});try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld0=new GLTFLoader();const GZ=typeof DecompressionStream!=='undefined';
+  if(X){X.cars={};X.lazyQ=[];X.lazyFill={};X.lazyHooks={};X.ready1=LAZY_EAGER?Promise.resolve():new Promise(r=>{X._ready1=r});try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld0=new GLTFLoader();
+   // people, world and Christmas models are Draco-compressed (optimised in Blender); the decoder comes from the same CDN as three
+   try{const{DRACOLoader}=await import(ADDON('loaders/DRACOLoader.js'));const dl=new DRACOLoader();dl.setDecoderPath(ADDON('libs/draco/gltf/'));ld0.setDRACOLoader(dl)}catch(e){console.warn('draco loader unavailable',e)}
+   const GZ=typeof DecompressionStream!=='undefined';
    // models are shipped twice: .glb.gz (about 2.5x smaller, unpacked in the browser) and plain .glb for older browsers
    const ld={loadAsync:async u=>{if(GZ){try{const r=await fetch(u+'.gz');if(r.ok){const buf=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return await ld0.parseAsync(buf,u.slice(0,u.lastIndexOf('/')+1))}}catch(e){}}return ld0.loadAsync(u)}};X.ld=ld;
    try{const[SU,gm]=await Promise.all([import(ADDON('utils/SkeletonUtils.js')),ld.loadAsync(ASSET_BASE+'assets/people/man.glb')]);const bb=new T.Box3().setFromObject(gm.scene);X.SUc=SU.clone;X.man={scene:gm.scene,clone:SU.clone,h:bb.max.y-bb.min.y,y0:bb.min.y}}catch(e){console.warn('person model',e)}
