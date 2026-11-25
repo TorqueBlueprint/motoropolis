@@ -223,7 +223,8 @@
      else if(f.k==='mid'){const h=(8+f.f*10)*gr;bld(cg,w,h,d,TM[1+Math.floor(f.f*3)],mat.roof,x,z);B0(cg,w*.4,1,d*.3,mat.steel,x,h,z)}
      else{const h=5+f.f*7;bld(cg,w,h,d,AM[Math.floor(f.f*AM.length)],mat.roof,x,z);B0(cg,w*.85,.25,1.3,M(['#d93a2f','#2e7d4f','#2f6fd9','#e8b931'][Math.floor(f.f*4)]),x,2.6,z+d/2+.65,false)}}
     instG(cg,bodyG,mt.bodyT,PD,PDc,false);instG(cg,bodyG,houseM,NB,NBc);instG(cg,bodyG,mt.brick,CA2);instG(cg,roofG,mt.roofT,NR,NRc);instG(cg,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),CA,CAc);
-    instG(cg,sh(W3.trG||(W3.trG=new T.IcosahedronGeometry(1.3,0))),M(0xffffff,{flatShading:true}),TT,TTc);instG(cg,sh(W3.tkG||(W3.tkG=new T.CylinderGeometry(.14,.2,1.6,5).translate(0,-1.4,0))),mat.trunk,TT.map(p=>({x:p.x,y:p.y,z:p.z})))}
+    instG(cg,sh(W3.trG||(W3.trG=new T.IcosahedronGeometry(1.3,0))),M(0xffffff,{flatShading:true}),TT,TTc);instG(cg,sh(W3.tkG||(W3.tkG=new T.CylinderGeometry(.14,.2,1.6,5).translate(0,-1.4,0))),mat.trunk,TT.map(p=>({x:p.x,y:p.y,z:p.z})));
+     if(W3.cityHook)W3.cityHook(cg,C3,gr)}
    // industrial zone
    {const slots=[];for(const z of[-268,-212,-182])for(let x=100;x<=320;x+=30)if(Math.abs(x-205)>16)slots.push([x,z]);slots.sort((a,b)=>Math.abs(a[0]-205)+Math.abs(a[1]+150)-Math.abs(b[0]-205)-Math.abs(b[1]+150));
     const n=Math.min(slots.length,5+Math.floor(sv/14));const CT=[],CTc=[];
@@ -321,4 +322,3 @@
     if(m&&!isOpen(l.type)){const nx=m===nextMilestone();pill(`${l.t} · ${m.n.toLocaleString('en-US')} SUBS${nx?' · NEXT':''}`,s.x,s.y,sz,nx?'rgba(255,122,26,.95)':'rgba(15,47,92,.92)',nx?'#1d0f02':'#e8f3ff')}
     else pill(l.t,s.x,s.y,sz,'rgba(16,19,24,.82)','#ffffff')}
    hctx.globalAlpha=1};
- }

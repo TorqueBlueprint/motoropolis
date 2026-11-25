@@ -299,7 +299,7 @@ async function sheet(side, name) {
 
 (async () => {
   fs.mkdirSync(OUT, {recursive: true});
-  if (opt.sheet) {for (const s of SIDES) await runSide(s, s === 'base' ? BASE : CAND); await sheet(SIDES[SIDES.length - 1], opt.sheet); return}
+  if (opt.sheet && opt.interiors === 'none') {for (const s of SIDES) await runSide(s, s === 'base' ? BASE : CAND); await sheet(SIDES[SIDES.length - 1], opt.sheet); return}
   if (METRICS) {
     const all = {};
     for (const s of SIDES) all[s] = await runMetrics(s, s === 'base' ? BASE : CAND);
@@ -311,6 +311,7 @@ async function sheet(side, name) {
   report.scores = await compare();
   const worst = Object.entries(report.scores).sort((a, b) => b[1].changedPct - a[1].changedPct);
   fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(report, null, 1));
+  if (opt.sheet) await sheet(SIDES[SIDES.length - 1], opt.sheet);
   log('side-by-side images in', path.join(OUT, 'side'));
   for (const [k, v] of worst) log(`  ${k.padEnd(28)} mean ${v.meanAbs.toFixed(3).padStart(7)}  changed ${v.changedPct.toFixed(3).padStart(7)}%`);
 })().catch(e => {console.error(e); process.exit(1)});

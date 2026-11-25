@@ -69,6 +69,8 @@ interiors/_life.js
 interiors/_staff.js
 interiors/_transitions.js
 world/world3d.js
+world/city2_roads.js
+world/world3d_end.js
 world/treeify.js
 view3d/resize.js
 xmas/city.js

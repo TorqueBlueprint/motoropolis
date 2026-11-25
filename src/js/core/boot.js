@@ -15,6 +15,8 @@ const PERF=document.documentElement.dataset.perf==='1';const AQ={pr:1,acc:0,n:0,
 // graphics quality: high / medium / low. Everyone starts on high; Medium/Low only if the viewer picks them (remembered).
 const QUAL=(()=>{let q=null;try{q=localStorage.getItem('mtp-quality')}catch(e){}if(q==='high'||q==='medium'||q==='low')return q;return 'high'})();const CW=WORLD?3640:1920,CH=WORLD?1980:1680,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
 const REMAKE=document.documentElement.dataset.remake!=='0';
+// city-v2 phase 1 (city structure): on by default on this branch; ?city=1 shows the phase-0 city for comparison
+const CITY2=!/[?&]city=1\b/.test(location.search);
 const CANAL_I=REMAKE&&!WORLD?2:-1;const ROUND_IJ=REMAKE?[[1,1],[3,3],[1,3]]:[];
 const XS=WORLD?[100,530,960,1390,1820,2250,2680,3110,3540]:[100,530,960,1390,1820],YS=WORLD?[100,400,700,1000,1300,1600,1900]:[100,400,700,1000,1300,1600],NX=XS.length,NY=YS.length,GAPX=0,GAPY=0;
 const C=document.getElementById('city');C.width=CW;C.height=CH;const octx=C.getContext('2d');

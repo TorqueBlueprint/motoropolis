@@ -292,6 +292,8 @@ const PERF=document.documentElement.dataset.perf==='1';const AQ={pr:1,acc:0,n:0,
 // graphics quality: high / medium / low. Everyone starts on high; Medium/Low only if the viewer picks them (remembered).
 const QUAL=(()=>{let q=null;try{q=localStorage.getItem('mtp-quality')}catch(e){}if(q==='high'||q==='medium'||q==='low')return q;return 'high'})();const CW=WORLD?3640:1920,CH=WORLD?1980:1680,TAU=Math.PI*2,HALF=30,LANE=14,KM=1.5;
 const REMAKE=document.documentElement.dataset.remake!=='0';
+// city-v2 phase 1 (city structure): on by default on this branch; ?city=1 shows the phase-0 city for comparison
+const CITY2=!/[?&]city=1\b/.test(location.search);
 const CANAL_I=REMAKE&&!WORLD?2:-1;const ROUND_IJ=REMAKE?[[1,1],[3,3],[1,3]]:[];
 const XS=WORLD?[100,530,960,1390,1820,2250,2680,3110,3540]:[100,530,960,1390,1820],YS=WORLD?[100,400,700,1000,1300,1600,1900]:[100,400,700,1000,1300,1600],NX=XS.length,NY=YS.length,GAPX=0,GAPY=0;
 const C=document.getElementById('city');C.width=CW;C.height=CH;const octx=C.getContext('2d');
@@ -3183,7 +3185,8 @@ function make3D(T,X){
      else if(f.k==='mid'){const h=(8+f.f*10)*gr;bld(cg,w,h,d,TM[1+Math.floor(f.f*3)],mat.roof,x,z);B0(cg,w*.4,1,d*.3,mat.steel,x,h,z)}
      else{const h=5+f.f*7;bld(cg,w,h,d,AM[Math.floor(f.f*AM.length)],mat.roof,x,z);B0(cg,w*.85,.25,1.3,M(['#d93a2f','#2e7d4f','#2f6fd9','#e8b931'][Math.floor(f.f*4)]),x,2.6,z+d/2+.65,false)}}
     instG(cg,bodyG,mt.bodyT,PD,PDc,false);instG(cg,bodyG,houseM,NB,NBc);instG(cg,bodyG,mt.brick,CA2);instG(cg,roofG,mt.roofT,NR,NRc);instG(cg,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),CA,CAc);
-    instG(cg,sh(W3.trG||(W3.trG=new T.IcosahedronGeometry(1.3,0))),M(0xffffff,{flatShading:true}),TT,TTc);instG(cg,sh(W3.tkG||(W3.tkG=new T.CylinderGeometry(.14,.2,1.6,5).translate(0,-1.4,0))),mat.trunk,TT.map(p=>({x:p.x,y:p.y,z:p.z})))}
+    instG(cg,sh(W3.trG||(W3.trG=new T.IcosahedronGeometry(1.3,0))),M(0xffffff,{flatShading:true}),TT,TTc);instG(cg,sh(W3.tkG||(W3.tkG=new T.CylinderGeometry(.14,.2,1.6,5).translate(0,-1.4,0))),mat.trunk,TT.map(p=>({x:p.x,y:p.y,z:p.z})));
+     if(W3.cityHook)W3.cityHook(cg,C3,gr)}
    // industrial zone
    {const slots=[];for(const z of[-268,-212,-182])for(let x=100;x<=320;x+=30)if(Math.abs(x-205)>16)slots.push([x,z]);slots.sort((a,b)=>Math.abs(a[0]-205)+Math.abs(a[1]+150)-Math.abs(b[0]-205)-Math.abs(b[1]+150));
     const n=Math.min(slots.length,5+Math.floor(sv/14));const CT=[],CTc=[];
@@ -3281,6 +3284,50 @@ function make3D(T,X){
     if(m&&!isOpen(l.type)){const nx=m===nextMilestone();pill(`${l.t} · ${m.n.toLocaleString('en-US')} SUBS${nx?' · NEXT':''}`,s.x,s.y,sz,nx?'rgba(255,122,26,.95)':'rgba(15,47,92,.92)',nx?'#1d0f02':'#e8f3ff')}
     else pill(l.t,s.x,s.y,sz,'rgba(16,19,24,.82)','#ffffff')}
    hctx.globalAlpha=1};
+  if(CITY2){const g=new T.Group();root.add(g);const C2=W3.c2={pts:[]};
+   // own random sequence, so the rest of the city (and every interior) keeps its numbers
+   let s2=4242;const r2=C2.rnd=()=>{s2=(s2*16807)%2147483647;return s2/2147483647};
+   // junctions where a side road meets a main road: [x, z, dx, dz (direction of travel into the junction), main road half width]
+   const JN=[[96,-34,0,-1,4]];
+   for(const x of conN){JN.push([x,-34,0,-1,4],[x,-34,0,1,4],[x,-150,0,-1,3.5])}
+   for(const x of conS)JN.push([x,174,0,1,4]);
+   for(const z of conEW){JN.push([-30,z,-1,0,4],[222,z,1,0,4])}
+   const SP=[],SG=[],SL=[],ZB=[];
+   for(const[x,z,dx,dz,hw]of JN){const rx=-dz,rz=dx,ry=Math.atan2(-dx,-dz);
+    // STOP sign on the right, facing the cars that arrive
+    const sx=x-dx*(hw+1.6)+rx*3.7,sz=z-dz*(hw+1.6)+rz*3.7;SP.push({x:sx,y:0,z:sz});SG.push({x:sx,y:2.15,z:sz,ry});C2.pts.push([sx,sz]);
+    // stop line across the right lane and a zebra crossing just before it
+    SL.push({x:x-dx*(hw+.55)+rx*1.5,y:.036,z:z-dz*(hw+.55)+rz*1.5,ry,sx:2.9,sz:.4});
+    for(let k=-2.4;k<=2.41;k+=.8)ZB.push({x:x-dx*(hw+2.7)+rx*k,y:.034,z:z-dz*(hw+2.7)+rz*k,ry,sx:.45,sz:1.7})}
+   const stopTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.translate(64,64);x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*62,Math.sin(a)*62)}x.closePath();x.fillStyle='#ffffff';x.fill();
+    x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*55,Math.sin(a)*55)}x.closePath();x.fillStyle='#c8102e';x.fill();x.fillStyle='#fff';x.font="800 34px 'Barlow Condensed','Arial Narrow',sans-serif";x.textAlign='center';x.textBaseline='middle';x.fillText('STOP',0,2);
+    const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t})();
+   instG(g,sh(new T.CylinderGeometry(.05,.05,2.2,6).translate(0,1.1,0)),mat.grey,SP);
+   const sgm=new T.MeshStandardMaterial({map:stopTex,alphaTest:.5,side:T.DoubleSide,roughness:.6});signMats.push(sgm);instG(g,sh(new T.PlaneGeometry(.75,.75)),sgm,SG,null,false);
+   const flat=sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2));instG(g,flat,mat.dash,SL,null,false);instG(g,flat,mat.dash,ZB,null,false);
+   // solid white edge lines on the ring road and the avenue (broken where a side road joins)
+   const EL=[],near=(x,z)=>JN.some(j=>Math.abs(x-j[0])<j[4]+4&&Math.abs(z-j[1])<j[4]+4);
+   for(const o of[-3.55,3.55])along(RING,2,o,(x,z,a)=>{if(!near(x,z))EL.push({x,y:.03,z,ry:a,sx:.14,sz:4.2})},true);
+   for(const o of[-3.1,3.1])along(AVE,2,o,(x,z,a)=>{if(!near(x,z))EL.push({x,y:.03,z,ry:a,sx:.14,sz:2})});
+   instG(g,flat,mat.dash,EL,null,false);
+   // on-street parking along the avenue: painted bays and parked cars (simple shapes, one draw call per part)
+   const BY=[],PC=[],PCc=[],PG=[];let k=0;
+   for(const s of[-1,1])along(AVE,6,s*4.75,(x,z,a)=>{if(x<-140||x>330||near(x,z)||Math.abs(x-53)<9||Math.abs(x-139)<9)return;BY.push({x,y:.03,z,ry:a,sx:2.3,sz:.12});
+    if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}});
+   const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
+   instG(g,flat,mat.dash,BY,null,false);instG(g,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),PC,PCc);instG(g,bodyG,mat.carGlass,PG,null,false);
+   // bus stops on the ring road (line 2)
+   {const shM=M(0x2b3038,{metalness:.5,roughness:.4}),glM=M(0x9fc8e8,{roughness:.05,metalness:.3,transparent:true,opacity:.45});const rp=mkPath(RING,true),o={};
+    for(const u of[.08,.33,.58,.83]){atPath(rp,u*rp.len,5.6,o);const b=new T.Group();b.position.set(o.x,0,o.z);b.rotation.y=o.ry+Math.PI/2;
+     B0(b,3.4,.1,1.3,shM,0,2.3,0);B0(b,3.4,2,.05,glM,0,.3,-.6,false);for(const q of[-1,1])B0(b,.09,2.3,.09,shM,q*1.65,0,-.6);B0(b,2.8,.12,.45,M(0x7a5a3a),0,.6,-.3);B0(b,3.6,.08,1.8,mat.pad,0,0,0,false);
+     b.add(sign('BUS 2',1.1,.42,'#2f6fd9','#ffffff',2.1,2.2,0,0));g.add(b);C2.pts.push([o.x,o.z])}}
+   warp(g);
+   // keep the forest clear of the new street furniture
+   C2.clear=(pts,r)=>{const P=pts.map(([x,z])=>[WX(x),WZ(z)]),m=new T.Matrix4(),v=new T.Vector3();
+    for(const im of root.children){if(!im.isInstancedMesh||im.parent!==root)continue;const ty=im.geometry.type;if(!(im.material===mat.trunk||ty==='IcosahedronGeometry'||ty==='ConeGeometry'))continue;
+     let n=0;for(let i=0;i<im.count;i++){im.getMatrixAt(i,m);v.setFromMatrixPosition(m);if(P.some(p=>Math.abs(p[0]-v.x)<r&&Math.abs(p[1]-v.z)<r))continue;if(n!==i)im.setMatrixAt(n,m);if(im.instanceColor&&n!==i){const c=new T.Color();im.getColorAt(i,c);im.setColorAt(n,c)}n++}
+     if(n!==im.count){im.count=n;im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.computeBoundingSphere()}}};
+   C2.clear(C2.pts,3)}
  }
  // ---------- world: swap the simple trees for the low-poly tree models, keep them clear of the traffic lights ----------
  let tfT=0;const _tm=new T.Matrix4(),_tp=new T.Vector3(),_tq=new T.Quaternion(),_ts=new T.Vector3(),_tinv=new T.Matrix4();
@@ -3702,7 +3749,7 @@ function make3D(T,X){
  function frame(dt){if(renderer.shadowMap.enabled){AQ.acc+=dt;AQ.n++;if(AQ.acc>=2){AQ.fps=AQ.n/AQ.acc;AQ.acc=0;AQ.n=0;const f=AQ.fps;if(f<32)AQ.shEvery=Math.min(5,AQ.shEvery+1);else if(f>52)AQ.shEvery=Math.max(2,AQ.shEvery-1)}if(++AQ.shN>=(window.__MANUAL?1:AQ.shEvery)){AQ.shN=0;renderer.shadowMap.needsUpdate=true}}
   if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.clearRect(0,0,hud.width,hud.height);cur.labels()}
-  else{syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);if(XMAS)XMS.sync(dt);applyNight(false);placeCam();RENDER(scene);
+  else{syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);if(XMAS)XMS.sync(dt);applyNight(false);if(CITY2){if(typeof C2W!=='undefined')C2W.sync(dt);if(typeof conTick!=='undefined')conTick(simTime)}placeCam();RENDER(scene);
   hctx.clearRect(0,0,hud.width,hud.height);drawLabels();if(XMAS)XMS.labels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
   if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,hud.width,hud.height)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
@@ -3788,7 +3835,7 @@ requestAnimationFrame(loop);
 ownerTools();
 setTimeout(()=>{newsSeed();parkRanger()},1500);setInterval(newsSummary,55000);
 setInterval(()=>{fetch('../state.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j)return;if(SUBS_OVR===null&&Number.isFinite(+j.subs)&&+j.subs!==subs)setSubs(+j.subs);if(j.roles&&typeof j.roles==='object')for(const k in j.roles)ROLES[k.toLowerCase()]=String(j.roles[k]).toLowerCase();if(Array.isArray(j.names)){let add=0;for(const raw of j.names){const n=String(raw).trim().slice(0,24);if(n&&!WALL.some(x=>x.toLowerCase()===n.toLowerCase())){WALL.push(n);add++}}if(add){assignDrivers();assignJobs();WALL.slice(-add).forEach(n=>{const jb=jobOf(n);news(jb?`Welcome, ${n}! The city's newest ${jb}`:`Welcome, ${n}! Now looking for a job`,'people',`${n} joined Motoropolis from the comments.`)})}}}).catch(()=>{})},120000);
-if(location.hostname==='localhost')window.__LIGHT=m=>{lightMode=m}; // test hook: 'auto' | 'dia' (day) | 'noite' (night)
+if(location.hostname==='localhost'){window.__LIGHT=m=>{lightMode=m};window.__SUBS=v=>setSubs(v)} // test hooks: day/night, subscriber preview // test hook: 'auto' | 'dia' (day) | 'noite' (night)
 if(location.hostname==='localhost')window.__mtpBuild=()=>buildPage(STATE);
 if(location.hostname==='localhost'){window.__R3=()=>R3;window.__jam=()=>{const st={},tk={};let slow=0;for(const c of cars){if(c.removed||c.hidden)continue;st[c.state]=(st[c.state]||0)+1;if(c.state==='road'&&c.v<3){slow++;const k=(c.task?c.task.type+':'+(c.task.b?c.task.b.type:''):'free')+(c.waitRed?'/red':'')+(c.arrestT>0?'/stop':'');tk[k]=(tk[k]||0)+1}}return JSON.stringify({sim:simTime|0,n:cars.length,st,slow,tk,q:Object.fromEntries(buildings.map(b=>[b.type,b.slots.filter(s=>s.car).length+'/'+b.slots.length]))})};window.__dbg={jobs:n=>{const o={};for(const k of n){const j=JOBS[k];o[k]=j?j.title+'@'+j.b:null}return o},why:id=>{const c=cars.find(q=>q.id===id);if(!c)return null;const hx=Math.cos(c.ang),hy=Math.sin(c.ang);const sd=segDir(c.from,c.to),sc=(c.x-sd.A.x)*sd.dx+(c.y-sd.A.y)*sd.dy;const r=[];for(const o of cars){if(o===c||o===c.towing)continue;const dx=o.x-c.x,dy=o.y-c.y,al=dx*hx+dy*hy,lt=Math.abs(-dx*hy+dy*hx);if(al>0&&al<100&&lt<14)r.push([o.id,o.kind,o.state,o.from+'>'+o.to,Math.round(al),Math.round(lt),Math.round(o.v),o.task?o.task.type:'',o.pts.length,o.waitRed?1:0,o.towedBy?1:0])}return{me:[c.state,c.from+'>'+c.to,Math.round(c.x),Math.round(c.y),c.pts.length,c.pts[0]&&[Math.round(c.pts[0].x),Math.round(c.pts[0].y),!!c.pts[0].merge],Math.round(sc),sd.len,gapAhead(c)|0],r}},tows:()=>tows.map(t=>[t.id,t.state,t.task?t.task.type+(t.task.target?':'+t.task.target.state+'@'+t.task.target.from+'>'+t.task.target.to:''):'',t.from,t.to,t.route&&t.route.join('-'),Math.round(t.v),t.idle?1:0,t.hidden?1:0,t.waitRed?1:0,Math.round(t.blockT||0)]),spawn:g=>{const m=MODELS.find(x=>x.glb===g);const c=newCar({model:m});if(!placeOnRoad(c)){c.removed=true;return null}c.vmax=1;c.v=0;c.color='#d93a2f';return c.id},cpos:id=>{const c=cars.find(c=>c.id===id);return c&&[c.x/10,c.y/10,c.ang]},nodes:()=>nodes.map((n,i)=>[i,n.x,n.y,n.nb.length,n.round?1:0,n.light?1:0]),all:()=>cars.filter(c=>c.state==='road'&&!c.hidden).map(c=>[c.id,Math.round(c.x),Math.round(c.y),+c.ang.toFixed(2),c.kind,c.from,c.to,c.ghost>0?1:0,c.task?c.task.type+(c.task.b?':'+c.task.b.type:''):'',c.pts.length,c.arrestT>0?1:0,Math.round(c.v)]),taxiInfo:()=>{const c=cars.find(c=>c.m&&c.m.taxi&&c.state==='road');return c&&{x:c.x/10,z:c.y/10,ang:c.ang,cfg:JSON.stringify(CAR_GLB.taxi)}},kpos:k=>{if(k==='ped'){const q=peds.filter(p=>p.name)[3];return q&&[q.x/10,q.y/10]}const kk={bus:'bus',garb:'garbage',pol:'police',tow:'tow'}[k];const b=cars.find(c=>c.kind===kk&&!c.hidden);return b&&[b.x/10,b.y/10]},busPos:()=>{const b=cars.find(c=>c.kind==='bus');return b&&[b.x/10,b.y/10]},pedPos:k=>{const q=peds.filter(p=>p.name)[k||0];return q&&[q.x/10,q.y/10]},emergStart:()=>emergStart(),emerg:()=>emerg&&{cx:emerg.car.x/10,cz:emerg.car.y/10,type:emerg.type,t:emerg.t,arrived:emerg.arrived,d:Math.hypot(emerg.resp.x-emerg.car.x,emerg.resp.y-emerg.car.y)},sim:()=>simTime,speed:v=>{speed=v},cars:()=>cars.filter(c=>c.kind==='fire'||c.kind==='amb').map(c=>[c.kind,Math.round(c.x),Math.round(c.y),c.state,c.ttl])}}
 })();
