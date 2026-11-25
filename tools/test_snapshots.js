@@ -56,7 +56,11 @@ const INT_LIST = pick(opt.interiors, INTERIORS);
 
 // ---------- deterministic page environment (installed before any page script) ----------
 const INIT = `(()=>{
- let s=0x5eed;Math.random=()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+ // seeded Math.random; three.js object UUIDs (generateUUID) draw from their own stream, so creating more or fewer
+ // meshes (instancing, batching) does not shift the random numbers the city itself uses
+ const mk=s=>()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+ const rA=mk(0x5eed),rU=mk(0xbeef);
+ Math.random=()=>{const L=Error.stackTraceLimit;Error.stackTraceLimit=2;const st=new Error().stack;Error.stackTraceLimit=L;return st.includes('generateUUID')?rU():rA()};
  const FIX=Date.UTC(2026,11,10,15,0,0),RD=Date;
  class D extends RD{constructor(...a){if(a.length)super(...a);else super(FIX)}static now(){return FIX}}
  window.Date=D;
