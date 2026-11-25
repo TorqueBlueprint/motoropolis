@@ -14,8 +14,9 @@ function lazyScene(T,X,name,b){const root=new T.Group(),list=[root];
  return root}
 function startLazy(X){const q=X.lazyQ.sort((a,b)=>a.pri-b.pri);let left=q.length,i=0;window.__lazyLeft=left;
  const next=async()=>{while(i<q.length){const t=q[i++];try{await t.run()}catch(e){console.warn('lazy asset',t.name,e)}window.__lazyLeft=--left;if(!q.slice(i).some(o=>o.pri===1)&&X._ready1){X._ready1();X._ready1=null}}};
- // after the first frame is on screen
- requestAnimationFrame(()=>requestAnimationFrame(()=>{if(!q.some(o=>o.pri===1)&&X._ready1){X._ready1();X._ready1=null}for(let k=0;k<4;k++)next()}))}
+ // after the first frame is on screen (or 250 ms, whichever comes first)
+ let go=false;const kick=()=>{if(go)return;go=true;if(!q.some(o=>o.pri===1)&&X._ready1){X._ready1();X._ready1=null}for(let k=0;k<4;k++)next()};
+ requestAnimationFrame(()=>requestAnimationFrame(kick));setTimeout(kick,250)}
 async function loadR3(){
  try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}
   if(X){X.cars={};X.lazyQ=[];X.lazyFill={};X.lazyHooks={};X.ready1=LAZY_EAGER?Promise.resolve():new Promise(r=>{X._ready1=r});try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld0=new GLTFLoader();const GZ=typeof DecompressionStream!=='undefined';

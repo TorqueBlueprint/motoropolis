@@ -15,6 +15,7 @@
  *          --out DIR  --pages list  --interiors all|none|a,b  --views all|none|a,b  --only base|cand
  *          --query 'lod=cars:250' (appended to every page URL)  --frames N (simulation frames before the shots, default 8)
  *          --state FILE (state.json served to both sides, default: the candidate's)
+ *          --night (shots at night)  --sheet NAME (only capture and write NAME.png, a grid of the city views)
  *          --verbose  --batch N (interiors per page load, default 6)  --w 1000 --h 700  --three FILE --addons DIR
  * Needs a local copy of three r169 (the CDN is routed to it): --three .../three.module.js, --addons .../examples/jsm
  * (or env THREE_LOCAL / THREE_ADDONS). Fonts from Google are stubbed with empty CSS on both sides.
@@ -51,6 +52,8 @@ const VIEWS = {
   street: {tx: 96, tz: 40, yaw: 2.2, pitch: .32, dist: 55},
   river: {tx: 230, tz: 100, yaw: -.4, pitch: .6, dist: 220},
   xmasStreet: {tx: 60, tz: 100, yaw: .3, pitch: .45, dist: 90},
+  far: {tx: 180, tz: 60, yaw: 2.6, pitch: .32, dist: 620},        // skyline / landmarks from far
+  junction: {tx: 53, tz: 40, yaw: .8, pitch: .5, dist: 38},       // a signalled junction close up
 };
 const pick = (v, all) => v === undefined || v === 'all' ? all : v === 'none' ? [] : String(v).split(',');
 const VIEW_LIST = pick(opt.views, Object.keys(VIEWS));
@@ -193,6 +196,7 @@ async function runSide(side, dir) {
           const {p, errs, tR3} = await openPage(browser, srv.port, pg, false);
           log(`[${side}] ${pg}: 3D ready in ${(tR3 / 1000).toFixed(1)}s`);
           await pump(p, +(opt.frames || 8)); // simulated time, same on both sides
+          if (opt.night) await p.evaluate(() => {if (window.__LIGHT) window.__LIGHT('noite')});
           await waitIdle(p);
           if (pg === 'rec') res[pg + '_hooks'] = await p.evaluate(() => ({H: !!window.__H, R3: !!window.__R3, PEDH: !!window.__PEDH, XMS: !!window.__XMS}));
           for (const name of list) {
@@ -278,8 +282,24 @@ async function compare() {
   return scores;
 }
 
+async function sheet(side, name) {
+  const dir = path.join(OUT, side), files = fs.readdirSync(dir).filter(f => f.endsWith('.png') && !f.includes('_in_')).sort();
+  const browser = await chromium.launch(); const p = await browser.newPage();
+  const url = await p.evaluate(async ([imgs, title]) => {
+    const load = s => new Promise(r => {const i = new Image(); i.onload = () => r(i); i.src = s});
+    const I = await Promise.all(imgs.map(x => load(x[1]))); const w = 500, h = 350, cols = 3, rows = Math.ceil(I.length / cols);
+    const c = document.createElement('canvas'); c.width = cols * w; c.height = rows * (h + 22) + 30; const g = c.getContext('2d');
+    g.fillStyle = '#111'; g.fillRect(0, 0, c.width, c.height); g.fillStyle = '#fff'; g.font = 'bold 18px sans-serif'; g.fillText(title, 8, 21);
+    I.forEach((im, k) => {const x = (k % cols) * w, y = 30 + Math.floor(k / cols) * (h + 22); g.drawImage(im, x, y + 22, w, h); g.font = '14px sans-serif'; g.fillText(imgs[k][0], x + 6, y + 16)});
+    return c.toDataURL('image/png');
+  }, [files.map(f => [f.replace('.png', ''), 'data:image/png;base64,' + fs.readFileSync(path.join(dir, f)).toString('base64')]), name]);
+  fs.writeFileSync(path.join(OUT, name + '.png'), Buffer.from(url.split(',')[1], 'base64')); await browser.close();
+  log('sheet', path.join(OUT, name + '.png'));
+}
+
 (async () => {
   fs.mkdirSync(OUT, {recursive: true});
+  if (opt.sheet) {for (const s of SIDES) await runSide(s, s === 'base' ? BASE : CAND); await sheet(SIDES[SIDES.length - 1], opt.sheet); return}
   if (METRICS) {
     const all = {};
     for (const s of SIDES) all[s] = await runMetrics(s, s === 'base' ? BASE : CAND);
