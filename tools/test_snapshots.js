@@ -14,6 +14,7 @@
  * Options: --base DIR (default /home/claude/motoropolis)  --cand DIR (default: the repo holding this file)
  *          --out DIR  --pages list  --interiors all|none|a,b  --views all|none|a,b  --only base|cand
  *          --query 'lod=cars:250' (appended to every page URL)  --frames N (simulation frames before the shots, default 8)
+ *          --state FILE (state.json served to both sides, default: the candidate's)
  *          --verbose  --batch N (interiors per page load, default 6)  --w 1000 --h 700  --three FILE --addons DIR
  * Needs a local copy of three r169 (the CDN is routed to it): --three .../three.module.js, --addons .../examples/jsm
  * (or env THREE_LOCAL / THREE_ADDONS). Fonts from Google are stubbed with empty CSS on both sides.
@@ -34,6 +35,7 @@ const CAND = path.resolve(opt.cand || path.join(__dirname, '..'));
 const OUT = path.resolve(opt.out || path.join(SP, 'v2', 'snap'));
 const THREE = opt.three || process.env.THREE_LOCAL || path.join(SP, 'proto/three.module.js');
 const ADDONS = opt.addons || process.env.THREE_ADDONS || path.join(SP, 'proto/tjsrepo/examples/jsm');
+const STATE_FILE = path.resolve(opt.state || path.join(CAND, 'state.json'));
 const W = +(opt.w || 1000), H = +(opt.h || 700), BATCH = +(opt.batch || 6);
 const PAGES = String(opt.pages || 'root,world,xmas,remake,perf,rec').split(',').filter(Boolean);
 const SIDES = opt.only ? [opt.only] : ['base', 'cand'];
@@ -122,6 +124,9 @@ async function openPage(browser, port, pageKey, metrics) {
     const body = fs.readFileSync(f); net.cdn += body.length;
     r.fulfill({status: 200, contentType: 'application/javascript', headers: {'access-control-allow-origin': '*'}, body});
   });
+  // both sides get the same subscriber data (the base checkout may hold an older state.json; one more subscriber
+  // = one more car = a different random sequence for everything after it)
+  await p.route(/\/state\.json(\?|$)/, r => r.fulfill({status: 200, contentType: 'application/json', body: fs.readFileSync(STATE_FILE)}));
   await p.route('https://fonts.googleapis.com/**', r => r.fulfill({status: 200, contentType: 'text/css', body: ''}));
   const t0 = Date.now();
   await p.goto(`http://localhost:${port}${PAGE_URL[pageKey]}${opt.query ? '?' + opt.query : ''}`, {waitUntil: 'load', timeout: 300000});
