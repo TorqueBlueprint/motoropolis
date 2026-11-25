@@ -143,7 +143,7 @@ async function pump(p, n) {
 }
 async function waitIdle(p, ms = 1500) {
   const t0 = Date.now();
-  await p.waitForFunction(ms => window.__netIdle(ms), ms, {timeout: 600000, polling: 300}).catch(() => log('  (network not idle, continuing)'));
+  await p.waitForFunction(ms => window.__netIdle(ms) && !(window.__lazyLeft > 0), ms, {timeout: 600000, polling: 300}).catch(() => log('  (network not idle, continuing)'));
   if (opt.verbose) log(`  network idle after ${((Date.now() - t0) / 1000).toFixed(1)}s`);
 }
 // render one frame (shadow map forced fresh) and grab the 3D canvas + HUD overlay in the same task (the WebGL

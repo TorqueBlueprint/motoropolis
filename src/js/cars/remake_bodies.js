@@ -13,7 +13,7 @@
  const glassX=()=>mat.carGlass;
  function wheelX(g,x,z,r){const w=new T.Mesh(WHEEL,mat.tire);w.scale.set(1.05,r/.3,r/.3);w.position.set(x,r,z);g.add(w);const rim=new T.Mesh(WHEEL,mat.chrome);rim.scale.set(1.12,r/.3*.62,r/.3*.62);rim.position.set(x,r,z);g.add(rim)}
  const GLBMAT={};
- function glbCar(c,key){const src=X.cars[key],cfg=CAR_GLB[key],L=c.len/10;const g=new T.Group();const m0=src.clone(true);const s=L*(cfg.lenK||1)/cfg.len;m0.position.set(-(cfg.cx||0),-(cfg.y0||0),-(cfg.cz||0));const m=new T.Group();m.add(m0);m.scale.setScalar(s);m.rotation.y=cfg.rot||0;
+ function glbBody(c,key,g){const src=X.cars[key],cfg=CAR_GLB[key],L=c.len/10;const m0=src.clone(true);const s=L*(cfg.lenK||1)/cfg.len;m0.position.set(-(cfg.cx||0),-(cfg.y0||0),-(cfg.cz||0));const m=new T.Group();m.add(m0);m.scale.setScalar(s);m.rotation.y=cfg.rot||0;
   const col=c.color||'#2f6fd9',mk=key+col;
   m.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;
    // bodies exported as see-through (alpha blend) show the far-side wheels through the panels: make them solid, keep glass see-through
@@ -21,7 +21,15 @@
    if(cfg.keep)return;if(cfg.paint&&o.material&&[].concat(cfg.paint).includes(o.material.name)){const mk2=mk+o.material.name;if(!GLBMAT[mk2]){const nm=o.material.clone();if(!cfg.tint)nm.map=null;nm.color.set(col);nm.metalness=.35;nm.roughness=.35;nm.transparent=false;nm.opacity=1;GLBMAT[mk2]=nm}o.material=GLBMAT[mk2];return}if(o.material&&o.material.map&&o.material.name==='Car_Main'){if(!GLBMAT[mk]){const base=o.material,img=base.map.image;const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;const x=cv.getContext('2d');x.drawImage(img,0,0);
      const[cx,cy,cw,ch]=cfg.cell,k=img.width/64;x.fillStyle=col;x.fillRect(cx*k,cy*k,cw*k,ch*k);const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;t.flipY=base.map.flipY;t.magFilter=T.NearestFilter;t.minFilter=T.NearestFilter;t.generateMipmaps=false;
      const nm=base.clone();nm.map=t;nm.metalness=Math.min(nm.metalness,.5);GLBMAT[mk]=nm}o.material=GLBMAT[mk]}});
-  g.add(m);const tl=box(L*.5,.08,.05,mat.tailOff,0,.62*s*cfg.len/4.4,-L/2+.02,false);tl.visible=false;g.add(tl);g.userData.tl=tl;return g}
+  g.add(m);return m}
+ // a car with a model: built at once; while the model is still loading (lazy assets) it is a plain box in the car's
+ // colour, swapped for the real body when the file lands (same group, same tail light)
+ function glbCar(c,key){const cfg=CAR_GLB[key],L=c.len/10,s=L*(cfg.lenK||1)/cfg.len;const g=new T.Group();
+  if(X.cars[key].lazyCar){const b=X.carBox[key],w=Math.min(b[3]-b[0],b[5]-b[2])*s,h=cfg.h*s;const ph=new T.Mesh(BOX,colMat(c.color||'#2f6fd9'));ph.scale.set(w,h*.8,L*(cfg.lenK||1)*.96);ph.position.y=h*.4;ph.castShadow=true;g.add(ph);
+   (X.carWait[key]||(X.carWait[key]=[])).push(()=>{g.remove(ph);glbBody(c,key,g);g.children.unshift(g.children.pop())})}
+  else glbBody(c,key,g);
+  const tl=box(L*.5,.08,.05,mat.tailOff,0,.62*s*cfg.len/4.4,-L/2+.02,false);tl.visible=false;g.add(tl);g.userData.tl=tl;return g}
+ if(X)X.carArrived=k=>{const L=X.carWait&&X.carWait[k];if(!L)return;X.carWait[k]=null;for(const f of L)f()};
  function carMeshX(c){if(X.cars&&['tow','fire','amb','garbage','van'].includes(c.kind)&&X.cars[c.kind]){const g=glbCar(c,c.kind);if(c.kind==='fire'||c.kind==='amb'){const L=c.len/10;g.userData.lb=[box(.5,.14,.3,M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2.5}),-.35,2.1,L*.3,false),box(.5,.14,.3,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:2.5}),.35,2.1,L*.3,false)];g.userData.lb.forEach(b=>g.add(b))}return g}
   if(c.kind==='tow')return null;if(c.m&&c.m.glb&&X.cars&&X.cars[c.m.glb])return glbCar(c,c.m.glb);
   if(c.kind==='bus'&&X.cars&&X.cars.bus)return glbCar(c,'bus');
