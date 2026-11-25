@@ -8,7 +8,9 @@ def R(a, b):
     global s
     assert a in s, a[:60]
     s = s.replace(a, b, 1)
-R("<html>", '<html data-rec="1">')
+# the page's own <html> tag (it may carry other flags such as data-xmas); a bare "<html>" also appears inside the script
+assert s.startswith("<!doctype html><html"), s[:40]
+s = s.replace("<html", '<html data-rec="1"', 1)
 R("<head>", "<head><script>try{localStorage.setItem('mtp-view','3d')}catch(e){}if(/[?&]xmas=1/.test(location.search))document.documentElement.dataset.xmas='1'</script>")
 s = s.replace("'state.json?v='", "'../state.json?v='")
 R("<title>Motoropolis by TorqueBlueprint</title>", "<title>Motoropolis · Recorder</title>")
