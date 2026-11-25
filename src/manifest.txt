@@ -79,6 +79,7 @@ view3d/resize.js
 xmas/city.js
 interiors/santa.js
 xmas/sleigh_snow.js
+view3d/city2_weather.js
 view3d/frame.js
 view3d/loader.js
 ui/view_controls.js
