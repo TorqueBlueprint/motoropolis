@@ -5,6 +5,7 @@ import os
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 s = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
 s = s if 'data-xmas="1"' in s[:200] else (s.replace("<html>", '<html data-xmas="1">', 1) if "<html>" in s else s.replace("<html ", '<html data-xmas="1" ', 1))
+s = s.replace('data-xmas="1"', 'data-xmas="1" data-xmas-always="1"', 1)
 s = s.replace("'state.json?v='", "'../state.json?v='")
 s = s.replace("<title>Motoropolis by TorqueBlueprint</title>", "<title>Motoropolis · Christmas</title>", 1)
 BANNER_ON = False

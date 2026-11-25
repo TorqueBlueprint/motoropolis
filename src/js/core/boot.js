@@ -8,8 +8,9 @@ const CSS0=document.getElementById('css').textContent;
 const SRC0=document.currentScript.textContent;
 const HEAD_TOP="<title>Motoropolis by TorqueBlueprint</title>\n<meta name=\"claude:viewport-fit-sides\" content=\"cover\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap\">";
 const WORLD=document.documentElement.dataset.world!=='0';
-// Christmas city: only on pages built with data-xmas="1" (see tools/build_xmas.py)
-const XMAS=document.documentElement.dataset.xmas==='1';
+// Christmas city: the xmas page always (data-xmas-always, see tools/build_xmas.py) and ?xmas=1; the other pages
+// built with data-xmas="1" show it only for the season, until the end of December 2026
+const XMAS=document.documentElement.dataset.xmas==='1'&&(document.documentElement.dataset.xmasAlways==='1'||/[?&]xmas=1/.test(location.search)||Date.now()<new Date(2027,0,1).getTime());
 // performance test build (tools/build_perf.py): adaptive resolution, throttled shadows, level of detail for far cars and people
 const PERF=document.documentElement.dataset.perf==='1';const AQ={pr:1,acc:0,n:0,shEvery:2,shN:0,fps:60};
 // graphics quality: high / medium / low. Everyone starts on high; Medium/Low only if the viewer picks them (remembered).
