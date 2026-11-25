@@ -57,4 +57,4 @@
    if(bay.id)pill(`TRUCK ${t.plate} · READY`,p.x,p.y,sz,'rgba(16,19,24,.85)','#5cc98a');
    else{const tk=t.task;const txt=tk&&tk.type==='tow'?`OUT ON A CALL → ${tk.target.plate}`:tk&&tk.type==='deliver'?'TOWING TO THE REPAIR SHOP':'ON THE WAY BACK';pill(txt,p.x,p.y,sz,'rgba(242,165,26,.95)','#1d0f02')}});
   if(!isOpen('reboques')){const p=toHud(0,3,0);if(p)pill('THE TOW DEPOT OPENS AT 10 SUBS',p.x,p.y,sz,'rgba(15,47,92,.92)','#c8defa')}
-  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE 24H TOWING DEPOT',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,hud.width/2,89)}
+  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE 24H TOWING DEPOT',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,HUDW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,HUDW/2,89)}

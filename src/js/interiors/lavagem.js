@@ -49,4 +49,4 @@
   for(const[name,x,col]of WS.stages){const s=toHud(x,6.6,-4.2);if(s)pill(name,s.x,s.y,sz,'#'+col.toString(16).padStart(6,'0'),'#071a2d')}
   WS.lanes.forEach(L=>{if(!L.id)return;const c=cars.find(q=>q.id===L.id);if(!c)return;const s=toHud(L.car.position.x,3.4,L.z);if(s)pill(c.driver?'★ '+c.driver:c.plate,s.x,s.y,sz,c.driver?'rgba(255,122,26,.95)':'#fafafa',c.driver?'#1d0f02':'#111')});
   if(!WS.lanes.some(L=>L.id)){const s=toHud(0,2,0);if(s)pill('Waiting for the next dirty car…',s.x,s.y,sz,'rgba(16,19,24,.85)','#c8defa')}
-  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE MOTOROPOLIS CAR WASH',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,hud.width/2,89)}
+  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE MOTOROPOLIS CAR WASH',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,HUDW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,HUDW/2,89)}

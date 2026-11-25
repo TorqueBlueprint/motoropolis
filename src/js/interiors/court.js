@@ -16,6 +16,6 @@
   R.B2(.2,1.2,5,wd2,0,0,8.6);CT.built=true}
  function syncCourt(){const cs=CASES[0];CT.def.visible=!!cs;CT.judge.rotation.y=Math.sin(simTime*.5)*.35;CT.law.forEach((m,k)=>{m.rotation.y=Math.PI+Math.sin(simTime*(.7+k*.3))*.5})}
  function labelsCourt(){staffTag(CT.judge,'court','Judge',0,6.2);staffTag(CT.clerk,'court','Court Clerk',0,4.4);CT.law.forEach((m,k)=>staffTag(m,'court','Lawyer',k,4.4));
-  const cs=CASES[0];if(cs){tag(-4.5,4.4,3.2,`DEFENDANT: ${cs.thief}`,'rgba(232,115,42,.95)','#1d0f02');pill(cs.verdict?`CASE #${cs.no} · ${cs.verdict==='guilty'?'GUILTY':cs.verdict==='community'?'30 DAYS WASHING CARS':'NOT GUILTY'}`:`CASE #${cs.no} · MOTOROPOLIS vs ${cs.thief} · IN SESSION`,hud.width/2,150,24,cs.verdict==='free'?'rgba(46,139,87,.95)':'rgba(74,52,18,.95)','#ffd34d')}
-  else pill('NO CASES TODAY · THE STREETS ARE CALM',hud.width/2,150,22,'rgba(16,19,24,.85)','#c8defa')
+  const cs=CASES[0];if(cs){tag(-4.5,4.4,3.2,`DEFENDANT: ${cs.thief}`,'rgba(232,115,42,.95)','#1d0f02');pill(cs.verdict?`CASE #${cs.no} · ${cs.verdict==='guilty'?'GUILTY':cs.verdict==='community'?'30 DAYS WASHING CARS':'NOT GUILTY'}`:`CASE #${cs.no} · MOTOROPOLIS vs ${cs.thief} · IN SESSION`,HUDW/2,150,24,cs.verdict==='free'?'rgba(46,139,87,.95)':'rgba(74,52,18,.95)','#ffd34d')}
+  else pill('NO CASES TODAY · THE STREETS ARE CALM',HUDW/2,150,22,'rgba(16,19,24,.85)','#c8defa')
   header('INSIDE THE COURTHOUSE')}

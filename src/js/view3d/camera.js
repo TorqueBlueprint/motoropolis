@@ -19,7 +19,7 @@
  c3.addEventListener('keydown',e=>{const k=e.key;let h=true;if(k==='ArrowLeft')cam.yaw+=.08;else if(k==='ArrowRight')cam.yaw-=.08;else if(k==='ArrowUp')cam.pitch+=.05;else if(k==='ArrowDown')cam.pitch-=.05;else if(k==='+'||k==='=')cam.dist*=.9;else if(k==='-')cam.dist*=1.1;else h=false;if(h){e.preventDefault();idle=0;clampCam()}});
  c3.tabIndex=0;
  const v3=new T.Vector3();
- function toHud(x,y,z){v3.set(x,y,z).project(camera);if(v3.z>1||v3.z<-1)return null;return{x:(v3.x+1)/2*hud.width,y:(1-v3.y)/2*hud.height}}
+ function toHud(x,y,z){v3.set(x,y,z).project(camera);if(v3.z>1||v3.z<-1)return null;return{x:(v3.x+1)/2*HUDW,y:(1-v3.y)/2*HUDH}}
  const ray=new T.Raycaster(),ndc=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-Y0),hit=new T.Vector3();
  function clickAt(cx,cy){if(trailer||mode==='in')return;const r=c3.getBoundingClientRect(),hx=(cx-r.left)/r.width*CW,hy=(cy-r.top)/r.height*CH;
   let best=null,bd=40*40;for(const c of cars){if(c.hidden||c.removed)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+.7,g.position.z);if(!s)continue;const d=(s.x-hx)**2+(s.y-hy)**2;if(d<bd){bd=d;best=c}}

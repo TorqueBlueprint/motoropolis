@@ -10,11 +10,11 @@
  const W3P={poles:[]};const tls=[];if(WORLD&&X&&X.tlight){const TL=X.tlight,K=.95,lens=new T.SphereGeometry(.085,10,8),TLM=[];W3P.poles=[];
   for(const n of nodes){if(!n.light)continue;const x=U(n.x)+H3+.5,z=U(n.y)+H3+.5;W3P.poles.push([x,z]);const heads={};
    for(const[ax,ry]of[['h',Math.PI/2],['v',0]]){const g=new T.Group();const L={};
-    for(const[k,y]of[['r',3.30],['y',3.04],['g',2.80]]){const l=new T.Mesh(lens,k==='r'?mat.tlR:k==='y'?mat.tlY:mat.tlG);l.position.set(TL.hx,y,TL.front+.02);l.visible=false;g.add(l);L[k]=l}
+    for(const[k,y]of[['r',3.30],['y',3.04],['g',2.80]]){const l=new T.Mesh(lens,k==='r'?mat.tlR:k==='y'?mat.tlY:mat.tlG);l.position.set(TL.hx,y,TL.front+.02);l.visible=false;l.userData.nm=1;g.add(l);L[k]=l}
     g.scale.setScalar(K);g.rotation.y=ry;g.position.set(x,0,z);g.updateMatrix();TLM.push(g.matrix.clone());scene.add(g);heads[ax]=L}
    tls.push({n,L:heads})}
   // the pole bodies: one InstancedMesh instead of one mesh per signal head (same model, material and shadows)
   {const im=new T.InstancedMesh(TL.g,TL.m,TLM.length);TLM.forEach((m,i)=>im.setMatrixAt(i,m));im.castShadow=true;im.userData.tf=1;im.computeBoundingSphere();scene.add(im)}}
  else for(const n of nodes){if(!n.light)continue;const x=U(n.x)+H3+.5,z=U(n.y)+H3+.5;scene.add(box(.16,3.2,.16,mat.dark,x,0,z));
   const hh=new T.Mesh(new T.SphereGeometry(.26,10,8),mat.tlG);hh.position.set(x-.05,3.15,z-.25);scene.add(hh);const hv=new T.Mesh(new T.SphereGeometry(.26,10,8),mat.tlG);hv.position.set(x-.25,2.55,z-.05);scene.add(hv);
-  scene.add(box(.5,1.6,.5,mat.black,x-.05,2.2,z-.05,false));tls.push({n,hh,hv})}
+  scene.add(box(.5,1.6,.5,mat.black,x-.05,2.2,z-.05,false));hh.userData.nm=1;hv.userData.nm=1;tls.push({n,hh,hv})}

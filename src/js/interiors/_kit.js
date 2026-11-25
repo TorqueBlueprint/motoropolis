@@ -37,7 +37,7 @@
    const rp=upgP(personMesh('#22252b','#f0c9a0','#2b1d14'),'Receptionist');rp.scale.setScalar(1.45);rp.position.set(dx-.2,0,dz-1.3);add(rp);
    for(let k=0;k<3;k++){const cx=dx-9+k*1.5;B2(1.1,.12,1.1,FURN.seat,cx,.85,10.4,false);B2(1.1,1,.15,FURN.seat,cx,.85,10.95,false);B2(.1,.85,.1,FURN.dark,cx,0,10.4,false)}
    B2(1.6,.6,1,FURN.wood,dx-4.3,0,10.4);{const wc=new T.Mesh(new T.CylinderGeometry(.35,.35,.9,12),M(0x9fd0ff,{transparent:true,opacity:.7}));wc.position.set(dx-11.6,2.05,10.6);add(wc);B2(.8,1.6,.8,FURN.white,dx-11.6,0,10.6)}}}
- function header(t){hctx.font="800 30px 'Barlow Condensed', sans-serif";const w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.textAlign='center';hctx.fillText(t,hud.width/2,89)}
+ function header(t){hctx.font="800 30px 'Barlow Condensed', sans-serif";const w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,HUDW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.textAlign='center';hctx.fillText(t,HUDW/2,89)}
  function lockedNote(type){if(isOpen(type))return;const m=MS[type];const p=toHud(0,4,2);if(p)pill(`BLUEPRINT PREVIEW · OPENS AT ${m.n.toLocaleString('en-US')} SUBS`,p.x,p.y,24,'rgba(15,47,92,.94)','#c8defa','#9fd0ff')}
  // mirror the cars parked in a building's slots into an interior
  function mirror(slots,holders,scale,place){slots.forEach((s,k)=>{const h=holders[k];if(!h)return;const c=s.car&&!s.car.removed&&(s.car.state==='service')?s.car:null;const id=c?c.id:null;

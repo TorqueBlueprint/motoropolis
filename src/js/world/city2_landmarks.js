@@ -22,7 +22,7 @@
     const disc=new T.Mesh(new T.CylinderGeometry(7,6,1,24),cc);disc.position.y=90;t.add(disc);
     const ant=new T.Mesh(new T.CylinderGeometry(.35,.6,34,8),M(0xd93a2f));ant.position.y=107;t.add(ant);
     const bc=new T.Mesh(new T.SphereGeometry(.9,10,8),M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2}));bc.position.y=124.5;t.add(bc);
-    W3.anim.push(tt=>{bc.visible=Math.floor(tt*1.2)%2===0});g.add(t);W3.labels.push({t:'TV TOWER',x,z,y:130})}
+    bc.userData.nm=1;W3.anim.push(tt=>{bc.visible=Math.floor(tt*1.2)%2===0});g.add(t);W3.labels.push({t:'TV TOWER',x,z,y:130})}
    // ---- MOTOROPOLIS DRAGWAY: a quarter-mile strip east of the highway ----
    {const x0=480,x1=780,z=-150,L=x1-x0;C2.clearRect(x0-10,z-40,x1+10,z+24);const d=new T.Group();
     const strip=new T.Mesh(new T.PlaneGeometry(L,14),mat.asphalt);strip.rotation.x=-Math.PI/2;strip.position.set((x0+x1)/2,.04,z);strip.receiveShadow=true;d.add(strip);

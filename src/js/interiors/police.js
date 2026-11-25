@@ -26,6 +26,6 @@
   PS.L.forEach((m,k)=>loopP(m,[[24,10],[-6,10.3],[-6,10.3]],14+k*4,k*.5,.3))}
  function labelsPolice(){PS.cops.forEach((m,k)=>staffTag(m,'police','Police Officer',k,4.4));staffTag(PS.desk,'police','Detective',0,4.6);
   const cs=CASES.find(c=>!c.verdict);if(cs&&PS.cell.visible)tag(-20,4.4,-6.5,`IN CUSTODY: ${cs.thief}`,'rgba(217,58,47,.95)','#fff');
-  if(crime)pill(`🚨 LIVE CHASE: ${crime.thief} in ${crime.car.plate}`,hud.width/2,150,26,'rgba(217,58,47,.95)','#fff')
+  if(crime)pill(`🚨 LIVE CHASE: ${crime.thief} in ${crime.car.plate}`,HUDW/2,150,26,'rgba(217,58,47,.95)','#fff')
   header('INSIDE THE POLICE STATION')}
 

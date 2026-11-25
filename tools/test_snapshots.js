@@ -15,6 +15,7 @@
  *          --out DIR  --pages list  --interiors all|none|a,b  --views all|none|a,b  --only base|cand
  *          --query 'lod=cars:250' (appended to every page URL)  --frames N (simulation frames before the shots, default 8)
  *          --state FILE (state.json served to both sides, default: the candidate's)
+ *          --mergenow N (after the simulation frames: N more frames, then merge the static meshes now; same frames with ?merge=0)
  *          --night (shots at night)  --sheet NAME (only capture and write NAME.png, a grid of the city views)
  *          --verbose  --batch N (interiors per page load, default 6)  --w 1000 --h 700  --three FILE --addons DIR
  * Needs a local copy of three r169 (the CDN is routed to it): --three .../three.module.js, --addons .../examples/jsm
@@ -197,6 +198,7 @@ async function runSide(side, dir) {
           log(`[${side}] ${pg}: 3D ready in ${(tR3 / 1000).toFixed(1)}s`);
           await pump(p, +(opt.frames || 8)); // simulated time, same on both sides
           if (opt.night) await p.evaluate(() => {if (window.__LIGHT) window.__LIGHT('noite')});
+          if (opt.mergenow) log('  merge', JSON.stringify(await p.evaluate(n => window.__R3().mergeNow ? window.__R3().mergeNow(n) : 'no hook', +opt.mergenow)));
           await waitIdle(p);
           if (pg === 'rec') res[pg + '_hooks'] = await p.evaluate(() => ({H: !!window.__H, R3: !!window.__R3, PEDH: !!window.__PEDH, XMS: !!window.__XMS}));
           for (const name of list) {

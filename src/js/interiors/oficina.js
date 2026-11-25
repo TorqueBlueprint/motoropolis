@@ -93,5 +93,5 @@
   const s=toHud(-23,4.6,-8.5);if(s)pill('1 BOLT = 1 SUBSCRIBER',s.x,s.y,sz*.85,'rgba(16,19,24,.85)','#ffd34d');
   hctx.globalAlpha=1;
   // header
-  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE TORQUEBLUEPRINT REPAIR SHOP',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,hud.width/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,hud.width/2,89);
+  hctx.font="800 30px 'Barlow Condensed', sans-serif";const t='INSIDE THE TORQUEBLUEPRINT REPAIR SHOP',w=hctx.measureText(t).width+44;hctx.fillStyle='rgba(16,19,24,.86)';rrect(hctx,HUDW/2-w/2,64,w,48,10);hctx.fill();hctx.fillStyle='#fff';hctx.fillText(t,HUDW/2,89);
  }

@@ -27,7 +27,7 @@
    for(let k=0;k<nb;k++){const u=rnd2(),y=1.2+u*6.4,r=3.1*(1-u*.88)+.05,a=rnd2()*Math.PI*2;list.push([Math.cos(a)*r,y,Math.sin(a)*r,1.1]);cs.push(PAL[k%PAL.length])}
    tBulbs=new T.InstancedMesh(bulbG,bulbA,nb);list.forEach((p,k)=>{o3.position.set(p[0],p[1],p[2]);o3.scale.setScalar(p[3]);o3.updateMatrix();tBulbs.setMatrixAt(k,o3.matrix);tBulbs.setColorAt(k,col.setHex(cs[k]))});tree.add(tBulbs)}
   // presents under the tree: one for every name on the Wall of Mechanics
-  const gifts=new T.Group();tree.add(gifts);let gSig='';XMS.giftPos=[];
+  const gifts=new T.Group();gifts.userData.mergeRoot=1;tree.userData.mergeRoot=1;tree.add(gifts);let gSig='';XMS.giftPos=[];
   const ribbon=M(0xffd34d);
   function buildGifts(){gifts.clear();XMS.giftPos=[];const names=WALL.slice(0,80);names.forEach((n,k)=>{const ring=k<14?0:k<34?1:2,per=[14,20,46][ring],idx=ring?k-(ring===1?14:34):k,a=idx/per*Math.PI*2+ring*.4,r=[3.9,5.2,6.5][ring];
     const s=.55+((k*37)%5)*.08,g=new T.Group();const b=new T.Mesh(BOX,M([0xd93a2f,0x2f6fd9,0x2e7d4f,0xf2a51a,0x8e44ad,0xffffff][k%6]));b.scale.set(s,s*.8,s);b.position.y=s*.4;b.castShadow=true;g.add(b);

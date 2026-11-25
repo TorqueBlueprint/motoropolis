@@ -81,7 +81,10 @@ xmas/city.js
 interiors/santa.js
 xmas/sleigh_snow.js
 view3d/city2_weather.js
+view3d/merge.js
+view3d/shadowfit.js
 view3d/frame.js
+view3d/geo_merge.js
 view3d/loader.js
 ui/view_controls.js
 core/main_loop.js

@@ -186,7 +186,7 @@ function drawNight(n){
 }
 let VW=CW,VH=CH;const HUDS=WORLD?CW/1920:1;
 let HUDSC=HUDS;const hudSc=(cw,ch)=>cw/ch<1.2?Math.min(HUDS,cw/1000):HUDS;
-function hudScaled(f){const cw=ctx.canvas.width,ch=ctx.canvas.height,sc=hudSc(cw,ch);if(sc===1){VW=cw;VH=ch;try{f()}finally{VW=CW;VH=CH}return}ctx.save();ctx.scale(sc,sc);VW=cw/sc;VH=ch/sc;try{f()}finally{ctx.restore();VW=CW;VH=CH}}
+function hudScaled(f){const cw=ctx===hctx?HUDW:ctx.canvas.width,ch=ctx===hctx?HUDH:ctx.canvas.height,sc=hudSc(cw,ch);if(sc===1){VW=cw;VH=ch;try{f()}finally{VW=CW;VH=CH}return}ctx.save();ctx.scale(sc,sc);VW=cw/sc;VH=ch/sc;try{f()}finally{ctx.restore();VW=CW;VH=CH}}
 function xmasLine(){const n=new Date(),y=n.getMonth()===0?n.getFullYear()-1:n.getFullYear(),d=Math.ceil((new Date(y,11,25)-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return d>1?`🎄 ${d} DAYS TO CHRISTMAS`:d===1?'🎄 CHRISTMAS EVE TOMORROW':d===0?'🎅 MERRY CHRISTMAS, MOTOROPOLIS!':'✨ HAPPY HOLIDAYS FROM MOTOROPOLIS'}
 function drawHUD(){
  const name=chan();

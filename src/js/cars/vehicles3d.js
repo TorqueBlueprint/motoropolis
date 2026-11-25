@@ -25,7 +25,7 @@
  const ring=new T.Mesh(new T.RingGeometry(2.3,2.6,40).rotateX(-Math.PI/2),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.9}));ring.visible=false;scene.add(ring);
  const inLot=(x,y)=>{for(const b of buildings)if(x>b.x0-1&&x<b.x1+1&&y>b.y0-1&&y<b.y1+1)return true;return false};
  function syncCars(dt){
-  const seen=new Set();
+  const seen=new Set();lodBegin();
   for(const c of cars){if(c.removed)continue;seen.add(c.id);let g=meshes.get(c.id);if(!g){g=carMesh(c);g.userData.y=inLot(c.x,c.y)?Y0:.02;scene.add(g);meshes.set(c.id,g)}
    g.visible=!c.hidden;if(!g.visible)continue;
    if(g.userData.lb){const on=Math.floor(simTime*6)%2===0;g.userData.lb[0].visible=!c.siren||on;g.userData.lb[1].visible=!c.siren||!on}
