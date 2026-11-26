@@ -2,6 +2,7 @@
 //@ closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt; //@ lines are dropped by tools/build.py
 // Redesign (option A): welcome screen with loading progress, the "next unlock" card over the city and "Find my name".
 // Never shows the subscriber count itself: only how many more are needed for the next unlock (like the boards in the city).
+const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
 {
  const REC=document.documentElement.dataset.rec==='1',BOT=!!navigator.webdriver,PERF=/\/perf\//.test(location.pathname);
  // ---- next unlock card (over the city) ----
@@ -30,7 +31,7 @@
  // keep the camera on the person for a while (they walk or drive); any drag on the city stops it
  setInterval(()=>{if(!follow||!R3||R3.mode()==='in')return;followT+=.05;const w=where(follow.n);if(!w||followT>45){follow=null;return}const p=posOf(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50);
  $('screen').addEventListener('pointerdown',e=>{if(!fd.contains(e.target)&&!nuCard.contains(e.target))follow=null});
- const openFinder=()=>{fd.hidden=false;fin.focus();render()};
+ const openFinder=()=>{if(UIX.only)UIX.only('finder');fd.hidden=false;fin.focus();render()};UIX.openFinder=openFinder;
  $('vFind').addEventListener('click',()=>{if(fd.hidden)openFinder();else fd.hidden=true});$('fdClose').addEventListener('click',()=>{fd.hidden=true});
  fin.addEventListener('input',render);fin.addEventListener('keydown',e=>{if(e.key==='Escape')fd.hidden=true});
  // ---- welcome screen ----
