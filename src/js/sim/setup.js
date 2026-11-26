@@ -5,7 +5,7 @@ const tows=[];let van=null;
 const race=[{t:0,sp:1,col:'#e8b931',num:7,laps:0},{t:.03,sp:1,col:'#2f6fd9',num:21,laps:0},{t:.06,sp:1,col:'#d93a2f',num:44,laps:0}];
 function setup(){
  setupPolice();
- if(REMAKE){const loop=[];for(let i=0;i<NX;i++)loop.push(nid(i,0));for(let j=1;j<NY;j++)loop.push(nid(NX-1,j));for(let i=NX-2;i>=0;i--)loop.push(nid(i,NY-1));for(let j=NY-2;j>0;j--)loop.push(nid(0,j));
+ if(REMAKE){const loop=CITY.busLoop.slice(); // Line 1 goes round the plaza ring (city_layout.json busLoop)
   for(let k=0;k<2;k++){const bu=newCar({kind:'bus',model:{n:'City bus · Line 1',len:66,wid:19,price:0,v:[62,68]},color:k?'#2f6fd9':'#ff7a1a'});bu.len=66;bu.wid=19;bu.vmax=64;bu.fuel=100;bu.health=100;bu.loop=loop;
    const i0=k?Math.floor(loop.length/2):0,a=loop[i0],b=loop[(i0+1)%loop.length],d=segDir(a,b);bu.from=a;bu.to=b;const p=lanePt(a,b,120);bu.x=p.x;bu.y=p.y;bu.ang=Math.atan2(d.dy,d.dx);bu.pts=[lanePt(a,b,d.len/2),stopPt(a,b)];bu.pts[0].cb=()=>{bu.arrestT=2.2};bu.state='road';bu.driver=null}
   {const rl=loop.slice().reverse();const gt=newCar({kind:'garbage',model:{n:'Garbage truck',len:62,wid:20,price:0,v:[50,56]},color:'#2e7d4f'});gt.len=62;gt.wid=20;gt.vmax=52;gt.fuel=100;gt.health=100;gt.loop=rl;

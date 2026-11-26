@@ -2,6 +2,7 @@
 # Moving a line changes the program: declarations must stay before their first top-level use.
 core/boot.js
 data/catalog.js
+roads/layout.js
 roads/graph.js
 buildings/layout.js
 sim/milestones.js

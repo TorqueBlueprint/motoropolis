@@ -1,8 +1,8 @@
 //@ view3d/camera.js
 //@ inside make3D(T,X): uses T (three), X (remake extras), scene, mat, box(), U(), LOT, cam, hctx.... Ordered partial: see src/manifest.txt; //@ lines are dropped by tools/build.py
  // ---------- camera ----------
- const cam=WORLD?{tx:180,tz:40,yaw:.5,pitch:.85,dist:700}:{tx:CX,tz:CZ-9,yaw:Math.PI-.3,pitch:.86,dist:235},home={...cam};let idle=0,dragging=false;
- const clampCam=()=>{if(mode==='in'){cam.pitch=clamp(cam.pitch,.12,1.2);cam.dist=clamp(cam.dist,10,62);cam.tx=clamp(cam.tx,-24,24);cam.tz=clamp(cam.tz,-10,8);return}cam.pitch=clamp(cam.pitch,.28,1.42);cam.dist=clamp(cam.dist,28,WORLD?1150:270);cam.tx=clamp(cam.tx,WORLD?-600:XS3[0]-10,WORLD?1000:XS3[NX-1]+10);cam.tz=clamp(cam.tz,WORLD?-500:YS3[0]-10,WORLD?720:YS3[NY-1]+10)};
+ const cam=WORLD?{tx:205,tz:70,yaw:.5,pitch:.85,dist:760}:{tx:CX,tz:CZ-9,yaw:Math.PI-.3,pitch:.86,dist:235},home={...cam};let idle=0,dragging=false;
+ const clampCam=()=>{if(mode==='in'){cam.pitch=clamp(cam.pitch,.12,1.2);cam.dist=clamp(cam.dist,10,62);cam.tx=clamp(cam.tx,-24,24);cam.tz=clamp(cam.tz,-10,8);return}cam.pitch=clamp(cam.pitch,.28,1.42);cam.dist=clamp(cam.dist,28,WORLD?1600:270);cam.tx=clamp(cam.tx,WORLD?CITY.bounds.x0:XS3[0]-10,WORLD?CITY.bounds.x1:XS3[NX-1]+10);cam.tz=clamp(cam.tz,WORLD?CITY.bounds.z0:YS3[0]-10,WORLD?CITY.bounds.z1:YS3[NY-1]+10)};
  function placeCam(){const cp=Math.cos(cam.pitch);const ly=mode==='in'?3:(cam.ty||0);camera.position.set(cam.tx+Math.sin(cam.yaw)*cp*cam.dist,ly+Math.sin(cam.pitch)*cam.dist,cam.tz+Math.cos(cam.yaw)*cp*cam.dist);camera.lookAt(cam.tx,ly,cam.tz)}
  const ptrs=new Map();let down=null,pinch=null;
  function pan(dx,dy){const k=cam.dist/700;const sx=Math.cos(cam.yaw),sz=-Math.sin(cam.yaw);const fx=-Math.sin(cam.yaw),fz=-Math.cos(cam.yaw);cam.tx-=(dx*sx-dy*fx)*k;cam.tz-=(dx*sz-dy*fz)*k;clampCam()}

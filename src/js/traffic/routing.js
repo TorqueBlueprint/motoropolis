@@ -1,8 +1,8 @@
 //@ traffic/routing.js
 //@ closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt; //@ lines are dropped by tools/build.py
 // ---------- routing & driving ----------
-const axisOf=c=>nodes[c.from].y===nodes[c.to].y?'h':'v';
-function pathTo(c,goal){if(c.to===goal)return[];return bfs(c.to,c.from,goal)||[]}
+const axisOf=c=>nodes[c.to].ax[c.from]||'h';
+function pathTo(c,goal){if(c.to===goal)return[];return bfs(c.to,c.from,goal)||bfs(c.to,-1,goal)||[]} // dead ends (cul-de-sacs): turn round if there is no way on
 // route search over (node, came-from) states: never plans a U-turn in the middle of the road unless it is a dead end
 function routeNoU(c,ok){if(ok.here&&ok(c.to,c.from))return[];const key=(u,p)=>u*4096+p,k0=key(c.to,c.from),prev=new Map([[k0,-1]]),q=[[c.to,c.from]];
  while(q.length){const[u,p]=q.shift(),k=key(u,p);if(k!==k0&&ok(u,p)){const r=[];let w=k;while(w!==k0){r.unshift(Math.floor(w/4096));w=prev.get(w)}return r}
@@ -20,7 +20,8 @@ function planRoute(c){
 }
 function randomNext(c){
  const n=nodes[c.to],opts=n.nb.filter(v=>v!==c.from);if(!opts.length)return c.from;
- const d=segDir(c.from,c.to);const straight=opts.find(v=>{const e=segDir(c.to,v);return e.dx===d.dx&&e.dy===d.dy});
+ // prefer going straight on half of the time (the road whose start points most like our heading)
+ const t=edgeTan(c.to,c.from),hx=-t.x,hy=-t.y;let straight,bd=.7;for(const v of opts){const e=edgeTan(c.to,v),dd=e.x*hx+e.y*hy;if(dd>bd){bd=dd;straight=v}}
  if(straight!==undefined&&R()<.5)return straight;return pick(opts);
 }
 function freeSlot(Bd,c){const t=c.task;
@@ -32,8 +33,8 @@ function freeSlot(Bd,c){const t=c.task;
 function tryEnter(c,a,b){
  const Bd=c.task.b,s=freeSlot(Bd,c);
  if(!s){c.task.fails=(c.task.fails||0)+1;if(c.task.fails>(c.task.type==='svc'?0:3))giveUp(c);return false}
- s.car=c;c.slot=s;const d=segDir(a,b);
- const sp=(Bd.door.x-d.A.x)*d.dx+(Bd.door.y-d.A.y)*d.dy;
+ s.car=c;c.slot=s;
+ const sp=edgeS(a,b,Bd.door.x,Bd.door.y);
  const ap=approach(s);
  const lp=lanePt(a,b,sp-12);lp.cb=()=>{c.state='lot'};c.pts.push(lp,{x:Bd.door.x,y:Bd.door.y,cb:()=>{c.state='lot'}},ap,{x:s.x,y:s.y,cb:()=>arrive(c)});
  return true;
@@ -64,11 +65,11 @@ function atNode(c){
  c.pts.push(stopPt(a,b));
 }
 function gapAhead(c){
- const hx=Math.cos(c.ang),hy=Math.sin(c.ang);let gp=1e9;const sd=segDir(c.from,c.to),sc=(c.x-sd.A.x)*sd.dx+(c.y-sd.A.y)*sd.dy;
+ const hx=Math.cos(c.ang),hy=Math.sin(c.ang);let gp=1e9;
  for(const o of cars){
   if(o===c||o===c.towing||o.state==='lot'||o.state==='service'||o.state==='waitlift'||o.hidden||(c.task&&c.task.target===o))continue;
   // same directed road: measure along the road, so cars still finishing a turn see the queue in front of them
-  if(o.state==='road'&&o.from===c.from&&o.to===c.to){const so=(o.x-sd.A.x)*sd.dx+(o.y-sd.A.y)*sd.dy;if(so>sc&&so-sc<120){const gg=so-sc-(c.len+o.len)/2;if(gg<gp)gp=gg}continue}
+  if(o.state==='road'&&o.from===c.from&&o.to===c.to){const dx=o.x-c.x,dy=o.y-c.y,dd=Math.hypot(dx,dy);if(dd<120&&dx*hx+dy*hy>-4){const gg=dd-(c.len+o.len)/2;if(gg<gp)gp=gg}continue}
   const dx=o.x-c.x,dy=o.y-c.y,al=dx*hx+dy*hy;if(al<=0||al>90)continue;
   if(Math.abs(-dx*hy+dy*hx)<11){const gg=al-(c.len+o.len)/2;if(gg<gp)gp=gg}
  }

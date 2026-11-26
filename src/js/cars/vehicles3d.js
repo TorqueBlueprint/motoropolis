@@ -32,7 +32,7 @@
    const ty=c.state==='towed'?.55:(inLot(c.x,c.y)?Y0:.02);g.userData.y+=(ty-g.userData.y)*Math.min(1,dt*8);
    let sc=1;if(c.state==='service'&&c.slot&&c.slot.b.type==='sucata')sc=Math.max(.35,c.timer/3);
    let lift=0;if(c.state==='service'&&c.slot&&c.slot.b.type==='oficina'&&c.kind==='car'&&c.task&&c.task.type!=='parts'){const tot=c.svcTotal||6,el=tot-c.timer;lift=Math.min(1.4,el*.9,Math.max(0,c.timer)*.9)}
-   g.position.set(U(c.x),g.userData.y+lift,U(c.y));g.rotation.y=Math.PI/2-c.ang;g.scale.set(1,sc,1);
+   g.position.set(U(c.x),g.userData.y+lift+(WORLD?CITY.gy(U(c.x),U(c.y)):0),U(c.y));g.rotation.y=Math.PI/2-c.ang;g.scale.set(1,sc,1);
    if(c.state==='towed')g.rotation.x=-.08;else g.rotation.x=0;
    g.userData.tl.material=c.brake||c.state==='broken'?mat.tailOn:mat.tailOff;lodCar(g,c)}
   for(const[id,g]of meshes)if(!seen.has(id)){scene.remove(g);meshes.delete(id)}

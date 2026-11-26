@@ -44,9 +44,9 @@ function drawCar(c){
  ctx.restore();
 }
 function drawLights(night){
- for(const n of nodes){if(!n.light)continue;
-  for(const m of n.nb){const d=segDir(m,nid(n.i,n.j));const ax=d.dy===0?'h':'v';const st=lightState(n,ax);
-   const x=n.x-d.dx*(HALF+20)+d.rx*(HALF+5),y=n.y-d.dy*(HALF+20)+d.ry*(HALF+5);
+ for(const n of nodes){if(!n.light)continue;const ni=nodes.indexOf(n);
+  for(const m of n.nb){const st=lightState(n,n.ax[m]||'h');const sp=stopPt(m,ni),t=edgeTan(ni,m),e=EDGE(m,ni);
+   const x=sp.x-t.y*(e.w/2-e.lane+8),y=sp.y+t.x*(e.w/2-e.lane+8);
    ctx.fillStyle='#1b1d21';ctx.beginPath();ctx.arc(x,y,5.5,0,TAU);ctx.fill();
    ctx.fillStyle=st==='g'?'#38e07b':st==='y'?'#ffc21a':'#ff3b2f';ctx.beginPath();ctx.arc(x,y,3.6,0,TAU);ctx.fill();
    if(night>0){ctx.globalCompositeOperation='lighter';glow(x,y,14,st==='g'?'56,224,123':st==='y'?'255,194,26':'255,59,47',.5*night);ctx.globalCompositeOperation='source-over'}
@@ -167,6 +167,7 @@ function clockStr(){const h=clockH(),hh=Math.floor(h),mm=Math.floor((h-hh)*60/5)
 function drawNight(n){
  if(n<=0)return;
  ctx.fillStyle=`rgba(8,14,38,${.62*n})`;ctx.fillRect(0,0,CW,CH);
+ ctx.save();ctx.setTransform(V2.s,0,0,V2.s,V2.ox,V2.oy);
  ctx.globalCompositeOperation='lighter';
  for(const l of lamps)glow(l.x,l.y,46,'255,190,110',.28*n);
  for(const c of cars){
@@ -182,7 +183,7 @@ function drawNight(n){
  }
  for(const b of buildings){if(b.type==='pista')continue;glow(b.x0+b.w/2,b.y0+b.h/2,Math.max(b.w,b.h)*.55,'255,200,120',.12*n)}
  const Pi=B.pista;glow(Pi.x0+Pi.w/2,Pi.y0+Pi.h/2,160,'255,255,240',.18*n);
- ctx.globalCompositeOperation='source-over';
+ ctx.globalCompositeOperation='source-over';ctx.restore();
 }
 let VW=CW,VH=CH;const HUDS=WORLD?CW/1920:1;
 let HUDSC=HUDS;const hudSc=(cw,ch)=>cw/ch<1.2?Math.min(HUDS,cw/1000):HUDS;
@@ -244,22 +245,23 @@ function drawSelected(){
  
  ctx.fillStyle='#111';ctx.font="700 14px 'JetBrains Mono', monospace";ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c.plate,x+w/2,y+h/2+1);
 }
+const inV2=f=>{ctx.save();ctx.setTransform(V2.s,0,0,V2.s,V2.ox,V2.oy);try{f()}finally{ctx.restore()}};
 function draw(){
  ctx.drawImage(bg,0,0);
- drawDynamicUnder();
+ const n=nightLevel();
+ inV2(()=>{drawDynamicUnder();
  const order=[...cars].sort((a,b)=>(a.state==='road'||a.state==='towed'?1:0)-(b.state==='road'||b.state==='towed'?1:0));
  for(const c of order)drawCar(c);
  drawDynamicOver();
  drawPeople();
- drawLocked();
- const n=nightLevel();
+ drawLocked()});
  drawAmbient(n);
  drawNight(n);
- drawLights(n);
+ inV2(()=>{drawLights(n);
  drawParticles();
  drawPeopleNames();
  drawNewCars();
- drawSelected();
+ drawSelected()});
  if(showHud&&!trailer)hudScaled(drawHUD);
  if(!trailer)hudScaled(drawCeleb);
 }
