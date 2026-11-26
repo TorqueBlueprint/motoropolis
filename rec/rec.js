@@ -53,9 +53,10 @@
     }
   }
   // camera for a shot: {cam:{from:{tx,tz,yaw,pitch,dist,fov},to:{...},ease:true}} or {follow:{glb,phi,pitch,dist,sweep}}
+  // or {follow:{mayor:true,phi,pitch,dist,sweep,at}}: Mayor TorqueBlueprint (window.__MAYOR, world/mayor.js); at = seconds into his loop at the shot start
   function camAt(S, t, st) {
     const u = S.dur ? t / S.dur : 0;
-    if (S.follow && st.id != null) { const q = S.follow.ped ? window.__PEDH.pos(st.id) : window.__H.pos(st.id); if (q) { const f = S.follow; if (st.ya == null) st.ya = q.a; let da = q.a - st.ya; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI; st.ya += da * .08; const ph = f.phi + (f.sweep || 0) * (u - .5); return { tx: q.x, tz: q.z, yaw: PI / 2 - (st.ya + ph), pitch: f.pitch || .3, dist: f.dist || 9.5, fov: f.fov || 50 } } }
+    if (S.follow && st.id != null) { const q = S.follow.mayor ? window.__MAYOR && window.__MAYOR.pos() : S.follow.ped ? window.__PEDH.pos(st.id) : window.__H.pos(st.id); if (q) { const f = S.follow; if (st.ya == null) st.ya = q.a; let da = q.a - st.ya; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI; st.ya += da * .08; const ph = f.phi + (f.sweep || 0) * (u - .5); return { tx: q.x, tz: q.z, ty: q.y || 0, yaw: PI / 2 - (st.ya + ph), pitch: f.pitch || .3, dist: f.dist || 9.5, fov: f.fov || 50 } } }
     if (S.xms && window.__XMS && window.__XMS[S.xms]) { const q = window.__XMS[S.xms](); if (q) { const x = q[0], z = q[1], y = S.xms === 'sleigh' ? (q[2] || 0) : 0, f = S.follow || {};
       if (st.px != null) { const dx = x - st.px, dz = z - st.pz; if (dx * dx + dz * dz > 1e-5) { const ry = Math.atan2(dx, dz); if (st.ry == null) st.ry = ry; let d = ry - st.ry; while (d > PI) d -= 2 * PI; while (d < -PI) d += 2 * PI; st.ry += d * .06 } } st.px = x; st.pz = z;
       const ph = (f.phi || 0) + (f.sweep || 0) * (u - .5); return { tx: x, tz: z, ty: y * (f.ty == null ? 1 : f.ty), yaw: (st.ry || 0) - ph, pitch: f.pitch || .3, dist: f.dist || 20, fov: f.fov || 50 } } }
@@ -96,7 +97,8 @@
       if (S.inside && R.mode() !== 'in') { R.enterIn(S.inside); st.textContent = 'Loading the inside…'; for (let q = 0; q < 150; q++) { H2.step(1 / 30); R.frame(1 / 30); await new Promise(z => setTimeout(z, 30)) } }
       if (!S.inside && R.mode() === 'in') { R.exitIn(); for (let q = 0; q < 40; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
       if (S.xms) { for (let q = 0; q < 3; q++) { H2.step(1 / FPS); camAt(S, 0, sst) } }
-      if (S.follow && S.follow.ped) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = window.__PEDH && window.__PEDH.pick(S.follow.ped, usedP); if (c != null) { sst.id = c; usedP.push(c) } else H2.step(2) } }
+      if (S.follow && S.follow.mayor) { if (window.__MAYOR) { if (S.follow.at != null) window.__MAYOR.seek(S.follow.at); sst.id = 0 } }
+      else if (S.follow && S.follow.ped) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = window.__PEDH && window.__PEDH.pick(S.follow.ped, usedP); if (c != null) { sst.id = c; usedP.push(c) } else H2.step(2) } }
       else if (S.follow) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = H2.pick(S.follow.glb, used); if (c) { sst.id = c.id; used.push(c.id) } else H2.step(2) } }
       for (let k = 0; k < n; k++, F++) {
         const due = t0 + F * 1000 / FPS; const now = performance.now(); if (enc) { if (enc.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 4)); else if (F % 30 === 0) await new Promise(r => setTimeout(r, 0)) } else if (now < due) await new Promise(r => setTimeout(r, due - now)); else if (now - due > 1000 / FPS) slow++;

@@ -75,6 +75,7 @@ world/city2_zones.js
 world/city2_detail.js
 world/city2_terrain.js
 world/city2_landmarks.js
+world/mayor.js
 world/world3d_end.js
 world/treeify.js
 view3d/resize.js
