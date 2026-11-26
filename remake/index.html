@@ -3749,7 +3749,10 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+1.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
-   instG(g,flat,mat.dash,BY,null,false);instG(g,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),PC,PCc);instG(g,bodyG,mat.carGlass,PG,null,false);
+   instG(g,flat,mat.dash,BY,null,false);
+   // parked cars: the city's own car models (the same licensed models as the traffic), boxes only if the models aren't there
+   if(AMBK.length){PC.forEach((q,i)=>{const m=AMBK[Math.floor(r2()*AMBK.length)],c=glbCar({len:m.len,color:m.taxi?'#f2b81d':PCc[i]},m.glb);c.scale.multiplyScalar(1.25);c.position.set(q.x,gh(q.x,q.z),q.z);c.rotation.y=q.ry;g.add(c)})}
+   else{instG(g,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),PC,PCc);instG(g,bodyG,mat.carGlass,PG,null,false)}
    // bus stops (line 2) on the avenues out of the plaza
    {const shM=M(0x2b3038,{metalness:.5,roughness:.4}),glM=M(0x9fc8e8,{roughness:.05,metalness:.3,transparent:true,opacity:.45}),o={};
     for(const[id,u]of[['west',.35],['east',.5],['south',.18],['se',.22],['north',.12]]){const r=CITY.roads.find(q=>q.id===id),rp=mkPath(r.P,false);atPath(rp,u*rp.len,r.w/2+2.6,o);if(CITY.roadD(o.x,o.z)<.8)continue;const b=new T.Group();b.position.set(o.x,gh(o.x,o.z),o.z);b.rotation.y=o.ry+Math.PI/2;
