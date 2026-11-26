@@ -279,6 +279,7 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 .fd-x{display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0;border-radius:10px}
 .fd-x:hover{color:#fff;background:rgba(140,190,255,.12)}
 .fd-x svg{width:22px;height:22px}
+.finder>*{flex-shrink:0}/* a short sheet scrolls instead of squashing the name field */
 .pn-sub{margin:0;font-size:14px;color:#cfdcf0}
 .pn-link{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;box-sizing:border-box;padding:8px 12px;border:1.5px dashed rgba(140,190,255,.55);border-radius:12px;background:transparent;color:#fff;font:700 16px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase;text-align:left;white-space:normal}
 .pn-link:hover{border-color:var(--accent);background:rgba(255,122,26,.08)}
@@ -328,6 +329,7 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
  .viewbar #vFind,.viewbar #vUnlocks{display:none}
  .screen.fsfake .viewbar #vFind,.screen:fullscreen .viewbar #vFind,.screen.fsfake .viewbar #vUnlocks,.screen:fullscreen .viewbar #vUnlocks{display:inline-block}
  .finder.pn{max-height:86%}
+ .np-card .card-b{max-height:440px;overflow:auto;overscroll-behavior:contain}
  .cards{gap:8px}
  .card-b{padding:12px}
  .stats{gap:10px 12px}

@@ -282,6 +282,7 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 .fd-x{display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0;border-radius:10px}
 .fd-x:hover{color:#fff;background:rgba(140,190,255,.12)}
 .fd-x svg{width:22px;height:22px}
+.finder>*{flex-shrink:0}/* a short sheet scrolls instead of squashing the name field */
 .pn-sub{margin:0;font-size:14px;color:#cfdcf0}
 .pn-link{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;box-sizing:border-box;padding:8px 12px;border:1.5px dashed rgba(140,190,255,.55);border-radius:12px;background:transparent;color:#fff;font:700 16px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase;text-align:left;white-space:normal}
 .pn-link:hover{border-color:var(--accent);background:rgba(255,122,26,.08)}
@@ -331,6 +332,7 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
  .viewbar #vFind,.viewbar #vUnlocks{display:none}
  .screen.fsfake .viewbar #vFind,.screen:fullscreen .viewbar #vFind,.screen.fsfake .viewbar #vUnlocks,.screen:fullscreen .viewbar #vUnlocks{display:inline-block}
  .finder.pn{max-height:86%}
+ .np-card .card-b{max-height:440px;overflow:auto;overscroll-behavior:contain}
  .cards{gap:8px}
  .card-b{padding:12px}
  .stats{gap:10px 12px}
@@ -4629,6 +4631,8 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  const toCity=()=>{const r=scr.getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)scr.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})};
  function fillUnlocks(){ul.innerHTML=$('metas').innerHTML;const c=ul.querySelector('li.next .chip');if(c)c.textContent=c.textContent.replace(/ to go$/,' more to go')}
  function open(id){if(id==='finder'){UIX.openFinder();return}only(id);const el=PN[id];if(id==='unlocks')fillUnlocks();el.hidden=false;el.scrollTop=0;
+  // the open milestones come first: start the list at the next one
+  if(id==='unlocks'){const nx=ul.querySelector('li.next');if(nx)el.scrollTop=Math.max(0,nx.offsetTop-el.clientHeight*.4)}
   const x=el.querySelector('.fd-x');if(x)try{x.focus({preventScroll:true})}catch(e){}}
  const close=id=>{PN[id].hidden=true};
  const toggle=id=>{if(PN[id].hidden){if(phone())toCity();open(id)}else close(id)};

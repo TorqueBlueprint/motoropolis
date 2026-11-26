@@ -12,6 +12,8 @@
  const toCity=()=>{const r=scr.getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)scr.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})};
  function fillUnlocks(){ul.innerHTML=$('metas').innerHTML;const c=ul.querySelector('li.next .chip');if(c)c.textContent=c.textContent.replace(/ to go$/,' more to go')}
  function open(id){if(id==='finder'){UIX.openFinder();return}only(id);const el=PN[id];if(id==='unlocks')fillUnlocks();el.hidden=false;el.scrollTop=0;
+  // the open milestones come first: start the list at the next one
+  if(id==='unlocks'){const nx=ul.querySelector('li.next');if(nx)el.scrollTop=Math.max(0,nx.offsetTop-el.clientHeight*.4)}
   const x=el.querySelector('.fd-x');if(x)try{x.focus({preventScroll:true})}catch(e){}}
  const close=id=>{PN[id].hidden=true};
  const toggle=id=>{if(PN[id].hidden){if(phone())toCity();open(id)}else close(id)};
