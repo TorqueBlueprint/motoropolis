@@ -266,7 +266,7 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 .enter-btn{max-width:100%;white-space:normal;box-sizing:border-box}
 .welcome{background-color:rgba(8,22,46,.985)}
 .nu-left{font:700 13px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
-.wc-title{font-size:clamp(40px,13.4vw,72px)}
+.wc-title{font-size:clamp(36px,12vw,72px)}
 /* phones: the city first and tall, the intro text below it */
 @media (max-width:700px){
  .screen{aspect-ratio:auto;height:68vh;height:68svh;order:-1}
@@ -274,6 +274,8 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
  .nu-name{font-size:16px}
  .nu-left{font-size:11.5px}
 }
+/* computers: keep the view buttons' row free */
+@media (min-width:701px){.nu-card{top:58px}.finder{top:58px;max-height:calc(100% - 120px)}}
 </style>
 <div id="app"><div class="app">
   <header class="hero">
@@ -1451,26 +1453,29 @@ function drawHUD(){
  const name=chan();
  ctx.save();ctx.textAlign='left';ctx.textBaseline='alphabetic';
  ctx.font="800 42px 'Barlow Condensed', sans-serif";const tw=Math.max(ctx.measureText(name).width,250);
- ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,18,tw+52,92,10);ctx.fill();ctx.fillStyle='#ff7a1a';ctx.fillRect(22,18,7,92);
+ // the redesigned page (ui/welcome.js) shows the next unlock as a card over the city, and never the subscriber count
+ const NEWUI=!!document.getElementById('nuCard');
+ if(!NEWUI){ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,18,tw+52,92,10);ctx.fill();ctx.fillStyle='#ff7a1a';ctx.fillRect(22,18,7,92);
  ctx.fillStyle='#fff';ctx.fillText(name,44,62);
- ctx.font="600 19px 'Barlow', sans-serif";ctx.fillStyle='#ffb36b';ctx.fillText(`MOTOROPOLIS · ${clockStr()} · DAY ${Math.floor((70+simTime)/240)+1}`,44,92);
+ ctx.font="600 19px 'Barlow', sans-serif";ctx.fillStyle='#ffb36b';ctx.fillText(`MOTOROPOLIS · ${clockStr()} · DAY ${Math.floor((70+simTime)/240)+1}`,44,92)}
  // next milestone
  const nm=nextMilestone(),sv=subs||0;
- ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,118,470,74,10);ctx.fill();
+ if(!NEWUI){ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,118,470,74,10);ctx.fill()}
  if(XMAS){const t=xmasLine(),cy=VW<1300?296:200;ctx.font="800 22px 'Barlow Condensed', sans-serif";const w=ctx.measureText(t).width+40;ctx.fillStyle='rgba(179,38,30,.92)';rrect(ctx,22,cy,w,40,10);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='left';ctx.fillText(t,42,cy+28)}
  ctx.textAlign='left';
- if(nm){
+ if(NEWUI){}else if(nm){
   const prevN=[...ALL_MS].reverse().find(m=>m.n<=sv);const base=prevN?prevN.n:0;const pr=clamp((sv-base)/Math.max(1,nm.n-base),0,1);
   ctx.font="700 14px 'Barlow', sans-serif";ctx.fillStyle='#9aa3ae';ctx.fillText(`NEXT MILESTONE · ${nm.n.toLocaleString('en-US')} SUBSCRIBERS`,40,142);
   ctx.font="800 24px 'Barlow Condensed', sans-serif";ctx.fillStyle='#fff';const left=nm.n-sv;ctx.fillText(`${nm.label.toUpperCase()} · ${left.toLocaleString('en-US')} TO GO`,40,168);
   ctx.fillStyle='#262b34';rrect(ctx,40,176,434,8,4);ctx.fill();ctx.fillStyle='#ff7a1a';rrect(ctx,40,176,Math.max(8,434*pr),8,4);ctx.fill();
  }else{ctx.font="800 26px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.fillText('ALL MILESTONES REACHED!',40,163)}
- const chips=[['SUBSCRIBERS',sv.toLocaleString('en-US'),true],['ON THE ROAD',String(cars.filter(c=>c.state==='road'&&c.kind==='car').length)],['REPAIRS',String(stats.repairs)],['REVENUE',eur(stats.money)]];
+ const chips=[...(NEWUI?[]:[['SUBSCRIBERS',sv.toLocaleString('en-US'),true]]),['ON THE ROAD',String(cars.filter(c=>c.state==='road'&&c.kind==='car').length)],['REPAIRS',String(stats.repairs)],['REVENUE',eur(stats.money)]];
  const NARROW=VW<1300,chY=NARROW?205:18;let x=VW-22;ctx.textAlign='right';let subsX=0,subsW=0;
  for(let k=chips.length-1;k>=0;k--){const[l,v,hl]=chips[k];ctx.font=`700 ${hl?38:30}px 'Barlow Condensed', sans-serif`;const w=Math.max(ctx.measureText(v).width,hl?120:90)+28;x-=w;
   ctx.fillStyle=hl?'#ff7a1a':'rgba(16,19,24,.86)';rrect(ctx,x,chY,w,70,8);ctx.fill();ctx.fillStyle=hl?'#1d0f02':'#fff';ctx.fillText(v,x+w-14,chY+(hl?60:56));ctx.font="600 13px 'Barlow', sans-serif";ctx.fillStyle=hl?'#3d1d04':'#9aa3ae';ctx.fillText(l,x+w-14,chY+20);
   if(hl){subsX=x;subsW=w}x-=10}
- if(sv>MAXCARS){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
+ if(NEWUI&&!subsW){subsX=x;subsW=120}
+ if(sv>MAXCARS&&!NEWUI){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
  if(subToast){const k=subToast.t/3;ctx.globalAlpha=1-k*k;ctx.font="800 34px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(16,19,24,.9)';const ty=118+k*40;ctx.strokeText(subToast.text,subsX+subsW/2,ty);ctx.fillText(subToast.text,subsX+subsW/2,ty);ctx.globalAlpha=1}
  // call to action
  ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;

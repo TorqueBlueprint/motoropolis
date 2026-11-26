@@ -263,7 +263,7 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 .enter-btn{max-width:100%;white-space:normal;box-sizing:border-box}
 .welcome{background-color:rgba(8,22,46,.985)}
 .nu-left{font:700 13px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
-.wc-title{font-size:clamp(40px,13.4vw,72px)}
+.wc-title{font-size:clamp(36px,12vw,72px)}
 /* phones: the city first and tall, the intro text below it */
 @media (max-width:700px){
  .screen{aspect-ratio:auto;height:68vh;height:68svh;order:-1}
@@ -271,3 +271,5 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
  .nu-name{font-size:16px}
  .nu-left{font-size:11.5px}
 }
+/* computers: keep the view buttons' row free */
+@media (min-width:701px){.nu-card{top:58px}.finder{top:58px;max-height:calc(100% - 120px)}}
