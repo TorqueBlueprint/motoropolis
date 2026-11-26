@@ -11,7 +11,7 @@ const SWK=(()=>{let sd=97531;const r=()=>{sd=(sd*16807)%2147483647;return sd/214
  const town=(x,z)=>CITY.districts.some(d=>d.id!=='farms'&&Math.hypot(x-d.x,z-d.z)<d.r+40)||Math.hypot(x-P0.x,z-P0.z)<330;
  const E=[];CITY.edges.forEach(e=>{if(e.amb||e.k==='hwy'||e.len<12)return;const m=e.P[Math.floor(e.P.length/2)];if(!town(m[0],m[1]))return;
   const L=[0];for(let k=1;k<e.P.length;k++)L.push(L[k-1]+Math.hypot(e.P[k][0]-e.P[k-1][0],e.P[k][1]-e.P[k-1][1]));
-  const trim=n=>CITY.nodes[n].round?CITY.nodes[n].round+9:CITY.nodes[n].edges.length>2?e.w/2+3.5:CITY.nodes[n].edges.length===1?0:1;
+  const trim=n=>CITY.nodes[n].round?CITY.nodes[n].round+11:CITY.nodes[n].edges.length>2?e.w/2+3.5:CITY.nodes[n].edges.length===1?0:1;
   E.push({e,L,len:L[L.length-1],t0:trim(e.a),t1:trim(e.b),off:e.w/2+(e.k==='lane'?.7:1.1),wt:1/(1+Math.hypot(m[0]-P0.x,m[1]-P0.z)/120)})});
  const by=new Map();E.forEach((q,k)=>{for(const n of[q.e.a,q.e.b]){if(!by.has(n))by.set(n,[]);by.get(n).push(k)}});
  const tot=E.reduce((a,q)=>a+q.wt,0);
@@ -21,14 +21,20 @@ const SWK=(()=>{let sd=97531;const r=()=>{sd=(sd*16807)%2147483647;return sd/214
   return{x:(a[0]+(b[0]-a[0])*t-tz*q.off*side)*10,y:(a[1]+(b[1]-a[1])*t+tx*q.off*side)*10,tx,tz}};
  return{r,E,by,pickE,at}})();
 function wkStart(p){const W=SWK,k=W.pickE(),q=W.E[k];p.wk={k,dir:W.r()<.5?1:-1,side:W.r()<.5?1:-1,s:q.t0+W.r()*Math.max(0,q.len-q.t0-q.t1),cross:null}}
-function wkPos(p){const w=p.wk,W=SWK;if(w.cross){const c=w.cross,t=Math.min(1,c.t/c.len);return{x:c.x0+(c.x1-c.x0)*t,y:c.y0+(c.y1-c.y0)*t,ang:Math.atan2(c.y1-c.y0,c.x1-c.x0)}}
+function wkPos(p){const w=p.wk,W=SWK;if(w.cross){const c=w.cross,t=Math.min(1,c.t/c.len);
+ if(c.arc){const a=c.a0+c.da*t,r=c.r0+(c.r1-c.r0)*t;return{x:c.cx+Math.cos(a)*r,y:c.cy+Math.sin(a)*r,ang:a+(c.da>0?Math.PI/2:-Math.PI/2)}}
+ return{x:c.x0+(c.x1-c.x0)*t,y:c.y0+(c.y1-c.y0)*t,ang:Math.atan2(c.y1-c.y0,c.x1-c.x0)}}
  const q=W.at(w.k,w.s,w.side);return{x:q.x,y:q.y,ang:Math.atan2(q.tz*w.dir,q.tx*w.dir)}}
 function wkStep(p,d){const w=p.wk,W=SWK;if(w.cross){w.cross.t+=d;if(w.cross.t>=w.cross.len)w.cross=null;return}
  const q=W.E[w.k];w.s+=d*w.dir;const end=w.dir>0?q.len-q.t1:q.t0;if(w.dir>0?w.s<end:w.s>end)return;
  // end of the block: carry on along another street of this junction (back the same way only at a dead end)
  const node=w.dir>0?q.e.b:q.e.a,here=W.at(w.k,end,w.side);let opts=(W.by.get(node)||[]).filter(k=>k!==w.k);if(!opts.length)opts=[w.k];
  const k2=opts[Math.floor(W.r()*opts.length)],q2=W.E[k2],dir2=q2.e.a===node?1:-1,rel=w.side*w.dir,keep=W.r()<.7?rel:-rel,side2=keep*dir2,s2=dir2>0?q2.t0:q2.len-q2.t1;
- const there=W.at(k2,s2,side2);w.k=k2;w.dir=dir2;w.side=side2;w.s=s2;const len=Math.hypot(there.x-here.x,there.y-here.y)/10;if(len>.3)w.cross={x0:here.x,y0:here.y,x1:there.x,y1:there.y,t:0,len}}
+ const there=W.at(k2,s2,side2);w.k=k2;w.dir=dir2;w.side=side2;w.s=s2;// at the roundabout walk round the outside of the ring (an arc on the plaza paving), never across it
+ const nd=CITY.nodes[node];if(nd.round){const cx=nd.x*10,cy=nd.z*10,a0=Math.atan2(here.y-cy,here.x-cx),r0=Math.hypot(here.x-cx,here.y-cy),r1=Math.hypot(there.x-cx,there.y-cy);
+  let da=Math.atan2(there.y-cy,there.x-cx)-a0;while(da>Math.PI)da-=2*Math.PI;while(da<=-Math.PI)da+=2*Math.PI;
+  const len=Math.abs(da)*(r0+r1)/20;if(len>.3)w.cross={arc:true,cx,cy,a0,da,r0,r1,t:0,len};return}
+ const len=Math.hypot(there.x-here.x,there.y-here.y)/10;if(len>.3)w.cross={x0:here.x,y0:here.y,x1:there.x,y1:there.y,t:0,len}}
 function pedPos(p){if(p.wk){const q=wkPos(p);p.h=CITY.gy(q.x/10,q.y/10)+(buildings.some(b=>inLotB(b,q.x,q.y,14))?.3:.02);return q}p.h=null;const r=p.loop,w=r.x1-r.x0,h=r.y1-r.y0,P=2*(w+h);let s=((p.s%P)+P)%P;
  if(s<w)return{x:r.x0+s,y:r.y0,ang:0};s-=w;if(s<h)return{x:r.x1,y:r.y0+s,ang:Math.PI/2};s-=h;if(s<w)return{x:r.x1-s,y:r.y1,ang:Math.PI};s-=w;return{x:r.x0,y:r.y1-s,ang:-Math.PI/2}}
 function mkPed(name,k){
