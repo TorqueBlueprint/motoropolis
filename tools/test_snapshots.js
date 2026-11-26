@@ -55,9 +55,17 @@ const VIEWS = {
   xmasStreet: {tx: 60, tz: 100, yaw: .3, pitch: .45, dist: 90},
   far: {tx: 180, tz: 60, yaw: 2.6, pitch: .32, dist: 620},        // skyline / landmarks from far
   junction: {tx: 53, tz: 40, yaw: .8, pitch: .5, dist: 38},       // a signalled junction close up
+  // Phase 1B organic layout (metres, src/data/world/city_layout.json): the whole map from above and the districts
+  top: {tx: 300, tz: -10, yaw: 0, pitch: 1.553, dist: 2150},       // top-down, north up
+  overview34: {tx: 210, tz: 30, yaw: .5, pitch: .72, dist: 1150},  // 3/4 view of the whole city
+  plaza: {tx: 180, tz: 80, yaw: .6, pitch: .72, dist: 250},        // the round plaza and the roundabout
+  harbour: {tx: -165, tz: -75, yaw: -.9, pitch: .6, dist: 250},    // old town, quay and bay
+  hills: {tx: 690, tz: -370, yaw: .4, pitch: .55, dist: 380},      // winding road, villas, TV tower
+  suburbs: {tx: 640, tz: 250, yaw: .3, pitch: .7, dist: 330},      // loops and cul-de-sacs
+  industry: {tx: 170, tz: 420, yaw: .25, pitch: .65, dist: 420},   // industrial zone and the dragway
 };
 const pick = (v, all) => v === undefined || v === 'all' ? all : v === 'none' ? [] : String(v).split(',');
-const VIEW_LIST = pick(opt.views, Object.keys(VIEWS));
+const VIEW_LIST = pick(opt.views, Object.keys(VIEWS).filter(k => !['top', 'overview34', 'plaza', 'harbour', 'hills', 'suburbs', 'industry'].includes(k)));
 const INT_LIST = pick(opt.interiors, INTERIORS);
 
 // ---------- deterministic page environment (installed before any page script) ----------
