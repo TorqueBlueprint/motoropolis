@@ -180,3 +180,96 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
 .v-msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;padding:10px 14px;border-radius:8px;background:rgba(16,19,24,.9);color:var(--fg);font:600 14px var(--body);z-index:2;text-align:center}
 .viewbar .sm{display:none}
 @media (max-width:640px){.viewbar{top:auto;bottom:4px;gap:4px}.viewbar button{padding:4px 8px;font-size:11px}.viewbar .lg{display:none}.viewbar .sm{display:inline}}
+
+/* ===== Redesign, option A "Blueprint" (approved 2026-11-26): navy blueprint palette, welcome screen, next-unlock card, Find my name ===== */
+:root{
+  --bg:#0b1d3a;
+  --surface:#10284d;
+  --surface-2:#173462;
+  --line:#2b4b7c;
+  --fg:#ffffff;
+  --muted:#b8cdea;
+  --accent:#ff7a1a;
+  --gold:#ffd34d;
+  --navy:#0a1e3e;
+}
+html,body{background-color:var(--bg)}
+body{background-image:linear-gradient(rgba(140,190,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(140,190,255,.06) 1px,transparent 1px);background-size:24px 24px}
+body.wc-lock{overflow:hidden}
+.card{background:var(--surface);border-color:var(--line)}
+h2{font-family:var(--display);letter-spacing:.04em}
+.kicker{color:var(--accent)}
+.nu-kick{margin:0;font:700 13px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.screen{border-color:var(--line)}
+.viewbar .find-btn{background:var(--accent);color:#1a1205;border-color:var(--accent);font-weight:700}
+/* next unlock card, top left of the city */
+.nu-card{position:absolute;left:12px;top:12px;z-index:4;width:min(320px,calc(100% - 24px));box-sizing:border-box;background:rgba(10,30,62,.9);border:1px solid rgba(140,190,255,.35);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.nu-top{display:flex;justify-content:space-between;gap:10px;font:700 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nu-top b{color:var(--gold);text-align:right}
+.nu-name{font:800 22px/1.05 var(--display);letter-spacing:.02em;text-transform:uppercase;color:#fff}
+.nu-bar{height:6px;border-radius:3px;background:rgba(140,190,255,.2);overflow:hidden}
+.nu-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px}
+/* Find my name */
+.finder{position:absolute;right:12px;top:12px;z-index:6;width:min(360px,calc(100% - 24px));box-sizing:border-box;max-height:calc(100% - 70px);overflow:auto;background:#0d2650;border:1px solid rgba(140,190,255,.4);border-radius:16px;padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.finder[hidden]{display:none}
+.fd-head{display:flex;justify-content:space-between;align-items:center}
+.fd-head h2{margin:0;font:800 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase}
+.fd-x{width:44px;height:44px;border:0;background:transparent;color:var(--muted);font-size:18px}
+.finder label{font-size:13px;color:var(--muted)}
+.finder input{height:46px;box-sizing:border-box;border:0;border-radius:12px;padding:0 14px;font:500 16px var(--body);color:#10213d;background:#fff}
+.finder input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fd-list li{display:flex;align-items:center;gap:10px;background:rgba(140,190,255,.10);border:1px solid rgba(140,190,255,.25);border-radius:12px;padding:8px 10px}
+.fd-list li.fd-none{color:var(--muted);font-size:14px}
+.fd-av{flex:0 0 38px;height:38px;border-radius:19px;background:var(--accent);color:#1a1205;display:flex;align-items:center;justify-content:center;font:800 16px var(--display)}
+.fd-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.fd-tx b{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fd-tx small{font-size:12.5px;color:var(--muted)}
+.fd-go{flex:0 0 auto;min-height:44px;border:0;border-radius:10px;background:var(--accent);color:#1a1205;font:800 15px var(--display);letter-spacing:.04em;text-transform:uppercase;padding:0 12px}
+.fd-help{margin:2px 0 0;font-size:13px;color:#cfdcf0}
+.fd-help b{color:var(--gold)}
+/* welcome screen */
+.welcome{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background-color:rgba(8,22,46,.94);background-image:linear-gradient(rgba(140,190,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(140,190,255,.10) 1px,transparent 1px);background-size:24px 24px;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+.welcome[hidden]{display:none}
+.wc-box{width:min(440px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:18px;color:#fff}
+.wc-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wc-brand{font:700 15px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:#ff8a33}
+.wc-tag{font:600 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(184,205,234,.5);border-radius:4px;padding:3px 7px}
+.wc-title{margin:24px 0 0;font:800 clamp(52px,16vw,72px)/.92 var(--display);letter-spacing:.01em;text-transform:uppercase}
+.wc-title span{color:#ff8a33}
+.wc-lead{margin:0;font-size:17px;line-height:1.4;color:#cfdcf0}
+.wc-actions{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.wc-go{height:56px;border:0;border-radius:12px;background:var(--accent);color:#1a1205;font:800 22px/1 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.wc-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wc-find,.wc-sub{height:50px;box-sizing:border-box;border-radius:12px;display:flex;align-items:center;justify-content:center;font:700 18px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none}
+.wc-find{border:1.5px solid #8cbcff;background:transparent;color:#fff}
+.wc-sub{background:#e62e2e;color:#fff}
+.wc-load{background:rgba(8,24,50,.7);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.wc-lt{display:flex;justify-content:space-between;font:600 14px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.wc-lt b{color:#fff}
+.wc-bar{height:6px;border-radius:3px;background:rgba(140,190,255,.2);overflow:hidden}
+.wc-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .2s}
+.wc-load p{margin:0;font-size:13px;color:#cfdcf0}
+.wc-load p b{color:var(--gold)}
+/* phones: the finder becomes a bottom sheet, the card gets smaller */
+@media (max-width:700px){
+ .nu-card{left:8px;top:8px;width:min(250px,calc(100% - 16px));padding:8px 10px;gap:4px}
+ .nu-name{font-size:17px}
+ .finder{left:8px;right:8px;top:auto;bottom:8px;width:auto;max-height:70%;border-radius:18px 18px 12px 12px}
+}
+/* the recorder films the city only */
+html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welcome{display:none!important}
+/* the "step inside" button was wider than a phone (whole page became 566 px wide and zoomed out) */
+.enter-btn{max-width:100%;white-space:normal;box-sizing:border-box}
+.welcome{background-color:rgba(8,22,46,.985)}
+.nu-left{font:700 13px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.wc-title{font-size:clamp(36px,12vw,72px)}
+/* phones: the city first and tall, the intro text below it */
+@media (max-width:700px){
+ .screen{aspect-ratio:auto;height:68vh;height:68svh;order:-1}
+ .nu-card{width:min(220px,calc(100% - 16px))}
+ .nu-name{font-size:16px}
+ .nu-left{font-size:11.5px}
+}
+/* computers: keep the view buttons' row free */
+@media (min-width:701px){.nu-card{top:58px}.finder{top:58px;max-height:calc(100% - 120px)}}

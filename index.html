@@ -183,6 +183,99 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
 .v-msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;padding:10px 14px;border-radius:8px;background:rgba(16,19,24,.9);color:var(--fg);font:600 14px var(--body);z-index:2;text-align:center}
 .viewbar .sm{display:none}
 @media (max-width:640px){.viewbar{top:auto;bottom:4px;gap:4px}.viewbar button{padding:4px 8px;font-size:11px}.viewbar .lg{display:none}.viewbar .sm{display:inline}}
+
+/* ===== Redesign, option A "Blueprint" (approved 2026-11-26): navy blueprint palette, welcome screen, next-unlock card, Find my name ===== */
+:root{
+  --bg:#0b1d3a;
+  --surface:#10284d;
+  --surface-2:#173462;
+  --line:#2b4b7c;
+  --fg:#ffffff;
+  --muted:#b8cdea;
+  --accent:#ff7a1a;
+  --gold:#ffd34d;
+  --navy:#0a1e3e;
+}
+html,body{background-color:var(--bg)}
+body{background-image:linear-gradient(rgba(140,190,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(140,190,255,.06) 1px,transparent 1px);background-size:24px 24px}
+body.wc-lock{overflow:hidden}
+.card{background:var(--surface);border-color:var(--line)}
+h2{font-family:var(--display);letter-spacing:.04em}
+.kicker{color:var(--accent)}
+.nu-kick{margin:0;font:700 13px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.screen{border-color:var(--line)}
+.viewbar .find-btn{background:var(--accent);color:#1a1205;border-color:var(--accent);font-weight:700}
+/* next unlock card, top left of the city */
+.nu-card{position:absolute;left:12px;top:12px;z-index:4;width:min(320px,calc(100% - 24px));box-sizing:border-box;background:rgba(10,30,62,.9);border:1px solid rgba(140,190,255,.35);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.nu-top{display:flex;justify-content:space-between;gap:10px;font:700 12px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nu-top b{color:var(--gold);text-align:right}
+.nu-name{font:800 22px/1.05 var(--display);letter-spacing:.02em;text-transform:uppercase;color:#fff}
+.nu-bar{height:6px;border-radius:3px;background:rgba(140,190,255,.2);overflow:hidden}
+.nu-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px}
+/* Find my name */
+.finder{position:absolute;right:12px;top:12px;z-index:6;width:min(360px,calc(100% - 24px));box-sizing:border-box;max-height:calc(100% - 70px);overflow:auto;background:#0d2650;border:1px solid rgba(140,190,255,.4);border-radius:16px;padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.finder[hidden]{display:none}
+.fd-head{display:flex;justify-content:space-between;align-items:center}
+.fd-head h2{margin:0;font:800 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase}
+.fd-x{width:44px;height:44px;border:0;background:transparent;color:var(--muted);font-size:18px}
+.finder label{font-size:13px;color:var(--muted)}
+.finder input{height:46px;box-sizing:border-box;border:0;border-radius:12px;padding:0 14px;font:500 16px var(--body);color:#10213d;background:#fff}
+.finder input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.fd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fd-list li{display:flex;align-items:center;gap:10px;background:rgba(140,190,255,.10);border:1px solid rgba(140,190,255,.25);border-radius:12px;padding:8px 10px}
+.fd-list li.fd-none{color:var(--muted);font-size:14px}
+.fd-av{flex:0 0 38px;height:38px;border-radius:19px;background:var(--accent);color:#1a1205;display:flex;align-items:center;justify-content:center;font:800 16px var(--display)}
+.fd-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.fd-tx b{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fd-tx small{font-size:12.5px;color:var(--muted)}
+.fd-go{flex:0 0 auto;min-height:44px;border:0;border-radius:10px;background:var(--accent);color:#1a1205;font:800 15px var(--display);letter-spacing:.04em;text-transform:uppercase;padding:0 12px}
+.fd-help{margin:2px 0 0;font-size:13px;color:#cfdcf0}
+.fd-help b{color:var(--gold)}
+/* welcome screen */
+.welcome{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background-color:rgba(8,22,46,.94);background-image:linear-gradient(rgba(140,190,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(140,190,255,.10) 1px,transparent 1px);background-size:24px 24px;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+.welcome[hidden]{display:none}
+.wc-box{width:min(440px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:18px;color:#fff}
+.wc-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wc-brand{font:700 15px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:#ff8a33}
+.wc-tag{font:600 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border:1px solid rgba(184,205,234,.5);border-radius:4px;padding:3px 7px}
+.wc-title{margin:24px 0 0;font:800 clamp(52px,16vw,72px)/.92 var(--display);letter-spacing:.01em;text-transform:uppercase}
+.wc-title span{color:#ff8a33}
+.wc-lead{margin:0;font-size:17px;line-height:1.4;color:#cfdcf0}
+.wc-actions{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.wc-go{height:56px;border:0;border-radius:12px;background:var(--accent);color:#1a1205;font:800 22px/1 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.wc-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wc-find,.wc-sub{height:50px;box-sizing:border-box;border-radius:12px;display:flex;align-items:center;justify-content:center;font:700 18px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none}
+.wc-find{border:1.5px solid #8cbcff;background:transparent;color:#fff}
+.wc-sub{background:#e62e2e;color:#fff}
+.wc-load{background:rgba(8,24,50,.7);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.wc-lt{display:flex;justify-content:space-between;font:600 14px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.wc-lt b{color:#fff}
+.wc-bar{height:6px;border-radius:3px;background:rgba(140,190,255,.2);overflow:hidden}
+.wc-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .2s}
+.wc-load p{margin:0;font-size:13px;color:#cfdcf0}
+.wc-load p b{color:var(--gold)}
+/* phones: the finder becomes a bottom sheet, the card gets smaller */
+@media (max-width:700px){
+ .nu-card{left:8px;top:8px;width:min(250px,calc(100% - 16px));padding:8px 10px;gap:4px}
+ .nu-name{font-size:17px}
+ .finder{left:8px;right:8px;top:auto;bottom:8px;width:auto;max-height:70%;border-radius:18px 18px 12px 12px}
+}
+/* the recorder films the city only */
+html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welcome{display:none!important}
+/* the "step inside" button was wider than a phone (whole page became 566 px wide and zoomed out) */
+.enter-btn{max-width:100%;white-space:normal;box-sizing:border-box}
+.welcome{background-color:rgba(8,22,46,.985)}
+.nu-left{font:700 13px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.wc-title{font-size:clamp(36px,12vw,72px)}
+/* phones: the city first and tall, the intro text below it */
+@media (max-width:700px){
+ .screen{aspect-ratio:auto;height:68vh;height:68svh;order:-1}
+ .nu-card{width:min(220px,calc(100% - 16px))}
+ .nu-name{font-size:16px}
+ .nu-left{font-size:11.5px}
+}
+/* computers: keep the view buttons' row free */
+@media (min-width:701px){.nu-card{top:58px}.finder{top:58px;max-height:calc(100% - 120px)}}
 </style>
 <div id="app"><div class="app">
   <header class="hero">
@@ -192,7 +285,7 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
       <p class="tag">A city that runs on cars and grows with the channel. Every subscriber adds one car, and every milestone opens a new building: tow trucks, a gas station, a car wash, all the way to a fire station, an airport and a Grand Prix at 10,000.</p>
     </div>
     <div class="cta">
-      <div class="count"><span id="heroSubs">0</span><small>subscribers</small></div>
+      <div class="count" hidden=""><span id="heroSubs">0</span><small>subscribers</small></div>
       <a class="sub-btn" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener">Subscribe on YouTube</a>
       <div class="prog" aria-hidden="true"><i id="heroBar"></i></div>
       <p class="next" id="heroNext"></p>
@@ -210,8 +303,16 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
   </section>
   <div class="screen" id="screen">
     <canvas id="city" width="1920" height="1380" aria-label="Live map of the city of Motoropolis"></canvas>
-    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button><button type="button" id="vFull" aria-label="Full screen"><span class="lg" id="vFullT">⛶ Full screen</span><span class="sm" id="vFullS">⛶</span></button></div>
+    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vFind" class="find-btn"><span class="lg">Find my name</span><span class="sm">Find me</span></button><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button><button type="button" id="vFull" aria-label="Full screen"><span class="lg" id="vFullT">⛶ Full screen</span><span class="sm" id="vFullS">⛶</span></button></div>
     <p class="v-msg" id="vMsg" hidden="" aria-live="polite"></p>
+    <div class="nu-card" id="nuCard" hidden=""><div class="nu-top">Next unlock</div><div class="nu-name" id="nuName"></div><div class="nu-bar"><i id="nuBar"></i></div><b class="nu-left" id="nuLeft"></b></div>
+    <section class="finder" id="finder" hidden="" aria-labelledby="fdTitle">
+      <div class="fd-head"><h2 id="fdTitle">Find my name</h2><button type="button" class="fd-x" id="fdClose" aria-label="Close">✕</button></div>
+      <label for="fdIn">Your YouTube name</label>
+      <input id="fdIn" type="text" autocomplete="off" spellcheck="false" placeholder="Start typing your name…">
+      <ul class="fd-list" id="fdList"></ul>
+      <p class="fd-help" id="fdHelp">Not in the city yet? Comment <b>WORKSHOP</b> on any TorqueBlueprint video to move in and get a job.</p>
+    </section>
   </div>
   <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click any building to step inside it in 3D (locked ones show a blueprint preview).</p>
   <div class="news-tk" id="newsTicker" aria-label="Latest news from Motoropolis Daily"><b>MOTOROPOLIS DAILY</b><div class="tk-win"><div class="tk-run"></div></div></div>
@@ -224,7 +325,7 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
     <section class="card">
       <h2>City stats</h2>
       <dl class="stats">
-        <div class="hl"><dt>Subscribers</dt><dd id="stSubs">0</dd></div>
+        <div class="hl" hidden=""><dt>Subscribers</dt><dd id="stSubs">0</dd></div>
         <div><dt>Buildings open</dt><dd id="stOpen">1 of 12</dd></div>
         <div><dt>Cars on the road</dt><dd id="stRoad">0</dd></div>
         <div><dt>Shop revenue</dt><dd id="stMoney">$0</dd></div>
@@ -262,6 +363,18 @@ input[type=number][readonly]{color:var(--accent);border-style:dashed}
   </div>
   <p class="foot" id="updated"></p>
   <p class="foot credits">3D car models (Sketchfab), recoloured for Motoropolis: “Honda Civic Type R | Low Poly Stylized”, “Ferrari F599 | Low Poly Stylized”, “Corvette Stingray | Low Poly Stylized” and “Porsche Panamera | Low Poly Stylized” by <a href="https://sketchfab.com/ynesolefru" target="_blank" rel="noopener">kulonee</a> (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>); <a href="https://sketchfab.com/3d-models/bmw-m3-low-poly-stylized-d1a53b09c2d949b1a5e7062ada0b44ed" target="_blank" rel="noopener">“BMW M3 | Low-Poly Stylized”</a> by kulonee (<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, recoloured version shared under the same licence); <a href="https://sketchfab.com/3d-models/mercerdes-benz-190e-evo-low-poly-ba862eb3fa0a4fd3b0901992908ec5bd" target="_blank" rel="noopener">“Mercerdes-Benz 190e EVO Low Poly”</a> by <a href="https://sketchfab.com/DucNghia31" target="_blank" rel="noopener">DucNghia31</a> (CC BY 4.0); <a href="https://sketchfab.com/3d-models/generic-civil-service-vehicles-pack-8ff2a13f30914932a70c7950cfa58465" target="_blank" rel="noopener">“Generic civil service vehicles pack”</a> by <a href="https://sketchfab.com/comrade1280" target="_blank" rel="noopener">Comrade1280</a> (CC BY 4.0); <a href="https://sketchfab.com/3d-models/low-poly-man-casual-clothes-2-4a834adf1e33405c979e94555e7955c6" target="_blank" rel="noopener">“Low-poly Man Casual Clothes 2”</a> by <a href="https://sketchfab.com/razvansavescu" target="_blank" rel="noopener">Razvan Savescu</a> (CC BY 4.0, recoloured outfits); <a href="https://sketchfab.com/3d-models/ford-ranger-raptor-fffd6f07668a467095718c5e062348e2" target="_blank" rel="noopener">“Ford ranger raptor”</a> by <a href="https://sketchfab.com/haraldina" target="_blank" rel="noopener">haraldina</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/low-poly-car-bmw-e30-1985-white-9dea494b447e442fafbddfc7eccbf158" target="_blank" rel="noopener">“Low Poly Car - BMW E30 1985 White”</a> by <a href="https://sketchfab.com/tedpermana" target="_blank" rel="noopener">tedpermana</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/low-poly-car-bmw-e46-1998-d9bfd8126e754164b48ded833c017bbf" target="_blank" rel="noopener">“Low Poly Car - BMW E46 1998”</a> by <a href="https://sketchfab.com/roh3d" target="_blank" rel="noopener">ROH3D</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/rigged-car-mustang-1965-with-engine-3d-model-c2d4f0a6170d43f4a5a8303373ebb81a" target="_blank" rel="noopener">“Rigged Car Mustang 1965 With Engine 3d model”</a> by <a href="https://sketchfab.com/godspeedx14" target="_blank" rel="noopener">Godspeed</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/low-poly-audi-r8-21579cae38304f0985786cc4d7ca0516" target="_blank" rel="noopener">“Low Poly Audi R8”</a> by <a href="https://sketchfab.com/sharkycat109" target="_blank" rel="noopener">SharkyStudios</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/1998-toyota-supra-b9ee69e17af947c0bce1c54d34195187" target="_blank" rel="noopener">“1998 Toyota Supra”</a> by <a href="https://sketchfab.com/BHP3D" target="_blank" rel="noopener">BHP3D</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/nissan-skyline-r34-gtr-6835b16977154068a5adb5445cd74ce6" target="_blank" rel="noopener">“Nissan Skyline R34 GTR”</a> by <a href="https://sketchfab.com/Blueberry12" target="_blank" rel="noopener">Blue3D</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/2010-porsche-gt2-9971-65bdd3a111a84d2a8243a90c084b7652" target="_blank" rel="noopener">“2010 Porsche GT2 997.1”</a> by <a href="https://sketchfab.com/ilvskf" target="_blank" rel="noopener">ilvskf</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/subaru-brz-zd8-bcab5a68e83645cd83d48f1b5cf3923d" target="_blank" rel="noopener">“Subaru BRZ (ZD8)”</a> by <a href="https://sketchfab.com/ilvskf" target="_blank" rel="noopener">ilvskf</a> (CC BY 4.0, simplified and recoloured); <a href="https://sketchfab.com/3d-models/low-poly-trees-51cae4a194344e8bbfbd0a4cff205f76" target="_blank" rel="noopener">“Low poly trees”</a> by <a href="https://sketchfab.com/Adityakm" target="_blank" rel="noopener">Aditya Graphical</a> (CC BY 4.0); <a href="https://sketchfab.com/3d-models/traffic-light-19a176596eb94d5e832cd12083a1cd4c" target="_blank" rel="noopener">“Traffic Light”</a> by <a href="https://sketchfab.com/Badboy17Aiden" target="_blank" rel="noopener">Pieter Ferreira</a> (CC BY 4.0). Car names in the city are fictional and not affiliated with any brand.</p>
+  <div class="welcome" id="welcome" hidden="" role="dialog" aria-modal="true" aria-labelledby="wcTitle">
+    <div class="wc-box">
+      <div class="wc-top"><span class="wc-brand">Motoropolis · TorqueBlueprint</span><span class="wc-tag">Blueprint 01</span></div>
+      <h1 id="wcTitle" class="wc-title">Welcome to<br><span>Motoropolis</span></h1>
+      <p class="wc-lead">A 3D city that grows with the TorqueBlueprint channel. Every car, every worker, every name here is a real subscriber.</p>
+      <div class="wc-actions">
+        <button type="button" class="wc-go" id="wcGo">Explore the city</button>
+        <div class="wc-row"><button type="button" class="wc-find" id="wcFind">Find my name</button><a class="wc-sub" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener">Subscribe</a></div>
+      </div>
+      <div class="wc-load"><div class="wc-lt"><span id="wcLt">Loading the city…</span><b id="wcPct">0%</b></div><div class="wc-bar"><i id="wcBar"></i></div><p>Tip: comment <b>WORKSHOP</b> on any video to move in and get a job.</p></div>
+    </div>
+  </div>
   <div class="ws-overlay" id="wsOverlay" hidden="">
     <div class="ws-box" role="dialog" aria-modal="true" aria-labelledby="wsTitle">
       <button type="button" class="ws-close" id="wsClose" aria-label="Close the workshop">✕</button>
@@ -736,7 +849,9 @@ function stepCar(c,dt){
  if(c.state==='lot'){want=Math.min(want,50);if(tgt&&tgt.merge){for(const o of cars){if(o===c||o.hidden||o.state!=='road'&&!(o.state==='lot'&&o.id<c.id&&o.pts[0]&&o.pts[0].merge&&dist(o,o.pts[0])<40))continue;const dd=Math.hypot(o.x-tgt.x,o.y-tgt.y);if(dd<(c.len+o.len)/2+4||dd<(c.len+o.len)/2+16&&(c.mergeT=(c.mergeT||0)+dt)<20){const dm=dist(c,tgt);want=Math.min(want,Math.max(0,(dm-22)*2.5));break}}}}
  if(c.state==='broken')want=Math.min(want,30);
  if(c.state==='road'){
-  if(c.ghost<=0){const gp=gapAhead(c);if(gp<6)want=0;else if(gp<46)want=Math.min(want,(gp-6)*3)}
+  if(c.ghost<=0){const gp=gapAhead(c);if(gp<6)want=0;else if(gp<46)want=Math.min(want,(gp-6)*3)
+   // walkers crossing the road in front: brake and stop ~2.5 m short of them (people/walkers.js)
+   const pg=pedGap(c);c.pedStop=pg<25;if(pg<25)want=0;else if(pg<110)want=Math.min(want,(pg-25)*2.2)}
   if(!c.siren&&tgt&&tgt.stop&&c.pts.length===1){const N=nodes[c.to];const red=lightState(N,axisOf(c))!=='g';if(red||(!N.light&&!N.round&&N.nb.length>=3&&c.stopAt!==c.to&&EDGE(c.from,c.to).w<N.wmax-1)||N.round||N.loop){const d=dist(c,tgt);want=Math.min(want,Math.max(red?0:N.round||N.loop?28:8,(d-1)*2.6))}}
  }
  if(tgt&&tgt.rev)want=Math.min(want,28);
@@ -1340,26 +1455,29 @@ function drawHUD(){
  const name=chan();
  ctx.save();ctx.textAlign='left';ctx.textBaseline='alphabetic';
  ctx.font="800 42px 'Barlow Condensed', sans-serif";const tw=Math.max(ctx.measureText(name).width,250);
- ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,18,tw+52,92,10);ctx.fill();ctx.fillStyle='#ff7a1a';ctx.fillRect(22,18,7,92);
+ // the redesigned page (ui/welcome.js) shows the next unlock as a card over the city, and never the subscriber count
+ const NEWUI=!!document.getElementById('nuCard');
+ if(!NEWUI){ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,18,tw+52,92,10);ctx.fill();ctx.fillStyle='#ff7a1a';ctx.fillRect(22,18,7,92);
  ctx.fillStyle='#fff';ctx.fillText(name,44,62);
- ctx.font="600 19px 'Barlow', sans-serif";ctx.fillStyle='#ffb36b';ctx.fillText(`MOTOROPOLIS · ${clockStr()} · DAY ${Math.floor((70+simTime)/240)+1}`,44,92);
+ ctx.font="600 19px 'Barlow', sans-serif";ctx.fillStyle='#ffb36b';ctx.fillText(`MOTOROPOLIS · ${clockStr()} · DAY ${Math.floor((70+simTime)/240)+1}`,44,92)}
  // next milestone
  const nm=nextMilestone(),sv=subs||0;
- ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,118,470,74,10);ctx.fill();
+ if(!NEWUI){ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,118,470,74,10);ctx.fill()}
  if(XMAS){const t=xmasLine(),cy=VW<1300?296:200;ctx.font="800 22px 'Barlow Condensed', sans-serif";const w=ctx.measureText(t).width+40;ctx.fillStyle='rgba(179,38,30,.92)';rrect(ctx,22,cy,w,40,10);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='left';ctx.fillText(t,42,cy+28)}
  ctx.textAlign='left';
- if(nm){
+ if(NEWUI){}else if(nm){
   const prevN=[...ALL_MS].reverse().find(m=>m.n<=sv);const base=prevN?prevN.n:0;const pr=clamp((sv-base)/Math.max(1,nm.n-base),0,1);
   ctx.font="700 14px 'Barlow', sans-serif";ctx.fillStyle='#9aa3ae';ctx.fillText(`NEXT MILESTONE · ${nm.n.toLocaleString('en-US')} SUBSCRIBERS`,40,142);
   ctx.font="800 24px 'Barlow Condensed', sans-serif";ctx.fillStyle='#fff';const left=nm.n-sv;ctx.fillText(`${nm.label.toUpperCase()} · ${left.toLocaleString('en-US')} TO GO`,40,168);
   ctx.fillStyle='#262b34';rrect(ctx,40,176,434,8,4);ctx.fill();ctx.fillStyle='#ff7a1a';rrect(ctx,40,176,Math.max(8,434*pr),8,4);ctx.fill();
  }else{ctx.font="800 26px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.fillText('ALL MILESTONES REACHED!',40,163)}
- const chips=[['SUBSCRIBERS',sv.toLocaleString('en-US'),true],['ON THE ROAD',String(cars.filter(c=>c.state==='road'&&c.kind==='car').length)],['REPAIRS',String(stats.repairs)],['REVENUE',eur(stats.money)]];
+ const chips=[...(NEWUI?[]:[['SUBSCRIBERS',sv.toLocaleString('en-US'),true]]),['ON THE ROAD',String(cars.filter(c=>c.state==='road'&&c.kind==='car').length)],['REPAIRS',String(stats.repairs)],['REVENUE',eur(stats.money)]];
  const NARROW=VW<1300,chY=NARROW?205:18;let x=VW-22;ctx.textAlign='right';let subsX=0,subsW=0;
  for(let k=chips.length-1;k>=0;k--){const[l,v,hl]=chips[k];ctx.font=`700 ${hl?38:30}px 'Barlow Condensed', sans-serif`;const w=Math.max(ctx.measureText(v).width,hl?120:90)+28;x-=w;
   ctx.fillStyle=hl?'#ff7a1a':'rgba(16,19,24,.86)';rrect(ctx,x,chY,w,70,8);ctx.fill();ctx.fillStyle=hl?'#1d0f02':'#fff';ctx.fillText(v,x+w-14,chY+(hl?60:56));ctx.font="600 13px 'Barlow', sans-serif";ctx.fillStyle=hl?'#3d1d04':'#9aa3ae';ctx.fillText(l,x+w-14,chY+20);
   if(hl){subsX=x;subsW=w}x-=10}
- if(sv>MAXCARS){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
+ if(NEWUI&&!subsW){subsX=x;subsW=120}
+ if(sv>MAXCARS&&!NEWUI){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
  if(subToast){const k=subToast.t/3;ctx.globalAlpha=1-k*k;ctx.font="800 34px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(16,19,24,.9)';const ty=118+k*40;ctx.strokeText(subToast.text,subsX+subsW/2,ty);ctx.fillText(subToast.text,subsX+subsW/2,ty);ctx.globalAlpha=1}
  // call to action
  ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;
@@ -1843,7 +1961,7 @@ const SWK=(()=>{let sd=97531;const r=()=>{sd=(sd*16807)%2147483647;return sd/214
  const E=[];CITY.edges.forEach(e=>{if(e.amb||e.k==='hwy'||e.len<12)return;const m=e.P[Math.floor(e.P.length/2)];if(!town(m[0],m[1]))return;
   const L=[0];for(let k=1;k<e.P.length;k++)L.push(L[k-1]+Math.hypot(e.P[k][0]-e.P[k-1][0],e.P[k][1]-e.P[k-1][1]));
   const trim=n=>CITY.nodes[n].round?CITY.nodes[n].round+11:CITY.nodes[n].edges.length>2?e.w/2+3.5:CITY.nodes[n].edges.length===1?0:1;
-  E.push({e,L,len:L[L.length-1],t0:trim(e.a),t1:trim(e.b),off:e.w/2+(e.k==='lane'?.7:1.1),wt:1/(1+Math.hypot(m[0]-P0.x,m[1]-P0.z)/120)})});
+  E.push({e,L,len:L[L.length-1],t0:trim(e.a),t1:trim(e.b),off:e.w/2+(e.k==='lane'?.7:e.road==='west'?2.0:1.1)/* west: the shopping street has parked cars along the kerb (world/city2_roads.js), walk behind them */,wt:1/(1+Math.hypot(m[0]-P0.x,m[1]-P0.z)/120)})});
  const by=new Map();E.forEach((q,k)=>{for(const n of[q.e.a,q.e.b]){if(!by.has(n))by.set(n,[]);by.get(n).push(k)}});
  const tot=E.reduce((a,q)=>a+q.wt,0);
  const pickE=()=>{let u=r()*tot;for(let k=0;k<E.length;k++){u-=E[k].wt;if(u<=0)return k}return E.length-1};
@@ -1880,9 +1998,37 @@ const PARK_LOOP=(()=>{const b=B.park;return{x0:b.x0+26,y0:b.y0+26,x1:b.x1-26,y1:
 for(let k=0;k<9;k++){const p=mkPed(null,k+90);p.wk=null;p.loop={...PARK_LOOP};p.s=k*140;p.v=(k%3===0?rr(26,32):rr(8,12))*(k%2?-1:1);Object.assign(p,pedPos(p))}
 function parkRanger(){for(const q of peds){if(q.name&&jobOf(q.name)==='Homeless'&&(q.wk||q.loop.x0!==PARK_LOOP.x0)){q.wk=null;q.loop={...PARK_LOOP};q.v=rr(4,6)*(R()<.5?-1:1);q.col='#7a6a55';Object.assign(q,pedPos(q))}}
  const n=staffOf('park','Park Ranger',0);if(!n)return;const p=peds.find(q=>q.name===n);if(p&&(p.wk||p.loop.x0!==PARK_LOOP.x0)){p.wk=null;p.loop={...PARK_LOOP};p.col='#2e7d4f';Object.assign(p,pedPos(p))}}
-function stepPeds(dt){for(const p of peds){
+// road crossings: a walker about to step off the kerb waits for a gap in the traffic (at most 8 s; up to 40 s while a car
+// stands on the crossing) and, once on the asphalt, keeps going: no stopping in the middle of the road, only a moment's
+// hesitation (2 s at most) to let a moving car clear the spot right in front. The cars brake for the walkers on the road
+// (pedGap, traffic/routing.js stepCar)
+const onAsph=(x,y)=>CITY.roadD(x/10,y/10)<0;
+var pedsOnRoad=[];// var: the cars may ask (pedGap) before this line has run
+function wkPeek(p,d){const c=p.wk.cross,t0=c.t;c.t=Math.min(c.len,t0+d);const q=wkPos(p);c.t=t0;return q}
+const carBoxD=(o,x,y)=>{const cs=Math.cos(o.ang),sn=Math.sin(o.ang),dx=x-o.x,dy=y-o.y;return Math.hypot(Math.max(0,Math.abs(dx*cs+dy*sn)-o.len/2),Math.max(0,Math.abs(dy*cs-dx*sn)-o.wid/2))};
+const roadCar=o=>o.state==='road'&&!o.hidden&&!o.removed&&!(o.ghost>0);
+// at the kerb: 0 go, 2 a car stands on (or is driving over) the way across, 1 a car is coming (within ~15 m and heading this way, or within ~6 m)
+function kerbBlock(p){const c=p.wk.cross,e=wkPeek(p,.8);if(!onAsph(e.x,e.y))return 0;const near=[];
+ for(const o of cars)if(roadCar(o)&&Math.abs(o.x-e.x)<260&&Math.abs(o.y-e.y)<260)near.push(o);if(!near.length)return 0;
+ for(let s=.8;s<=Math.min(c.len-c.t,20);s+=1){const q=wkPeek(p,s);if(!onAsph(q.x,q.y))continue;for(const o of near)if(carBoxD(o,q.x,q.y)<10)return 2}
+ for(const o of near){const dx=e.x-o.x,dy=e.y-o.y,d=Math.hypot(dx,dy);if(o.v>3&&(d<60+o.len/2||d<150+o.len/2&&dx*Math.cos(o.ang)+dy*Math.sin(o.ang)>d*.3))return 1}
+ return 0}
+// px from the front of car c to the nearest walker on the asphalt in its lane ahead (1e9 when none). A crossing walker
+// counts with the rest of their way over the road (xPts), so the car stops short of the crossing, not on it
+function pedGap(c){if(!pedsOnRoad||!pedsOnRoad.length)return 1e9;const lw=Math.max(20,c.wid/2+11);let g=1e9;
+ // along the car's heading and, while it turns, toward the point it is steering for
+ const dirs=[[Math.cos(c.ang),Math.sin(c.ang)]],t=c.pts[0];if(t){const tx=t.x-c.x,ty=t.y-c.y,tl=Math.hypot(tx,ty);if(tl>8&&(tx*dirs[0][0]+ty*dirs[0][1])/tl<.97)dirs.push([tx/tl,ty/tl])}
+ for(const p of pedsOnRoad){if(Math.abs(p.x-c.x)>300||Math.abs(p.y-c.y)>300)continue;for(const q of p.xPts)for(const[hx,hy]of dirs){const dx=q.x-c.x,dy=q.y-c.y,al=dx*hx+dy*hy-c.len/2;if(al<-3||al>110)continue;if(Math.abs(-dx*hy+dy*hx)<lw&&al<g)g=Math.max(0,al)}}return g}
+function stepPeds(dt){pedsOnRoad=[];for(const p of peds){
+ const asph=!!p.wk&&onAsph(p.x,p.y),xr=asph&&!!p.wk.cross;
+ if(asph){p.xPts=[p];if(xr)for(let d=1.2;d<20&&d<p.wk.cross.len-p.wk.cross.t;d+=1.2){const q=wkPeek(p,d);if(onAsph(q.x,q.y))p.xPts.push(q)}pedsOnRoad.push(p)}
+ if(!(p.wk&&p.wk.cross))p.xWait=p.xHold=0;
  if(p.pause>0){p.pause-=dt;continue}
- if(R()<dt*.025)p.pause=rr(1.5,4);
+ if(R()<dt*.025&&!asph)p.pause=rr(1.5,4);
+ // a sidewalk that runs over the asphalt (inside of a bend): turn back rather than walk into a car standing there
+ if(asph&&!xr){const q=wkPos(p),hx=Math.cos(q.ang),hy=Math.sin(q.ang),fx=p.x+hx*8,fy=p.y+hy*8;if(cars.some(o=>roadCar(o)&&Math.abs(o.x-fx)<60&&Math.abs(o.y-fy)<60&&carBoxD(o,fx,fy)<8))p.wk.dir=-p.wk.dir}
+ if(xr){p.xWait=0;if((p.xHold||0)<2){const q=wkPeek(p,.7);if(cars.some(o=>roadCar(o)&&o.v>5&&Math.abs(o.x-q.x)<60&&Math.abs(o.y-q.y)<60&&carBoxD(o,q.x,q.y)<6)){p.pause=.15;p.xHold=(p.xHold||0)+.15;continue}}}
+ else if(p.wk&&p.wk.cross&&(p.xWait||0)<40){p.xHold=0;const k=kerbBlock(p);if(k===2||k===1&&(p.xWait||0)<8){p.pause=.25;p.xWait=(p.xWait||0)+.25;continue}}
  p.phase+=dt*Math.abs(p.v)*.6;if(p.wk){wkStep(p,Math.abs(p.v)*dt/10);const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=q.ang;continue}
  p.s+=p.v*dt;const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=p.v<0?q.ang+Math.PI:q.ang}}
 
@@ -2392,7 +2538,7 @@ function make3D(T,X){
  function applyNight(force){const XL=X&&!WORLD;const nv0=nightLevel(),nv=XL?Math.max(nv0,.42):nv0;if(!force&&Math.abs(nv-lastN)<.004)return;lastN=nv;bgC.lerpColors(XL?duskC:dayC,nightC,XL?Math.max(0,(nv-.42)/.58):nv);scene.background=bgC;scene.fog.color.copy(bgC);
   hemi.intensity=.6-.32*nv;sun.intensity=3.3-2.95*nv;sun.color.setHex(nv>.5?0x8fb0ff:0xfff1dc);mat.win.emissiveIntensity=1.6*nv;mat.lamp.emissiveIntensity=3*nv;mat.hl.emissiveIntensity=.15+2.4*nv;
   renderer.toneMappingExposure=XL?.92+.2*nv:1.05+.25*nv;if(XL){sun.color.setHex(nv>.6?0x8fb0ff:0xffbf86);hemi.color.setHex(0x9fb2e0);hemi.groundColor.setHex(0x3a2c26)}for(const m of signMats)m.emissiveIntensity=(XL?.22:0)+.5*nv;for(const p of pls)p.intensity=nv*30}
- const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity}:{cars:150,people:100,shadow:150};
+ const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity}:{cars:200,people:100,shadow:200};
   try{Object.assign(o,window.__LOD3||{});const q=new URLSearchParams(location.search).get('lod');if(q==='off'){o.cars=o.people=o.shadow=Infinity}else if(q)for(const kv of q.split(',')){const[k,v]=kv.split(':');if(k in o&&+v>0)o[k]=+v}}catch(e){}
   o.on=isFinite(o.cars)||isFinite(o.people)||isFinite(o.shadow);return o})();
  const _lodV=new T.Vector3(),_lodM=new T.Matrix4(),_lodC=new T.Color();
@@ -3607,6 +3753,8 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    // own random sequence, so the rest of the city (and every interior) keeps its numbers
    let s2=4242;const r2=C2.rnd=()=>{s2=(s2*16807)%2147483647;return s2/2147483647};
    // junctions where a smaller road meets a bigger one (no lights, no roundabout): [x, z, dx, dz (travel into the junction), half width, the road's lane]
+   // road paint lies on the asphalt (which uses polygon offset -3, roads/ground3d.js): pull it a bit further so it always shows
+   const dashPO=mat.dash.clone();dashPO.polygonOffset=true;dashPO.polygonOffsetFactor=-5;dashPO.polygonOffsetUnits=-10;
    const JN=[];
    CITY.nodes.forEach((n,ni)=>{if(n.round||n.edges.length<3||nodes[ni].light)return;let wmax=0;for(const ei of n.edges)wmax=Math.max(wmax,CITY.edges[ei].w);
     for(const m of nodes[ni].nb){const e=EDGE(m,ni);if(e.w>=wmax*10-1)continue;const sp=stopPt(m,ni),t=edgeTan(ni,m);JN.push([U(sp.x),U(sp.y),-t.x,-t.y,e.w/20,e.lane/10])}});
@@ -3616,24 +3764,36 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
     const sx=cx+rx*(hw+.9),sz=cz+rz*(hw+.9);SP.push({x:sx,y,z:sz});SG.push({x:sx,y:y+2.15,z:sz,ry});C2.pts.push([sx,sz]);
     // stop line across the right lane and a zebra crossing just before it
     SL.push({x:cx+rx*hw/2,y:y+.036,z:cz+rz*hw/2,ry,sx:hw-.2,sz:.4});
-    for(let k=-hw+.4;k<=hw-.39;k+=.8)ZB.push({x:cx-dx*2.2+rx*k,y:y+.034,z:cz-dz*2.2+rz*k,ry,sx:.45,sz:1.7})}
+}
    const stopTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.translate(64,64);x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*62,Math.sin(a)*62)}x.closePath();x.fillStyle='#ffffff';x.fill();
     x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*55,Math.sin(a)*55)}x.closePath();x.fillStyle='#c8102e';x.fill();x.fillStyle='#fff';x.font="800 34px 'Barlow Condensed','Arial Narrow',sans-serif";x.textAlign='center';x.textBaseline='middle';x.fillText('STOP',0,2);
     const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t})();
    instG(g,sh(new T.CylinderGeometry(.05,.05,2.2,6).translate(0,1.1,0)),mat.grey,SP);
    const sgm=new T.MeshStandardMaterial({map:stopTex,alphaTest:.5,side:T.DoubleSide,roughness:.6});signMats.push(sgm);instG(g,sh(new T.PlaneGeometry(.75,.75)),sgm,SG,null,false);
-   const flat=sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2));instG(g,flat,mat.dash,SL,null,false);instG(g,flat,mat.dash,ZB,null,false);
+   // zebra crossings on every road at every junction and roundabout, where the walkers cross (people/walkers.js walks an
+   // arc round the node at about hypot(trim, kerb offset) from its centre, so the stripes sit right under their path)
+   CITY.nodes.forEach(n=>{if(!n.round&&n.edges.length<3)return;for(const ei of n.edges){const e=CITY.edges[ei];if(e.k==='hwy')continue;
+    const r=n.round?Math.hypot(n.round+11,e.w/2+1.1):Math.hypot(e.w/2+3.5,e.w/2+(e.road==='west'?2:1.1));
+    const P=e.a===CITY.nodes.indexOf(n)?e.P:e.P.slice().reverse();let acc=0,pt=null;
+    for(let i=1;i<P.length&&!pt;i++){const a=P[i-1],b=P[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(acc+l>=r){const t=(r-acc)/l;pt=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,(b[0]-a[0])/l,(b[1]-a[1])/l]}acc+=l}
+    if(!pt||CITY.bridges.some(q=>Math.abs(pt[0]-q.x)<q.w&&Math.abs(pt[1]-q.zc)<q.half))continue;
+    const[x0,z0,dx,dz]=pt,rx=-dz,rz=dx,ry=Math.atan2(dx,dz),hw=e.w/2,y=gh(x0,z0);
+    for(let k=-hw+.4;k<=hw-.39;k+=.8)ZB.push({x:x0+rx*k,y:y+.04,z:z0+rz*k,ry,sx:.45,sz:2.2})}});
+   const flat=sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2));instG(g,flat,dashPO,SL,null,false);instG(g,flat,dashPO,ZB,null,false);
    // solid white edge lines on the main roads (broken at the junctions and on the bridges)
    const EL=[];
    for(const e of CITY.edges){if(e.k!=='main')continue;const na=CITY.nodes[e.a],nb=CITY.nodes[e.b],ca=na.round?na.round+8:na.edges.length>2?e.w+3:0,cb=nb.round?nb.round+8:nb.edges.length>2?e.w+3:0;let s=0;
     for(const o of[-(e.w/2-.45),e.w/2-.45]){s=0;along(e.P,2,o,(x,z,a)=>{s+=2;if(s<ca||s>e.len-cb)return;if(CITY.bridges.some(q=>Math.abs(x-q.x)<q.w&&Math.abs(z-q.zc)<q.half))return;EL.push({x,y:gh(x,z)+.03,z,ry:a,sx:.14,sz:2.1})})}}
-   instG(g,flat,mat.dash,EL,null,false);
+   instG(g,flat,dashPO,EL,null,false);
    // on-street parking on the shopping street (the west avenue between the plaza and the old town): painted bays and parked cars
    const BY=[],PC=[],PCc=[],PG=[];let k=0;
-   {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+1.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
+   {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
-   instG(g,flat,mat.dash,BY,null,false);instG(g,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),PC,PCc);instG(g,bodyG,mat.carGlass,PG,null,false);
+   instG(g,flat,dashPO,BY,null,false);
+   // parked cars: the city's own car models (the same licensed models as the traffic), boxes only if the models aren't there
+   if(AMBK.length){PC.forEach((q,i)=>{const m=AMBK[Math.floor(r2()*AMBK.length)],c=glbCar({len:m.len,color:m.taxi?'#f2b81d':PCc[i]},m.glb);c.scale.multiplyScalar(1.25);c.position.set(q.x,gh(q.x,q.z),q.z);c.rotation.y=q.ry;g.add(c)})}
+   else{instG(g,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),PC,PCc);instG(g,bodyG,mat.carGlass,PG,null,false)}
    // bus stops (line 2) on the avenues out of the plaza
    {const shM=M(0x2b3038,{metalness:.5,roughness:.4}),glM=M(0x9fc8e8,{roughness:.05,metalness:.3,transparent:true,opacity:.45}),o={};
     for(const[id,u]of[['west',.35],['east',.5],['south',.18],['se',.22],['north',.12]]){const r=CITY.roads.find(q=>q.id===id),rp=mkPath(r.P,false);atPath(rp,u*rp.len,r.w/2+2.6,o);if(CITY.roadD(o.x,o.z)<.8)continue;const b=new T.Group();b.position.set(o.x,gh(o.x,o.z),o.z);b.rotation.y=o.ry+Math.PI/2;
@@ -4273,6 +4433,8 @@ function geoMerge(T,items,inv,m){const _mm=new T.Matrix4(),_mn=new T.Matrix3(),_
   out.setIndex(new T.BufferAttribute(ind,1));out.computeBoundingBox();out.computeBoundingSphere();return out}
 // ---------- lazy assets (city-v2): the first 3D frame needs only three.js, the base person, the trees and the
 // traffic light; car models, Christmas props, job outfits and the boat load right after it, cars first.
+// loading progress for the welcome screen (ui/welcome.js): st = stage reached, n/d = model files started/finished
+window.__mtpLoad={st:0,n:0,d:0};
 // The recorder page (data-rec) and ?eager load everything before the first frame, as before.
 const LAZY_EAGER=document.documentElement.dataset.rec==='1'||/[?&]eager\b/.test(location.search);
 const CAR_BOX={"hothatch":{"len":4.588770389556885,"h":1.4243000974850188,"y0":-0.014566585421562195,"cx":0,"cz":0.1404578685760498,"box":[-1.0509484355732794,-0.014566585421562195,-2.1539273262023926,1.0509484355732794,1.4097335120634567,2.434843063354492],"rot":0},"gt12":{"len":4.641972064971924,"h":1.3370354151892756,"y0":0.0007113377464830206,"cx":0,"cz":0.0064771175384521484,"box":[-0.9982499513481448,0.0007113377464830206,-2.3145089149475098,0.9982499513481448,1.3377467529357587,2.327463150024414],"rot":0},"v8sport":{"len":4.637942314147949,"h":1.3503539337368653,"y0":8.283555507659912e-05,"cx":0,"cz":-0.008814811706542969,"box":[-0.9285226472002486,8.283555507659912e-05,-2.3277859687805176,0.9285226472002486,1.350436769291942,2.3101563453674316],"rot":0},"sportsaloon":{"len":5.029734332686644,"h":1.4257468056871234,"y0":0.002141986433013443,"cx":0,"cz":0.06289823286482488,"box":[-1.0649829645735018,0.002141986433013443,-2.451968933478497,1.0649829645735018,1.4278887921201369,2.577765399208147],"rot":0},"sport3":{"len":4.795649136059691,"h":1.4648256032074494,"y0":-0.002920165672547992,"cx":0,"cz":0.0011603724079682909,"box":[-1.040230663232364,-0.002920165672547992,-2.396664195621877,1.040230663232364,1.4619054375349014,2.3989849404378134],"rot":0},"saloon90":{"len":48.9834142849095,"h":14.319673698449389,"y0":-0.09740612540356164,"cx":0,"cz":1.8801024849575825,"box":[-10.288654584329034,-0.09740612540356164,-22.611604657497168,10.288654584329034,14.222267573045828,26.371809627412333],"rot":0},"police":{"len":5.17222447081468,"h":1.8780493026644387,"y0":-0.0026333001785859844,"cx":0.8724627208462067,"cz":-11.367700849264885,"box":[-0.12694429666177975,-0.0026333001785859844,-13.953813084672225,1.8718697383541931,1.8754160024858528,-8.781588613857545],"rot":3.141592653589793},"bus":{"len":9.950812187955151,"h":2.5160215758906377,"y0":-0.0024482232459461795,"cx":-0.03570734195744096,"cz":8.950233047496866,"box":[-1.3034360164964216,-0.0024482232459461795,3.9748269535192895,1.2320213325815397,2.5135733526446913,13.925639141474441],"rot":0},"tow":{"len":6.942852411494911,"h":2.3938946957997445,"y0":0.005659486285386484,"cx":-0.38969227304273835,"cz":-10.490976395690021,"box":[-1.5778468518831574,0.005659486285386484,-13.962402601437477,0.7984623057976807,2.399554182085131,-7.019550189942565],"rot":3.141592653589793},"fire":{"len":8.35393277873826,"h":2.933214113583905,"y0":-0.009767474693781697,"cx":0.4798438824176847,"cz":-9.807670419341122,"box":[-0.815359762162577,-0.009767474693781697,-13.984636808710253,1.7750475269979464,2.9234466388901232,-5.630704029971993],"rot":3.141592653589793},"amb":{"len":6.899094889182767,"h":2.573971891129416,"y0":0.0009611556214255135,"cx":0.38615680039564215,"cz":10.327777490425191,"box":[-0.9087031412763775,0.0009611556214255135,6.878230045833807,1.6810167420676618,2.574933046750841,13.777324935016575],"rot":0},"offroad":{"len":5.212218761444092,"h":1.7383076456514495,"y0":-0.5076543344719954,"cx":0.1805734634399414,"cz":1.2418040037155151,"box":[-2.4255359172821045,-0.5076543344719954,0.14367014283019497,2.7866828441619873,1.230653311179454,2.3399378646008353],"rot":4.71238898038469},"coupe85":{"len":4317.91796875,"h":1355.1887078653826,"y0":7.197943430589817,"cx":488.30804443359375,"cz":-6.09503173828125,"box":[-1670.6509399414062,7.197943430589817,-862.5758764262486,2647.2670288085938,1362.3866512959726,850.385812949686],"rot":1.5707963267948966},"sedan98":{"len":446.7462158203125,"h":140.30778853745647,"y0":0.5241071350803566,"cx":0.18999862670898438,"cz":0.17369842529296875,"box":[-96.55025145273153,0.5241071350803566,-223.19940948486328,96.9302487061495,140.83189567253683,223.54680633544922],"rot":0},"fastback65":{"len":5.646062850952148,"h":1.6085084601470476,"y0":0.10206193108217687,"cx":0,"cz":0.05341041088104248,"box":[-1.1911750385641713,0.10206193108217687,-2.7696210145950317,1.1911750385641713,1.7105703912292245,2.8764418363571167],"rot":3.141592653589793},"midv10":{"len":4.408924579620361,"h":1.2512158472209765,"y0":-0.6361168483331597,"cx":-7.426395416259766,"cz":-0.019826650619506836,"box":[-8.414491294748554,-0.6361168483331597,-2.2242889404296875,-6.438299537770978,0.6150989988878167,2.184635639190674],"rot":0},"jgt98":{"len":3.6214590072631836,"h":1.0138140041390784,"y0":-0.01996092591483034,"cx":0.006829202175140381,"cz":0.03568845987319946,"box":[-0.7817971824901158,-0.01996092591483034,-1.7750410437583923,0.7954555868403965,0.9938530782242481,1.8464179635047913],"rot":0},"awd99":{"len":4.597707748413086,"h":1.3271010432597112,"y0":0.019909117919399644,"cx":0.0014365911483764648,"cz":0.006375432014465332,"box":[-1.0116390625136151,0.019909117919399644,-2.2924784421920776,1.014512244810368,1.347010161179111,2.3052293062210083],"rot":0},"rearturbo":{"len":4.46484375,"h":1.2606810014648886,"y0":-0.07219825591661788,"cx":0,"cz":-0.005859017372131348,"box":[-0.9795077149838253,-0.07219825591661788,-2.2382808923721313,0.9795077149838253,1.1884827455482707,2.2265628576278687],"rot":3.141592653589793},"rwd24":{"len":4.340126991271973,"h":1.2638780404283931,"y0":0.030867729129675392,"cx":-0.00905531644821167,"cz":-0.10507261753082275,"box":[-1.0253102174319517,0.030867729129675392,-2.275136113166809,1.0071995845355284,1.2947457695580686,2.0649908781051636],"rot":0},"ae86":{"len":4.623620986938477,"h":1.3953974407127476,"y0":-0.5243133982624102,"cx":0,"cz":0.06808793544769287,"box":[-1.0022760664761499,-0.5243133982624102,-2.2437225580215454,1.0022760664761499,0.8710840424503374,2.379898428916931],"rot":3.141592653589793},"f40":{"len":4.526628494262695,"h":1.1662281487034418,"y0":0.011032534954614648,"cx":0.00023800134658813477,"cz":0.10893690586090088,"box":[-1.054713580929393,0.011032534954614648,-2.1543773412704468,1.0551895836225693,1.1772606836580564,2.3722511529922485],"rot":0},"venom":{"len":4.720460414886475,"h":1.1516269587268435,"y0":-0.050029463707904176,"cx":0,"cz":0.12033271789550781,"box":[-0.9234336759368359,-0.050029463707904176,-2.2398974895477295,0.9234336759368359,1.1015974950189393,2.480562925338745],"rot":0},"amgone":{"len":3.200892448425293,"h":0.7899904547384669,"y0":-0.004369541915818509,"cx":0.6885345578193665,"cz":-0.02518099546432495,"box":[0.011127755743949308,-0.004369541915818509,-1.6256272196769714,1.3659413598947836,0.7856209128226483,1.5752652287483215],"rot":0},"p1":{"len":5.591322898864746,"h":1.449065036688114,"y0":-0.00210377927316463,"cx":-1.1920928955078125e-07,"cz":-0.0017675161361694336,"box":[-1.3041927799967665,-0.00210377927316463,-2.7974289655685425,1.3041925415781874,1.4469612574149493,2.7938939332962036],"rot":0},"etype":{"len":5.592584609985352,"h":1.42430245583446,"y0":-0.006766317810571132,"cx":1.1920928955078125e-07,"cz":-0.0032421350479125977,"box":[-1.0678426986371217,-0.006766317810571132,-2.7995344400405884,1.0678429370557008,1.417536138023889,2.793050169944763],"rot":0},"viper":{"len":2.6885433197021484,"h":0.9962551648861198,"y0":-0.0005916980627193036,"cx":0.00047141313552856445,"cz":0.001604616641998291,"box":[-0.5898807455990812,-0.0005916980627193036,-1.342667043209076,0.5908235718701383,0.9956634668234005,1.3458762764930725],"rot":0},"miata":{"len":266.0356750488281,"h":80.20772221464807,"y0":44.86572049667988,"cx":160.8311767578125,"cz":93.10908508300781,"box":[98.71261388057064,44.86572049667988,-39.90875244140625,222.94973963505436,125.07344271132794,226.12692260742188],"rot":0},"svj":{"len":4.848339080810547,"h":1.1233433119148435,"y0":-0.002388995473107669,"cx":0,"cz":-0.0006414651870727539,"box":[-1.1089907959433285,-0.002388995473107669,-2.424811005592346,1.1089907959433285,1.1209543164417357,2.4235280752182007],"rot":0},"r32":{"len":2.566964626312256,"h":0.7541002073086269,"y0":-0.0060464460748914095,"cx":0,"cz":0.0001175999641418457,"box":[-0.5297738055188644,-0.0060464460748914095,-1.283364713191986,0.5297738055188644,0.7480537612337355,1.2835999131202698],"rot":0},"charger":{"len":5.2535295486450195,"h":1.4214848163788796,"y0":-0.010284894857072846,"cx":0,"cz":-0.261763334274292,"box":[-0.9908387283128215,-0.010284894857072846,-2.8885281085968018,0.9908387283128215,1.4111999215218067,2.3650014400482178],"rot":0},"challenger":{"len":101.00880432128906,"h":29.045598797500134,"y0":0.05928058177232742,"cx":0,"cz":-3.1002464294433594,"box":[-22.021055221557617,0.05928058177232742,-53.60464859008789,22.021055221557617,29.10487937927246,47.40415573120117],"rot":0},"urus":{"len":326.686767578125,"h":105.55231813561232,"y0":4.53583357745751,"cx":0,"cz":31.25084686279297,"box":[-72.03320095681488,4.53583357745751,-132.09253692626953,72.03320095681488,110.08815171306983,194.59423065185547],"rot":3.141592653589793},"evo9":{"len":0.04615447670221329,"h":0.017260565737141687,"y0":-6.153403682187912e-05,"cx":0,"cz":-0.00019582267850637436,"box":[-0.010132518331167678,-6.153403682187912e-05,-0.023273061029613018,0.010132518331167678,0.017199031700319806,0.02288141567260027],"rot":0},"garbage":{"len":7.65844210436644,"h":2.8308710685771707,"y0":-0.0044445482956916305,"cx":0.3004301657596704,"cz":10.11369512386709,"box":[-1.017980476425743,-0.0044445482956916305,6.284474071683871,1.6188408079450838,2.826426520281479,13.94291617605031],"rot":0},"taxi":{"len":5.085253350527157,"h":1.5035228876585705,"y0":-0.002673763046605271,"cx":0.9244988573159021,"cz":11.274419118182513,"box":[-0.07487517603227178,-0.002673763046605271,8.731792442918934,1.923872890664076,1.5008491246119653,13.817045793446091],"rot":0},"van":{"len":5.346318533517305,"h":1.9780973240134387,"y0":-0.00309895127877835,"cx":-0.4528707700231231,"cz":11.12197121837084,"box":[-1.5460740127677552,-0.00309895127877835,8.448811951612187,0.6403324727215091,1.9749983727346605,13.795130485129492],"rot":0}},XMAS_BOX={"xmas_truck":[-0.12855302343649172,0.00011920440632470775,-0.4884459972381592,0.1292506063966205,0.2834438134388291,0.48847681283950806],"xmas_tree":[-24.51025622065723,0,-24.423952501570405,24.51025622065723,97.51427459716797,24.423952501570405],"xmas_stall":[-45.83152281332486,0,-31.036004369010836,45.85346113729947,97.91545104980469,30.98478442882529],"xmas_carousel":[-39.59173364627931,0,-39.707546705510886,39.59173364627931,97.30375671386719,39.707546705510886],"xmas_sleigh":[-0.2560243887109585,-2.3457557385420102e-06,-0.49096985161304474,0.2551275176210232,0.7518798324615186,0.4887853115797043],"xmas_reindeer":[-0.3575314410945139,8.792221546172208e-05,-0.3051535826235865,0.3568481632491312,0.9773090779781342,0.3054025512248133]};
@@ -4298,13 +4460,13 @@ function slimCar(T,root,v){root.updateMatrixWorld(true);const inv=new T.Matrix4(
  for(const b of B.values()){if(b.items.length<2)continue;const geo=geoMerge(T,b.items.map(o=>[o,{start:0,count:Infinity}]),inv,b.m);if(!geo)continue;const me=new T.Mesh(geo,b.m);me.castShadow=b.o.castShadow;me.receiveShadow=b.o.receiveShadow;me.name=b.o.name;out.push([me,b.items])}
  for(const[me,items]of out){for(const o of items)o.parent.remove(o);root.add(me)}}
 async function loadR3(){
- try{const T=await import(THREE_URL);let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}
+ try{const T=await import(THREE_URL);window.__mtpLoad.st=.2;let X=null;if(REMAKE){try{const[a,b,c,d,e,f]=await Promise.all(['environments/RoomEnvironment.js','postprocessing/EffectComposer.js','postprocessing/RenderPass.js','postprocessing/UnrealBloomPass.js','postprocessing/OutputPass.js','postprocessing/ShaderPass.js'].map(p=>import(ADDON(p))));X={RoomEnvironment:a.RoomEnvironment,EffectComposer:b.EffectComposer,RenderPass:c.RenderPass,UnrealBloomPass:d.UnrealBloomPass,OutputPass:e.OutputPass,ShaderPass:f.ShaderPass}}catch(err){console.warn('remake addons unavailable',err)}
   if(X){X.cars={};X.lazyQ=[];X.lazyFill={};X.lazyHooks={};X.ready1=LAZY_EAGER?Promise.resolve():new Promise(r=>{X._ready1=r});try{const{GLTFLoader}=await import(ADDON('loaders/GLTFLoader.js'));const ld0=new GLTFLoader();
    // people, world and Christmas models are Draco-compressed (optimised in Blender); the decoder comes from the same CDN as three
    try{const{DRACOLoader}=await import(ADDON('loaders/DRACOLoader.js'));const dl=new DRACOLoader();dl.setDecoderPath(ADDON('libs/draco/gltf/'));ld0.setDRACOLoader(dl)}catch(e){console.warn('draco loader unavailable',e)}
    const GZ=typeof DecompressionStream!=='undefined';
    // models are shipped twice: .glb.gz (about 2.5x smaller, unpacked in the browser) and plain .glb for older browsers
-   const ld={loadAsync:async u=>{if(GZ){try{const r=await fetch(u+'.gz');if(r.ok){const buf=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return await ld0.parseAsync(buf,u.slice(0,u.lastIndexOf('/')+1))}}catch(e){}}return ld0.loadAsync(u)}};X.ld=ld;
+   const ld={loadAsync:async u=>{const L=window.__mtpLoad;L.n++;try{return await ld1(u)}finally{L.d++}}},ld1=async u=>{if(GZ){try{const r=await fetch(u+'.gz');if(r.ok){const buf=await new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();return await ld0.parseAsync(buf,u.slice(0,u.lastIndexOf('/')+1))}}catch(e){}}return ld0.loadAsync(u)};X.ld=ld;
    try{const[SU,gm]=await Promise.all([import(ADDON('utils/SkeletonUtils.js')),ld.loadAsync(ASSET_BASE+'assets/people/man.glb')]);const bb=new T.Box3().setFromObject(gm.scene);X.SUc=SU.clone;X.man={scene:gm.scene,clone:SU.clone,h:bb.max.y-bb.min.y,y0:bb.min.y}}catch(e){console.warn('person model',e)}
    if(WORLD){try{const norm=sc=>{sc.updateMatrixWorld(true);let mesh=null;sc.traverse(o=>{if(o.isMesh&&!mesh)mesh=o});const g=mesh.geometry.clone();for(const k in g.attributes){const at=g.attributes[k];if(at.normalized||!(at.array instanceof Float32Array)){const n=at.count,sz=at.itemSize,fa=new Float32Array(n*sz);for(let i=0;i<n;i++)for(let c=0;c<sz;c++)fa[i*sz+c]=at.getComponent(i,c);g.setAttribute(k,new T.BufferAttribute(fa,sz))}}g.applyMatrix4(mesh.matrixWorld);g.computeBoundingBox();const b=g.boundingBox;return{g,m:mesh.material,b}};
      const tr=await Promise.all([1,2,3,4,5,6,7,8,9,10].map(n=>ld.loadAsync(ASSET_BASE+'assets/world/tree'+n+'.glb')));X.trees=tr.map((t,i)=>{const o=norm(t.scene),b=o.b,h=b.max.y-b.min.y;o.g.translate(-(b.min.x+b.max.x)/2,-b.min.y,-(b.min.z+b.max.z)/2);o.g.scale(1/h,1/h,1/h);o.pine=[0,1,7,8].includes(i);return o});
@@ -4346,6 +4508,53 @@ v3b.addEventListener('click',()=>setView(true,true));v2b.addEventListener('click
 if(!hasGL()){v3b.disabled=true;v3b.title='3D isn’t available in this browser'}
 else if(readStore('mtp-view')!=='2d')setView(true,false);
 
+// Redesign (option A): welcome screen with loading progress, the "next unlock" card over the city and "Find my name".
+// Never shows the subscriber count itself: only how many more are needed for the next unlock (like the boards in the city).
+{
+ const REC=document.documentElement.dataset.rec==='1',BOT=!!navigator.webdriver,PERF=/\/perf\//.test(location.pathname);
+ // ---- next unlock card (over the city) ----
+ const nuCard=$('nuCard');
+ function nuUpdate(){const next=nextMilestone();if(!next||subs===null){nuCard.hidden=true;return}
+  const sv=subs||0,left=next.n-sv,pv=[...ALL_MS].reverse().find(q=>q.n<=sv),base=pv?pv.n:0;
+  $('nuName').textContent=next.label;$('nuLeft').textContent=`${left.toLocaleString('en-US')} more subscriber${left===1?'':'s'} to open`;
+  $('nuBar').style.width=(clamp((sv-base)/Math.max(1,next.n-base),0,1)*100).toFixed(1)+'%';nuCard.hidden=REC}
+ nuUpdate();setInterval(nuUpdate,5000);
+ // ---- Find my name ----
+ const fd=$('finder'),fin=$('fdIn'),flist=$('fdList');let follow=null,followT=0;
+ const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ function where(n){const p=peds.find(q=>q.name===n);if(p)return{kind:'ped',p};const c=cars.find(q=>q.driver===n&&!q.removed&&!q.hidden);if(c)return{kind:'car',c};return null}
+ function posOf(f){if(f.kind==='ped')return{x:f.p.x/10,z:f.p.y/10};return{x:f.c.x/10,z:f.c.y/10}}
+ function render(){const q=norm(fin.value);flist.textContent='';if(!q){return}
+  const hits=WALL.filter(n=>norm(n).includes(q)).slice(0,6);
+  if(!hits.length){const li=document.createElement('li');li.className='fd-none';li.textContent='No one with that name lives here yet.';flist.append(li);return}
+  for(const n of hits){const li=document.createElement('li');const w=where(n),job=jobOf(n);
+   const av=document.createElement('span');av.className='fd-av';av.textContent=n.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'?';
+   const tx=document.createElement('span');tx.className='fd-tx';const b=document.createElement('b');b.textContent=n;const sm=document.createElement('small');
+   sm.textContent=(job?job:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);li.append(av,tx);
+   if(w&&R3){const go=document.createElement('button');go.type='button';go.className='fd-go';go.textContent='Fly to me';go.addEventListener('click',()=>flyTo(n));li.append(go)}
+   flist.append(li)}}
+ function flyTo(n){const w=where(n);if(!w||!R3)return;if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
+  if(matchMedia('(max-width: 700px)').matches)fd.hidden=true}
+ // keep the camera on the person for a while (they walk or drive); any drag on the city stops it
+ setInterval(()=>{if(!follow||!R3||R3.mode()==='in')return;followT+=.05;const w=where(follow.n);if(!w||followT>45){follow=null;return}const p=posOf(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50);
+ $('screen').addEventListener('pointerdown',e=>{if(!fd.contains(e.target)&&!nuCard.contains(e.target))follow=null});
+ const openFinder=()=>{fd.hidden=false;fin.focus();render()};
+ $('vFind').addEventListener('click',()=>{if(fd.hidden)openFinder();else fd.hidden=true});$('fdClose').addEventListener('click',()=>{fd.hidden=true});
+ fin.addEventListener('input',render);fin.addEventListener('keydown',e=>{if(e.key==='Escape')fd.hidden=true});
+ // ---- welcome screen ----
+ const wc=$('welcome');
+ if(!REC&&!BOT&&!PERF&&!/[?&]nowelcome\b/.test(location.search)){
+  wc.hidden=false;document.body.classList.add('wc-lock');const t0=performance.now();let shown=0;
+  const close=()=>{wc.hidden=true;document.body.classList.remove('wc-lock');clearInterval(tick)};
+  const tick=setInterval(()=>{const L=window.__mtpLoad||{st:0,n:0,d:0};let p;
+   if(R3)p=100;else if(!hasGL())p=100;else{const files=L.n?L.d/L.n:0;p=5+L.st*60+files*30;p=Math.min(95,Math.max(p,Math.min(60,(performance.now()-t0)/250)))}
+   shown+=(p-shown)*.25;if(p>=100&&shown>99)shown=100;$('wcPct').textContent=Math.round(shown)+'%';$('wcBar').style.width=shown.toFixed(1)+'%';
+   if(shown>=100){$('wcLt').textContent='The city is ready';$('wcPct').textContent='100%'}},120);
+  $('wcGo').addEventListener('click',()=>{close();if(hasGL()&&!view3d)setView(true,true)});
+  $('wcFind').addEventListener('click',()=>{close();if(hasGL()&&!view3d)setView(true,true);openFinder()});
+  wc.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  setTimeout(()=>{try{$('wcGo').focus()}catch(e){}},50)}
+}
 drawBackground();setup();setSubs(SUBS_OVR!==null?SUBS_OVR:Math.max(0,Math.floor(Number(STATE.subs)||0)));
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{g.clearRect(0,0,CW,CH);drawBackground()});
 let last=performance.now();
