@@ -138,7 +138,7 @@ const CITY=(()=>{
  const dSort=(a,p)=>a.sort((u,v)=>Math.hypot(u[0]-p[0],u[1]-p[1])-Math.hypot(v[0]-p[0],v[1]-p[1]));
  dSort(slots.suburb,[nodes[NI.SB0].x,nodes[NI.SB0].z]);dSort(slots.village,[nodes[NI.VIL].x,nodes[NI.VIL].z]);dSort(slots.industry,[nodes[NI.SS1].x,nodes[NI.SS1].z]);
  // street trees in the plaza ring and along the avenues
- for(const b of along(['ring','spokeN','spokeE','spokeS','east','west','se'],{w:[2,2],d:[2,2],set:1.2,gap:9,rm:.8,plaza:true,where:(x,z)=>plazaD(x,z)<300}))fill.push({k:'tree',x:px(b.x),y:px(b.z),r:12+rnd()*5});
+ for(const b of along(['ring','spokeN','spokeE','spokeS','east','west','se'],{w:[2,2],d:[2,2],set:1.2,gap:9,rm:.8,plaza:true,where:(x,z)=>plazaD(x,z)<300&&plazaD(x,z)>P0.rb+11}))fill.push({k:'tree',x:px(b.x),y:px(b.z),r:12+rnd()*5});
  // ---- open land: forests ----
  const forestK=(x,z)=>{let k=0;for(const f of L.forests){const dx=(x-f[0])/f[2],dz=(z-f[1])/f[3],d=dx*dx+dz*dz;if(d<1)k=Math.max(k,1-d*.7)}return k};
  const free=(x,z,m)=>{m=m||0;if(roadD(x,z)<1.5+m)return false;if(inSea(x,z,3+m)||inRiver(x,z,5+m))return false;if(inRect(x,z,m+1))return false;if(inField(x,z,m))return false;if(railD(x,z)<5+m||hwyD(x,z)<9+m)return false;if(plazaD(x,z)<P0.paved+m)return false;
