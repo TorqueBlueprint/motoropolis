@@ -76,3 +76,5 @@ To be done after the performance work and before Phase 2. Seen from above, the c
 - **The city visibly grows outward** with each unlock.
 - **Must keep working:** traffic, lots, milestones, `state.json`, roles and locked jobs.
 - **Static-geometry merging stays a load-time step** driven by the city data (chunked). There are no hand-baked merged files, so it keeps working when the layout changes.
+- **Status (step 1, layout for approval):** the grid is gone. The layout is data (`src/data/world/city_layout.json`, see the README): a round plaza with a roundabout and a ring road, curved roads out to the districts (old town and harbour on the bay, the village across the river with two bridges, the hills, the suburbs, industry with the dragway, the stadium), the coast road, the riverside road, farms, forests and the reserved airport area in the east. Traffic and lots follow the new roads; polishing traffic and lots is step 2.
+
