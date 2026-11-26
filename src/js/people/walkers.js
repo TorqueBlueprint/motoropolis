@@ -49,9 +49,37 @@ const PARK_LOOP=(()=>{const b=B.park;return{x0:b.x0+26,y0:b.y0+26,x1:b.x1-26,y1:
 for(let k=0;k<9;k++){const p=mkPed(null,k+90);p.wk=null;p.loop={...PARK_LOOP};p.s=k*140;p.v=(k%3===0?rr(26,32):rr(8,12))*(k%2?-1:1);Object.assign(p,pedPos(p))}
 function parkRanger(){for(const q of peds){if(q.name&&jobOf(q.name)==='Homeless'&&(q.wk||q.loop.x0!==PARK_LOOP.x0)){q.wk=null;q.loop={...PARK_LOOP};q.v=rr(4,6)*(R()<.5?-1:1);q.col='#7a6a55';Object.assign(q,pedPos(q))}}
  const n=staffOf('park','Park Ranger',0);if(!n)return;const p=peds.find(q=>q.name===n);if(p&&(p.wk||p.loop.x0!==PARK_LOOP.x0)){p.wk=null;p.loop={...PARK_LOOP};p.col='#2e7d4f';Object.assign(p,pedPos(p))}}
-function stepPeds(dt){for(const p of peds){
+// road crossings: a walker about to step off the kerb waits for a gap in the traffic (at most 8 s; up to 40 s while a car
+// stands on the crossing) and, once on the asphalt, keeps going: no stopping in the middle of the road, only a moment's
+// hesitation (2 s at most) to let a moving car clear the spot right in front. The cars brake for the walkers on the road
+// (pedGap, traffic/routing.js stepCar)
+const onAsph=(x,y)=>CITY.roadD(x/10,y/10)<0;
+var pedsOnRoad=[];// var: the cars may ask (pedGap) before this line has run
+function wkPeek(p,d){const c=p.wk.cross,t0=c.t;c.t=Math.min(c.len,t0+d);const q=wkPos(p);c.t=t0;return q}
+const carBoxD=(o,x,y)=>{const cs=Math.cos(o.ang),sn=Math.sin(o.ang),dx=x-o.x,dy=y-o.y;return Math.hypot(Math.max(0,Math.abs(dx*cs+dy*sn)-o.len/2),Math.max(0,Math.abs(dy*cs-dx*sn)-o.wid/2))};
+const roadCar=o=>o.state==='road'&&!o.hidden&&!o.removed&&!(o.ghost>0);
+// at the kerb: 0 go, 2 a car stands on (or is driving over) the way across, 1 a car is coming (within ~15 m and heading this way, or within ~6 m)
+function kerbBlock(p){const c=p.wk.cross,e=wkPeek(p,.8);if(!onAsph(e.x,e.y))return 0;const near=[];
+ for(const o of cars)if(roadCar(o)&&Math.abs(o.x-e.x)<260&&Math.abs(o.y-e.y)<260)near.push(o);if(!near.length)return 0;
+ for(let s=.8;s<=Math.min(c.len-c.t,20);s+=1){const q=wkPeek(p,s);if(!onAsph(q.x,q.y))continue;for(const o of near)if(carBoxD(o,q.x,q.y)<10)return 2}
+ for(const o of near){const dx=e.x-o.x,dy=e.y-o.y,d=Math.hypot(dx,dy);if(o.v>3&&(d<60+o.len/2||d<150+o.len/2&&dx*Math.cos(o.ang)+dy*Math.sin(o.ang)>d*.3))return 1}
+ return 0}
+// px from the front of car c to the nearest walker on the asphalt in its lane ahead (1e9 when none). A crossing walker
+// counts with the rest of their way over the road (xPts), so the car stops short of the crossing, not on it
+function pedGap(c){if(!pedsOnRoad||!pedsOnRoad.length)return 1e9;const lw=Math.max(20,c.wid/2+11);let g=1e9;
+ // along the car's heading and, while it turns, toward the point it is steering for
+ const dirs=[[Math.cos(c.ang),Math.sin(c.ang)]],t=c.pts[0];if(t){const tx=t.x-c.x,ty=t.y-c.y,tl=Math.hypot(tx,ty);if(tl>8&&(tx*dirs[0][0]+ty*dirs[0][1])/tl<.97)dirs.push([tx/tl,ty/tl])}
+ for(const p of pedsOnRoad){if(Math.abs(p.x-c.x)>300||Math.abs(p.y-c.y)>300)continue;for(const q of p.xPts)for(const[hx,hy]of dirs){const dx=q.x-c.x,dy=q.y-c.y,al=dx*hx+dy*hy-c.len/2;if(al<-3||al>110)continue;if(Math.abs(-dx*hy+dy*hx)<lw&&al<g)g=Math.max(0,al)}}return g}
+function stepPeds(dt){pedsOnRoad=[];for(const p of peds){
+ const asph=!!p.wk&&onAsph(p.x,p.y),xr=asph&&!!p.wk.cross;
+ if(asph){p.xPts=[p];if(xr)for(let d=1.2;d<20&&d<p.wk.cross.len-p.wk.cross.t;d+=1.2){const q=wkPeek(p,d);if(onAsph(q.x,q.y))p.xPts.push(q)}pedsOnRoad.push(p)}
+ if(!(p.wk&&p.wk.cross))p.xWait=p.xHold=0;
  if(p.pause>0){p.pause-=dt;continue}
- if(R()<dt*.025)p.pause=rr(1.5,4);
+ if(R()<dt*.025&&!asph)p.pause=rr(1.5,4);
+ // a sidewalk that runs over the asphalt (inside of a bend): turn back rather than walk into a car standing there
+ if(asph&&!xr){const q=wkPos(p),hx=Math.cos(q.ang),hy=Math.sin(q.ang),fx=p.x+hx*8,fy=p.y+hy*8;if(cars.some(o=>roadCar(o)&&Math.abs(o.x-fx)<60&&Math.abs(o.y-fy)<60&&carBoxD(o,fx,fy)<8))p.wk.dir=-p.wk.dir}
+ if(xr){p.xWait=0;if((p.xHold||0)<2){const q=wkPeek(p,.7);if(cars.some(o=>roadCar(o)&&o.v>5&&Math.abs(o.x-q.x)<60&&Math.abs(o.y-q.y)<60&&carBoxD(o,q.x,q.y)<6)){p.pause=.15;p.xHold=(p.xHold||0)+.15;continue}}}
+ else if(p.wk&&p.wk.cross&&(p.xWait||0)<40){p.xHold=0;const k=kerbBlock(p);if(k===2||k===1&&(p.xWait||0)<8){p.pause=.25;p.xWait=(p.xWait||0)+.25;continue}}
  p.phase+=dt*Math.abs(p.v)*.6;if(p.wk){wkStep(p,Math.abs(p.v)*dt/10);const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=q.ang;continue}
  p.s+=p.v*dt;const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=p.v<0?q.ang+Math.PI:q.ang}}
 
