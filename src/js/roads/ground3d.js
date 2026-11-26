@@ -35,24 +35,25 @@
   const town=(x,z)=>CITY.districts.some(d=>d.id!=='farms'&&Math.hypot(x-d.x,z-d.z)<d.r+40)||Math.hypot(x-CITY.P0.x,z-CITY.P0.z)<330;
   const P0=CITY.P0;
   // the round plaza: paving inside the ring road, the roundabout and its garden
-  {const pv=new T.Mesh(new T.CircleGeometry(P0.ring+7,96),mat.pad);pv.rotation.x=-Math.PI/2;pv.position.set(P0.x,.004,P0.z);pv.receiveShadow=true;scene.add(pv)}
+  {const pm=mat.pad.clone();pm.polygonOffset=true;pm.polygonOffsetFactor=-1;pm.polygonOffsetUnits=-2;const pv=new T.Mesh(new T.CircleGeometry(P0.ring+7,96),pm);pv.rotation.x=-Math.PI/2;pv.position.set(P0.x,.01,P0.z);pv.receiveShadow=true;scene.add(pv)}
   for(const e of CITY.edges){for(const P of cutB(e.P)){
    if(e.k!=='hwy'&&e.k!=='lane'){// sidewalks in town (drawn under the asphalt: junctions cover them), grass verges outside
-    let run=[];const fl=()=>{if(run.length>1)addRib('sw',run,e.w+4.6,.007);run=[]};for(const p of P){if(town(p[0],p[1]))run.push(p);else{fl()}}fl()}
-   addRib(e.k==='lane'?'cob':'asph',P,e.w,e.k==='lane'?.013:.012)}}
+    let run=[];const fl=()=>{if(run.length>1)addRib('sw',run,e.w+4.6,.02);run=[]};for(const p of P){if(town(p[0],p[1]))run.push(p);else{fl()}}fl()}
+   addRib(e.k==='lane'?'cob':'asph',P,e.w,e.k==='lane'?.031:.03)}}
   // junction patches (the ribbons meet at angles)
   const disc=(key,x,z,r,y,seg)=>{const P=[];for(let k=0;k<=(seg||20);k++){const a=k/(seg||20)*TAU;P.push([x+Math.cos(a)*r/2,z+Math.sin(a)*r/2])}addRib(key,P,r,y,true)};
-  CITY.nodes.forEach((n,i)=>{if(n.round||n.edges.length<3)return;let w=0;for(const ei of n.edges)w=Math.max(w,CITY.edges[ei].w);disc('asph',n.x,n.z,w*.75,.0125)});
+  CITY.nodes.forEach((n,i)=>{if(n.round||n.edges.length<3)return;let w=0;for(const ei of n.edges)w=Math.max(w,CITY.edges[ei].w);disc('asph',n.x,n.z,w*.75,.032)});
   // turning bulbs at the dead ends (traffic/routing.js drives round them), each with a small kerbed island
-  for(const q of CITY.bulbs)disc(q.w<6?'cob':'asph',q.x,q.z,q.r+2.7,.0128,28);
+  for(const q of CITY.bulbs)disc(q.w<6?'cob':'asph',q.x,q.z,q.r+2.7,.033,28);
   // roundabout ring
-  {const r0=(P0.island+P0.rb+8)/2,P=[];for(let k=0;k<64;k++){const a=k/64*TAU;P.push([P0.x+Math.cos(a)*r0,P0.z+Math.sin(a)*r0])}addRib('asph',P,P0.rb+8-P0.island,.0135,true)}
-  C3R.asph=flush('asph',mat.asphalt);C3R.sw=flush('sw',mat.pad);C3R.cob=flush('cob',mat.cobble);
+  {const r0=(P0.island+P0.rb+8)/2,P=[];for(let k=0;k<64;k++){const a=k/64*TAU;P.push([P0.x+Math.cos(a)*r0,P0.z+Math.sin(a)*r0])}addRib('asph',P,P0.rb+8-P0.island,.034,true)}
+  const PO=(m,u)=>{const c=m.clone();c.polygonOffset=true;c.polygonOffsetFactor=u;c.polygonOffsetUnits=u*2;return c};
+  C3R.asph=flush('asph',PO(mat.asphalt,-3));C3R.sw=flush('sw',PO(mat.pad,-2));C3R.cob=flush('cob',PO(mat.cobble,-3));
   {const ig=new T.CylinderGeometry(1,1.06,.3,24),gg=new T.CylinderGeometry(.82,.82,.32,24);for(const q of CITY.bulbs){const r=q.r-2,y=gh(q.x,q.z);const k=new T.Mesh(ig,mat.curb);k.scale.set(r,1,r);k.position.set(q.x,y+.15,q.z);k.receiveShadow=true;scene.add(k);const gi=new T.Mesh(gg,mat.grass2);gi.scale.set(r,1,r);gi.position.set(q.x,y+.17,q.z);gi.receiveShadow=true;scene.add(gi)}}
   {const isl=new T.Mesh(new T.CylinderGeometry(P0.island,P0.island+.2,.3,48),mat.curb);isl.position.set(P0.x,.15,P0.z);isl.receiveShadow=true;scene.add(isl);const gi=new T.Mesh(new T.CylinderGeometry(P0.island-.6,P0.island-.6,.32,48),mat.grass2);gi.position.set(P0.x,.17,P0.z);gi.receiveShadow=true;scene.add(gi)}
   // centre lines (dashed) away from the junctions, as one instanced mesh
   {const D=[];const o=new T.Object3D();for(const e of CITY.edges){if(e.k==='lane')continue;const na=CITY.nodes[e.a],nb=CITY.nodes[e.b],ca=na.round?na.round+8:na.edges.length>2?e.w:2,cb=nb.round?nb.round+8:nb.edges.length>2?e.w:2;let acc=0;
-    for(let i=1;i<e.P.length;i++){const a=e.P[i-1],b=e.P[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let t=(4-acc%4)%4;t<l;t+=4){const s2=acc+t;if(s2<ca||s2>e.len-cb)continue;const x=a[0]+(b[0]-a[0])*t/l,z=a[1]+(b[1]-a[1])*t/l;if(CITY.bridges.some(q=>Math.abs(x-q.x)<q.w&&Math.abs(z-q.zc)<q.half))continue;D.push([x,gh(x,z)+.03,z,Math.atan2(b[0]-a[0],b[1]-a[1])])}acc+=l}}
-   const im=new T.InstancedMesh(new T.PlaneGeometry(.18,1.6).rotateX(-Math.PI/2),mat.dash,D.length);D.forEach((p,k)=>{o.position.set(p[0],p[1],p[2]);o.rotation.set(0,p[3],0);o.updateMatrix();im.setMatrixAt(k,o.matrix)});im.receiveShadow=true;scene.add(im)
-   const RD=[];for(let k=0;k<32;k++){if(k%2)continue;const a=k/32*TAU;RD.push([P0.x+Math.cos(a)*(P0.rb+.5),.031,P0.z+Math.sin(a)*(P0.rb+.5),-a])}const im2=new T.InstancedMesh(new T.PlaneGeometry(.18,2.2).rotateX(-Math.PI/2),mat.dash,RD.length);RD.forEach((p,k)=>{o.position.set(p[0],p[1],p[2]);o.rotation.set(0,p[3],0);o.updateMatrix();im2.setMatrixAt(k,o.matrix)});scene.add(im2)}
+    for(let i=1;i<e.P.length;i++){const a=e.P[i-1],b=e.P[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let t=(4-acc%4)%4;t<l;t+=4){const s2=acc+t;if(s2<ca||s2>e.len-cb)continue;const x=a[0]+(b[0]-a[0])*t/l,z=a[1]+(b[1]-a[1])*t/l;if(CITY.bridges.some(q=>Math.abs(x-q.x)<q.w&&Math.abs(z-q.zc)<q.half))continue;D.push([x,gh(x,z)+.05,z,Math.atan2(b[0]-a[0],b[1]-a[1])])}acc+=l}}
+   const im=new T.InstancedMesh(new T.PlaneGeometry(.18,1.6).rotateX(-Math.PI/2),PO(mat.dash,-5),D.length);D.forEach((p,k)=>{o.position.set(p[0],p[1],p[2]);o.rotation.set(0,p[3],0);o.updateMatrix();im.setMatrixAt(k,o.matrix)});im.receiveShadow=true;scene.add(im)
+   const RD=[];for(let k=0;k<32;k++){if(k%2)continue;const a=k/32*TAU;RD.push([P0.x+Math.cos(a)*(P0.rb+.5),.05,P0.z+Math.sin(a)*(P0.rb+.5),-a])}const im2=new T.InstancedMesh(new T.PlaneGeometry(.18,2.2).rotateX(-Math.PI/2),PO(mat.dash,-5),RD.length);RD.forEach((p,k)=>{o.position.set(p[0],p[1],p[2]);o.rotation.set(0,p[3],0);o.updateMatrix();im2.setMatrixAt(k,o.matrix)});scene.add(im2)}
  }

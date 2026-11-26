@@ -1,7 +1,7 @@
 {
- "title": "Short · Teaser: the new Motoropolis (Phase 1B) — the 'before' still is added by Claude",
+ "title": "Short · Teaser: the new Motoropolis (Phase 1B) — record s27old first",
  "light": "dia",
- "warmup": 90,
+ "warmup": 300,
  "hide": [
   "Hunter-is-gay-af"
  ],
@@ -43,26 +43,26 @@
    ]
   },
   {
-   "name": "plaza",
-   "dur": 3.5,
+   "name": "roundabout",
+   "dur": 4.0,
    "cam": {
     "from": {
      "tx": 180,
      "tz": 80,
-     "yaw": 2.5,
-     "pitch": 0.95,
-     "dist": 160,
+     "yaw": 2.3,
+     "pitch": 0.62,
+     "dist": 95,
      "fov": 50
     },
     "to": {
      "tx": 180,
      "tz": 80,
-     "yaw": 3.3,
-     "pitch": 0.55,
-     "dist": 95,
+     "yaw": 2.9,
+     "pitch": 0.42,
+     "dist": 62,
      "fov": 50
     },
-    "ease": true
+    "ease": false
    },
    "txt": [
     {
@@ -153,50 +153,26 @@
    ]
   },
   {
-   "name": "drag",
-   "dur": 2.5,
+   "name": "names",
+   "dur": 4.5,
    "cam": {
     "from": {
-     "tx": 120,
-     "tz": 482,
-     "yaw": 0.8,
-     "pitch": 0.45,
-     "dist": 140,
+     "tx": 180,
+     "tz": 80,
+     "yaw": 4.2,
+     "pitch": 0.5,
+     "dist": 55,
      "fov": 50
     },
     "to": {
-     "tx": 120,
-     "tz": 482,
-     "yaw": 1.2,
-     "pitch": 0.3,
-     "dist": 90,
+     "tx": 180,
+     "tz": 80,
+     "yaw": 5.1,
+     "pitch": 0.42,
+     "dist": 48,
      "fov": 50
     },
-    "ease": true
-   },
-   "txt": [
-    {
-     "t0": 0.05,
-     "y": 300,
-     "lines": [
-      [
-       "A DRAG STRIP",
-       90,
-       "#ffd34d"
-      ]
-     ]
-    }
-   ]
-  },
-  {
-   "name": "you",
-   "dur": 4.5,
-   "follow": {
-    "ped": "^(?!Homeless$).+",
-    "phi": 0.6,
-    "pitch": 0.32,
-    "dist": 8.5,
-    "sweep": -0.3
+    "ease": false
    },
    "txt": [
     {
@@ -214,9 +190,38 @@
        "#3ee08f"
       ]
      ]
+    }
+   ]
+  },
+  {
+   "name": "walker",
+   "dur": 3.5,
+   "follow": {
+    "ped": "^(?!Homeless$).+",
+    "phi": 0.7,
+    "pitch": 0.42,
+    "dist": 17,
+    "sweep": -0.35
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "THEY WORK HERE",
+       80,
+       "#ffffff"
+      ],
+      [
+       "THEY LIVE HERE",
+       80,
+       "#3ee08f"
+      ]
+     ]
     },
     {
-     "t0": 2.0,
+     "t0": 1.4,
      "y": 1560,
      "lines": [
       [
@@ -230,7 +235,7 @@
   },
   {
    "name": "airport",
-   "dur": 5.5,
+   "dur": 5.0,
    "cam": {
     "from": {
      "tx": 1010,
@@ -268,7 +273,7 @@
      ]
     },
     {
-     "t0": 2.4,
+     "t0": 2.2,
      "y": 1560,
      "lines": [
       [
