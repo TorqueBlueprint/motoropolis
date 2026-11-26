@@ -17,8 +17,10 @@
   if(selected&&!selected.removed&&!selected.hidden){const g=meshes.get(selected.id);const s=g&&toHud(g.position.x,g.position.y+2.4,g.position.z);if(s){hctx.font="700 16px 'JetBrains Mono', monospace";const t=selected.plate,w=hctx.measureText(t).width+20;hctx.fillStyle='#fafafa';rrect(hctx,s.x-w/2,s.y-28,w,26,4);hctx.fill();hctx.strokeStyle='#111';hctx.lineWidth=2;hctx.stroke();hctx.fillStyle='#111';hctx.fillText(t,s.x,s.y-14.5);
    if(selected.driver)pill('★ '+selected.driver,s.x,s.y-34,17,'rgba(255,122,26,.95)','#1d0f02')}}
   const LP0=(b,x,y,h)=>{const p=lotPt(b,x,y);return toHud(U(p.x),h,U(p.y))};
-  // "STEP INSIDE …" boards only when the camera is near the building (full up to ~100 m, gone by 140 m); the repair shop's stays
-  const LP=(b,x,y,h)=>{const p=lotPt(b,x,y),wx=U(p.x),wz=U(p.y),k=clamp((140-Math.hypot(wx-cp.x,h-cp.y,wz-cp.z))/40,0,1);if(k<=0)return null;const s=toHud(wx,h,wz);if(s)s.k=k;return s};
+  // "STEP INSIDE …" boards only when zoomed in (camera closer than ~200 m) and the building is within ~120 m of the point
+  // the camera looks at (full up to 100 m, gone by 140 m); the repair shop's board always stays
+  const zk=clamp((200-cam.dist)/40,0,1);
+  const LP=(b,x,y,h)=>{if(zk<=0)return null;const p=lotPt(b,x,y),wx=U(p.x),wz=U(p.y),k=zk*clamp((140-Math.hypot(wx-cam.tx,wz-cam.tz))/40,0,1);if(k<=0)return null;const s=toHud(wx,h,wz);if(s)s.k=k;return s};
   if(!trailer){const O=B.oficina,s=LP0(O,O.x0+O.w/2,O.y0+O.h*.55,11.5);if(s){hctx.globalAlpha=.82+.18*Math.sin(simTime*3);pill('CLICK TO STEP INSIDE ▶',s.x,s.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#ff7a1a');hctx.globalAlpha=1}
    if(isOpen('lavagem')){const Lw=B.lavagem,s2=LP(Lw,Lw.x0+Lw.w/2,Lw.y0+Lw.h/2,8);if(s2){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+1))*s2.k;pill('STEP INSIDE THE CAR WASH ▶',s2.x,s2.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#46c8ff');hctx.globalAlpha=1}}
    if(isOpen('reboques')){const Rb=B.reboques,s3=LP(Rb,Rb.x0+Rb.w/2,Rb.y0+Rb.h*.7,9);if(s3){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+2))*s3.k;pill('STEP INSIDE THE TOW DEPOT ▶',s3.x,s3.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2a51a');hctx.globalAlpha=1}}}
