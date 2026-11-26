@@ -24,7 +24,7 @@ R("if(location.hostname==='localhost')window.__mtpBuild=",
   "if(location.hostname==='localhost')window.__mtpBuild=")
 s = s.replace("if(location.hostname==='localhost')window.__XMS=", "window.__XMS=")
 i = s.rindex("</body>")
-s = s[:i] + '<script src="mp4mux.js?v=1"></script><script src="rec.js?v=6"></script>' + s[i:]
+s = s[:i] + '<script src="mp4mux.js?v=1"></script><script src="rec.js?v=7"></script>' + s[i:]
 os.makedirs(os.path.join(ROOT, "rec", "shots"), exist_ok=True)
 open(os.path.join(ROOT, "rec", "index.html"), "w", encoding="utf-8").write(s)
 print("rec/index.html built", len(s))

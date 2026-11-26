@@ -338,3 +338,35 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 html[data-rec="1"] .bnav{display:none!important}
 /* small computers / tablets: the viewbar (now with Unlocks) uses the short labels */
 @media (min-width:701px) and (max-width:1000px){.viewbar .lg{display:none}.viewbar .sm{display:inline}.viewbar button{min-height:40px}}
+/* ===== Phase 2C step 1: Drag Strip panel (hidden until the strip opens) ===== */
+.dg-link svg{color:#ffd34d}
+.dg-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border-radius:12px;background:rgba(140,190,255,.10);border:1px solid rgba(140,190,255,.25)}
+.dg-tabs button{min-height:40px;border:0;border-radius:9px;background:transparent;color:#b8cdea;font:700 15px/1 var(--display);letter-spacing:.05em;text-transform:uppercase}
+.dg-tabs button[aria-selected="true"]{background:var(--accent);color:#1a1205}
+.dg-tabs button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+.dg-body{display:flex;flex-direction:column;gap:8px}
+.dg-body label{font-size:13px;color:var(--muted)}
+.dg-final{border-radius:12px;padding:10px 12px;background:linear-gradient(135deg,rgba(255,122,26,.22),rgba(255,122,26,.06));border:1px solid rgba(255,138,51,.55);display:flex;flex-direction:column;gap:2px}
+.dg-k{font:700 12.5px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:#ffb36b}
+.dg-champ{font:800 24px/1.1 var(--display);letter-spacing:.02em;color:#fff;overflow-wrap:anywhere}
+.dg-sub{font-size:13px;color:#cfdcf0}
+.dg-h{margin:6px 0 0;font:700 14px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.dg-heat{border-radius:12px;background:rgba(140,190,255,.08);border:1px solid rgba(140,190,255,.22);padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.dg-hl{font:700 12.5px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.dg-ln{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;align-items:center;padding:4px 0 4px 8px;border-left:3px solid rgba(140,190,255,.25)}
+.dg-ln.w{border-left-color:#38e07b}
+.dg-who{display:flex;flex-direction:column;min-width:0}
+.dg-who b{font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dg-who small,.dg-t small{font-size:12px;color:var(--muted)}
+.dg-t{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.dg-t b{font:700 16px/1.15 'JetBrains Mono',monospace;color:#ffd34d;white-space:nowrap}
+.dg-ln.w .dg-t b{color:#8fe0b0}
+.dg-r{grid-column:1/-1;font-size:11.5px;color:#9fb3cf}
+.dg-ln.w .dg-r{color:#8fe0b0}
+.dg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:dg}
+.dg-list li{counter-increment:dg;display:grid;grid-template-columns:26px minmax(0,1fr) auto;column-gap:8px;align-items:center;background:rgba(140,190,255,.08);border:1px solid rgba(140,190,255,.2);border-radius:10px;padding:6px 10px}
+.dg-list li::before{content:counter(dg);font:800 16px/1 var(--display);color:var(--accent);text-align:center}
+.dg-note{margin:2px 0 0;font-size:12.5px;line-height:1.4;color:#b8cdea}
+.dg-me{display:flex;flex-direction:column;gap:8px}
+.fd-tx small.fd-dg{color:#ffd34d}
+html[data-rec="1"] .dg{display:none!important}

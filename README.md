@@ -49,3 +49,18 @@ The city is laid out from data: `src/data/world/city_layout.json` (metres; x eas
 - **Shadows** follow the camera target when you are close up.
 - The **HUD** canvas is drawn at display resolution.
 - The **recorder page** (`data-rec`) and `?eager` keep full detail.
+
+## Drag Strip (Phase 2C step 1, hidden until 1,000 subscribers)
+
+The Drag Strip (layout feature `dragway`) opens with the Race Track at 1,000 subscribers. Until then the 3D city shows its blueprint board ("DRAG STRIP · OPENS AT 1,000 SUBS" / "N MORE SUBSCRIBERS TO OPEN") and the page shows nothing else about it.
+
+- **Preview:** `?drag=1` opens it on any page (root, world, xmas, rec). On the recorder, `"drag": 1` at the top of a shot list does the same.
+- **Physics** (`src/js/sim/drag.js`, specs per car model in `src/data/cars/drag_specs.json`): power curve, clutch launch, traction limit with weight transfer, gear shifts and aero drag, integrated over the quarter mile (402 m). Gives reaction time, 60 ft, 1/8 mile and 1/4 mile times and trap speeds. `node tools/drag_day.js --cars` lists every model.
+- **Daily races:** every subscriber car races (Wall of Mechanics names drive theirs, the others are shown by plate). Seeded by the UTC date and `state.json`: everyone sees the same results. Qualifying in pairs, then an 8-car elimination ladder. It is bracket racing (dial-ins, the slower car starts first), so any car can win. "Fastest this week" is the raw quickest time since Monday. `node tools/drag_day.js [DATE] [--json]` prints a day.
+- **3D:** the strip replays the day's heats in a loop synced to the UTC clock (36 s per heat). The quarter mile is drawn at half scale; times and speeds are the real ones.
+- **Panel:** Unlocks → "Drag Strip" (Today, This week, My best). Find my name shows a person's best time once the strip is open.
+- **Recorder** (`rec/shots/drag.json` is an example):
+  - `"drag": {"heat": "f", "t": 10}` on a shot jumps to a heat (`"f"` final, `"sf1"`, `"qf2"`, or an index) and a time in its 36 s cycle (staging ~7 s, lights ~9 s, the run, the board after ~28 s).
+  - `"follow": {"drag": true, "lane": 0, "phi": -2.0, "pitch": 0.28, "dist": 16}` follows a car (lane 0 = left, 1 = right).
+  - `"dragCam": "tree"` or `{"from": "overview", "to": "stands", "fromOv": {...}}` uses a camera preset: `overview`, `start`, `tree`, `burnout`, `stands`, `finish`, `board`.
+- **Next step (needs the comment job):** `STATE.drag.tunes = {"<name>": "launch"|"topspeed"}` is already read by the physics. Bets (`BET name amount`) can be settled with `node tools/drag_day.js DATE --json` (the final's winner).

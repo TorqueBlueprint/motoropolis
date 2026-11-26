@@ -341,6 +341,38 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 html[data-rec="1"] .bnav{display:none!important}
 /* small computers / tablets: the viewbar (now with Unlocks) uses the short labels */
 @media (min-width:701px) and (max-width:1000px){.viewbar .lg{display:none}.viewbar .sm{display:inline}.viewbar button{min-height:40px}}
+/* ===== Phase 2C step 1: Drag Strip panel (hidden until the strip opens) ===== */
+.dg-link svg{color:#ffd34d}
+.dg-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border-radius:12px;background:rgba(140,190,255,.10);border:1px solid rgba(140,190,255,.25)}
+.dg-tabs button{min-height:40px;border:0;border-radius:9px;background:transparent;color:#b8cdea;font:700 15px/1 var(--display);letter-spacing:.05em;text-transform:uppercase}
+.dg-tabs button[aria-selected="true"]{background:var(--accent);color:#1a1205}
+.dg-tabs button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+.dg-body{display:flex;flex-direction:column;gap:8px}
+.dg-body label{font-size:13px;color:var(--muted)}
+.dg-final{border-radius:12px;padding:10px 12px;background:linear-gradient(135deg,rgba(255,122,26,.22),rgba(255,122,26,.06));border:1px solid rgba(255,138,51,.55);display:flex;flex-direction:column;gap:2px}
+.dg-k{font:700 12.5px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:#ffb36b}
+.dg-champ{font:800 24px/1.1 var(--display);letter-spacing:.02em;color:#fff;overflow-wrap:anywhere}
+.dg-sub{font-size:13px;color:#cfdcf0}
+.dg-h{margin:6px 0 0;font:700 14px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.dg-heat{border-radius:12px;background:rgba(140,190,255,.08);border:1px solid rgba(140,190,255,.22);padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.dg-hl{font:700 12.5px/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.dg-ln{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;align-items:center;padding:4px 0 4px 8px;border-left:3px solid rgba(140,190,255,.25)}
+.dg-ln.w{border-left-color:#38e07b}
+.dg-who{display:flex;flex-direction:column;min-width:0}
+.dg-who b{font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dg-who small,.dg-t small{font-size:12px;color:var(--muted)}
+.dg-t{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.dg-t b{font:700 16px/1.15 'JetBrains Mono',monospace;color:#ffd34d;white-space:nowrap}
+.dg-ln.w .dg-t b{color:#8fe0b0}
+.dg-r{grid-column:1/-1;font-size:11.5px;color:#9fb3cf}
+.dg-ln.w .dg-r{color:#8fe0b0}
+.dg-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:dg}
+.dg-list li{counter-increment:dg;display:grid;grid-template-columns:26px minmax(0,1fr) auto;column-gap:8px;align-items:center;background:rgba(140,190,255,.08);border:1px solid rgba(140,190,255,.2);border-radius:10px;padding:6px 10px}
+.dg-list li::before{content:counter(dg);font:800 16px/1 var(--display);color:var(--accent);text-align:center}
+.dg-note{margin:2px 0 0;font-size:12.5px;line-height:1.4;color:#b8cdea}
+.dg-me{display:flex;flex-direction:column;gap:8px}
+.fd-tx small.fd-dg{color:#ffd34d}
+html[data-rec="1"] .dg{display:none!important}
 </style>
 <div id="app"><div class="app">
   <header class="hero">
@@ -382,7 +414,14 @@ html[data-rec="1"] .bnav{display:none!important}
       <div class="fd-head"><h2 id="ulTitle">Unlocks</h2><button type="button" class="fd-x" data-close="unlocks" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
       <p class="pn-sub">Every subscriber milestone opens a new building in the city.</p>
       <ol class="metas ul-list" id="ulList"></ol>
+      <button type="button" class="pn-link dg-link" id="ulDrag" data-open="drag" hidden=""><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 21V4"/><path d="M5 4h13l-2.5 4L18 12H5"/></svg><span>Drag Strip · today’s races and the weekly times</span></button>
       <button type="button" class="pn-link" data-open="moveIn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>How to move in and get a job</span></button>
+    </section>
+    <section class="finder pn dg" id="drag" hidden="" aria-labelledby="dgTitle">
+      <div class="fd-head"><h2 id="dgTitle">Drag Strip</h2><button type="button" class="fd-x" data-close="drag" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div class="dg-tabs" role="tablist" aria-label="Drag Strip results"><button type="button" role="tab" id="dgT-today" data-dg="today" aria-selected="true">Today</button><button type="button" role="tab" id="dgT-week" data-dg="week" aria-selected="false">This week</button><button type="button" role="tab" id="dgT-me" data-dg="me" aria-selected="false">My best</button></div>
+      <div class="dg-body" id="dgBody" role="tabpanel"></div>
+      <button type="button" class="pn-link" id="dgWatch"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg><span>Watch the strip live</span></button>
     </section>
     <section class="finder pn" id="moveIn" hidden="" aria-labelledby="miTitle">
       <div class="fd-head"><h2 id="miTitle">How to move in</h2><button type="button" class="fd-x" data-close="moveIn" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -2175,6 +2214,108 @@ function drawPeopleNames(){
  ctx.restore();
 }
 
+// Data model (for the next step: predictions and tunes by comment, settled by the comment job):
+//  entrant  {id:'n:<name>'|'a:<k>', name|null, plate, glb, model, color, rt0}   rt0 = the driver's usual reaction time
+//  run      {rt, t60, t8, v8, et, vt, red, tune}                                seconds, m/s (shown in mph and km/h)
+//  heat     {id:'q12'|'qf1'|'sf2'|'f', round, lanes:[{e,run}|null, ...], win:0|1}
+//  STATE.drag.tunes = {"<name>":"launch"|"topspeed"} is read when present (written later by the comment job); bets will be
+//  {name, pick:<entrant name>, coins, day} and are settled against day(date).heats.find(h=>h.id==='f').
+const DRAG=(()=>{
+ const SPEC={"_doc":"Drag strip specs per car model (key = glb in models.json). hp at the crank, kg kerb mass (a driver of 80 kg is added), drive FWD/RWD/AWD, eng F/M/R = front/mid/rear engine (weight on the driven wheels), gears = forward gears, v1 / vtop = km/h at the rev limiter in 1st / top gear, shift = seconds without drive per gear change, cda = drag coefficient x frontal area (m2), mu = tyre grip on a prepared strip, launch = launch rpm as a fraction of the rev limiter. Fictional generic cars: no brands.","hothatch":{"hp":280,"kg":1420,"drive":"FWD","eng":"F","gears":6,"v1":62,"vtop":270,"shift":0.25,"cda":0.7,"mu":1.08,"launch":0.45},"gt12":{"hp":789,"kg":1630,"drive":"RWD","eng":"F","gears":7,"v1":88,"vtop":345,"shift":0.12,"cda":0.72,"mu":1.2,"launch":0.4},"v8sport":{"hp":300,"kg":1430,"drive":"RWD","eng":"F","gears":4,"v1":85,"vtop":235,"shift":0.45,"cda":0.75,"mu":0.9,"launch":0.4},"sportsaloon":{"hp":560,"kg":2000,"drive":"AWD","eng":"F","gears":8,"v1":64,"vtop":310,"shift":0.15,"cda":0.66,"mu":1.1,"launch":0.42},"sport3":{"hp":473,"kg":1730,"drive":"RWD","eng":"F","gears":8,"v1":62,"vtop":300,"shift":0.15,"cda":0.68,"mu":1.12,"launch":0.4},"saloon90":{"hp":238,"kg":1200,"drive":"RWD","eng":"F","gears":5,"v1":60,"vtop":250,"shift":0.4,"cda":0.66,"mu":1.02,"launch":0.48},"taxi":{"hp":150,"kg":1600,"drive":"FWD","eng":"F","gears":6,"v1":55,"vtop":215,"shift":0.35,"cda":0.72,"mu":0.98,"launch":0.38},"offroad":{"hp":278,"kg":2200,"drive":"AWD","eng":"F","gears":6,"v1":52,"vtop":200,"shift":0.35,"cda":1.15,"mu":0.95,"launch":0.35},"coupe85":{"hp":185,"kg":1200,"drive":"RWD","eng":"F","gears":5,"v1":60,"vtop":240,"shift":0.4,"cda":0.66,"mu":0.98,"launch":0.48},"sedan98":{"hp":170,"kg":1450,"drive":"RWD","eng":"F","gears":5,"v1":55,"vtop":225,"shift":0.4,"cda":0.68,"mu":0.98,"launch":0.42},"fastback65":{"hp":271,"kg":1400,"drive":"RWD","eng":"F","gears":4,"v1":80,"vtop":220,"shift":0.45,"cda":0.8,"mu":0.88,"launch":0.4},"midv10":{"hp":610,"kg":1500,"drive":"AWD","eng":"M","gears":7,"v1":80,"vtop":330,"shift":0.1,"cda":0.64,"mu":1.15,"launch":0.45},"jgt98":{"hp":320,"kg":1500,"drive":"RWD","eng":"F","gears":6,"v1":68,"vtop":285,"shift":0.35,"cda":0.68,"mu":1.05,"launch":0.5},"awd99":{"hp":330,"kg":1560,"drive":"AWD","eng":"F","gears":6,"v1":62,"vtop":280,"shift":0.35,"cda":0.7,"mu":1.08,"launch":0.55},"rearturbo":{"hp":640,"kg":1640,"drive":"AWD","eng":"R","gears":8,"v1":70,"vtop":330,"shift":0.09,"cda":0.66,"mu":1.18,"launch":0.48},"rwd24":{"hp":228,"kg":1280,"drive":"RWD","eng":"F","gears":6,"v1":62,"vtop":240,"shift":0.35,"cda":0.62,"mu":1.02,"launch":0.48},"ae86":{"hp":128,"kg":950,"drive":"RWD","eng":"F","gears":5,"v1":56,"vtop":210,"shift":0.4,"cda":0.62,"mu":0.95,"launch":0.52},"f40":{"hp":478,"kg":1100,"drive":"RWD","eng":"M","gears":5,"v1":95,"vtop":330,"shift":0.4,"cda":0.66,"mu":1.08,"launch":0.45},"venom":{"hp":1817,"kg":1360,"drive":"RWD","eng":"M","gears":7,"v1":115,"vtop":480,"shift":0.1,"cda":0.62,"mu":1.3,"launch":0.3},"amgone":{"hp":1049,"kg":1695,"drive":"AWD","eng":"M","gears":7,"v1":100,"vtop":360,"shift":0.1,"cda":0.85,"mu":1.22,"launch":0.4},"p1":{"hp":903,"kg":1490,"drive":"RWD","eng":"M","gears":7,"v1":95,"vtop":360,"shift":0.08,"cda":0.72,"mu":1.25,"launch":0.35},"etype":{"hp":265,"kg":1250,"drive":"RWD","eng":"F","gears":4,"v1":80,"vtop":240,"shift":0.45,"cda":0.62,"mu":0.88,"launch":0.42},"viper":{"hp":400,"kg":1490,"drive":"RWD","eng":"F","gears":6,"v1":85,"vtop":300,"shift":0.4,"cda":0.72,"mu":1.05,"launch":0.35},"miata":{"hp":116,"kg":960,"drive":"RWD","eng":"F","gears":5,"v1":55,"vtop":200,"shift":0.35,"cda":0.62,"mu":0.98,"launch":0.5},"svj":{"hp":759,"kg":1525,"drive":"AWD","eng":"M","gears":7,"v1":85,"vtop":350,"shift":0.08,"cda":0.7,"mu":1.2,"launch":0.45},"r32":{"hp":276,"kg":1430,"drive":"AWD","eng":"F","gears":5,"v1":65,"vtop":260,"shift":0.38,"cda":0.7,"mu":1.05,"launch":0.55},"charger":{"hp":600,"kg":1700,"drive":"RWD","eng":"F","gears":4,"v1":95,"vtop":270,"shift":0.4,"cda":0.82,"mu":0.92,"launch":0.32},"challenger":{"hp":717,"kg":1990,"drive":"RWD","eng":"F","gears":8,"v1":75,"vtop":320,"shift":0.15,"cda":0.8,"mu":1.12,"launch":0.3},"urus":{"hp":650,"kg":2200,"drive":"AWD","eng":"F","gears":8,"v1":62,"vtop":310,"shift":0.15,"cda":0.95,"mu":1.12,"launch":0.42},"evo9":{"hp":286,"kg":1400,"drive":"AWD","eng":"F","gears":5,"v1":60,"vtop":250,"shift":0.35,"cda":0.72,"mu":1.08,"launch":0.55}};
+ const QM=402.336,EM=201.168,FT60=18.288,ROLL=.3,G=9.81,RHO=1.2,DT=.002;
+ const FORCE0=typeof location!=='undefined'&&/[?&]drag=1\b/.test(location.search);let force=FORCE0;
+ // ---- seeded numbers ----
+ const h32=s=>{let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)}return h>>>0};
+ const rng=seed=>{let s=seed>>>0;return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}};
+ // n-th root with Newton steps (exact IEEE operations only)
+ const root=(a,n)=>{if(n<=1)return a;let q=1+(a-1)/n;for(let k=0;k<60;k++){let p=1;for(let i=0;i<n-1;i++)p*=q;q=q-(p*q-a)/(n*p)}return q};
+ // ---- the car: a small integrator with traction limit, gear shifts and aero drag ----
+ // engine: power at the wheels P(x)=Pmax*(x+x^2-x^3), x=rpm/rpm at peak power (peak at 88% of the rev limiter)
+ // launch: clutch slip holds the launch rpm until the car catches up with it in 1st gear
+ // traction: mu * weight on the driven wheels, with weight transfer under acceleration (RWD gains, FWD loses)
+ // tunes (chosen by comment in the next step): launch = stickier and shorter-geared but draggier and a softer top end;
+ // topspeed = slippery and a stronger top end but less grip. Traction-limited cars gain from launch, the others from topspeed.
+ const TUNES={stock:{grip:1,cda:1,gear:1,launch:0,power:1},launch:{grip:1.07,cda:1.1,gear:.93,launch:.08,power:.97},topspeed:{grip:.95,cda:.9,gear:1.05,launch:-.04,power:1.03}};
+ function prep(glb,tune){const s=SPEC[glb]||SPEC.hothatch,tu=TUNES[tune]||TUNES.stock,n=s.gears;
+  const eff=s.drive==='AWD'?.82:s.drive==='FWD'?.88:.86,v1=s.v1/3.6*tu.gear,vt=s.vtop/3.6*tu.gear,q=root(vt/v1,n-1);
+  const vg=[];let v=v1;for(let g=0;g<n;g++){vg.push(v);v*=q}
+  const wr=s.eng==='R'?.61:s.eng==='M'?.57:.5,wf=s.eng==='F'?.62:1-wr;
+  return{m:s.kg+80,P:s.hp*745.7*eff*tu.power,vg,n,shift:s.shift,cda:s.cda*tu.cda,mu:s.mu*tu.grip,drive:s.drive,wr,wf,launch:Math.min(.75,Math.max(.25,s.launch+tu.launch))}}
+ const pw=x=>{if(x<=0)return 0;const y=x+x*x-x*x*x;return y<.05?.05:y};
+ // o: {glb, tune, grip (day x run), power (day air x run), shiftK (driver's shift time x), ldl (launch rpm +-)}; trace: also sample x every 0.05 s (for the 3D replay)
+ function run(o,trace){const c=prep(o.glb,o.tune),m=c.m,mi=m*1.05,W=m*G,roll=.013*W;
+  const shT=c.shift*(o.shiftK||1),lch=Math.min(.8,Math.max(.2,c.launch+(o.ldl||0)));let x=0,v=0,a=0,t=0,g=0,sh=0,tr=null,t60=0,t8=0,v8=0,tR=0,last=0;const out=trace?[0]:null;const P=c.P*(o.power||1),mu=c.mu*(o.grip||1);
+  for(let it=0;it<20000;it++){
+   let F=0;
+   if(sh>0){sh-=DT;if(sh<=0)g++}
+   else{const vmax=c.vg[g];let r=v/vmax;if(g===0&&r<lch)r=lch;
+    if(r>=1&&g<c.n-1){sh=shT;F=0}
+    else if(r<1.02){const vr=r*vmax;F=P*pw(r/.88)/(vr>v?vr:v>.5?v:.5)}}
+   // traction limit
+   const fr=c.drive==='AWD'?.98:c.drive==='FWD'?c.wf-.25*a/G:c.wr+.25*a/G,Tm=mu*W*(fr<.2?.2:fr);if(F>Tm)F=Tm;
+   const Fd=.5*RHO*c.cda*v*v+(v>0?roll:0);a=(F-Fd)/mi;v+=a*DT;if(v<0)v=0;const x0=x;x+=v*DT;t+=DT;
+   if(!tR&&x>=ROLL)tR=t-(x-ROLL)/(v||1);
+   const cross=d=>t-(x-d)/(v||1);
+   if(!t60&&x>=FT60+ROLL)t60=cross(FT60+ROLL)-tR;
+   if(!t8&&x>=EM+ROLL){t8=cross(EM+ROLL)-tR;v8=v}
+   if(trace&&t-last>=.05-1e-9){last+=.05;out.push(x)}
+   if(x>=QM+ROLL){const et=cross(QM+ROLL)-tR;if(trace)out.push(x);return{t60,t8,v8,et,vt:v,tR,trace:out}}
+   if(x0===x&&it>1000)break}
+  return{t60:99,t8:99,v8:0,et:99,vt:0,tR:0,trace:out}}
+ // ---- who races: every subscriber car (up to what the streets hold); Wall of Mechanics names drive theirs ----
+ const plateOf=k=>{const r=rng(h32('plate|'+k)),l=()=>L2[Math.floor(r()*L2.length)];return `${l()}${l()}${l()} ${String(Math.floor(r()*10000)).padStart(4,'0')}`};
+ function entrant(key,name){const hm=h32('car|'+key),m=MODELS[hm%MODELS.length],hc=h32('col|'+key),r=rng(h32('drv|'+key));
+  return{id:(name?'n:':'a:')+key,name,plate:plateOf(key),glb:m.glb,model:m.n,color:m.taxi?'#f2b81d':COLORS[hc%COLORS.length],rt0:.415+r()*.11,cons:.3+r()*.7}}
+ let eCache=null,eSig='';
+ function entrants(){const nCars=Math.min(subs||0,typeof MAXCARS!=='undefined'?MAXCARS:400),named=WALL.slice(0,nCars);const sig=nCars+'|'+named.join('\n');if(sig===eSig)return eCache;
+  const out=named.map(n=>entrant(n.toLowerCase(),n));for(let k=0;out.length<nCars;k++)out.push(entrant(String(k),null));eSig=sig;eCache=out;return out}
+ const tuneOf=e=>{const T=typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes;return e.name&&T&&T[e.name]&&TUNES[T[e.name]]?T[e.name]:'stock'};
+ // ---- one day of racing (run at 00:00 UTC; the strip replays it all day) ----
+ // Bracket racing, so any car can win: every car gets a dial-in (its expected time, rounded up), the slower car gets the
+ // green first by the difference, and the first to the line wins unless it ran quicker than its dial-in ("breakout").
+ // Red light (left before the green) loses. The weekly leaderboard is the raw quickest time.
+ const ROUND={q:'Qualifying',qf:'Quarter-final',sf:'Semi-final',f:'Final'};
+ const dayCache=new Map(),dialCache=new Map();
+ const dialOf=(glb,tune)=>{const k=glb+'|'+tune;if(!dialCache.has(k))dialCache.set(k,Math.ceil((run({glb,tune,grip:.99}).et+.04)*100)/100);return dialCache.get(k)};
+ // who wins a heat: 0 or 1
+ function judge(a,b){if(!b)return 0;if(!a)return 1;if(a.red!==b.red)return a.red?1:0;if(a.red)return a.rt<=b.rt?1:0;
+  const ba=a.et<a.dial,bb=b.et<b.dial;if(ba!==bb)return ba?1:0;if(ba)return(a.dial-a.et)<=(b.dial-b.et)?0:1;
+  return(a.rt+a.et-a.dial)<=(b.rt+b.et-b.dial)?0:1}
+ function day(date){const E=entrants();const key=date+'|'+eSig+'|'+JSON.stringify((typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes)||0);if(dayCache.has(key))return dayCache.get(key);
+  const r=rng(h32('drag|'+date)),air=.97+r()*.05,track=.96+r()*.06;
+  const pass=(e,lane)=>{const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000,res=run({glb:e.glb,tune,grip,power,shiftK,ldl});
+   return{e,lane,o:{glb:e.glb,tune,grip,power,shiftK,ldl},dial:dialOf(e.glb,tune),rt,red:rt<.4,t60:res.t60,t8:res.t8,v8:res.v8,et:res.et,vt:res.vt,tR:res.tR,tune}};
+  const heat=(id,round,a,b)=>{const L=[a?pass(a,0):null,b?pass(b,1):null];
+   return{id,round,label:round==='q'?ROUND.q:ROUND[round]+(/\d/.test(id)?' '+id.replace(/\D/g,''):''),lanes:L,win:judge(L[0],L[1])}};
+  // qualifying: everyone, in pairs, in a seeded order
+  const ord=E.slice();for(let i=ord.length-1;i>0;i--){const j=Math.floor(r()*(i+1));const t=ord[i];ord[i]=ord[j];ord[j]=t}
+  const heats=[];for(let i=0;i<ord.length;i+=2)heats.push(heat('q'+(i/2+1),'q',ord[i],ord[i+1]||null));
+  // qualifying order: the best "package" (reaction time + how close to the dial-in; a breakout counts double, a red light last)
+  const pk=l=>(l.red?100:0)+(l.rt-.4)+(l.et<l.dial?2:1)*Math.abs(l.et-l.dial);
+  const quali=[];for(const h of heats)for(const l of h.lanes)if(l){l.pk=pk(l);quali.push(l)}quali.sort((a,b)=>a.pk-b.pk);
+  // eliminations: the 8 best packages (4 or 2 on a small day), ladder 1-8, 4-5, 2-7, 3-6; higher seed in the left lane
+  const nE=quali.length>=8?8:quali.length>=4?4:quali.length>=2?2:0,seeds=quali.slice(0,nE).map(l=>l.e);let champ=null;
+  if(nE){const pairs=nE===8?[[0,7],[3,4],[1,6],[2,5]]:nE===4?[[0,3],[1,2]]:[[0,1]];let cur=pairs.map(([a,b])=>[seeds[a],seeds[b]]);
+   const rounds=nE===8?['qf','sf','f']:nE===4?['sf','f']:['f'];
+   for(const rd of rounds){const won=[];cur.forEach(([a,b],k)=>{const h=heat(rd==='f'?'f':rd+(k+1),rd,a,b);heats.push(h);won.push(h.lanes[h.win].e)});
+    if(rd==='f')champ=won[0];else{const nx=[];for(let k=0;k<won.length;k+=2)nx.push([won[k],won[k+1]]);cur=nx}}}
+  const fast=quali.slice().sort((a,b)=>a.et-b.et);
+  const d={date,air,track,heats,quali,fast,champ,final:heats.find(h=>h.id==='f')||null};dayCache.set(key,d);if(dayCache.size>12)dayCache.delete(dayCache.keys().next().value);return d}
+ // ---- dates (UTC) ----
+ const today=()=>new Date().toISOString().slice(0,10);
+ const addDays=(date,k)=>new Date(Date.parse(date+'T00:00:00Z')+k*864e5).toISOString().slice(0,10);
+ const weekDays=date=>{const wd=(new Date(date+'T00:00:00Z').getUTCDay()+6)%7,out=[];for(let k=wd;k>=0;k--)out.push(addDays(date,-k));return out};
+ // fastest this week: each entrant's best pass Monday..today
+ function week(date){const best=new Map();for(const d of weekDays(date))for(const h of day(d).heats)for(const l of h.lanes){if(!l)continue;const b=best.get(l.e.id);if(!b||l.et<b.et)best.set(l.e.id,Object.assign({date:d},l))}
+  return[...best.values()].sort((a,b)=>a.et-b.et)}
+ function person(name,date){const k=String(name||'').toLowerCase();const e=entrants().find(q=>q.name&&q.name.toLowerCase()===k);if(!e)return null;
+  const runs=[];for(const d of weekDays(date))for(const h of day(d).heats)for(const l of h.lanes)if(l&&l.e===e)runs.push(Object.assign({date:d,heat:h},l));
+  const td=runs.filter(q=>q.date===date);let best=null;for(const q of runs)if(!best||q.et<best.et)best=q;return{e,today:td,best}}
+ // ---- formatting: always both units ----
+ const fmt={et:t=>t.toFixed(3)+' s',rt:t=>t.toFixed(3)+' s',mph:v=>(v*2.236936).toFixed(1)+' mph',kmh:v=>(v*3.6).toFixed(1)+' km/h',spd:v=>(v*2.236936).toFixed(1)+' mph · '+(v*3.6).toFixed(1)+' km/h',who:e=>e.name||e.plate,
+  QM:'1/4 mile · 402 m',EM:'1/8 mile · 201 m',FT60:'60 ft · 18 m'};
+ const isOpenNow=()=>force||(subs!==null&&subs>=MS.pista.n);
+ return{SPEC,TUNES,judge,dialOf,QM,EM,FT60,ROLL,run,day,week,person,entrants,today,addDays,weekDays,fmt,isOpen:isOpenNow,force:v=>{force=!!v||FORCE0},forced:()=>force,h32,rng}})();
 // ---------- 3D view (three.js, loaded on demand; the simulation above stays the same) ----------
 const THREE_URL='https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
 const ADDON=p=>'https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/'+p;
@@ -2908,7 +3049,7 @@ function make3D(T,X){
  // ---------- labels drawn on the HUD canvas ----------
  function pill(text,x,y,size,bg,fg,stroke){if(window.__HIDE&&window.__HIDE.some(n=>String(text).includes(n)))return;hctx.font=`700 ${size*=(HUDH===CH?HUDSC:1),size}px 'Barlow Condensed', sans-serif`;const w=hctx.measureText(text).width+size*.9,h=size*1.25;hctx.fillStyle=bg;rrect(hctx,x-w/2,y-h,w,h,h/2);hctx.fill();if(stroke){hctx.strokeStyle=stroke;hctx.lineWidth=2;hctx.stroke()}hctx.fillStyle=fg;hctx.fillText(text,x,y-h/2+1)}
  function drawLabels(){
-  hctx.textAlign='center';hctx.textBaseline='middle';if(WORLD&&W3.labelsDraw)W3.labelsDraw();if(WORLD&&W3.fish&&cam.dist<220&&mode!=='in'){const F=W3.fish.g.position,q=toHud(F.x,3.2,F.z);if(q)pill('★ Kongcringe · FISHERMAN',q.x,q.y,clamp(2000/cam.dist,12,20),'rgba(46,139,87,.95)','#ffffff')}const sz=clamp(2600/cam.dist,13,26),near=cam.dist<200;
+  hctx.textAlign='center';hctx.textBaseline='middle';if(WORLD&&W3.labelsDraw)W3.labelsDraw();if(WORLD&&W3.dragDraw)W3.dragDraw();if(WORLD&&W3.fish&&cam.dist<220&&mode!=='in'){const F=W3.fish.g.position,q=toHud(F.x,3.2,F.z);if(q)pill('★ Kongcringe · FISHERMAN',q.x,q.y,clamp(2000/cam.dist,12,20),'rgba(46,139,87,.95)','#ffffff')}const sz=clamp(2600/cam.dist,13,26),near=cam.dist<200;
   const items=[];
   if(near)peds.forEach((p,k)=>{if(!p.name)return;const g=pedMeshes[k];items.push({w:g.position,h:2.25,t:p.name+(jobOf(p.name)?' · '+jobOf(p.name).toUpperCase():''),kind:'p'})});
   for(const c of cars){if(!c.driver||c.hidden||c.removed||c===selected)continue;const g=meshes.get(c.id);if(g&&near)items.push({w:g.position,h:2.1,t:'★ '+c.driver,kind:'d'})}
@@ -3846,6 +3987,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    wt+=dt;W3.waterTex.offset.set(wt*.01,wt*.004);if(W3.fish){const F=W3.fish;if(F.mx)F.mx.update(dt);F.g.position.y=F.y0+.06*Math.sin(wt*1.6);F.g.rotation.z=.03*Math.sin(wt*1.1);F.g.rotation.y=F.r0+.05*Math.sin(wt*.3)}for(const m of W3.tmats)m.emissiveIntensity=mat.win.emissiveIntensity*.75;
    for(const c of W3.cars){c.s+=c.v*dt*c.dir;atPath(c.p,c.s,c.off,tmp);if(c.rig){c.g.position.set(tmp.x+c.rig[0],0,tmp.z+c.rig[1]);c.g.rotation.y=tmp.ry+(c.dir<0?Math.PI:0)}else{atPath(c.p,c.s,0,tmp);const px=tmp.x,pz=tmp.z,x0=WX(px),z0=WZ(pz);atPath(c.p,c.s+1,0,tmp);let hx=WX(tmp.x)-x0,hz=WZ(tmp.z)-z0;const hl=Math.hypot(hx,hz)||1;hx/=hl;hz/=hl;const o=c.off>0?1.55:-1.55;c.g.position.set(x0-hz*o,deckY(px,pz),z0+hx*o);c.g.rotation.y=Math.atan2(hx,hz)+(c.dir<0?Math.PI:0)}if(c.g.userData.col)lodCar(c.g,{color:c.g.userData.col})}
    for(const a of W3.anim)a(wt,dt);
+   if(W3.dragTick)W3.dragTick(dt);
    if(W3.board&&simTime-(W3.board.at||-99)>1){W3.board.at=simTime;const L=LEAGUE;const txt=L.home+' '+L.hs+' - '+L.as+' '+L.away+'|'+L.min;if(txt!==W3.board.last){W3.board.last=txt;const x=W3.board.c.getContext('2d');x.fillStyle='#0b0e13';x.fillRect(0,0,512,160);x.fillStyle='#ffd34d';x.font="800 30px 'Barlow Condensed',sans-serif";x.textAlign='center';x.fillText('MOTOROPOLIS LEAGUE · '+(L.min>=90?'FULL TIME':L.min+"'"),256,40);x.fillStyle='#fff';x.font="800 50px 'Barlow Condensed',sans-serif";x.fillText(`${L.home.toUpperCase()} ${L.hs}-${L.as} ${L.away.toUpperCase()}`,256,112);W3.board.t.needsUpdate=true}}
    const e=emerg;flame.visible=false;spray.visible=false;
    if(e&&e.type==='fire'){const gv=meshes.get(e.car.id);if(gv){flame.visible=true;flame.position.copy(gv.position);const k=e.arrived?Math.max(.15,1-(e.t-(e.fix-8))/8):1;flame.scale.set(k,k*(1+.25*Math.sin(wt*20)),k);
@@ -4009,24 +4151,143 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
     const ant=new T.Mesh(new T.CylinderGeometry(.35,.6,34,8),M(0xd93a2f));ant.position.y=107;t.add(ant);
     const bc=new T.Mesh(new T.SphereGeometry(.9,10,8),M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2}));bc.position.y=124.5;t.add(bc);
     bc.userData.nm=1;W3.anim.push(tt=>{bc.visible=Math.floor(tt*1.2)%2===0});g.add(t);W3.labels.push({t:'TV TOWER',x,z,y:130+CITY.h(x,z)})}
-   // ---- MOTOROPOLIS DRAGWAY: a quarter-mile strip east of the highway ----
-   {const[x0,z,x1]=F.dragway,L=x1-x0;C2.clearRect(x0-10,z-40,x1+10,z+24);const d=new T.Group();
-    const strip=new T.Mesh(new T.PlaneGeometry(L,14),mat.asphalt);strip.rotation.x=-Math.PI/2;strip.position.set((x0+x1)/2,.04,z);strip.receiveShadow=true;d.add(strip);
-    B0(d,L,.03,.3,mt.white,(x0+x1)/2,.05,z,false);for(const s of[-1,1])B0(d,L,.03,.3,M(0xe8b931),(x0+x1)/2,.05,z+s*6.6,false);
-    B0(d,.8,.03,14,mt.white,x0+18,.05,z,false);B0(d,.8,.03,14,mt.white,x0+18+402/2.5,.05,z,false);
-    for(const s of[-1,1])B0(d,L,.9,.5,mt.stone,(x0+x1)/2,0,z+s*7.6);
-    // start lights ("tree") and the timing tower
-    const tr=new T.Group();tr.position.set(x0+16,0,z);const pole=new T.Mesh(new T.CylinderGeometry(.15,.15,4,6),mat.dark);pole.position.y=2;tr.add(pole);
-    const lamps=[];for(let q=0;q<5;q++){const c=q<3?0xffb000:q===3?0x38e07b:0xff3b30;const m=new T.Mesh(new T.SphereGeometry(.22,10,8),M(c,{emissive:c,emissiveIntensity:0}));m.position.set(0,2.4+q*.4,0);tr.add(m);lamps.push(m)}d.add(tr);
-    bld(d,8,14,8,TM[1],mat.roof,x0+24,z-16);d.add(sign('DRAGWAY',7,1.4,'#22252b','#ff7a1a',x0+24,12,z-11.9,0));
-    // grandstand along the north side
-    for(let s=0;s<5;s++)B0(d,120,1,2,s%2?M(0xd93a2f):M(0x2f6fd9),x0+80,s,z-12-s*2);B0(d,124,.4,12,mat.roofD,x0+80,7.5,z-16,false);
-    d.add(sign('MOTOROPOLIS DRAGWAY',28,3.4,'#ff7a1a','#1d0f02',x0+80,11,z-10,0));
-    // two dragsters race down the strip every 20 s
-    const dc=[0xd93a2f,0x2f6fd9].map((c,k)=>{const car=new T.Group();B0(car,1.6,.5,5.6,M(c,{roughness:.35,metalness:.3}),0,.2,0);B0(car,1.2,.6,1.4,mat.carGlass,0,.6,-.4,false);B0(car,2.2,.12,.6,mat.dark,0,1.4,-2.6,false);car.position.set(x0+14,0,z+(k?3.3:-3.3));car.rotation.y=Math.PI/2;d.add(car);return car});
-    W3.anim.push(tt=>{const ph=tt%20;lamps.forEach((m,q)=>{m.material.emissiveIntensity=(q<3&&ph>q*.5&&ph<3)||(q===3&&ph>=1.5&&ph<6)?2.5:0});dc.forEach((c,k)=>{const t2=Math.max(0,ph-1.5),s=Math.min(L-30,.5*(18+k*1.5)*t2*t2);c.position.x=x0+14+s})});
-    g.add(d);W3.labels.push({t:'DRAGWAY',x:(x0+x1)/2,z,y:16})}
+   // (the Drag Strip is built by world/drag3d.js: locked until 1,000 subscribers)
    warp(g)}
+  if(CITY2){const[x0,zc,x1]=F.dragway,S=.5,XS=x0+22,XF=XS+DRAG.QM*S,XE=x1-6,XB=XS-10,LZ=[zc-3.3,zc+3.3],ZR=zc+12,CYC=36;
+   W3.c2.clearRect(x0-10,zc-40,x1+10,zc+30);
+   const lab={t:'DRAG STRIP',x:(x0+x1)/2,z:zc,y:16,type:'pista'};W3.labels.push(lab);
+   const D3={g:null,sig:'',open:false,clock:null,heat:-1,day:null,dayKey:'',cars:[null,null],board:null,tree:null,treeSig:'',boardSig:'',last:null,lanes:[null,null],puffs:[],tag:null};
+   // the ground under the strip is not perfectly flat: lift the whole strip just above its highest point
+   const YG=(()=>{let y=0;for(let x=x0-12;x<=x1+12;x+=6)for(let dz=-32;dz<=26;dz+=4)y=Math.max(y,gh(x,zc+dz));return y+.04})();
+   const own=new Set();const ownTex=t=>{own.add(t);return t};
+   function dispose(g){root.remove(g);g.traverse(o=>{if(o.userData.keepGeo)return;if(o.geometry&&o.geometry!==BOX&&!SH.has(o.geometry)&&!o.userData.carPart)o.geometry.dispose();const m=o.material;if(m&&!Array.isArray(m)){const i=signMats.indexOf(m);if(i>=0){signMats.splice(i,1);if(m.map)m.map.dispose();m.dispose()}else if(m.map&&own.has(m.map)){own.delete(m.map);m.map.dispose();m.dispose()}}})}
+   const cvTex=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const t=ownTex(new T.CanvasTexture(c));t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return{c,x:c.getContext('2d'),t}};
+   // ---------- locked: blueprint footprint + board ----------
+   function buildLocked(){const g=new T.Group();g.position.y=YG;g.userData.mergeRoot=1;g.userData.warped=1;const cx=(x0+x1)/2,cz=zc-6,w=x1-x0+16,d=40;
+    const pg=new T.PlaneGeometry(w,d),uv=pg.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*w/24,uv.getY(i)*d/24);const p=new T.Mesh(pg,bpMat);p.rotation.x=-Math.PI/2;p.position.set(cx,.06,cz);p.receiveShadow=true;g.add(p);
+    for(const s of[-1,1]){B0(g,w,.08,.4,bpLine,cx,.06,cz+s*(d/2-.2),false);B0(g,.4,.08,d,bpLine,cx+s*(w/2-.2),.06,cz,false)}
+    // ghost of the strip: lane lines, start and finish
+    for(const z of[zc-7,zc,zc+7])B0(g,x1-x0,.09,.25,bpLine,cx,.06,z,false);for(const x of[XS,XF])B0(g,.5,.09,14,bpLine,x,.06,zc,false);
+    const m=MS.pista,left=Math.max(0,m.n-(subs||0)),nx=m===nextMilestone();
+    const sw=30,shh=9;g.add(panel([[(nx?'NEXT · ':'')+'DRAG STRIP · OPENS AT '+m.n.toLocaleString('en-US')+' SUBS',84,'#ffffff'],[`${left.toLocaleString('en-US')} MORE SUBSCRIBER${left===1?'':'S'} TO OPEN`,70,nx?'#ffd34d':'#ffb36b']],nx?'#b4500f':'#0f2f5c',sw,shh,cx,shh/2+3.4,zc-14,0));
+    for(const s of[-1,1])B0(g,.45,3.6,.45,mat.dark,cx+s*sw*.4,0,zc-14);
+    return g}
+   // ---------- open: the strip ----------
+   function bulbs(){const{c,x,t}=D3.tree;const L=D3.lanes;x.fillStyle='#15181d';x.fillRect(0,0,256,640);x.fillStyle='#2a2f37';x.fillRect(124,0,8,640);
+    const ph=D3.ph||[];const B=(cx,cy,r,on,col,off)=>{x.beginPath();x.arc(cx,cy,r,0,7);x.fillStyle=on?col:off;x.fill();if(on){x.fillStyle='rgba(255,255,255,.55)';x.beginPath();x.arc(cx-r*.3,cy-r*.3,r*.35,0,7);x.fill()}};
+    for(let k=0;k<2;k++){const cx=k?184:72,s=ph[k]||{};B(cx-18,44,13,s.p,'#fff7d6','#3b3a33');B(cx+18,44,13,s.p,'#fff7d6','#3b3a33');B(cx-18,96,13,s.s,'#fff7d6','#3b3a33');B(cx+18,96,13,s.s,'#fff7d6','#3b3a33');
+     for(let a=0;a<3;a++)B(cx,180+a*92,36,s.a,'#ffb000','#4a3a12');B(cx,470,36,s.g,'#38e07b','#123a22');B(cx,566,36,s.r,'#ff3b30','#4a1512')}
+    t.needsUpdate=true}
+   const ftxt=(x,txt,px,max,weight,font)=>{let f=px;x.font=`${weight||800} ${f}px ${font||"'Barlow Condensed','Arial Narrow',sans-serif"}`;while(x.measureText(txt).width>max&&f>12){f-=2;x.font=`${weight||800} ${f}px ${font||"'Barlow Condensed','Arial Narrow',sans-serif"}`}};
+   const hidden=n=>window.__HIDE&&n&&window.__HIDE.some(h=>String(n).includes(h));
+   const who=e=>e.name&&!hidden(e.name)?e.name:e.plate;
+   function drawBoard(){const{c,x,t}=D3.board,W=1024,H=512,F2=DRAG.fmt,r=D3.last;x.fillStyle='#0b0e13';x.fillRect(0,0,W,H);x.strokeStyle='#ff7a1a';x.lineWidth=8;x.strokeRect(6,6,W-12,H-12);
+    x.fillStyle='#ff7a1a';x.fillRect(6,6,W-12,64);x.fillStyle='#1d0f02';x.textBaseline='middle';x.textAlign='left';ftxt(x,'MOTOROPOLIS DRAG STRIP · '+(r?r.h.label.toUpperCase():'TODAY'),40,600);x.fillText('MOTOROPOLIS DRAG STRIP · '+(r?r.h.label.toUpperCase():'TODAY'),26,40);
+    x.textAlign='right';ftxt(x,'1/4 MILE · 402 M',40,330);x.fillText('1/4 MILE · 402 M',W-26,40);
+    x.fillStyle='#2a2f37';x.fillRect(W/2-3,80,6,H-96);
+    for(let k=0;k<2;k++){const ox=k?W/2+22:28,cw=W/2-50,l=r&&r.h.lanes[k],done=r&&r.done[k];x.textAlign='left';
+     x.fillStyle='#9aa3ae';x.font="700 26px 'Barlow Condensed',sans-serif";x.fillText(k?'RIGHT LANE':'LEFT LANE',ox,104);
+     if(!l){x.fillStyle='#5a6270';x.font="800 44px 'Barlow Condensed',sans-serif";x.fillText(r?'BYE RUN':'',ox,200);continue}
+     x.fillStyle='#ffffff';ftxt(x,who(l.e),44,cw);x.fillText(who(l.e),ox,146);x.fillStyle='#9aa3ae';ftxt(x,l.e.model,26,cw,600);x.fillText(l.e.model,ox,184);
+     x.fillStyle=done?(l.red?'#ff5a4f':'#ffd34d'):'#3a4050';x.font="800 132px 'JetBrains Mono',monospace";x.fillText(done?l.et.toFixed(3):'--.---',ox-6,276);
+     x.font="800 40px 'Barlow Condensed',sans-serif";x.fillStyle=done?'#ffd34d':'#3a4050';x.fillText('s',ox+404,296);
+     x.fillStyle=done?'#ffffff':'#3a4050';ftxt(x,done?F2.spd(l.vt):'--- mph · --- km/h',46,cw);x.fillText(done?F2.spd(l.vt):'--- mph · --- km/h',ox,364);
+     x.fillStyle='#9aa3ae';x.font="600 28px 'Barlow Condensed',sans-serif";x.fillText(`RT ${done||r.started[k]?l.rt.toFixed(3):'-.---'} s · DIAL ${l.dial.toFixed(2)} s`,ox,412);
+     const fin=r.done[0]||!r.h.lanes[0],fin2=r.done[1]||!r.h.lanes[1];
+     if(l.red&&(done||r.started[k])){x.fillStyle='#ff3b30';x.fillRect(ox,438,cw,52);x.fillStyle='#fff';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('RED LIGHT',ox+16,465)}
+     else if(fin&&fin2&&r.h.win===k){x.fillStyle='#38e07b';x.fillRect(ox,438,cw,52);x.fillStyle='#062a14';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('WIN ▲',ox+16,465)}
+     else if(done&&l.et<l.dial){x.fillStyle='#e8b931';x.fillRect(ox,438,cw,52);x.fillStyle='#1d0f02';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('BREAKOUT',ox+16,465)}}
+    t.needsUpdate=true}
+   function buildOpen(){const g=new T.Group();g.position.y=YG;g.userData.mergeRoot=1;g.userData.warped=1;const L=x1-x0,cx=(x0+x1)/2;
+    const conc=M(0xa9acb0,{roughness:.9}),burn=M(0x24272c,{roughness:.35,metalness:.15}),yel=M(0xe8b931),wall=M(0xd9d6cf,{roughness:.85});
+    // strip: asphalt, a concrete launch pad, the burnout box, lane lines
+    const strip=new T.Mesh(new T.PlaneGeometry(L,16),M(0x2b2e34,{roughness:.9}));strip.rotation.x=-Math.PI/2;strip.position.set(cx,.04,zc);strip.receiveShadow=true;g.add(strip);
+    B0(g,XS+50-x0,.02,15,conc,(x0+XS+50)/2,.04,zc,false);for(const z of LZ)B0(g,XS-3-(x0+3),.025,5.6,burn,(x0+3+XS-3)/2,.05,z,false);
+    B0(g,L,.03,.3,mt.white,cx,.07,zc,false);for(const s of[-1,1])B0(g,L,.03,.25,yel,cx,.07,zc+s*7,false);
+    B0(g,.6,.03,14,mt.white,XS,.07,zc,false);for(let k=0;k<14;k++)B0(g,1,.031,1,k%2?mt.white:mat.dark,XF-.5+(k%2)*0,.07,zc-6.5+k,false);for(let k=0;k<14;k++)B0(g,1,.031,1,k%2?mat.dark:mt.white,XF+.5,.07,zc-6.5+k,false);
+    for(const s of[-1,1])B0(g,XE-2-x0,1,.5,wall,(x0+XE-2)/2,0,zc+s*8.2);
+    // return road (south of the wall) and the exit at the far end
+    const rr2=new T.Mesh(new T.PlaneGeometry(XE+6-x0,6),mat.asphalt);rr2.rotation.x=-Math.PI/2;rr2.position.set((x0+XE+6)/2,.035,ZR);rr2.receiveShadow=true;g.add(rr2);
+    B0(g,10,.02,ZR-zc+3,mat.asphalt,XE+1,.035,(zc+ZR)/2,false);
+    // distance markers (both units)
+    for(const[d,txt]of[[18.288,'60 FT · 18 M'],[100.584,'330 FT · 101 M'],[201.168,'1/8 MILE · 201 M'],[304.8,'1000 FT · 305 M'],[402.336,'1/4 MILE · 402 M']]){const x=XS+d*S;g.add(sign(txt,6,1,'#22252b','#ffd34d',x,2.2,zc-9.4,0));B0(g,.2,1.7,.2,mat.dark,x,0,zc-9.4)}
+    // christmas tree (staging lights) between the lanes, just past the start line; faces the drivers (and the cameras behind)
+    {const tr=new T.Group();tr.position.set(XS+5,0,zc);B0(tr,.3,3,.3,mat.dark,0,0,0);B0(tr,.5,2.9,1.1,mat.dark,0,3,0);D3.tree=cvTex(256,640);
+     const tm=new T.MeshBasicMaterial({map:D3.tree.t});const pl=new T.PlaneGeometry(.95,2.38);for(const s of[-1,1]){const m=new T.Mesh(pl,tm);m.position.set(s*.26,4.45,0);m.rotation.y=s*Math.PI/2;if(s>0)m.scale.x=-1;tr.add(m)}
+     tr.userData.nm=1;g.add(tr);bulbs()}
+    // timing board at the finish, south side, facing the grandstand
+    {const bd=new T.Group();bd.position.set(XF-12,0,zc+22);D3.board=cvTex(1024,512);const bm=new T.MeshBasicMaterial({map:D3.board.t});
+     B0(bd,20.6,10.6,.5,mat.dark,0,4.7,0);for(const s of[-1,1])B0(bd,.6,5,.6,mat.dark,s*7,0,0);const m=new T.Mesh(new T.PlaneGeometry(20,10),bm);m.position.set(0,10,-.27);m.rotation.y=Math.PI;bd.add(m);
+     const m2=new T.Mesh(new T.PlaneGeometry(20,10),bm);m2.position.set(0,10,.27);bd.add(m2);bd.userData.nm=1;g.add(bd);drawBoard()}
+    // grandstand along the north side, with a crowd, a roof and the strip's name
+    {const gx=XS+60,gl=120,r2=DRAG.rng(77),P=[],PC=[];for(let s=0;s<5;s++){B0(g,gl,1,2,s%2?M(0xd93a2f):M(0x2f6fd9),gx,s,zc-13-s*2);
+      for(let q=0;q<70;q++)if(r2()<.6)P.push({x:gx-gl/2+1+q*(gl-2)/70+r2()*.6,y:s+1,z:zc-13.2-s*2+r2()*.4,ry:0,sx:.5,sy:1.1,sz:.4})}
+     for(const p of P)PC.push(['#d93a2f','#2f6fd9','#f2f2ee','#e8b931','#22252b','#2e8b57','#ff7a1a'][Math.floor(r2()*7)]);instG(g,sh(W3.bodyG||new T.BoxGeometry(1,1,1).translate(0,.5,0)),mt.bodyT,P,PC);
+     B0(g,gl+4,.4,12,mat.roofD,gx,8.6,zc-18,false);for(let q=-3;q<=3;q++)B0(g,.4,8.6,.4,mat.dark,gx+q*gl/6,0,zc-23.6);
+     g.add(sign('MOTOROPOLIS DRAG STRIP',30,3.4,'#ff7a1a','#1d0f02',gx,11.2,zc-12.4,0))}
+    // timing tower at the start
+    bld(g,8,12,8,TM[1],mat.roof,XS-4,zc-30);g.add(sign('TIMING',5,1.1,'#22252b','#ff7a1a',XS-4,10.2,zc-25.9,0));
+    // light poles
+    for(let q=0;q<5;q++)for(const s of[-1,1]){const x=x0+20+q*(L-40)/4,z=zc+s*(s<0?26:16.5);if(s>0&&Math.abs(x-(XF-12))<16)continue;B0(g,.3,12,.3,mat.dark,x,0,z);B0(g,2.4,.4,.8,mat.dark,x,12,z)}
+    // the two race cars (rebuilt for every heat) and the burnout smoke
+    const cg=new T.Group();cg.userData.nm=1;g.add(cg);D3.cg=cg;D3.cars=[null,null];
+    D3.puffs=[];const smk=mt.smoke;for(let k=0;k<2;k++)for(let q=0;q<5;q++){const p=new T.Mesh(new T.SphereGeometry(1,10,8),smk);p.visible=false;p.castShadow=false;cg.add(p);D3.puffs.push({m:p,k,q})}
+    return g}
+   // ---------- the loop through the day's heats ----------
+   const secOfDay=()=>{const n=Date.now();return(n%864e5)/1000};
+   function carFor(e){const c={kind:'car',len:(MODELS.find(m=>m.glb===e.glb)||{len:32}).len,wid:16,color:e.color,m:MODELS.find(m=>m.glb===e.glb)||{}};
+    const g=X&&X.cars&&X.cars[e.glb]?glbCar(c,e.glb):carMesh(c);g.traverse(o=>{o.userData.carPart=1});return g}
+   function setHeat(i){const d=D3.day,h=d.heats[i];D3.heat=i;D3.h=h;
+    for(let k=0;k<2;k++){if(D3.cars[k]){D3.cg.remove(D3.cars[k].g);D3.cars[k]=null}const l=h.lanes[k];if(!l)continue;const tr=DRAG.run(l.o,true);const g=new T.Group();g.add(carFor(l.e));g.rotation.y=Math.PI/2;g.position.set(x0-8,0,LZ[k]);D3.cg.add(g);
+     D3.cars[k]={g,l,tr:tr.trace,tR:tr.tR,cross:false,x:x0-8,z:LZ[k],a:0}}
+    const dm=Math.max(h.lanes[0]?h.lanes[0].dial:0,h.lanes[1]?h.lanes[1].dial:0);D3.ta=h.lanes.map(l=>l?9+(dm-l.dial):0);
+    D3.cur={h,done:[false,false],started:[false,false]};if(!D3.last&&i>0)D3.last={h:d.heats[i-1],done:[true,true],started:[true,true]}}
+   const ease=u=>u<0?0:u>1?1:u*u*(3-2*u);
+   function laneAt(k,t){const C=D3.cars[k];if(!C)return null;const l=C.l,ta=D3.ta[k],tl=ta+l.rt-C.tR;let x,z=LZ[k],a=0,ph={p:false,s:false,a:false,g:false,r:false},vis=true,smoke=0;
+    if(t<3){x=x0-8+(XB-(x0-8))*ease(t/3)}
+    else if(t<5){x=XB;smoke=1}
+    else if(t<7.4){x=XB+(XS-1.6-XB)*ease((t-5)/2.4)}
+    else x=XS-1.6;
+    ph.p=x>XS-4;ph.s=t>=7.4;
+    if(t>=ta){ph.a=t<ta+.4||(l.red&&t<tl);if(!l.red)ph.g=t>=ta+.4}
+    if(l.red&&t>=tl)ph.r=true;
+    if(t>=tl){const tt=t-tl,i=tt/.05,tr=C.tr,n=tr.length-1;const xr=i<n?tr[Math.floor(i)]+(tr[Math.min(n,Math.floor(i)+1)]-tr[Math.floor(i)])*(i-Math.floor(i)):tr[n];
+     const tc=l.et+C.tR;// time from moving to the finish line
+     if(tt<tc){x=XS-1.6+(xr-DRAG.ROLL)*S+DRAG.ROLL*S;ph.s=ph.p=false}
+     else{if(!D3.cur.done[k]){D3.cur.done[k]=true;D3.last=D3.cur;D3.boardSig=''}const vs=l.vt*S,Dst=XE-10-XF,dec=vs*vs/(2*Dst),ts=vs/dec,u=Math.min(tt-tc,ts);x=XF+vs*u-.5*dec*u*u;ph.s=ph.p=false;
+      const after=tt-tc-ts;if(after>1){const w=after-1;// turn off through the exit and drive back on the return road
+       if(w<2.5){const q=ease(w/2.5);x=x+6*Math.sin(q*Math.PI/2);z=LZ[k]+(ZR+(k?1.5:-1.5)-LZ[k])*(1-Math.cos(q*Math.PI/2));a=-q*Math.PI*.98}
+       else{x=x+6-(w-2.5)*11;z=ZR+(k?1.5:-1.5);a=-Math.PI;if(x<x0-6)vis=false}}}
+     if(!D3.cur.started[k]){D3.cur.started[k]=true;D3.boardSig=''}}
+    return{x,z,a,ph,vis,smoke}}
+   function tick(dt){const open=DRAG.isOpen(),m=MS.pista;const sig=open?'open':'lock|'+Math.max(0,m.n-(subs||0))+'|'+(m===nextMilestone()?1:0);
+    lab.type=open?undefined:'pista';
+    if(sig!==D3.sig){D3.sig=sig;if(D3.g)dispose(D3.g);D3.open=open;D3.heat=-1;D3.last=null;D3.cur=null;D3.g=open?buildOpen():buildLocked();root.add(D3.g)}
+    if(!open)return;
+    if(D3.clock==null)D3.clock=secOfDay();D3.clock+=dt;
+    const date=DRAG.today(),dk=date+'|'+(subs||0);if(dk!==D3.dayKey){D3.dayKey=dk;D3.day=DRAG.day(date);D3.heat=-1}
+    const d=D3.day,N=d.heats.length;if(!N)return;
+    const sec=((D3.clock%86400)+86400)%86400,i=Math.floor(sec/CYC)%N,t=sec%CYC;if(i!==D3.heat){setHeat(i);D3.boardSig=''}
+    const ph=[{},{}];
+    for(let k=0;k<2;k++){const s=laneAt(k,t),C=D3.cars[k];if(!s||!C)continue;C.g.visible=s.vis;C.g.position.set(s.x,0,s.z);C.g.rotation.y=Math.PI/2+s.a;C.x=s.x;C.z=s.z;C.a=s.a;ph[k]=s.ph;
+     for(const p of D3.puffs)if(p.k===k){p.m.visible=s.smoke>0;if(s.smoke){const u=((t*1.7+p.q*.2)%1);p.m.position.set(s.x-1.8-u*3,.4+u*1.1,s.z+(p.q%2?.9:-.9));p.m.scale.setScalar(.35+u*1.1)}}}
+    for(const p of D3.puffs)if(!D3.cars[p.k])p.m.visible=false;
+    D3.ph=ph;const ts=JSON.stringify(ph);if(ts!==D3.treeSig){D3.treeSig=ts;bulbs()}
+    const bs=D3.last?D3.last.h.id+D3.last.done.join()+D3.last.started.join():'';if(bs!==D3.boardSig){D3.boardSig=bs;drawBoard()}}
+   W3.dragTick=tick;
+   // name tags over the cars (driver name, or the plate for a subscriber without a name), and the round over the tree
+   W3.dragDraw=()=>{if(!D3.open||!D3.h||cam.dist>420)return;const sz=clamp(2400/cam.dist,12,20);
+    for(let k=0;k<2;k++){const C=D3.cars[k];if(!C||!C.g.visible)continue;const s=toHud(C.x,2.5+YG,C.z);if(!s)continue;if(C.l.e.name)pill('★ '+C.l.e.name,s.x,s.y,sz,'rgba(255,122,26,.95)','#1d0f02');else pill(C.l.e.plate,s.x,s.y,sz,'rgba(250,250,250,.95)','#111')}
+    if(cam.dist<260){const s=toHud(XS+5,7.2+YG,zc);if(s)pill(D3.h.label.toUpperCase()+' · NOW RACING',s.x,s.y,sz*.9,'rgba(13,38,80,.94)','#ffd34d')}};
+   // recorder / test hooks: force open, jump to a heat, car positions, camera presets
+   const CAMS={overview:{tx:(x0+x1)/2,tz:zc,yaw:Math.PI-.55,pitch:.5,dist:250},start:{tx:XS-2,tz:zc,yaw:-Math.PI/2+.42,pitch:.22,dist:30},tree:{tx:XS+5,tz:zc,ty:3.4,yaw:-Math.PI/2-.35,pitch:.1,dist:13},
+    stands:{tx:XS+90,tz:zc,yaw:Math.PI-.25,pitch:.28,dist:60},finish:{tx:XF,tz:zc,yaw:Math.PI/2+.5,pitch:.2,dist:55},board:{tx:XF-12,tz:zc+22,ty:9,yaw:Math.PI+.15,pitch:.12,dist:30},
+    burnout:{tx:XB,tz:zc,yaw:-.6,pitch:.25,dist:24}};
+   window.__DRAG={force:v=>{DRAG.force(v)},open:()=>DRAG.isOpen(),
+    seek:(h,t)=>{const d=DRAG.day(DRAG.today()),N=d.heats.length,i=typeof h==='number'?h:d.heats.findIndex(q=>q.id===h);if(i<0||i>=N)return false;let c=(Math.floor(secOfDay()/(CYC*N))*N+i)*CYC;if(c+CYC>86400)c=i*CYC;D3.clock=c+(t||0);D3.heat=-1;return true},
+    pos:k=>{const C=D3.cars[k||0];return C?{x:C.x,z:C.z,y:YG,a:-C.a}:null},cam:n=>CAMS[n]?Object.assign({fov:50},CAMS[n]):null,cams:()=>Object.keys(CAMS),
+    info:()=>D3.h?{heat:D3.h.id,label:D3.h.label,t:D3.clock%CYC,lanes:D3.h.lanes.map(l=>l&&{who:l.e.name||l.e.plate,et:l.et,dial:l.dial})}:null};
+  }
  }
  // ---------- world: swap the simple trees for the low-poly tree models, keep them clear of the traffic lights ----------
  let tfT=0;const _tm=new T.Matrix4(),_tp=new T.Vector3(),_tq=new T.Quaternion(),_ts=new T.Vector3(),_tinv=new T.Matrix4();
@@ -4637,7 +4898,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   for(const n of hits){const li=document.createElement('li');const w=where(n),job=jobOf(n);
    const av=document.createElement('span');av.className='fd-av';av.textContent=n.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'?';
    const tx=document.createElement('span');tx.className='fd-tx';const b=document.createElement('b');b.textContent=n;const sm=document.createElement('small');
-   sm.textContent=(job?job:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);li.append(av,tx);
+   sm.textContent=(job?job:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);{const db=UIX.dragBest&&UIX.dragBest(n);if(db){const d=document.createElement('small');d.className='fd-dg';d.textContent=db;tx.append(d)}}li.append(av,tx);
    if(w&&R3){const go=document.createElement('button');go.type='button';go.className='fd-go';go.textContent='Fly to me';go.addEventListener('click',()=>flyTo(n));li.append(go)}
    flist.append(li)}}
  function flyTo(n){const w=where(n);if(!w||!R3)return;if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
@@ -4667,13 +4928,13 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
 // and the collapsible cards below the city. Never shows the subscriber total: the Unlocks list copies #metas
 // (milestone thresholds, "Open", "N more to go", "Blueprint").
 {
- const PN={finder:$('finder'),unlocks:$('unlocks'),moveIn:$('moveIn')},scr=$('screen'),ul=$('ulList');
+ const PN={finder:$('finder'),unlocks:$('unlocks'),moveIn:$('moveIn'),drag:$('drag')},scr=$('screen'),ul=$('ulList');
  const phone=()=>matchMedia('(max-width: 700px)').matches;
  const only=keep=>{for(const k in PN)if(k!==keep)PN[k].hidden=true};UIX.only=only;
  // the panels live over the city: on a phone, bring the city back into view first
  const toCity=()=>{const r=scr.getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)scr.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})};
  function fillUnlocks(){ul.innerHTML=$('metas').innerHTML;const c=ul.querySelector('li.next .chip');if(c)c.textContent=c.textContent.replace(/ to go$/,' more to go')}
- function open(id){if(id==='finder'){UIX.openFinder();return}only(id);const el=PN[id];if(id==='unlocks')fillUnlocks();el.hidden=false;el.scrollTop=0;
+ function open(id){if(id==='finder'){UIX.openFinder();return}only(id);const el=PN[id];if(id==='unlocks')fillUnlocks();if(id==='drag'&&UIX.fillDrag)UIX.fillDrag();el.hidden=false;el.scrollTop=0;
   // the open milestones come first: start the list at the next one
   if(id==='unlocks'){const nx=ul.querySelector('li.next');if(nx)el.scrollTop=Math.max(0,nx.offsetTop-el.clientHeight*.4)}
   const x=el.querySelector('.fd-x');if(x)try{x.focus({preventScroll:true})}catch(e){}}
@@ -4685,10 +4946,10 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  $('nbExplore').addEventListener('click',()=>{only(null);toCity();if(hasGL()&&!view3d)setView(true,true)});
  document.addEventListener('click',e=>{const o=e.target.closest&&e.target.closest('[data-open]');if(o){open(o.dataset.open);return}
   const c=e.target.closest&&e.target.closest('[data-close]');if(c)close(c.dataset.close)});
- for(const id of ['unlocks','moveIn'])PN[id].addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close(id)}});
+ for(const id of ['unlocks','moveIn','drag'])PN[id].addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close(id)}});
  setInterval(()=>{if(!PN.unlocks.hidden)fillUnlocks()},5000);
  // keep the buttons in step with whichever panel is open (Find my name can also close itself)
- const sync=()=>{const f=!PN.finder.hidden,u=!PN.unlocks.hidden,m=!PN.moveIn.hidden;
+ const sync=()=>{const f=!PN.finder.hidden,u=!PN.unlocks.hidden||!PN.drag.hidden,m=!PN.moveIn.hidden;
   for(const[b,on]of[[$('vFind'),f],[$('nbFind'),f],[$('vUnlocks'),u],[$('nbUnlocks'),u]]){b.setAttribute('aria-expanded',String(on));b.classList.toggle('is-on',on)}
   $('nbExplore').classList.toggle('is-on',!f&&!u&&!m)};
  const mo=new MutationObserver(sync);for(const k in PN)mo.observe(PN[k],{attributes:true,attributeFilter:['hidden']});sync();
@@ -4700,6 +4961,45 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  for(const c of cards){const b=c.querySelector('.card-h button');if(b)b.addEventListener('click',()=>setCard(c,b.getAttribute('aria-expanded')!=='true'))}
  // a car picked on the map opens its card
  {const info=$('carInfo'),cc=$('carCard');new MutationObserver(()=>{if(!info.hidden)setCard(cc,true)}).observe(info,{attributes:true,attributeFilter:['hidden']})}
+}
+{
+ const P=$('drag'),body=$('dgBody'),link=$('ulDrag'),F=DRAG.fmt;let tab='today',meName='';
+ const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+ const day=()=>DRAG.day(DRAG.today());
+ const dayName=d=>new Date(d+'T12:00:00Z').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'});
+ function vis(){const o=DRAG.isOpen();link.hidden=!o;if(!o&&!P.hidden)P.hidden=true}
+ vis();setInterval(vis,3000);
+ // one lane of a heat: who, the car, the time and the trap speed
+ function lane(l,win){const r=el('div','dg-ln'+(win?' w':''));if(!l){r.append(el('span','dg-who','Bye run'));return r}
+  const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));
+  const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));
+  const c=el('span','dg-r',(win?'WIN · ':'')+'RT '+l.rt.toFixed(3)+' s · dial '+l.dial.toFixed(2)+' s'+(!l.red&&l.et<l.dial?' · breakout':''));r.append(a,b,c);return r}
+ function heat(h){const box=el('div','dg-heat');box.append(el('div','dg-hl',h.label));box.append(lane(h.lanes[0],h.win===0&&!!h.lanes[1]),lane(h.lanes[1],h.win===1));return box}
+ function today(){const d=day(),f=d.final;body.textContent='';
+  const top=el('div','dg-final');top.append(el('div','dg-k',`Today · ${dayName(d.date)}`));
+  if(f){const w=f.lanes[f.win];top.append(el('div','dg-champ','🏆 '+F.who(w.e)),el('div','dg-sub',`${w.e.model} · won the final in ${F.et(w.et)} at ${F.spd(w.vt)}`))}
+  else top.append(el('div','dg-sub','The first races start at midnight (UTC).'));body.append(top);
+  const el2=d.heats.filter(h=>h.round!=='q');if(el2.length){body.append(el('h3','dg-h','Eliminations'));for(const h of el2.slice().reverse())body.append(heat(h))}
+  if(d.quali.length){body.append(el('h3','dg-h','Best qualifiers'));const ol=el('ol','dg-list');d.quali.slice(0,8).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
+  body.append(el('p','dg-note','Bracket racing: every car gets a dial-in (its expected time) and the slower car gets the green first, so any car can win. The first to the line wins, unless it ran quicker than its dial-in (a breakout). The races run at midnight UTC and the strip replays every heat all day. Quarter mile · 402 m.'))}
+ function week(){const w=DRAG.week(DRAG.today());body.textContent='';body.append(el('p','dg-note','The quickest quarter mile (402 m) of each car since Monday (UTC).'));
+  const ol=el('ol','dg-list dg-rank');w.slice(0,10).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model+' · '+dayName(l.date)));const b=el('span','dg-t');b.append(el('b',null,F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
+ function me(){body.textContent='';const lb=el('label',null,'Your YouTube name');lb.htmlFor='dgIn';const inp=el('input');inp.id='dgIn';inp.type='text';inp.autocomplete='off';inp.spellcheck=false;inp.placeholder='Start typing your name…';inp.value=meName;
+  const out=el('div','dg-me');body.append(lb,inp,out);
+  const show=()=>{meName=inp.value;out.textContent='';const q=inp.value.trim().toLowerCase();if(!q)return;
+   const hit=WALL.find(n=>n.toLowerCase()===q)||WALL.find(n=>n.toLowerCase().includes(q));const p=hit&&DRAG.person(hit,DRAG.today());
+   if(!p){out.append(el('p','dg-note',hit?`${hit} doesn’t have a car in the races yet.`:'No one with that name lives here yet. Comment WORKSHOP on any video to move in.'));return}
+   const card=el('div','dg-final');card.append(el('div','dg-k',p.e.name),el('div','dg-sub',p.e.model+' · plate '+p.e.plate));
+   if(p.best){card.append(el('div','dg-champ',F.et(p.best.et)),el('div','dg-sub',`Best this week · ${F.spd(p.best.vt)} · ${dayName(p.best.date)}`))}out.append(card);
+   if(p.today.length){out.append(el('h3','dg-h','Today'));for(const r of p.today)out.append(heat(r.heat))}};
+  inp.addEventListener('input',show);show()}
+ function render(){for(const b of P.querySelectorAll('[data-dg]'))b.setAttribute('aria-selected',String(b.dataset.dg===tab));(tab==='week'?week:tab==='me'?me:today)()}
+ UIX.fillDrag=()=>{if(!meName){const f=$('fdIn');if(f&&f.value.trim())meName=f.value.trim()}render()};
+ for(const b of P.querySelectorAll('[data-dg]'))b.addEventListener('click',()=>{tab=b.dataset.dg;render();if(tab==='me'){const i=$('dgIn');if(i&&!matchMedia('(max-width: 700px)').matches)i.focus()}});
+ // fly the camera to the strip
+ $('dgWatch').addEventListener('click',()=>{if(!hasGL())return;if(!view3d)setView(true,true);const go=()=>{if(!R3){setTimeout(go,300);return}if(R3.mode()==='in')R3.exitIn();const c=window.__DRAG&&window.__DRAG.cam('stands');if(c)Object.assign(R3.cam,{tx:c.tx,tz:c.tz,yaw:c.yaw,pitch:c.pitch,dist:c.dist})};go();if(matchMedia('(max-width: 700px)').matches)P.hidden=true});
+ // Find my name: a person's best quarter mile this week, when the strip is open
+ UIX.dragBest=n=>{if(!DRAG.isOpen())return null;const p=DRAG.person(n,DRAG.today());return p&&p.best?`Drag best ${F.et(p.best.et)} · ${F.spd(p.best.vt)}`:null};
 }
 drawBackground();setup();setSubs(SUBS_OVR!==null?SUBS_OVR:Math.max(0,Math.floor(Number(STATE.subs)||0)));
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{g.clearRect(0,0,CW,CH);drawBackground()});

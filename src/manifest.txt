@@ -21,6 +21,7 @@ ui/panels.js
 ui/workshop2d.js
 people/walkers.js
 people/jobs.js
+sim/drag.js
 view3d/boot.js
 view3d/renderer.js
 view3d/batch.js
@@ -75,6 +76,7 @@ world/city2_zones.js
 world/city2_detail.js
 world/city2_terrain.js
 world/city2_landmarks.js
+world/drag3d.js
 world/world3d_end.js
 world/treeify.js
 view3d/resize.js
@@ -90,6 +92,7 @@ view3d/loader.js
 ui/view_controls.js
 ui/welcome.js
 ui/nav.js
+ui/drag_ui.js
 core/main_loop.js
 recorder/hooks.js
 core/end.js

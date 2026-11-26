@@ -1,5 +1,5 @@
 //@ world/city2_landmarks.js - phase 1 landmarks seen from far (Phase 1B places): City Hall on the Old Town square, the TV
-//@ tower on the top of the hills, the Motoropolis Dragway beside the industrial zone in the south. (The stadium stays a milestone: it opens at its subscriber goal.)
+//@ tower on the top of the hills. (The Drag Strip in the south is world/drag3d.js.) (The stadium stays a milestone: it opens at its subscriber goal.)
 //@ inside the if(WORLD){ block of world/world3d.js. Off with ?city=1.
   if(CITY2){const C2=W3.c2,g=new T.Group();root.add(g);const stone=M(0xe9e4d8,{roughness:.8}),stone2=M(0xd2cbbd,{roughness:.85});
    // ---- CITY HALL: west side of the Old Town square, facing it ----
@@ -23,21 +23,5 @@
     const ant=new T.Mesh(new T.CylinderGeometry(.35,.6,34,8),M(0xd93a2f));ant.position.y=107;t.add(ant);
     const bc=new T.Mesh(new T.SphereGeometry(.9,10,8),M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2}));bc.position.y=124.5;t.add(bc);
     bc.userData.nm=1;W3.anim.push(tt=>{bc.visible=Math.floor(tt*1.2)%2===0});g.add(t);W3.labels.push({t:'TV TOWER',x,z,y:130+CITY.h(x,z)})}
-   // ---- MOTOROPOLIS DRAGWAY: a quarter-mile strip east of the highway ----
-   {const[x0,z,x1]=F.dragway,L=x1-x0;C2.clearRect(x0-10,z-40,x1+10,z+24);const d=new T.Group();
-    const strip=new T.Mesh(new T.PlaneGeometry(L,14),mat.asphalt);strip.rotation.x=-Math.PI/2;strip.position.set((x0+x1)/2,.04,z);strip.receiveShadow=true;d.add(strip);
-    B0(d,L,.03,.3,mt.white,(x0+x1)/2,.05,z,false);for(const s of[-1,1])B0(d,L,.03,.3,M(0xe8b931),(x0+x1)/2,.05,z+s*6.6,false);
-    B0(d,.8,.03,14,mt.white,x0+18,.05,z,false);B0(d,.8,.03,14,mt.white,x0+18+402/2.5,.05,z,false);
-    for(const s of[-1,1])B0(d,L,.9,.5,mt.stone,(x0+x1)/2,0,z+s*7.6);
-    // start lights ("tree") and the timing tower
-    const tr=new T.Group();tr.position.set(x0+16,0,z);const pole=new T.Mesh(new T.CylinderGeometry(.15,.15,4,6),mat.dark);pole.position.y=2;tr.add(pole);
-    const lamps=[];for(let q=0;q<5;q++){const c=q<3?0xffb000:q===3?0x38e07b:0xff3b30;const m=new T.Mesh(new T.SphereGeometry(.22,10,8),M(c,{emissive:c,emissiveIntensity:0}));m.position.set(0,2.4+q*.4,0);tr.add(m);lamps.push(m)}d.add(tr);
-    bld(d,8,14,8,TM[1],mat.roof,x0+24,z-16);d.add(sign('DRAGWAY',7,1.4,'#22252b','#ff7a1a',x0+24,12,z-11.9,0));
-    // grandstand along the north side
-    for(let s=0;s<5;s++)B0(d,120,1,2,s%2?M(0xd93a2f):M(0x2f6fd9),x0+80,s,z-12-s*2);B0(d,124,.4,12,mat.roofD,x0+80,7.5,z-16,false);
-    d.add(sign('MOTOROPOLIS DRAGWAY',28,3.4,'#ff7a1a','#1d0f02',x0+80,11,z-10,0));
-    // two dragsters race down the strip every 20 s
-    const dc=[0xd93a2f,0x2f6fd9].map((c,k)=>{const car=new T.Group();B0(car,1.6,.5,5.6,M(c,{roughness:.35,metalness:.3}),0,.2,0);B0(car,1.2,.6,1.4,mat.carGlass,0,.6,-.4,false);B0(car,2.2,.12,.6,mat.dark,0,1.4,-2.6,false);car.position.set(x0+14,0,z+(k?3.3:-3.3));car.rotation.y=Math.PI/2;d.add(car);return car});
-    W3.anim.push(tt=>{const ph=tt%20;lamps.forEach((m,q)=>{m.material.emissiveIntensity=(q<3&&ph>q*.5&&ph<3)||(q===3&&ph>=1.5&&ph<6)?2.5:0});dc.forEach((c,k)=>{const t2=Math.max(0,ph-1.5),s=Math.min(L-30,.5*(18+k*1.5)*t2*t2);c.position.x=x0+14+s})});
-    g.add(d);W3.labels.push({t:'DRAGWAY',x:(x0+x1)/2,z,y:16})}
+   // (the Drag Strip is built by world/drag3d.js: locked until 1,000 subscribers)
    warp(g)}

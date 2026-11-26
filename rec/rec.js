@@ -55,6 +55,8 @@
   // camera for a shot: {cam:{from:{tx,tz,yaw,pitch,dist,fov},to:{...},ease:true}} or {follow:{glb,phi,pitch,dist,sweep}}
   function camAt(S, t, st) {
     const u = S.dur ? t / S.dur : 0;
+    if (S.follow && S.follow.drag && window.__DRAG) { const q = window.__DRAG.pos(S.follow.lane || 0); if (q) { const f = S.follow; if (st.ya == null) st.ya = q.a; let da = q.a - st.ya; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI; st.ya += da * .08; const ph = (f.phi || 0) + (f.sweep || 0) * (u - .5); return { tx: q.x, tz: q.z, ty: f.ty || 0, yaw: PI / 2 - (st.ya + ph), pitch: f.pitch || .3, dist: f.dist || 12, fov: f.fov || 50 } } }
+    if (S.dragCam && window.__DRAG) { const a = Object.assign({}, window.__DRAG.cam(S.dragCam.from || S.dragCam), S.dragCam.fromOv || {}), b = Object.assign({}, window.__DRAG.cam(S.dragCam.to || S.dragCam.from || S.dragCam), S.dragCam.toOv || {}), k = S.dragCam.ease === false ? u : E(u); const o = {}; for (const key of ['tx', 'tz', 'ty', 'yaw', 'pitch', 'dist', 'fov']) o[key] = L(a[key] || 0, b[key] ?? a[key] ?? 0, k); return o }
     if (S.follow && st.id != null) { const q = S.follow.ped ? window.__PEDH.pos(st.id) : window.__H.pos(st.id); if (q) { const f = S.follow; if (st.ya == null) st.ya = q.a; let da = q.a - st.ya; while (da > PI) da -= 2 * PI; while (da < -PI) da += 2 * PI; st.ya += da * .08; const ph = f.phi + (f.sweep || 0) * (u - .5); return { tx: q.x, tz: q.z, yaw: PI / 2 - (st.ya + ph), pitch: f.pitch || .3, dist: f.dist || 9.5, fov: f.fov || 50 } } }
     if (S.xms && window.__XMS && window.__XMS[S.xms]) { const q = window.__XMS[S.xms](); if (q) { const x = q[0], z = q[1], y = S.xms === 'sleigh' ? (q[2] || 0) : 0, f = S.follow || {};
       if (st.px != null) { const dx = x - st.px, dz = z - st.pz; if (dx * dx + dz * dz > 1e-5) { const ry = Math.atan2(dx, dz); if (st.ry == null) st.ry = ry; let d = ry - st.ry; while (d > PI) d -= 2 * PI; while (d < -PI) d += 2 * PI; st.ry += d * .06 } } st.px = x; st.pz = z;
@@ -95,9 +97,10 @@
       if (S.night != null) H2.light(S.night ? 'noite' : (SH.light || 'dia'));
       if (S.inside && R.mode() !== 'in') { R.enterIn(S.inside); st.textContent = 'Loading the inside…'; for (let q = 0; q < 150; q++) { H2.step(1 / 30); R.frame(1 / 30); await new Promise(z => setTimeout(z, 30)) } }
       if (!S.inside && R.mode() === 'in') { R.exitIn(); for (let q = 0; q < 40; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
+      if (S.drag && window.__DRAG) { window.__DRAG.seek(S.drag.heat ?? 'f', S.drag.t || 0); R.frame(1 / FPS) }
       if (S.xms) { for (let q = 0; q < 3; q++) { H2.step(1 / FPS); camAt(S, 0, sst) } }
       if (S.follow && S.follow.ped) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = window.__PEDH && window.__PEDH.pick(S.follow.ped, usedP); if (c != null) { sst.id = c; usedP.push(c) } else H2.step(2) } }
-      else if (S.follow) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = H2.pick(S.follow.glb, used); if (c) { sst.id = c.id; used.push(c.id) } else H2.step(2) } }
+      else if (S.follow && !S.follow.drag) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = H2.pick(S.follow.glb, used); if (c) { sst.id = c.id; used.push(c.id) } else H2.step(2) } }
       for (let k = 0; k < n; k++, F++) {
         const due = t0 + F * 1000 / FPS; const now = performance.now(); if (enc) { if (enc.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 4)); else if (F % 30 === 0) await new Promise(r => setTimeout(r, 0)) } else if (now < due) await new Promise(r => setTimeout(r, due - now)); else if (now - due > 1000 / FPS) slow++;
         const t = k / FPS; if (S.oldUntil != null && window.__PEDH) window.__PEDH.old(t < S.oldUntil); H2.step(1 / FPS); const cam = camAt(S, t, sst); Object.assign(R.cam, { tx: cam.tx, tz: cam.tz, ty: cam.ty || 0, yaw: cam.yaw, pitch: cam.pitch, dist: cam.dist });
@@ -125,6 +128,7 @@
     const dur = SH.shots.reduce((a, s) => a + s.dur, 0);
     info.innerHTML = `<b>${SH.title || NAME}</b><br>${SH.shots.length} shots · ${dur.toFixed(1)} s · 1080×1920 · ${FPS} fps<br>Press RECORD and wait until it says Done (it may take longer than the video; every frame is kept). The video downloads by itself.`;
     const wait = () => new Promise(r => { const k = () => window.__H && window.__H.R3() ? r() : setTimeout(k, 300); k() }); await wait();
+    if (SH.drag && window.__DRAG) window.__DRAG.force(true);
     window.__H.step(SH.warmup || 40); $('rGo').disabled = $('rPv').disabled = false; $('rGo').onclick = () => run(true); $('rPv').onclick = () => run(false)
   }
   boot()
