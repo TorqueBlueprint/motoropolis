@@ -30,8 +30,8 @@ function wkStep(p,d){const w=p.wk,W=SWK;if(w.cross){w.cross.t+=d;if(w.cross.t>=w
  // end of the block: carry on along another street of this junction (back the same way only at a dead end)
  const node=w.dir>0?q.e.b:q.e.a,here=W.at(w.k,end,w.side);let opts=(W.by.get(node)||[]).filter(k=>k!==w.k);if(!opts.length)opts=[w.k];
  const k2=opts[Math.floor(W.r()*opts.length)],q2=W.E[k2],dir2=q2.e.a===node?1:-1,rel=w.side*w.dir,keep=W.r()<.7?rel:-rel,side2=keep*dir2,s2=dir2>0?q2.t0:q2.len-q2.t1;
- const there=W.at(k2,s2,side2);w.k=k2;w.dir=dir2;w.side=side2;w.s=s2;// at the roundabout walk round the outside of the ring (an arc on the plaza paving), never across it
- const nd=CITY.nodes[node];if(nd.round){const cx=nd.x*10,cy=nd.z*10,a0=Math.atan2(here.y-cy,here.x-cx),r0=Math.hypot(here.x-cx,here.y-cy),r1=Math.hypot(there.x-cx,there.y-cy);
+ const there=W.at(k2,s2,side2);w.k=k2;w.dir=dir2;w.side=side2;w.s=s2;// at the roundabout and at junctions walk round the corner (an arc around the node, crossing each road near its stop line), never diagonally through the middle
+ const nd=CITY.nodes[node];if(nd.round||nd.edges.length>2){const cx=nd.x*10,cy=nd.z*10,a0=Math.atan2(here.y-cy,here.x-cx),r0=Math.hypot(here.x-cx,here.y-cy),r1=Math.hypot(there.x-cx,there.y-cy);
   let da=Math.atan2(there.y-cy,there.x-cx)-a0;while(da>Math.PI)da-=2*Math.PI;while(da<=-Math.PI)da+=2*Math.PI;
   const len=Math.abs(da)*(r0+r1)/20;if(len>.3)w.cross={arc:true,cx,cy,a0,da,r0,r1,t:0,len};return}
  const len=Math.hypot(there.x-here.x,there.y-here.y)/10;if(len>.3)w.cross={x0:here.x,y0:here.y,x1:there.x,y1:there.y,t:0,len}}

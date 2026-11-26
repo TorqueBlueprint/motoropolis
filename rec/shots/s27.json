@@ -195,13 +195,13 @@
   },
   {
    "name": "walker",
-   "dur": 3.5,
+   "dur": 4.5,
    "follow": {
     "ped": "^(?!Homeless$).+",
     "phi": 0.7,
-    "pitch": 0.42,
-    "dist": 17,
-    "sweep": -0.35
+    "pitch": 0.62,
+    "dist": 19,
+    "sweep": -0.3
    },
    "txt": [
     {
@@ -221,13 +221,23 @@
      ]
     },
     {
-     "t0": 1.4,
-     "y": 1560,
+     "t0": 1.3,
+     "y": 1520,
      "lines": [
       [
-       "YOURS COULD BE NEXT",
-       84,
+       "THE CITY NEEDS MORE PEOPLE",
+       64,
+       "#ffffff"
+      ],
+      [
+       "COMMENT WORKSHOP",
+       88,
        "#ffd34d"
+      ],
+      [
+       "TO MOVE IN",
+       72,
+       "#ffffff"
       ]
      ]
     }
