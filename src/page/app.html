@@ -24,62 +24,93 @@
   </section>
   <div class="screen" id="screen">
     <canvas id="city" width="1920" height="1380" aria-label="Live map of the city of Motoropolis"></canvas>
-    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vFind" class="find-btn"><span class="lg">Find my name</span><span class="sm">Find me</span></button><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button><button type="button" id="vFull" aria-label="Full screen"><span class="lg" id="vFullT">⛶ Full screen</span><span class="sm" id="vFullS">⛶</span></button></div>
+    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vFind" class="find-btn" aria-expanded="false" aria-controls="finder"><span class="lg">Find my name</span><span class="sm">Find me</span></button><button type="button" id="vUnlocks" class="ul-btn" aria-expanded="false" aria-controls="unlocks"><span class="lg">Unlocks</span><span class="sm">Unlocks</span></button><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button><button type="button" id="vFull" aria-label="Full screen"><span class="lg" id="vFullT">⛶ Full screen</span><span class="sm" id="vFullS">⛶</span></button></div>
     <p class="v-msg" id="vMsg" hidden="" aria-live="polite"></p>
     <div class="nu-card" id="nuCard" hidden=""><div class="nu-top">Next unlock</div><div class="nu-name" id="nuName"></div><div class="nu-bar"><i id="nuBar"></i></div><b class="nu-left" id="nuLeft"></b></div>
     <section class="finder" id="finder" hidden="" aria-labelledby="fdTitle">
-      <div class="fd-head"><h2 id="fdTitle">Find my name</h2><button type="button" class="fd-x" id="fdClose" aria-label="Close">✕</button></div>
+      <div class="fd-head"><h2 id="fdTitle">Find my name</h2><button type="button" class="fd-x" id="fdClose" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
       <label for="fdIn">Your YouTube name</label>
       <input id="fdIn" type="text" autocomplete="off" spellcheck="false" placeholder="Start typing your name…">
       <ul class="fd-list" id="fdList"></ul>
       <p class="fd-help" id="fdHelp">Not in the city yet? Comment <b>WORKSHOP</b> on any TorqueBlueprint video to move in and get a job.</p>
+      <button type="button" class="pn-link" data-open="moveIn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>Not in the city yet? How to move in</span></button>
+    </section>
+    <section class="finder pn" id="unlocks" hidden="" aria-labelledby="ulTitle">
+      <div class="fd-head"><h2 id="ulTitle">Unlocks</h2><button type="button" class="fd-x" data-close="unlocks" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <p class="pn-sub">Every subscriber milestone opens a new building in the city.</p>
+      <ol class="metas ul-list" id="ulList"></ol>
+      <button type="button" class="pn-link" data-open="moveIn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>How to move in and get a job</span></button>
+    </section>
+    <section class="finder pn" id="moveIn" hidden="" aria-labelledby="miTitle">
+      <div class="fd-head"><h2 id="miTitle">How to move in</h2><button type="button" class="fd-x" data-close="moveIn" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <ol class="mi-steps">
+        <li><b>Pick any TorqueBlueprint video</b><span>Old or new, long video or Short.</span></li>
+        <li><b>Comment <em>WORKSHOP</em></b><span>Your name goes up on the Wall of Mechanics and you walk and work in the city.</span></li>
+        <li><b>Want a job? Add it</b><span><em>WORKSHOP MECHANIC</em>, <em>WORKSHOP DOCTOR</em>, <em>WORKSHOP PILOT</em>… Your newest comment wins.</span></li>
+      </ol>
+      <p class="pn-sub">The city reads new comments every 30 minutes. Then look for your name in Find me.</p>
+      <div class="mi-acts"><a class="mi-go" href="https://www.youtube.com/@TorqueBlueprint/videos" target="_blank" rel="noopener">Open the videos</a><a class="mi-sub" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener">Subscribe</a></div>
     </section>
   </div>
   <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click any building to step inside it in 3D (locked ones show a blueprint preview).</p>
   <div class="news-tk" id="newsTicker" aria-label="Latest news from Motoropolis Daily"><b>MOTOROPOLIS DAILY</b><div class="tk-win"><div class="tk-run"></div></div></div>
   <button type="button" class="enter-btn" id="wsOpen">Step inside the TorqueBlueprint Repair Shop ▶</button>
   <div class="cards">
-    <section class="card np-card">
-      <h2>City news</h2>
-      <div id="news"><p class="empty">The first edition is being printed…</p></div>
+    <section class="card np-card" data-card="news">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-news"><span>City news</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-news">
+        <div id="news"><p class="empty">The first edition is being printed…</p></div>
+      </div>
     </section>
-    <section class="card">
-      <h2>City stats</h2>
-      <dl class="stats">
-        <div class="hl" hidden=""><dt>Subscribers</dt><dd id="stSubs">0</dd></div>
-        <div><dt>Buildings open</dt><dd id="stOpen">1 of 12</dd></div>
-        <div><dt>Cars on the road</dt><dd id="stRoad">0</dd></div>
-        <div><dt>Shop revenue</dt><dd id="stMoney">$0</dd></div>
-        <div><dt>Breakdowns</dt><dd id="stFaults">0</dd></div>
-        <div><dt>Repairs</dt><dd id="stRepairs">0</dd></div>
-        <div><dt>Tows</dt><dd id="stTows">0</dd></div>
-        <div><dt>Inspections</dt><dd id="stInsp">0</dd></div>
-        <div><dt>Gallons sold</dt><dd id="stFuel">0</dd></div>
-        <div><dt>Cars sold</dt><dd id="stSold">0</dd></div>
-        <div><dt>Car washes</dt><dd id="stWash">0</dd></div>
-        <div><dt>Scrapped</dt><dd id="stScrap">0</dd></div>
-      </dl>
+    <section class="card" data-card="jobs">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-jobs"><span>Jobs in Motoropolis</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-jobs">
+        <div id="jobs"></div>
+      </div>
     </section>
-    <section class="card">
-      <h2>Subscriber milestones</h2>
-      <ol class="metas" id="metas"></ol>
+    <section class="card" data-card="milestones">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-milestones"><span>Subscriber milestones</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-milestones">
+        <ol class="metas" id="metas"></ol>
+      </div>
     </section>
-    <section class="card">
-      <h2>Jobs in Motoropolis</h2>
-      <div id="jobs"></div>
+    <section class="card" data-card="car" id="carCard">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-car"><span>Car details</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-car">
+        <p class="empty" id="carEmpty">Click a car on the map to see its plate, mileage, fuel and engine condition.</p>
+        <div id="carInfo" hidden=""></div>
+      </div>
     </section>
-    <section class="card cr-card">
-      <h2>Crime &amp; justice</h2>
-      <div id="crime"><p class="cr-calm">The police station is opening…</p></div>
+    <section class="card cr-card" data-card="crime">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-crime"><span>Crime &amp; justice</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-crime">
+        <div id="crime"><p class="cr-calm">The police station is opening…</p></div>
+      </div>
     </section>
-    <section class="card" id="carCard">
-      <h2>Car details</h2>
-      <p class="empty" id="carEmpty">Click a car on the map to see its plate, mileage, fuel and engine condition.</p>
-      <div id="carInfo" hidden=""></div>
+    <section class="card" data-card="stats">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-stats"><span>City stats</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-stats">
+        <dl class="stats">
+          <div class="hl" hidden=""><dt>Subscribers</dt><dd id="stSubs">0</dd></div>
+          <div><dt>Buildings open</dt><dd id="stOpen">1 of 12</dd></div>
+          <div><dt>Cars on the road</dt><dd id="stRoad">0</dd></div>
+          <div><dt>Shop revenue</dt><dd id="stMoney">$0</dd></div>
+          <div><dt>Breakdowns</dt><dd id="stFaults">0</dd></div>
+          <div><dt>Repairs</dt><dd id="stRepairs">0</dd></div>
+          <div><dt>Tows</dt><dd id="stTows">0</dd></div>
+          <div><dt>Inspections</dt><dd id="stInsp">0</dd></div>
+          <div><dt>Gallons sold</dt><dd id="stFuel">0</dd></div>
+          <div><dt>Cars sold</dt><dd id="stSold">0</dd></div>
+          <div><dt>Car washes</dt><dd id="stWash">0</dd></div>
+          <div><dt>Scrapped</dt><dd id="stScrap">0</dd></div>
+        </dl>
+      </div>
     </section>
-    <section class="card">
-      <h2>Shop log</h2>
-      <ul class="log" id="log"></ul>
+    <section class="card" data-card="log">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-log"><span>Shop log</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-log">
+        <ul class="log" id="log"></ul>
+      </div>
     </section>
   </div>
   <p class="foot" id="updated"></p>
@@ -96,6 +127,12 @@
       <div class="wc-load"><div class="wc-lt"><span id="wcLt">Loading the city…</span><b id="wcPct">0%</b></div><div class="wc-bar"><i id="wcBar"></i></div><p>Tip: comment <b>WORKSHOP</b> on any video to move in and get a job.</p></div>
     </div>
   </div>
+  <nav class="bnav" id="bnav" aria-label="City shortcuts">
+    <button type="button" id="nbExplore" class="is-on"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span>Explore</span></button>
+    <button type="button" id="nbFind" aria-expanded="false" aria-controls="finder"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span>Find me</span></button>
+    <button type="button" id="nbUnlocks" aria-expanded="false" aria-controls="unlocks"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 7.6-1.7"/><path d="M12 14.5v2"/></svg><span>Unlocks</span></button>
+    <a id="nbSub" class="nb-sub" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.5 4.5 2.5-4.5 2.5z"/></svg><span>Subscribe</span></a>
+  </nav>
   <div class="ws-overlay" id="wsOverlay" hidden="">
     <div class="ws-box" role="dialog" aria-modal="true" aria-labelledby="wsTitle">
       <button type="button" class="ws-close" id="wsClose" aria-label="Close the workshop">✕</button>
