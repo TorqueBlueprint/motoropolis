@@ -47,19 +47,19 @@
    "dur": 4.0,
    "cam": {
     "from": {
-     "tx": 180,
-     "tz": 80,
-     "yaw": 2.3,
-     "pitch": 0.62,
-     "dist": 95,
+     "tx": 176,
+     "tz": 66,
+     "yaw": 0.35,
+     "pitch": 0.66,
+     "dist": 105,
      "fov": 50
     },
     "to": {
-     "tx": 180,
-     "tz": 80,
-     "yaw": 2.9,
-     "pitch": 0.42,
-     "dist": 62,
+     "tx": 174,
+     "tz": 60,
+     "yaw": -0.15,
+     "pitch": 0.55,
+     "dist": 85,
      "fov": 50
     },
     "ease": false
@@ -157,19 +157,19 @@
    "dur": 4.5,
    "cam": {
     "from": {
-     "tx": 180,
-     "tz": 80,
-     "yaw": 4.2,
-     "pitch": 0.5,
-     "dist": 55,
+     "tx": 95,
+     "tz": 100,
+     "yaw": 0.7,
+     "pitch": 0.6,
+     "dist": 80,
      "fov": 50
     },
     "to": {
-     "tx": 180,
-     "tz": 80,
-     "yaw": 5.1,
-     "pitch": 0.42,
-     "dist": 48,
+     "tx": 90,
+     "tz": 92,
+     "yaw": 0.2,
+     "pitch": 0.5,
+     "dist": 62,
      "fov": 50
     },
     "ease": false
