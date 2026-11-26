@@ -3753,6 +3753,8 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    // own random sequence, so the rest of the city (and every interior) keeps its numbers
    let s2=4242;const r2=C2.rnd=()=>{s2=(s2*16807)%2147483647;return s2/2147483647};
    // junctions where a smaller road meets a bigger one (no lights, no roundabout): [x, z, dx, dz (travel into the junction), half width, the road's lane]
+   // road paint lies on the asphalt (which uses polygon offset -3, roads/ground3d.js): pull it a bit further so it always shows
+   const dashPO=mat.dash.clone();dashPO.polygonOffset=true;dashPO.polygonOffsetFactor=-5;dashPO.polygonOffsetUnits=-10;
    const JN=[];
    CITY.nodes.forEach((n,ni)=>{if(n.round||n.edges.length<3||nodes[ni].light)return;let wmax=0;for(const ei of n.edges)wmax=Math.max(wmax,CITY.edges[ei].w);
     for(const m of nodes[ni].nb){const e=EDGE(m,ni);if(e.w>=wmax*10-1)continue;const sp=stopPt(m,ni),t=edgeTan(ni,m);JN.push([U(sp.x),U(sp.y),-t.x,-t.y,e.w/20,e.lane/10])}});
@@ -3762,24 +3764,33 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
     const sx=cx+rx*(hw+.9),sz=cz+rz*(hw+.9);SP.push({x:sx,y,z:sz});SG.push({x:sx,y:y+2.15,z:sz,ry});C2.pts.push([sx,sz]);
     // stop line across the right lane and a zebra crossing just before it
     SL.push({x:cx+rx*hw/2,y:y+.036,z:cz+rz*hw/2,ry,sx:hw-.2,sz:.4});
-    for(let k=-hw+.4;k<=hw-.39;k+=.8)ZB.push({x:cx-dx*2.2+rx*k,y:y+.034,z:cz-dz*2.2+rz*k,ry,sx:.45,sz:1.7})}
+}
    const stopTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.translate(64,64);x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*62,Math.sin(a)*62)}x.closePath();x.fillStyle='#ffffff';x.fill();
     x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*55,Math.sin(a)*55)}x.closePath();x.fillStyle='#c8102e';x.fill();x.fillStyle='#fff';x.font="800 34px 'Barlow Condensed','Arial Narrow',sans-serif";x.textAlign='center';x.textBaseline='middle';x.fillText('STOP',0,2);
     const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t})();
    instG(g,sh(new T.CylinderGeometry(.05,.05,2.2,6).translate(0,1.1,0)),mat.grey,SP);
    const sgm=new T.MeshStandardMaterial({map:stopTex,alphaTest:.5,side:T.DoubleSide,roughness:.6});signMats.push(sgm);instG(g,sh(new T.PlaneGeometry(.75,.75)),sgm,SG,null,false);
-   const flat=sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2));instG(g,flat,mat.dash,SL,null,false);instG(g,flat,mat.dash,ZB,null,false);
+   // zebra crossings on every road at every junction and roundabout, where the walkers cross (people/walkers.js walks an
+   // arc round the node at about hypot(trim, kerb offset) from its centre, so the stripes sit right under their path)
+   CITY.nodes.forEach(n=>{if(!n.round&&n.edges.length<3)return;for(const ei of n.edges){const e=CITY.edges[ei];if(e.k==='hwy')continue;
+    const r=n.round?Math.hypot(n.round+11,e.w/2+1.1):Math.hypot(e.w/2+3.5,e.w/2+(e.road==='west'?2:1.1));
+    const P=e.a===CITY.nodes.indexOf(n)?e.P:e.P.slice().reverse();let acc=0,pt=null;
+    for(let i=1;i<P.length&&!pt;i++){const a=P[i-1],b=P[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(acc+l>=r){const t=(r-acc)/l;pt=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,(b[0]-a[0])/l,(b[1]-a[1])/l]}acc+=l}
+    if(!pt||CITY.bridges.some(q=>Math.abs(pt[0]-q.x)<q.w&&Math.abs(pt[1]-q.zc)<q.half))continue;
+    const[x0,z0,dx,dz]=pt,rx=-dz,rz=dx,ry=Math.atan2(dx,dz),hw=e.w/2,y=gh(x0,z0);
+    for(let k=-hw+.4;k<=hw-.39;k+=.8)ZB.push({x:x0+rx*k,y:y+.04,z:z0+rz*k,ry,sx:.45,sz:2.2})}});
+   const flat=sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2));instG(g,flat,dashPO,SL,null,false);instG(g,flat,dashPO,ZB,null,false);
    // solid white edge lines on the main roads (broken at the junctions and on the bridges)
    const EL=[];
    for(const e of CITY.edges){if(e.k!=='main')continue;const na=CITY.nodes[e.a],nb=CITY.nodes[e.b],ca=na.round?na.round+8:na.edges.length>2?e.w+3:0,cb=nb.round?nb.round+8:nb.edges.length>2?e.w+3:0;let s=0;
     for(const o of[-(e.w/2-.45),e.w/2-.45]){s=0;along(e.P,2,o,(x,z,a)=>{s+=2;if(s<ca||s>e.len-cb)return;if(CITY.bridges.some(q=>Math.abs(x-q.x)<q.w&&Math.abs(z-q.zc)<q.half))return;EL.push({x,y:gh(x,z)+.03,z,ry:a,sx:.14,sz:2.1})})}}
-   instG(g,flat,mat.dash,EL,null,false);
+   instG(g,flat,dashPO,EL,null,false);
    // on-street parking on the shopping street (the west avenue between the plaza and the old town): painted bays and parked cars
    const BY=[],PC=[],PCc=[],PG=[];let k=0;
    {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
-   instG(g,flat,mat.dash,BY,null,false);
+   instG(g,flat,dashPO,BY,null,false);
    // parked cars: the city's own car models (the same licensed models as the traffic), boxes only if the models aren't there
    if(AMBK.length){PC.forEach((q,i)=>{const m=AMBK[Math.floor(r2()*AMBK.length)],c=glbCar({len:m.len,color:m.taxi?'#f2b81d':PCc[i]},m.glb);c.scale.multiplyScalar(1.25);c.position.set(q.x,gh(q.x,q.z),q.z);c.rotation.y=q.ry;g.add(c)})}
    else{instG(g,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),PC,PCc);instG(g,bodyG,mat.carGlass,PG,null,false)}
