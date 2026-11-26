@@ -276,6 +276,71 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 }
 /* computers: keep the view buttons' row free */
 @media (min-width:701px){.nu-card{top:58px}.finder{top:58px;max-height:calc(100% - 120px)}}
+/* ===== Redesign A, step 2: bottom nav (phones), Unlocks and How to move in panels, tidy cards ===== */
+.viewbar .ul-btn{background:rgba(10,30,62,.94);border-color:#8cbcff;color:#fff;font-weight:700}
+.viewbar .find-btn.is-on,.viewbar .ul-btn.is-on{box-shadow:0 0 0 2px #fff,0 4px 14px rgba(0,0,0,.35)}
+.fd-x{display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0;border-radius:10px}
+.fd-x:hover{color:#fff;background:rgba(140,190,255,.12)}
+.fd-x svg{width:22px;height:22px}
+.finder>*,.finder input{flex:none}/* the base input[type=text]{flex:1} collapsed the name field to 0 height in a short sheet */
+.pn-sub{margin:0;font-size:14px;color:#cfdcf0}
+.pn-link{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;box-sizing:border-box;padding:8px 12px;border:1.5px dashed rgba(140,190,255,.55);border-radius:12px;background:transparent;color:#fff;font:700 16px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase;text-align:left;white-space:normal}
+.pn-link:hover{border-color:var(--accent);background:rgba(255,122,26,.08)}
+.pn-link svg{flex:none;width:22px;height:22px;color:var(--accent)}
+.ul-list{font-size:14px}
+.ul-list li{grid-template-columns:58px 1fr auto;min-height:40px;box-sizing:border-box}
+.ul-list li.open .n{color:#8fe0b0}
+.mi-steps{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:mi}
+.mi-steps li{counter-increment:mi;display:grid;grid-template-columns:34px 1fr;column-gap:12px;row-gap:2px;align-items:start}
+.mi-steps li::before{content:counter(mi);grid-row:span 2;width:34px;height:34px;border-radius:17px;background:var(--accent);color:#1a1205;display:flex;align-items:center;justify-content:center;font:800 18px/1 var(--display)}
+.mi-steps b{font:700 18px/1.15 var(--display);letter-spacing:.03em;text-transform:uppercase;color:#fff}
+.mi-steps span{font-size:14px;line-height:1.4;color:#cfdcf0}
+.mi-steps em{font-style:normal;font-weight:700;color:var(--gold);white-space:nowrap}
+.mi-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mi-go,.mi-sub{min-height:48px;box-sizing:border-box;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:0 10px;font:800 17px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;text-align:center}
+.mi-go{background:var(--accent);color:#1a1205}
+.mi-sub{background:#e62e2e;color:#fff}
+.mi-go:focus-visible,.mi-sub:focus-visible,.pn-link:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* cards: one header style, the header folds the card */
+.cards .card{padding:0;overflow:hidden}
+.card .card-h{margin:0;font:inherit;letter-spacing:0;text-transform:none}
+.card-h button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:48px;box-sizing:border-box;padding:10px 14px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:#0d2246;color:#fff;font:700 17px/1.1 var(--display);letter-spacing:.1em;text-transform:uppercase;text-align:left;white-space:normal}
+.card-h button::before{content:"";flex:none;width:4px;height:20px;border-radius:2px;background:var(--accent)}
+.card-h button span{flex:1}
+.card-h button:hover{background:#12305e;border-color:var(--line)}
+.card-h button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.card-h svg{flex:none;width:20px;height:20px;color:var(--muted);transition:transform .15s}
+.card.is-shut .card-h button{border-bottom-color:transparent}
+.card.is-shut .card-h svg{transform:rotate(-90deg)}
+.card-b{padding:14px}
+.card-b[hidden]{display:none}
+.cr-card .card-h button::before{background:#ff5a4f}
+.np-card .card-h button::before{background:var(--gold)}
+@media (prefers-reduced-motion:reduce){.card-h svg{transition:none}}
+/* bottom nav: phones only */
+.bnav{display:none}
+@media (max-width:700px){
+ .bnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:40;background:#081a38;border-top:1px solid #23406e;box-shadow:0 -8px 24px rgba(0,0,0,.35);padding:4px max(6px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+ .bnav>button,.bnav>a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;padding:4px 2px;border:0;border-radius:12px;background:transparent;color:#b8cdea;font:700 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;-webkit-tap-highlight-color:transparent}
+ .bnav svg{width:24px;height:24px}
+ .bnav>.is-on{color:#ff8a33}
+ .bnav>.is-on svg{filter:drop-shadow(0 0 6px rgba(255,122,26,.45))}
+ .bnav>.nb-sub{color:#ff7070}
+ .bnav>button:focus-visible,.bnav>a:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+ html:not([data-rec="1"]) .app{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+ /* the nav has Find me and Unlocks: the city's own buttons keep 3D/2D, camera, quality and full screen */
+ .viewbar #vFind,.viewbar #vUnlocks{display:none}
+ .screen.fsfake .viewbar #vFind,.screen:fullscreen .viewbar #vFind,.screen.fsfake .viewbar #vUnlocks,.screen:fullscreen .viewbar #vUnlocks{display:inline-block}
+ .finder.pn{max-height:86%}
+ .np-card .card-b{max-height:440px;overflow:auto;overscroll-behavior:contain}
+ .cards{gap:8px}
+ .card-b{padding:12px}
+ .stats{gap:10px 12px}
+ .stats dd{font-size:21px}
+}
+html[data-rec="1"] .bnav{display:none!important}
+/* small computers / tablets: the viewbar (now with Unlocks) uses the short labels */
+@media (min-width:701px) and (max-width:1000px){.viewbar .lg{display:none}.viewbar .sm{display:inline}.viewbar button{min-height:40px}}
 </style>
 <div id="app"><div class="app">
   <header class="hero">
@@ -303,62 +368,92 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
   </section>
   <div class="screen" id="screen">
     <canvas id="city" width="1920" height="1380" aria-label="Live map of the city of Motoropolis"></canvas>
-    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vFind" class="find-btn"><span class="lg">Find my name</span><span class="sm">Find me</span></button><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button><button type="button" id="vFull" aria-label="Full screen"><span class="lg" id="vFullT">⛶ Full screen</span><span class="sm" id="vFullS">⛶</span></button></div>
+    <div class="viewbar"><div class="seg" role="group" aria-label="City view"><button type="button" id="v3d" aria-pressed="false"><span class="lg">3D city</span><span class="sm">3D</span></button><button type="button" id="v2d" aria-pressed="true"><span class="lg">2D map</span><span class="sm">2D</span></button></div><button type="button" id="vFind" class="find-btn" aria-expanded="false" aria-controls="finder"><span class="lg">Find my name</span><span class="sm">Find me</span></button><button type="button" id="vUnlocks" class="ul-btn" aria-expanded="false" aria-controls="unlocks"><span class="lg">Unlocks</span><span class="sm">Unlocks</span></button><button type="button" id="vBack" hidden="">← Back to the city</button><button type="button" id="vReset" hidden="" aria-label="Reset camera"><span class="lg">Reset camera</span><span class="sm">⟲</span></button><button type="button" id="vQual" aria-label="Graphics quality"><span class="lg">Quality: <b id="vQualT">High</b></span><span class="sm" id="vQualS">HQ</span></button><button type="button" id="vFull" aria-label="Full screen"><span class="lg" id="vFullT">⛶ Full screen</span><span class="sm" id="vFullS">⛶</span></button></div>
     <p class="v-msg" id="vMsg" hidden="" aria-live="polite"></p>
     <div class="nu-card" id="nuCard" hidden=""><div class="nu-top">Next unlock</div><div class="nu-name" id="nuName"></div><div class="nu-bar"><i id="nuBar"></i></div><b class="nu-left" id="nuLeft"></b></div>
     <section class="finder" id="finder" hidden="" aria-labelledby="fdTitle">
-      <div class="fd-head"><h2 id="fdTitle">Find my name</h2><button type="button" class="fd-x" id="fdClose" aria-label="Close">✕</button></div>
+      <div class="fd-head"><h2 id="fdTitle">Find my name</h2><button type="button" class="fd-x" id="fdClose" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
       <label for="fdIn">Your YouTube name</label>
       <input id="fdIn" type="text" autocomplete="off" spellcheck="false" placeholder="Start typing your name…">
       <ul class="fd-list" id="fdList"></ul>
-      <p class="fd-help" id="fdHelp">Not in the city yet? Comment <b>WORKSHOP</b> on any TorqueBlueprint video to move in and get a job.</p>
+      <button type="button" class="pn-link" id="fdHelp" data-open="moveIn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>Not in the city yet? How to move in</span></button>
+    </section>
+    <section class="finder pn" id="unlocks" hidden="" aria-labelledby="ulTitle">
+      <div class="fd-head"><h2 id="ulTitle">Unlocks</h2><button type="button" class="fd-x" data-close="unlocks" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <p class="pn-sub">Every subscriber milestone opens a new building in the city.</p>
+      <ol class="metas ul-list" id="ulList"></ol>
+      <button type="button" class="pn-link" data-open="moveIn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 11 12 4l9 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg><span>How to move in and get a job</span></button>
+    </section>
+    <section class="finder pn" id="moveIn" hidden="" aria-labelledby="miTitle">
+      <div class="fd-head"><h2 id="miTitle">How to move in</h2><button type="button" class="fd-x" data-close="moveIn" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <ol class="mi-steps">
+        <li><b>Pick any TorqueBlueprint video</b><span>Old or new, long video or Short.</span></li>
+        <li><b>Comment <em>WORKSHOP</em></b><span>Your name goes up on the Wall of Mechanics and you walk and work in the city.</span></li>
+        <li><b>Want a job? Add it</b><span><em>WORKSHOP MECHANIC</em>, <em>WORKSHOP DOCTOR</em>, <em>WORKSHOP PILOT</em>… Your newest comment wins.</span></li>
+      </ol>
+      <p class="pn-sub">The city reads new comments every 30 minutes. Then look for your name in Find me.</p>
+      <div class="mi-acts"><a class="mi-go" href="https://www.youtube.com/@TorqueBlueprint/videos" target="_blank" rel="noopener">Open the videos</a><a class="mi-sub" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener">Subscribe</a></div>
     </section>
   </div>
   <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click any building to step inside it in 3D (locked ones show a blueprint preview).</p>
   <div class="news-tk" id="newsTicker" aria-label="Latest news from Motoropolis Daily"><b>MOTOROPOLIS DAILY</b><div class="tk-win"><div class="tk-run"></div></div></div>
   <button type="button" class="enter-btn" id="wsOpen">Step inside the TorqueBlueprint Repair Shop ▶</button>
   <div class="cards">
-    <section class="card np-card">
-      <h2>City news</h2>
-      <div id="news"><p class="empty">The first edition is being printed…</p></div>
+    <section class="card np-card" data-card="news">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-news"><span>City news</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-news">
+        <div id="news"><p class="empty">The first edition is being printed…</p></div>
+      </div>
     </section>
-    <section class="card">
-      <h2>City stats</h2>
-      <dl class="stats">
-        <div class="hl" hidden=""><dt>Subscribers</dt><dd id="stSubs">0</dd></div>
-        <div><dt>Buildings open</dt><dd id="stOpen">1 of 12</dd></div>
-        <div><dt>Cars on the road</dt><dd id="stRoad">0</dd></div>
-        <div><dt>Shop revenue</dt><dd id="stMoney">$0</dd></div>
-        <div><dt>Breakdowns</dt><dd id="stFaults">0</dd></div>
-        <div><dt>Repairs</dt><dd id="stRepairs">0</dd></div>
-        <div><dt>Tows</dt><dd id="stTows">0</dd></div>
-        <div><dt>Inspections</dt><dd id="stInsp">0</dd></div>
-        <div><dt>Gallons sold</dt><dd id="stFuel">0</dd></div>
-        <div><dt>Cars sold</dt><dd id="stSold">0</dd></div>
-        <div><dt>Car washes</dt><dd id="stWash">0</dd></div>
-        <div><dt>Scrapped</dt><dd id="stScrap">0</dd></div>
-      </dl>
+    <section class="card" data-card="jobs">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-jobs"><span>Jobs in Motoropolis</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-jobs">
+        <div id="jobs"></div>
+      </div>
     </section>
-    <section class="card">
-      <h2>Subscriber milestones</h2>
-      <ol class="metas" id="metas"></ol>
+    <section class="card" data-card="milestones">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-milestones"><span>Subscriber milestones</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-milestones">
+        <ol class="metas" id="metas"></ol>
+      </div>
     </section>
-    <section class="card">
-      <h2>Jobs in Motoropolis</h2>
-      <div id="jobs"></div>
+    <section class="card" data-card="car" id="carCard">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-car"><span>Car details</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-car">
+        <p class="empty" id="carEmpty">Click a car on the map to see its plate, mileage, fuel and engine condition.</p>
+        <div id="carInfo" hidden=""></div>
+      </div>
     </section>
-    <section class="card cr-card">
-      <h2>Crime &amp; justice</h2>
-      <div id="crime"><p class="cr-calm">The police station is opening…</p></div>
+    <section class="card cr-card" data-card="crime">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-crime"><span>Crime &amp; justice</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-crime">
+        <div id="crime"><p class="cr-calm">The police station is opening…</p></div>
+      </div>
     </section>
-    <section class="card" id="carCard">
-      <h2>Car details</h2>
-      <p class="empty" id="carEmpty">Click a car on the map to see its plate, mileage, fuel and engine condition.</p>
-      <div id="carInfo" hidden=""></div>
+    <section class="card" data-card="stats">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-stats"><span>City stats</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-stats">
+        <dl class="stats">
+          <div class="hl" hidden=""><dt>Subscribers</dt><dd id="stSubs">0</dd></div>
+          <div><dt>Buildings open</dt><dd id="stOpen">1 of 12</dd></div>
+          <div><dt>Cars on the road</dt><dd id="stRoad">0</dd></div>
+          <div><dt>Shop revenue</dt><dd id="stMoney">$0</dd></div>
+          <div><dt>Breakdowns</dt><dd id="stFaults">0</dd></div>
+          <div><dt>Repairs</dt><dd id="stRepairs">0</dd></div>
+          <div><dt>Tows</dt><dd id="stTows">0</dd></div>
+          <div><dt>Inspections</dt><dd id="stInsp">0</dd></div>
+          <div><dt>Gallons sold</dt><dd id="stFuel">0</dd></div>
+          <div><dt>Cars sold</dt><dd id="stSold">0</dd></div>
+          <div><dt>Car washes</dt><dd id="stWash">0</dd></div>
+          <div><dt>Scrapped</dt><dd id="stScrap">0</dd></div>
+        </dl>
+      </div>
     </section>
-    <section class="card">
-      <h2>Shop log</h2>
-      <ul class="log" id="log"></ul>
+    <section class="card" data-card="log">
+      <h2 class="card-h"><button type="button" aria-expanded="true" aria-controls="cb-log"><span>Shop log</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></button></h2>
+      <div class="card-b" id="cb-log">
+        <ul class="log" id="log"></ul>
+      </div>
     </section>
   </div>
   <p class="foot" id="updated"></p>
@@ -375,6 +470,12 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
       <div class="wc-load"><div class="wc-lt"><span id="wcLt">Loading the city…</span><b id="wcPct">0%</b></div><div class="wc-bar"><i id="wcBar"></i></div><p>Tip: comment <b>WORKSHOP</b> on any video to move in and get a job.</p></div>
     </div>
   </div>
+  <nav class="bnav" id="bnav" aria-label="City shortcuts">
+    <button type="button" id="nbExplore" class="is-on"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><span>Explore</span></button>
+    <button type="button" id="nbFind" aria-expanded="false" aria-controls="finder"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg><span>Find me</span></button>
+    <button type="button" id="nbUnlocks" aria-expanded="false" aria-controls="unlocks"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="10.5" width="16" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 7.6-1.7"/><path d="M12 14.5v2"/></svg><span>Unlocks</span></button>
+    <a id="nbSub" class="nb-sub" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9.5 4.5 2.5-4.5 2.5z"/></svg><span>Subscribe</span></a>
+  </nav>
   <div class="ws-overlay" id="wsOverlay" hidden="">
     <div class="ws-box" role="dialog" aria-modal="true" aria-labelledby="wsTitle">
       <button type="button" class="ws-close" id="wsClose" aria-label="Close the workshop">✕</button>
@@ -849,7 +950,9 @@ function stepCar(c,dt){
  if(c.state==='lot'){want=Math.min(want,50);if(tgt&&tgt.merge){for(const o of cars){if(o===c||o.hidden||o.state!=='road'&&!(o.state==='lot'&&o.id<c.id&&o.pts[0]&&o.pts[0].merge&&dist(o,o.pts[0])<40))continue;const dd=Math.hypot(o.x-tgt.x,o.y-tgt.y);if(dd<(c.len+o.len)/2+4||dd<(c.len+o.len)/2+16&&(c.mergeT=(c.mergeT||0)+dt)<20){const dm=dist(c,tgt);want=Math.min(want,Math.max(0,(dm-22)*2.5));break}}}}
  if(c.state==='broken')want=Math.min(want,30);
  if(c.state==='road'){
-  if(c.ghost<=0){const gp=gapAhead(c);if(gp<6)want=0;else if(gp<46)want=Math.min(want,(gp-6)*3)}
+  if(c.ghost<=0){const gp=gapAhead(c);if(gp<6)want=0;else if(gp<46)want=Math.min(want,(gp-6)*3)
+   // walkers crossing the road in front: brake and stop ~2.5 m short of them (people/walkers.js)
+   const pg=pedGap(c);c.pedStop=pg<25;if(pg<25)want=0;else if(pg<110)want=Math.min(want,(pg-25)*2.2)}
   if(!c.siren&&tgt&&tgt.stop&&c.pts.length===1){const N=nodes[c.to];const red=lightState(N,axisOf(c))!=='g';if(red||(!N.light&&!N.round&&N.nb.length>=3&&c.stopAt!==c.to&&EDGE(c.from,c.to).w<N.wmax-1)||N.round||N.loop){const d=dist(c,tgt);want=Math.min(want,Math.max(red?0:N.round||N.loop?28:8,(d-1)*2.6))}}
  }
  if(tgt&&tgt.rev)want=Math.min(want,28);
@@ -1996,9 +2099,37 @@ const PARK_LOOP=(()=>{const b=B.park;return{x0:b.x0+26,y0:b.y0+26,x1:b.x1-26,y1:
 for(let k=0;k<9;k++){const p=mkPed(null,k+90);p.wk=null;p.loop={...PARK_LOOP};p.s=k*140;p.v=(k%3===0?rr(26,32):rr(8,12))*(k%2?-1:1);Object.assign(p,pedPos(p))}
 function parkRanger(){for(const q of peds){if(q.name&&jobOf(q.name)==='Homeless'&&(q.wk||q.loop.x0!==PARK_LOOP.x0)){q.wk=null;q.loop={...PARK_LOOP};q.v=rr(4,6)*(R()<.5?-1:1);q.col='#7a6a55';Object.assign(q,pedPos(q))}}
  const n=staffOf('park','Park Ranger',0);if(!n)return;const p=peds.find(q=>q.name===n);if(p&&(p.wk||p.loop.x0!==PARK_LOOP.x0)){p.wk=null;p.loop={...PARK_LOOP};p.col='#2e7d4f';Object.assign(p,pedPos(p))}}
-function stepPeds(dt){for(const p of peds){
+// road crossings: a walker about to step off the kerb waits for a gap in the traffic (at most 8 s; up to 40 s while a car
+// stands on the crossing) and, once on the asphalt, keeps going: no stopping in the middle of the road, only a moment's
+// hesitation (2 s at most) to let a moving car clear the spot right in front. The cars brake for the walkers on the road
+// (pedGap, traffic/routing.js stepCar)
+const onAsph=(x,y)=>CITY.roadD(x/10,y/10)<0;
+var pedsOnRoad=[];// var: the cars may ask (pedGap) before this line has run
+function wkPeek(p,d){const c=p.wk.cross,t0=c.t;c.t=Math.min(c.len,t0+d);const q=wkPos(p);c.t=t0;return q}
+const carBoxD=(o,x,y)=>{const cs=Math.cos(o.ang),sn=Math.sin(o.ang),dx=x-o.x,dy=y-o.y;return Math.hypot(Math.max(0,Math.abs(dx*cs+dy*sn)-o.len/2),Math.max(0,Math.abs(dy*cs-dx*sn)-o.wid/2))};
+const roadCar=o=>o.state==='road'&&!o.hidden&&!o.removed&&!(o.ghost>0);
+// at the kerb: 0 go, 2 a car stands on (or is driving over) the way across, 1 a car is coming (within ~15 m and heading this way, or within ~6 m)
+function kerbBlock(p){const c=p.wk.cross,e=wkPeek(p,.8);if(!onAsph(e.x,e.y))return 0;const near=[];
+ for(const o of cars)if(roadCar(o)&&Math.abs(o.x-e.x)<260&&Math.abs(o.y-e.y)<260)near.push(o);if(!near.length)return 0;
+ for(let s=.8;s<=Math.min(c.len-c.t,20);s+=1){const q=wkPeek(p,s);if(!onAsph(q.x,q.y))continue;for(const o of near)if(carBoxD(o,q.x,q.y)<10)return 2}
+ for(const o of near){const dx=e.x-o.x,dy=e.y-o.y,d=Math.hypot(dx,dy);if(o.v>3&&(d<60+o.len/2||d<150+o.len/2&&dx*Math.cos(o.ang)+dy*Math.sin(o.ang)>d*.3))return 1}
+ return 0}
+// px from the front of car c to the nearest walker on the asphalt in its lane ahead (1e9 when none). A crossing walker
+// counts with the rest of their way over the road (xPts), so the car stops short of the crossing, not on it
+function pedGap(c){if(!pedsOnRoad||!pedsOnRoad.length)return 1e9;const lw=Math.max(20,c.wid/2+11);let g=1e9;
+ // along the car's heading and, while it turns, toward the point it is steering for
+ const dirs=[[Math.cos(c.ang),Math.sin(c.ang)]],t=c.pts[0];if(t){const tx=t.x-c.x,ty=t.y-c.y,tl=Math.hypot(tx,ty);if(tl>8&&(tx*dirs[0][0]+ty*dirs[0][1])/tl<.97)dirs.push([tx/tl,ty/tl])}
+ for(const p of pedsOnRoad){if(Math.abs(p.x-c.x)>300||Math.abs(p.y-c.y)>300)continue;for(const q of p.xPts)for(const[hx,hy]of dirs){const dx=q.x-c.x,dy=q.y-c.y,al=dx*hx+dy*hy-c.len/2;if(al<-3||al>110)continue;if(Math.abs(-dx*hy+dy*hx)<lw&&al<g)g=Math.max(0,al)}}return g}
+function stepPeds(dt){pedsOnRoad=[];for(const p of peds){
+ const asph=!!p.wk&&onAsph(p.x,p.y),xr=asph&&!!p.wk.cross;
+ if(asph){p.xPts=[p];if(xr)for(let d=1.2;d<20&&d<p.wk.cross.len-p.wk.cross.t;d+=1.2){const q=wkPeek(p,d);if(onAsph(q.x,q.y))p.xPts.push(q)}pedsOnRoad.push(p)}
+ if(!(p.wk&&p.wk.cross))p.xWait=p.xHold=0;
  if(p.pause>0){p.pause-=dt;continue}
- if(R()<dt*.025)p.pause=rr(1.5,4);
+ if(R()<dt*.025&&!asph)p.pause=rr(1.5,4);
+ // a sidewalk that runs over the asphalt (inside of a bend): turn back rather than walk into a car standing there
+ if(asph&&!xr){const q=wkPos(p),hx=Math.cos(q.ang),hy=Math.sin(q.ang),fx=p.x+hx*8,fy=p.y+hy*8;if(cars.some(o=>roadCar(o)&&Math.abs(o.x-fx)<60&&Math.abs(o.y-fy)<60&&carBoxD(o,fx,fy)<8))p.wk.dir=-p.wk.dir}
+ if(xr){p.xWait=0;if((p.xHold||0)<2){const q=wkPeek(p,.7);if(cars.some(o=>roadCar(o)&&o.v>5&&Math.abs(o.x-q.x)<60&&Math.abs(o.y-q.y)<60&&carBoxD(o,q.x,q.y)<6)){p.pause=.15;p.xHold=(p.xHold||0)+.15;continue}}}
+ else if(p.wk&&p.wk.cross&&(p.xWait||0)<40){p.xHold=0;const k=kerbBlock(p);if(k===2||k===1&&(p.xWait||0)<8){p.pause=.25;p.xWait=(p.xWait||0)+.25;continue}}
  p.phase+=dt*Math.abs(p.v)*.6;if(p.wk){wkStep(p,Math.abs(p.v)*dt/10);const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=q.ang;continue}
  p.s+=p.v*dt;const q=pedPos(p);p.x=q.x;p.y=q.y;p.ang=p.v<0?q.ang+Math.PI:q.ang}}
 
@@ -2791,13 +2922,18 @@ function make3D(T,X){
   if(crime){const c=crime.car,g=meshes.get(c.id);const s=g&&toHud(g.position.x,g.position.y+3,g.position.z);if(s)pill(`STOLEN · ${crime.thief}`,s.x,s.y,sz,'rgba(217,58,47,.95)','#fff');for(const p of crime.cops){const gp=meshes.get(p.id);const sp=gp&&toHud(gp.position.x,gp.position.y+3,gp.position.z);if(sp)pill(p.driver?`🚔 ${p.driver}`:'🚔 POLICE',sp.x,sp.y,sz*.9,'rgba(29,79,184,.95)','#fff')}}
   if(selected&&!selected.removed&&!selected.hidden){const g=meshes.get(selected.id);const s=g&&toHud(g.position.x,g.position.y+2.4,g.position.z);if(s){hctx.font="700 16px 'JetBrains Mono', monospace";const t=selected.plate,w=hctx.measureText(t).width+20;hctx.fillStyle='#fafafa';rrect(hctx,s.x-w/2,s.y-28,w,26,4);hctx.fill();hctx.strokeStyle='#111';hctx.lineWidth=2;hctx.stroke();hctx.fillStyle='#111';hctx.fillText(t,s.x,s.y-14.5);
    if(selected.driver)pill('★ '+selected.driver,s.x,s.y-34,17,'rgba(255,122,26,.95)','#1d0f02')}}
-  const LP=(b,x,y,h)=>{const p=lotPt(b,x,y);return toHud(U(p.x),h,U(p.y))};if(!trailer){const O=B.oficina,s=LP(O,O.x0+O.w/2,O.y0+O.h*.55,11.5);if(s){hctx.globalAlpha=.82+.18*Math.sin(simTime*3);pill('CLICK TO STEP INSIDE ▶',s.x,s.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#ff7a1a');hctx.globalAlpha=1}
-   if(isOpen('lavagem')){const Lw=B.lavagem,s2=LP(Lw,Lw.x0+Lw.w/2,Lw.y0+Lw.h/2,8);if(s2){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+1);pill('STEP INSIDE THE CAR WASH ▶',s2.x,s2.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#46c8ff');hctx.globalAlpha=1}}
-   if(isOpen('reboques')){const Rb=B.reboques,s3=LP(Rb,Rb.x0+Rb.w/2,Rb.y0+Rb.h*.7,9);if(s3){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+2);pill('STEP INSIDE THE TOW DEPOT ▶',s3.x,s3.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2a51a');hctx.globalAlpha=1}}}
+  const LP0=(b,x,y,h)=>{const p=lotPt(b,x,y);return toHud(U(p.x),h,U(p.y))};
+  // "STEP INSIDE …" boards only when zoomed in (camera closer than ~300 m; the city opens at 760) and the building is
+  // within ~120 m of the point the camera looks at (full up to 100 m, gone by 140 m); the repair shop's board always stays
+  const zk=clamp((340-cam.dist)/60,0,1);
+  const LP=(b,x,y,h)=>{if(zk<=0)return null;const p=lotPt(b,x,y),wx=U(p.x),wz=U(p.y),k=zk*clamp((140-Math.hypot(wx-cam.tx,wz-cam.tz))/40,0,1);if(k<=0)return null;const s=toHud(wx,h,wz);if(s)s.k=k;return s};
+  if(!trailer){const O=B.oficina,s=LP0(O,O.x0+O.w/2,O.y0+O.h*.55,11.5);if(s){hctx.globalAlpha=.82+.18*Math.sin(simTime*3);pill('CLICK TO STEP INSIDE ▶',s.x,s.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#ff7a1a');hctx.globalAlpha=1}
+   if(isOpen('lavagem')){const Lw=B.lavagem,s2=LP(Lw,Lw.x0+Lw.w/2,Lw.y0+Lw.h/2,8);if(s2){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+1))*s2.k;pill('STEP INSIDE THE CAR WASH ▶',s2.x,s2.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#46c8ff');hctx.globalAlpha=1}}
+   if(isOpen('reboques')){const Rb=B.reboques,s3=LP(Rb,Rb.x0+Rb.w/2,Rb.y0+Rb.h*.7,9);if(s3){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+2))*s3.k;pill('STEP INSIDE THE TOW DEPOT ▶',s3.x,s3.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2a51a');hctx.globalAlpha=1}}}
    {const LBLS={bomba:['STEP INSIDE THE GAS STATION ▶','#d93a2f',7.5,.55],pneus:['STEP INSIDE THE TIRE SHOP ▶','#9aa3ae',9,.7],inspecao:['STEP INSIDE THE INSPECTION CENTER ▶','#1d4fb8',7,.5],parque:['STEP INSIDE THE PARKING ▶','#1d4fb8',4,.5],pecas:['STEP INSIDE AUTO PARTS ▶','#c0392b',8,.5],stand:['STEP INSIDE THE DEALERSHIP ▶','#ff7a1a',8,.5],sucata:['STEP INSIDE THE JUNKYARD ▶','#a08a66',6,.5],fabrica:['STEP INSIDE THE FACTORY ▶','#ff7a1a',10,.4],market:['STEP INSIDE THE SUPERMARKET ▶','#2e7d4f',9,.78],pista:['STEP INSIDE THE PIT GARAGE ▶','#ff7a1a',4,.5]};
-    for(const k in LBLS){if(!isOpen(k))continue;const L=LBLS[k],b=B[k],sp=LP(b,b.x0+b.w/2,b.y0+b.h*L[3],L[2]);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+k.length);pill(L[0],sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',L[1]);hctx.globalAlpha=1}}
-    {for(const[t2,lab,col,hh]of[['police','STEP INSIDE THE POLICE STATION ▶','#1d4fb8',9.4],['court','STEP INSIDE THE COURTHOUSE ▶','#8a6a2c',12]]){const Lc=LOT[t2],sp=LP(Lc.b,Lc.cx*10,(Lc.cz-2)*10,hh);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+t2.length);pill(lab,sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',col);hctx.globalAlpha=1}}}
-    {const Ln=LOT.news,sp=LP(Ln.b,(Ln.cx+3)*10,(Ln.cz-2)*10,10.6);if(sp){hctx.globalAlpha=.82+.18*Math.sin(simTime*3+5);pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}}
+    for(const k in LBLS){if(!isOpen(k))continue;const L=LBLS[k],b=B[k],sp=LP(b,b.x0+b.w/2,b.y0+b.h*L[3],L[2]);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+k.length))*sp.k;pill(L[0],sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',L[1]);hctx.globalAlpha=1}}
+    {for(const[t2,lab,col,hh]of[['police','STEP INSIDE THE POLICE STATION ▶','#1d4fb8',9.4],['court','STEP INSIDE THE COURTHOUSE ▶','#8a6a2c',12]]){const Lc=LOT[t2],sp=LP(Lc.b,Lc.cx*10,(Lc.cz-2)*10,hh);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+t2.length))*sp.k;pill(lab,sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',col);hctx.globalAlpha=1}}}
+    {const Ln=LOT.news,sp=LP(Ln.b,(Ln.cx+3)*10,(Ln.cz-2)*10,10.6);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+5))*sp.k;pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}}
  }
  // ---------- 3D interior: the TorqueBlueprint repair shop ----------
  let mode='city',fade=0,fadeTo=null,cityCam=null;
@@ -3724,6 +3860,8 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    // own random sequence, so the rest of the city (and every interior) keeps its numbers
    let s2=4242;const r2=C2.rnd=()=>{s2=(s2*16807)%2147483647;return s2/2147483647};
    // junctions where a smaller road meets a bigger one (no lights, no roundabout): [x, z, dx, dz (travel into the junction), half width, the road's lane]
+   // road paint lies on the asphalt (which uses polygon offset -3, roads/ground3d.js): pull it a bit further so it always shows
+   const dashPO=mat.dash.clone();dashPO.polygonOffset=true;dashPO.polygonOffsetFactor=-5;dashPO.polygonOffsetUnits=-10;
    const JN=[];
    CITY.nodes.forEach((n,ni)=>{if(n.round||n.edges.length<3||nodes[ni].light)return;let wmax=0;for(const ei of n.edges)wmax=Math.max(wmax,CITY.edges[ei].w);
     for(const m of nodes[ni].nb){const e=EDGE(m,ni);if(e.w>=wmax*10-1)continue;const sp=stopPt(m,ni),t=edgeTan(ni,m);JN.push([U(sp.x),U(sp.y),-t.x,-t.y,e.w/20,e.lane/10])}});
@@ -3733,24 +3871,33 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
     const sx=cx+rx*(hw+.9),sz=cz+rz*(hw+.9);SP.push({x:sx,y,z:sz});SG.push({x:sx,y:y+2.15,z:sz,ry});C2.pts.push([sx,sz]);
     // stop line across the right lane and a zebra crossing just before it
     SL.push({x:cx+rx*hw/2,y:y+.036,z:cz+rz*hw/2,ry,sx:hw-.2,sz:.4});
-    for(let k=-hw+.4;k<=hw-.39;k+=.8)ZB.push({x:cx-dx*2.2+rx*k,y:y+.034,z:cz-dz*2.2+rz*k,ry,sx:.45,sz:1.7})}
+}
    const stopTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.translate(64,64);x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*62,Math.sin(a)*62)}x.closePath();x.fillStyle='#ffffff';x.fill();
     x.beginPath();for(let k=0;k<8;k++){const a=(k+.5)*Math.PI/4;x.lineTo(Math.cos(a)*55,Math.sin(a)*55)}x.closePath();x.fillStyle='#c8102e';x.fill();x.fillStyle='#fff';x.font="800 34px 'Barlow Condensed','Arial Narrow',sans-serif";x.textAlign='center';x.textBaseline='middle';x.fillText('STOP',0,2);
     const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;return t})();
    instG(g,sh(new T.CylinderGeometry(.05,.05,2.2,6).translate(0,1.1,0)),mat.grey,SP);
    const sgm=new T.MeshStandardMaterial({map:stopTex,alphaTest:.5,side:T.DoubleSide,roughness:.6});signMats.push(sgm);instG(g,sh(new T.PlaneGeometry(.75,.75)),sgm,SG,null,false);
-   const flat=sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2));instG(g,flat,mat.dash,SL,null,false);instG(g,flat,mat.dash,ZB,null,false);
+   // zebra crossings on every road at every junction and roundabout, where the walkers cross (people/walkers.js walks an
+   // arc round the node at about hypot(trim, kerb offset) from its centre, so the stripes sit right under their path)
+   CITY.nodes.forEach(n=>{if(!n.round&&n.edges.length<3)return;for(const ei of n.edges){const e=CITY.edges[ei];if(e.k==='hwy')continue;
+    const r=n.round?Math.hypot(n.round+11,e.w/2+1.1):Math.hypot(e.w/2+3.5,e.w/2+(e.road==='west'?2:1.1));
+    const P=e.a===CITY.nodes.indexOf(n)?e.P:e.P.slice().reverse();let acc=0,pt=null;
+    for(let i=1;i<P.length&&!pt;i++){const a=P[i-1],b=P[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(acc+l>=r){const t=(r-acc)/l;pt=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,(b[0]-a[0])/l,(b[1]-a[1])/l]}acc+=l}
+    if(!pt||CITY.bridges.some(q=>Math.abs(pt[0]-q.x)<q.w&&Math.abs(pt[1]-q.zc)<q.half))continue;
+    const[x0,z0,dx,dz]=pt,rx=-dz,rz=dx,ry=Math.atan2(dx,dz),hw=e.w/2,y=gh(x0,z0);
+    for(let k=-hw+.4;k<=hw-.39;k+=.8)ZB.push({x:x0+rx*k,y:y+.04,z:z0+rz*k,ry,sx:.45,sz:2.2})}});
+   const flat=sh(new T.PlaneGeometry(1,1).rotateX(-Math.PI/2));instG(g,flat,dashPO,SL,null,false);instG(g,flat,dashPO,ZB,null,false);
    // solid white edge lines on the main roads (broken at the junctions and on the bridges)
    const EL=[];
    for(const e of CITY.edges){if(e.k!=='main')continue;const na=CITY.nodes[e.a],nb=CITY.nodes[e.b],ca=na.round?na.round+8:na.edges.length>2?e.w+3:0,cb=nb.round?nb.round+8:nb.edges.length>2?e.w+3:0;let s=0;
     for(const o of[-(e.w/2-.45),e.w/2-.45]){s=0;along(e.P,2,o,(x,z,a)=>{s+=2;if(s<ca||s>e.len-cb)return;if(CITY.bridges.some(q=>Math.abs(x-q.x)<q.w&&Math.abs(z-q.zc)<q.half))return;EL.push({x,y:gh(x,z)+.03,z,ry:a,sx:.14,sz:2.1})})}}
-   instG(g,flat,mat.dash,EL,null,false);
+   instG(g,flat,dashPO,EL,null,false);
    // on-street parking on the shopping street (the west avenue between the plaza and the old town): painted bays and parked cars
    const BY=[],PC=[],PCc=[],PG=[];let k=0;
    {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
-   instG(g,flat,mat.dash,BY,null,false);
+   instG(g,flat,dashPO,BY,null,false);
    // parked cars: the city's own car models (the same licensed models as the traffic), boxes only if the models aren't there
    if(AMBK.length){PC.forEach((q,i)=>{const m=AMBK[Math.floor(r2()*AMBK.length)],c=glbCar({len:m.len,color:m.taxi?'#f2b81d':PCc[i]},m.glb);c.scale.multiplyScalar(1.25);c.position.set(q.x,gh(q.x,q.z),q.z);c.rotation.y=q.ry;g.add(c)})}
    else{instG(g,bodyG,M(0xffffff,{roughness:.35,metalness:.3}),PC,PCc);instG(g,bodyG,mat.carGlass,PG,null,false)}
@@ -4556,6 +4703,7 @@ else if(readStore('mtp-view')!=='2d')setView(true,false);
 
 // Redesign (option A): welcome screen with loading progress, the "next unlock" card over the city and "Find my name".
 // Never shows the subscriber count itself: only how many more are needed for the next unlock (like the boards in the city).
+const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
 {
  const REC=document.documentElement.dataset.rec==='1',BOT=!!navigator.webdriver,PERF=/\/perf\//.test(location.pathname);
  // ---- next unlock card (over the city) ----
@@ -4584,7 +4732,7 @@ else if(readStore('mtp-view')!=='2d')setView(true,false);
  // keep the camera on the person for a while (they walk or drive); any drag on the city stops it
  setInterval(()=>{if(!follow||!R3||R3.mode()==='in')return;followT+=.05;const w=where(follow.n);if(!w||followT>45){follow=null;return}const p=posOf(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50);
  $('screen').addEventListener('pointerdown',e=>{if(!fd.contains(e.target)&&!nuCard.contains(e.target))follow=null});
- const openFinder=()=>{fd.hidden=false;fin.focus();render()};
+ const openFinder=()=>{if(UIX.only)UIX.only('finder');fd.hidden=false;fin.focus();render()};UIX.openFinder=openFinder;
  $('vFind').addEventListener('click',()=>{if(fd.hidden)openFinder();else fd.hidden=true});$('fdClose').addEventListener('click',()=>{fd.hidden=true});
  fin.addEventListener('input',render);fin.addEventListener('keydown',e=>{if(e.key==='Escape')fd.hidden=true});
  // ---- welcome screen ----
@@ -4600,6 +4748,45 @@ else if(readStore('mtp-view')!=='2d')setView(true,false);
   $('wcFind').addEventListener('click',()=>{close();if(hasGL()&&!view3d)setView(true,true);openFinder()});
   wc.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
   setTimeout(()=>{try{$('wcGo').focus()}catch(e){}},50)}
+}
+// Redesign (option A), step 2: the phone bottom nav (Explore / Find me / Unlocks / Subscribe), the Unlocks and
+// "How to move in" panels over the city (one panel open at a time, shared with Find my name from ui/welcome.js),
+// and the collapsible cards below the city. Never shows the subscriber total: the Unlocks list copies #metas
+// (milestone thresholds, "Open", "N more to go", "Blueprint").
+{
+ const PN={finder:$('finder'),unlocks:$('unlocks'),moveIn:$('moveIn')},scr=$('screen'),ul=$('ulList');
+ const phone=()=>matchMedia('(max-width: 700px)').matches;
+ const only=keep=>{for(const k in PN)if(k!==keep)PN[k].hidden=true};UIX.only=only;
+ // the panels live over the city: on a phone, bring the city back into view first
+ const toCity=()=>{const r=scr.getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)scr.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})};
+ function fillUnlocks(){ul.innerHTML=$('metas').innerHTML;const c=ul.querySelector('li.next .chip');if(c)c.textContent=c.textContent.replace(/ to go$/,' more to go')}
+ function open(id){if(id==='finder'){UIX.openFinder();return}only(id);const el=PN[id];if(id==='unlocks')fillUnlocks();el.hidden=false;el.scrollTop=0;
+  // the open milestones come first: start the list at the next one
+  if(id==='unlocks'){const nx=ul.querySelector('li.next');if(nx)el.scrollTop=Math.max(0,nx.offsetTop-el.clientHeight*.4)}
+  const x=el.querySelector('.fd-x');if(x)try{x.focus({preventScroll:true})}catch(e){}}
+ const close=id=>{PN[id].hidden=true};
+ const toggle=id=>{if(PN[id].hidden){if(phone())toCity();open(id)}else close(id)};
+ $('vUnlocks').addEventListener('click',()=>toggle('unlocks'));
+ $('nbFind').addEventListener('click',()=>toggle('finder'));
+ $('nbUnlocks').addEventListener('click',()=>toggle('unlocks'));
+ $('nbExplore').addEventListener('click',()=>{only(null);toCity();if(hasGL()&&!view3d)setView(true,true)});
+ document.addEventListener('click',e=>{const o=e.target.closest&&e.target.closest('[data-open]');if(o){open(o.dataset.open);return}
+  const c=e.target.closest&&e.target.closest('[data-close]');if(c)close(c.dataset.close)});
+ for(const id of ['unlocks','moveIn'])PN[id].addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close(id)}});
+ setInterval(()=>{if(!PN.unlocks.hidden)fillUnlocks()},5000);
+ // keep the buttons in step with whichever panel is open (Find my name can also close itself)
+ const sync=()=>{const f=!PN.finder.hidden,u=!PN.unlocks.hidden,m=!PN.moveIn.hidden;
+  for(const[b,on]of[[$('vFind'),f],[$('nbFind'),f],[$('vUnlocks'),u],[$('nbUnlocks'),u]]){b.setAttribute('aria-expanded',String(on));b.classList.toggle('is-on',on)}
+  $('nbExplore').classList.toggle('is-on',!f&&!u&&!m)};
+ const mo=new MutationObserver(sync);for(const k in PN)mo.observe(PN[k],{attributes:true,attributeFilter:['hidden']});sync();
+ // ---- cards below the city: every header folds its card; phones start with only the news open ----
+ const cards=[...document.querySelectorAll('.cards .card')];
+ const setCard=(c,on)=>{const b=c.querySelector('.card-h button'),body=c.querySelector('.card-b');if(!b||!body)return;b.setAttribute('aria-expanded',String(on));body.hidden=!on;c.classList.toggle('is-shut',!on)};
+ const defaults=()=>{const p=phone();for(const c of cards)setCard(c,!p||c.dataset.card==='news')};
+ defaults();try{matchMedia('(max-width: 700px)').addEventListener('change',defaults)}catch(e){}
+ for(const c of cards){const b=c.querySelector('.card-h button');if(b)b.addEventListener('click',()=>setCard(c,b.getAttribute('aria-expanded')!=='true'))}
+ // a car picked on the map opens its card
+ {const info=$('carInfo'),cc=$('carCard');new MutationObserver(()=>{if(!info.hidden)setCard(cc,true)}).observe(info,{attributes:true,attributeFilter:['hidden']})}
 }
 drawBackground();setup();setSubs(SUBS_OVR!==null?SUBS_OVR:Math.max(0,Math.floor(Number(STATE.subs)||0)));
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{g.clearRect(0,0,CW,CH);drawBackground()});

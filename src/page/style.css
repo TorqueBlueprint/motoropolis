@@ -273,3 +273,68 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
 }
 /* computers: keep the view buttons' row free */
 @media (min-width:701px){.nu-card{top:58px}.finder{top:58px;max-height:calc(100% - 120px)}}
+/* ===== Redesign A, step 2: bottom nav (phones), Unlocks and How to move in panels, tidy cards ===== */
+.viewbar .ul-btn{background:rgba(10,30,62,.94);border-color:#8cbcff;color:#fff;font-weight:700}
+.viewbar .find-btn.is-on,.viewbar .ul-btn.is-on{box-shadow:0 0 0 2px #fff,0 4px 14px rgba(0,0,0,.35)}
+.fd-x{display:inline-flex;align-items:center;justify-content:center;flex:none;padding:0;border-radius:10px}
+.fd-x:hover{color:#fff;background:rgba(140,190,255,.12)}
+.fd-x svg{width:22px;height:22px}
+.finder>*,.finder input{flex:none}/* the base input[type=text]{flex:1} collapsed the name field to 0 height in a short sheet */
+.pn-sub{margin:0;font-size:14px;color:#cfdcf0}
+.pn-link{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;box-sizing:border-box;padding:8px 12px;border:1.5px dashed rgba(140,190,255,.55);border-radius:12px;background:transparent;color:#fff;font:700 16px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase;text-align:left;white-space:normal}
+.pn-link:hover{border-color:var(--accent);background:rgba(255,122,26,.08)}
+.pn-link svg{flex:none;width:22px;height:22px;color:var(--accent)}
+.ul-list{font-size:14px}
+.ul-list li{grid-template-columns:58px 1fr auto;min-height:40px;box-sizing:border-box}
+.ul-list li.open .n{color:#8fe0b0}
+.mi-steps{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:mi}
+.mi-steps li{counter-increment:mi;display:grid;grid-template-columns:34px 1fr;column-gap:12px;row-gap:2px;align-items:start}
+.mi-steps li::before{content:counter(mi);grid-row:span 2;width:34px;height:34px;border-radius:17px;background:var(--accent);color:#1a1205;display:flex;align-items:center;justify-content:center;font:800 18px/1 var(--display)}
+.mi-steps b{font:700 18px/1.15 var(--display);letter-spacing:.03em;text-transform:uppercase;color:#fff}
+.mi-steps span{font-size:14px;line-height:1.4;color:#cfdcf0}
+.mi-steps em{font-style:normal;font-weight:700;color:var(--gold);white-space:nowrap}
+.mi-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mi-go,.mi-sub{min-height:48px;box-sizing:border-box;border-radius:12px;display:flex;align-items:center;justify-content:center;padding:0 10px;font:800 17px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;text-align:center}
+.mi-go{background:var(--accent);color:#1a1205}
+.mi-sub{background:#e62e2e;color:#fff}
+.mi-go:focus-visible,.mi-sub:focus-visible,.pn-link:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* cards: one header style, the header folds the card */
+.cards .card{padding:0;overflow:hidden}
+.card .card-h{margin:0;font:inherit;letter-spacing:0;text-transform:none}
+.card-h button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:48px;box-sizing:border-box;padding:10px 14px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:#0d2246;color:#fff;font:700 17px/1.1 var(--display);letter-spacing:.1em;text-transform:uppercase;text-align:left;white-space:normal}
+.card-h button::before{content:"";flex:none;width:4px;height:20px;border-radius:2px;background:var(--accent)}
+.card-h button span{flex:1}
+.card-h button:hover{background:#12305e;border-color:var(--line)}
+.card-h button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.card-h svg{flex:none;width:20px;height:20px;color:var(--muted);transition:transform .15s}
+.card.is-shut .card-h button{border-bottom-color:transparent}
+.card.is-shut .card-h svg{transform:rotate(-90deg)}
+.card-b{padding:14px}
+.card-b[hidden]{display:none}
+.cr-card .card-h button::before{background:#ff5a4f}
+.np-card .card-h button::before{background:var(--gold)}
+@media (prefers-reduced-motion:reduce){.card-h svg{transition:none}}
+/* bottom nav: phones only */
+.bnav{display:none}
+@media (max-width:700px){
+ .bnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:40;background:#081a38;border-top:1px solid #23406e;box-shadow:0 -8px 24px rgba(0,0,0,.35);padding:4px max(6px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+ .bnav>button,.bnav>a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:56px;padding:4px 2px;border:0;border-radius:12px;background:transparent;color:#b8cdea;font:700 13px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;-webkit-tap-highlight-color:transparent}
+ .bnav svg{width:24px;height:24px}
+ .bnav>.is-on{color:#ff8a33}
+ .bnav>.is-on svg{filter:drop-shadow(0 0 6px rgba(255,122,26,.45))}
+ .bnav>.nb-sub{color:#ff7070}
+ .bnav>button:focus-visible,.bnav>a:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+ html:not([data-rec="1"]) .app{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+ /* the nav has Find me and Unlocks: the city's own buttons keep 3D/2D, camera, quality and full screen */
+ .viewbar #vFind,.viewbar #vUnlocks{display:none}
+ .screen.fsfake .viewbar #vFind,.screen:fullscreen .viewbar #vFind,.screen.fsfake .viewbar #vUnlocks,.screen:fullscreen .viewbar #vUnlocks{display:inline-block}
+ .finder.pn{max-height:86%}
+ .np-card .card-b{max-height:440px;overflow:auto;overscroll-behavior:contain}
+ .cards{gap:8px}
+ .card-b{padding:12px}
+ .stats{gap:10px 12px}
+ .stats dd{font-size:21px}
+}
+html[data-rec="1"] .bnav{display:none!important}
+/* small computers / tablets: the viewbar (now with Unlocks) uses the short labels */
+@media (min-width:701px) and (max-width:1000px){.viewbar .lg{display:none}.viewbar .sm{display:inline}.viewbar button{min-height:40px}}
