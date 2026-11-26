@@ -12,7 +12,7 @@ const SWK=(()=>{let sd=97531;const r=()=>{sd=(sd*16807)%2147483647;return sd/214
  const E=[];CITY.edges.forEach(e=>{if(e.amb||e.k==='hwy'||e.len<12)return;const m=e.P[Math.floor(e.P.length/2)];if(!town(m[0],m[1]))return;
   const L=[0];for(let k=1;k<e.P.length;k++)L.push(L[k-1]+Math.hypot(e.P[k][0]-e.P[k-1][0],e.P[k][1]-e.P[k-1][1]));
   const trim=n=>CITY.nodes[n].round?CITY.nodes[n].round+11:CITY.nodes[n].edges.length>2?e.w/2+3.5:CITY.nodes[n].edges.length===1?0:1;
-  E.push({e,L,len:L[L.length-1],t0:trim(e.a),t1:trim(e.b),off:e.w/2+(e.k==='lane'?.7:1.1),wt:1/(1+Math.hypot(m[0]-P0.x,m[1]-P0.z)/120)})});
+  E.push({e,L,len:L[L.length-1],t0:trim(e.a),t1:trim(e.b),off:e.w/2+(e.k==='lane'?.7:e.road==='west'?2.0:1.1)/* west: the shopping street has parked cars along the kerb (world/city2_roads.js), walk behind them */,wt:1/(1+Math.hypot(m[0]-P0.x,m[1]-P0.z)/120)})});
  const by=new Map();E.forEach((q,k)=>{for(const n of[q.e.a,q.e.b]){if(!by.has(n))by.set(n,[]);by.get(n).push(k)}});
  const tot=E.reduce((a,q)=>a+q.wt,0);
  const pickE=()=>{let u=r()*tot;for(let k=0;k<E.length;k++){u-=E[k].wt;if(u<=0)return k}return E.length-1};

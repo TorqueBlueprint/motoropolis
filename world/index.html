@@ -1959,7 +1959,7 @@ const SWK=(()=>{let sd=97531;const r=()=>{sd=(sd*16807)%2147483647;return sd/214
  const E=[];CITY.edges.forEach(e=>{if(e.amb||e.k==='hwy'||e.len<12)return;const m=e.P[Math.floor(e.P.length/2)];if(!town(m[0],m[1]))return;
   const L=[0];for(let k=1;k<e.P.length;k++)L.push(L[k-1]+Math.hypot(e.P[k][0]-e.P[k-1][0],e.P[k][1]-e.P[k-1][1]));
   const trim=n=>CITY.nodes[n].round?CITY.nodes[n].round+11:CITY.nodes[n].edges.length>2?e.w/2+3.5:CITY.nodes[n].edges.length===1?0:1;
-  E.push({e,L,len:L[L.length-1],t0:trim(e.a),t1:trim(e.b),off:e.w/2+(e.k==='lane'?.7:1.1),wt:1/(1+Math.hypot(m[0]-P0.x,m[1]-P0.z)/120)})});
+  E.push({e,L,len:L[L.length-1],t0:trim(e.a),t1:trim(e.b),off:e.w/2+(e.k==='lane'?.7:e.road==='west'?2.0:1.1)/* west: the shopping street has parked cars along the kerb (world/city2_roads.js), walk behind them */,wt:1/(1+Math.hypot(m[0]-P0.x,m[1]-P0.z)/120)})});
  const by=new Map();E.forEach((q,k)=>{for(const n of[q.e.a,q.e.b]){if(!by.has(n))by.set(n,[]);by.get(n).push(k)}});
  const tot=E.reduce((a,q)=>a+q.wt,0);
  const pickE=()=>{let u=r()*tot;for(let k=0;k<E.length;k++){u-=E[k].wt;if(u<=0)return k}return E.length-1};
@@ -2508,7 +2508,7 @@ function make3D(T,X){
  function applyNight(force){const XL=X&&!WORLD;const nv0=nightLevel(),nv=XL?Math.max(nv0,.42):nv0;if(!force&&Math.abs(nv-lastN)<.004)return;lastN=nv;bgC.lerpColors(XL?duskC:dayC,nightC,XL?Math.max(0,(nv-.42)/.58):nv);scene.background=bgC;scene.fog.color.copy(bgC);
   hemi.intensity=.6-.32*nv;sun.intensity=3.3-2.95*nv;sun.color.setHex(nv>.5?0x8fb0ff:0xfff1dc);mat.win.emissiveIntensity=1.6*nv;mat.lamp.emissiveIntensity=3*nv;mat.hl.emissiveIntensity=.15+2.4*nv;
   renderer.toneMappingExposure=XL?.92+.2*nv:1.05+.25*nv;if(XL){sun.color.setHex(nv>.6?0x8fb0ff:0xffbf86);hemi.color.setHex(0x9fb2e0);hemi.groundColor.setHex(0x3a2c26)}for(const m of signMats)m.emissiveIntensity=(XL?.22:0)+.5*nv;for(const p of pls)p.intensity=nv*30}
- const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity}:{cars:150,people:100,shadow:150};
+ const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity}:{cars:200,people:100,shadow:200};
   try{Object.assign(o,window.__LOD3||{});const q=new URLSearchParams(location.search).get('lod');if(q==='off'){o.cars=o.people=o.shadow=Infinity}else if(q)for(const kv of q.split(',')){const[k,v]=kv.split(':');if(k in o&&+v>0)o[k]=+v}}catch(e){}
   o.on=isFinite(o.cars)||isFinite(o.people)||isFinite(o.shadow);return o})();
  const _lodV=new T.Vector3(),_lodM=new T.Matrix4(),_lodC=new T.Color();
@@ -3746,7 +3746,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    instG(g,flat,mat.dash,EL,null,false);
    // on-street parking on the shopping street (the west avenue between the plaza and the old town): painted bays and parked cars
    const BY=[],PC=[],PCc=[],PG=[];let k=0;
-   {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+1.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
+   {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
    instG(g,flat,mat.dash,BY,null,false);

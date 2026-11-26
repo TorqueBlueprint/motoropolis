@@ -1,8 +1,8 @@
 //@ view3d/lod.js - level of detail and shadow distance for cars and people (performance)
-//@ inside make3D(T,X). Defaults on the city pages: cars beyond 150 m are drawn as boxes in their colour (all of them in
-//@ ONE instanced draw call), pedestrians beyond 100 m keep their pose, cars beyond 150 m cast no shadow.
+//@ inside make3D(T,X). Defaults on the city pages: cars beyond 200 m are drawn as boxes in their colour (all of them in
+//@ ONE instanced draw call), pedestrians beyond 100 m keep their pose, cars beyond 200 m cast no shadow.
 //@ The recorder page and ?eager keep full detail. Override: ?lod=cars:250,people:120,shadow:300, ?lod=off, window.__LOD3.
- const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity}:{cars:150,people:100,shadow:150};
+ const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity}:{cars:200,people:100,shadow:200};
   try{Object.assign(o,window.__LOD3||{});const q=new URLSearchParams(location.search).get('lod');if(q==='off'){o.cars=o.people=o.shadow=Infinity}else if(q)for(const kv of q.split(',')){const[k,v]=kv.split(':');if(k in o&&+v>0)o[k]=+v}}catch(e){}
   o.on=isFinite(o.cars)||isFinite(o.people)||isFinite(o.shadow);return o})();
  const _lodV=new T.Vector3(),_lodM=new T.Matrix4(),_lodC=new T.Color();

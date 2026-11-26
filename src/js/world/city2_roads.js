@@ -28,7 +28,7 @@
    instG(g,flat,mat.dash,EL,null,false);
    // on-street parking on the shopping street (the west avenue between the plaza and the old town): painted bays and parked cars
    const BY=[],PC=[],PCc=[],PG=[];let k=0;
-   {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+1.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
+   {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
    instG(g,flat,mat.dash,BY,null,false);
