@@ -59,9 +59,9 @@ function updateStats(){
 }
 C.addEventListener('click',ev=>{
  if(trailer)return;
- const r=C.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width*CW,y=(ev.clientY-r.top)/r.height*CH;
- let best=null,bd=30*30;for(const c of cars){if(c.hidden)continue;const d=(c.x-x)**2+(c.y-y)**2;if(d<bd){bd=d;best=c}}
- if(!best){const O=B.oficina;if(x>=O.x0&&x<=O.x1&&y>=O.y0&&y<=O.y1){openWorkshop();return}if(inKiosk(x,y)){const n=$('news');if(n)n.closest('.card').scrollIntoView({behavior:'smooth',block:'center'});return}}
+ const r=C.getBoundingClientRect(),x=((ev.clientX-r.left)/r.width*CW-V2.ox)/V2.s,y=((ev.clientY-r.top)/r.height*CH-V2.oy)/V2.s;
+ let best=null,bd=(30*V2.k)**2;for(const c of cars){if(c.hidden)continue;const d=(c.x-x)**2+(c.y-y)**2;if(d<bd){bd=d;best=c}}
+ if(!best){const O=B.oficina;if(inLotB(O,x,y)){openWorkshop();return}if(inKiosk(x,y)){const n=$('news');if(n)n.closest('.card').scrollIntoView({behavior:'smooth',block:'center'});return}}
  selected=best;updateCard();
 });
 let trailer=null;

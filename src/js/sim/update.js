@@ -36,7 +36,7 @@ function update(dt){
   }
  }
  if(emerg&&emerg.type==='fire'&&!emerg.arrived||emerg&&emerg.type==='fire'&&emerg.t<emerg.fix-3){const c=emerg.car;if(R()<dt*30)particles.push({x:c.x+rr(-8,8),y:c.y+rr(-6,6),vx:rr(-6,6),vy:rr(-40,-20),life:rr(.4,.8),t:0,kind:'flame',r:rr(5,8),col:'#ff8a1a'});if(R()<dt*8)particles.push({x:c.x,y:c.y,vx:rr(-8,8),vy:rr(-30,-14),life:rr(1.6,2.6),t:0,kind:'smoke',r:rr(6,10)})}
- const F=B.fabrica;if(R()<dt*5)particles.push({x:F.x0+F.w-48+rr(-3,3),y:F.y0+30,vx:rr(4,14),vy:rr(-22,-10),life:rr(2,3.5),t:0,kind:'smoke',r:rr(6,11)});
+ const F=B.fabrica;if(R()<dt*5){const sp=lotPt(F,F.x0+F.w-48,F.y0+30);particles.push({x:sp.x+rr(-3,3),y:sp.y,vx:rr(4,14),vy:rr(-22,-10),life:rr(2,3.5),t:0,kind:'smoke',r:rr(6,11)})}
  for(const p of particles){p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.kind==='smoke'||p.kind==='dust')p.r+=dt*6;if(p.kind==='confetti'){p.vy+=260*dt;p.vx*=.99}}
  particles=particles.filter(p=>p.t<p.life);if(particles.length>500)particles.splice(0,particles.length-500);
  for(const r of race){r.sp=1+Math.sin(simTime*.7+r.num)*.12;const before=r.t;r.t=(r.t+dt*.085*r.sp)%1;if(r.t<before)r.laps++}

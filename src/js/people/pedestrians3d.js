@@ -14,5 +14,5 @@
  const _pv=new T.Vector3();
  function syncPeople(){
   peds.forEach((p,k)=>{const g=pedMeshes[k];const walking=p.pause<=0;const sw=walking?Math.sin(p.phase*2)*.5:0;
-   const rg=lodPersonFrozen(g)?!!g.userData.rig:walkPose(g,p.phase*.7,walking);g.position.set(U(p.x),.25+(walking?Math.abs(Math.sin(rg?p.phase*.7:p.phase*2))*(rg?.015:.04):0),U(p.y));g.rotation.y=Math.PI/2-p.ang;if(!rg){g.userData.legs[0].rotation.x=sw;g.userData.legs[1].rotation.x=-sw}});
-  B.oficina.slots.forEach((s,k)=>{const g=mech[k];const on=s.car&&s.car.state==='service'&&s.car.kind==='car';g.visible=on;if(!on)return;const ph=simTime*2+k;g.position.set(U(s.x)+1.9+Math.sin(ph)*.25,Y0,U(s.y)+Math.cos(ph*.7)*1.2);g.rotation.y=-Math.PI/2+Math.sin(ph)*.4})}
+   const rg=lodPersonFrozen(g)?!!g.userData.rig:walkPose(g,p.phase*.7,walking);g.position.set(U(p.x),(p.h!=null?p.h:.25)+(walking?Math.abs(Math.sin(rg?p.phase*.7:p.phase*2))*(rg?.015:.04):0),U(p.y));g.rotation.y=Math.PI/2-p.ang;if(!rg){g.userData.legs[0].rotation.x=sw;g.userData.legs[1].rotation.x=-sw}});
+  B.oficina.slots.forEach((s,k)=>{const g=mech[k];const on=s.car&&s.car.state==='service'&&s.car.kind==='car';g.visible=on;if(!on)return;const ph=simTime*2+k,q=lotPt(s.b,s.ux+19+Math.sin(ph)*2.5,s.uy+Math.cos(ph*.7)*12);g.position.set(U(q.x),Y0,U(q.y));g.rotation.y=-Math.PI/2+Math.sin(ph)*.4-s.b.rot})}

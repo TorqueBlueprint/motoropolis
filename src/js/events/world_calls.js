@@ -9,7 +9,7 @@ function emergStart(){
  const v=pick(pool);v.emerg=type;v.arrestT=1e6;
  const r=newCar({kind:fire?'fire':'amb',model:{n:fire?'Fire engine':'Ambulance',len:fire?56:46,wid:20,price:0,v:[130,140]},color:fire?'#d93a2f':'#f4f4f0'});
  r.len=fire?56:46;r.wid=20;r.vmax=135;r.fuel=100;r.health=100;r.siren=true;r.task={type:'resc',target:v};r.route=[];
- const i=fire?1:2,a=nid(i,NY-1),b=nid(i,NY-2),d=segDir(a,b),p=lanePt(a,b,HALF+8);r.x=p.x;r.y=p.y;r.ang=Math.atan2(d.dy,d.dx);r.from=a;r.to=b;r.pts=[stopPt(a,b)];r.v=60;r.state='road';
+ const sp=CITY.F[fire?'w_fire':'w_hosp'];let a=0,bd=1e18;nodes.forEach((n,k)=>{const dd=(n.x-sp[0]*10)**2+(n.y-sp[1]*10)**2;if(n.nb.length&&dd<bd){bd=dd;a=k}});const b=nodes[a].nb[0],d=segDir(a,b),p=lanePt(a,b,HALF+8);r.x=p.x;r.y=p.y;r.ang=Math.atan2(d.dy,d.dx);r.from=a;r.to=b;r.pts=[stopPt(a,b)];r.v=60;r.state='road';
  r.driver=staffOf(fire?'w_fire':'w_hosp',fire?'Firefighter':'Paramedic',0)||null;
  emerg={type,car:v,resp:r,t:0,arrived:false};const owner=v.driver;
  if(fire){log(`🔥 Car fire: ${v.plate}${owner?` (${owner}'s car)`:''}. The fire engine is on its way.`,'bad');news(`Car on fire in Motoropolis: ${v.plate}!`,'city',`Smoke over the city. ${r.driver?r.driver+' and the':'The'} fire crew are racing in from the fire station.`)}

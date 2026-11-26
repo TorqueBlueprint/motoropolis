@@ -33,12 +33,12 @@ function assignDrivers(){
  for(const n of WALL){if(taken.has(n))continue;const c=cars.find(c=>c.kind==='car'&&!c.removed&&!c.driver&&!c.isNew&&!(c.m&&c.m.taxi));if(!c)break;c.driver=n;taken.add(n)}
 }
 function drawPeople(){
- for(const p of peds){ctx.save();ctx.translate(p.x,p.y);ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.arc(1.5,2,4.6,0,TAU);ctx.fill();
+ for(const p of peds){ctx.save();ctx.translate(p.x,p.y);ctx.scale(Math.min(2.4,V2.k),Math.min(2.4,V2.k));ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.arc(1.5,2,4.6,0,TAU);ctx.fill();
   ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(0,0,4.6,0,TAU);ctx.fill();ctx.fillStyle=p.hair;ctx.beginPath();ctx.arc(0,0,2.7,0,TAU);ctx.fill();ctx.restore()}
 }
 function drawPeopleNames(){
  ctx.save();ctx.font="700 14px 'Barlow Condensed', sans-serif";ctx.textAlign='center';ctx.textBaseline='middle';
- for(const p of peds){if(!p.name)continue;const w=ctx.measureText(p.name).width+14;ctx.fillStyle='rgba(16,19,24,.84)';rrect(ctx,p.x-w/2,p.y-26,w,17,8.5);ctx.fill();ctx.fillStyle='#ffd34d';ctx.fillText(p.name,p.x,p.y-17)}
+ for(const p of peds){if(!p.name)continue;const w=ctx.measureText(p.name).width+14;ctx.save();ctx.translate(p.x,p.y);ctx.scale(V2.k,V2.k);ctx.fillStyle='rgba(16,19,24,.84)';rrect(ctx,-w/2,-26,w,17,8.5);ctx.fill();ctx.fillStyle='#ffd34d';ctx.fillText(p.name,0,-17);ctx.restore()}
  ctx.restore();
 }
 

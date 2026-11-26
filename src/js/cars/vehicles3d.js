@@ -23,7 +23,7 @@
  const raceMeshes=race.map(r=>{const g=carMesh({kind:'car',len:30,wid:16,color:r.col,m:{sport:true,n:'race'}});const nb=new T.Mesh(new T.CircleGeometry(.42,16).rotateX(-Math.PI/2),M(0xffffff));nb.position.set(0,1.15,-.2);g.add(nb);g.visible=false;scene.add(g);return g});
  const meshes=new Map();
  const ring=new T.Mesh(new T.RingGeometry(2.3,2.6,40).rotateX(-Math.PI/2),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.9}));ring.visible=false;scene.add(ring);
- const inLot=(x,y)=>{for(const b of buildings)if(x>b.x0-1&&x<b.x1+1&&y>b.y0-1&&y<b.y1+1)return true;return false};
+ const inLot=(x,y)=>{for(const b of buildings)if(inLotB(b,x,y,1))return true;return false};
  function syncCars(dt){
   const seen=new Set();lodBegin();
   for(const c of cars){if(c.removed)continue;seen.add(c.id);let g=meshes.get(c.id);if(!g){g=carMesh(c);g.userData.y=inLot(c.x,c.y)?Y0:.02;scene.add(g);meshes.set(c.id,g)}
@@ -32,12 +32,15 @@
    const ty=c.state==='towed'?.55:(inLot(c.x,c.y)?Y0:.02);g.userData.y+=(ty-g.userData.y)*Math.min(1,dt*8);
    let sc=1;if(c.state==='service'&&c.slot&&c.slot.b.type==='sucata')sc=Math.max(.35,c.timer/3);
    let lift=0;if(c.state==='service'&&c.slot&&c.slot.b.type==='oficina'&&c.kind==='car'&&c.task&&c.task.type!=='parts'){const tot=c.svcTotal||6,el=tot-c.timer;lift=Math.min(1.4,el*.9,Math.max(0,c.timer)*.9)}
-   g.position.set(U(c.x),g.userData.y+lift,U(c.y));g.rotation.y=Math.PI/2-c.ang;g.scale.set(1,sc,1);
-   if(c.state==='towed')g.rotation.x=-.08;else g.rotation.x=0;
+   // on the hills and the bridge ramps the car pitches with the road: ground height under the front and the rear axle
+   const wx=U(c.x),wz=U(c.y);let pt=0;if(WORLD){const hl=Math.max(1.2,c.len/20),fx=Math.cos(c.ang)*hl,fz=Math.sin(c.ang)*hl;if(!inLot(c.x,c.y))pt=Math.atan2(CITY.gy(wx+fx,wz+fz)-CITY.gy(wx-fx,wz-fz),2*hl)}
+   g.userData.pt=(g.userData.pt||0)+(pt-(g.userData.pt||0))*Math.min(1,dt*10);
+   g.position.set(wx,g.userData.y+lift+(WORLD?CITY.gy(wx,wz):0),wz);g.rotation.order='YXZ';g.rotation.y=Math.PI/2-c.ang;g.scale.set(1,sc,1);
+   g.rotation.x=-g.userData.pt+(c.state==='towed'?-.08:0);
    g.userData.tl.material=c.brake||c.state==='broken'?mat.tailOn:mat.tailOff;lodCar(g,c)}
   for(const[id,g]of meshes)if(!seen.has(id)){scene.remove(g);meshes.delete(id)}
   // race cars
   const open=isOpen('pista'),Pi=B.pista,ax=Pi.w/2-26,ay=Pi.h/2-24,pcx=Pi.x0+Pi.w/2,pcy=Pi.y0+Pi.h/2;
-  race.forEach((r,k)=>{const g=raceMeshes[k];g.visible=open;if(!open)return;const a=r.t*TAU,x=pcx+Math.cos(a)*ax,y=pcy+Math.sin(a)*ay,ang=Math.atan2(Math.cos(a)*ay,-Math.sin(a)*ax);g.position.set(U(x),Y0+.03,U(y));g.rotation.y=Math.PI/2-ang});
+  race.forEach((r,k)=>{const g=raceMeshes[k];g.visible=open;if(!open)return;const a=r.t*TAU,q=lotPt(Pi,pcx+Math.cos(a)*ax,pcy+Math.sin(a)*ay),ang=Math.atan2(Math.cos(a)*ay,-Math.sin(a)*ax)+Pi.rot;g.position.set(U(q.x),Y0+.03,U(q.y));g.rotation.y=Math.PI/2-ang});
   if(selected&&!selected.removed&&!selected.hidden){ring.visible=true;const g=meshes.get(selected.id);if(g){ring.position.set(g.position.x,g.position.y+.05,g.position.z);ring.material.opacity=.6+.35*Math.sin(simTime*6)}}else ring.visible=false;
  }

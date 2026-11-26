@@ -14,8 +14,8 @@ function arrive(c){
 }
 function exitBuilding(c){const s=c.slot;if(s&&s.car===c)s.car=null;c.slot=null;leave(c,s.b,s)}
 function leave(c,Bd,s){
- const[a0,b0]=Bd.seg,dir=R()<.5,a=dir?a0:b0,b=dir?b0:a0,d=segDir(a,b);
- const sp=(Bd.door.x-d.A.x)*d.dx+(Bd.door.y-d.A.y)*d.dy;
+ const[a0,b0]=Bd.seg,dir=R()<.5,a=dir?a0:b0,b=dir?b0:a0;
+ const sp=edgeS(a,b,Bd.door.x,Bd.door.y);
  c.state='lot';c.route=[];c.waitRed=false;
  const pts=[];
  if(s){if(s.fwd)pts.push({x:s.x+Math.cos(s.ang)*46,y:s.y+Math.sin(s.ang)*46});else{const ap=approach(s);ap.rev=true;pts.push(ap)}}
@@ -59,13 +59,13 @@ function canBreak(c){return c.state==='road'&&c.pts.length===1&&c.pts[0].stop&&d
 function breakDown(c,f){
  c.fault=f;c.state='broken';c.task=null;c.route=[];c.towAssigned=null;c.forceBreak=null;
  if(c.slot){c.slot.car=null;c.slot=null}
- const d=segDir(c.from,c.to);
+ const d=segAt(c.from,c.to,edgeS(c.from,c.to,c.x,c.y));
  c.pts=[{x:c.x+d.dx*16+d.rx*12,y:c.y+d.dy*16+d.ry*12}];
  log(`${c.plate} broke down: ${f.n.toLowerCase()}. Tow truck called.`,'bad');newsBreakdown(c,f);
 }
 function hookPath(t,a,b){
- const tc=t.task.target,d=segDir(a,b);
- const sp=(tc.x-d.A.x)*d.dx+(tc.y-d.A.y)*d.dy;
+ const tc=t.task.target;
+ const sp=edgeS(a,b,tc.x,tc.y),d=segAt(a,b,sp);
  const back=(t.len+tc.len)/2+4;
  t.pts.push(lanePt(a,b,sp-back-40),{x:tc.x-d.dx*back,y:tc.y-d.dy*back,cb:()=>{t.state='hooking';t.timer=2;t.v=0}});
 }

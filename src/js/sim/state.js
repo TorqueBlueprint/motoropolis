@@ -17,9 +17,9 @@ function newCar(o){
 }
 function placeOnRoad(c){
  for(let k=0;k<120;k++){
-  const a=Math.floor(R()*nodes.length),b=pick(nodes[a].nb),d=segDir(a,b),s=rr(70,d.len-90),p=lanePt(a,b,s);
+  const a=Math.floor(R()*nodes.length);if(!nodes[a].nb.length)continue;const b=pick(nodes[a].nb),d=segDir(a,b);if(d.len<nodes[a].clr+nodes[b].clr+60)continue;const s=rr(nodes[a].clr+20,d.len-nodes[b].clr-40),p=lanePt(a,b,s),t=segAt(a,b,s);
   if(cars.some(o=>o!==c&&o.state==='road'&&Math.hypot(o.x-p.x,o.y-p.y)<45))continue;
-  c.x=p.x;c.y=p.y;c.ang=Math.atan2(d.dy,d.dx);c.from=a;c.to=b;c.pts=[stopPt(a,b)];c.v=c.vmax*.6;c.state='road';return true;
+  c.x=p.x;c.y=p.y;c.ang=Math.atan2(t.dy,t.dx);c.from=a;c.to=b;c.pts=[stopPt(a,b)];c.v=c.vmax*.6;c.state='road';return true;
  }
  return false;
 }
