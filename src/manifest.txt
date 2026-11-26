@@ -89,6 +89,7 @@ view3d/geo_merge.js
 view3d/loader.js
 ui/view_controls.js
 ui/welcome.js
+ui/nav.js
 core/main_loop.js
 recorder/hooks.js
 core/end.js
