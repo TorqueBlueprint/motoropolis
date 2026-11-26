@@ -1,0 +1,68 @@
+{
+ "title": "Short · Teaser part 1: the OLD grid city (then record s27 on the new city)",
+ "light": "dia",
+ "warmup": 90,
+ "hide": [
+  "Hunter-is-gay-af"
+ ],
+ "shots": [
+  {
+   "name": "old",
+   "dur": 6.0,
+   "cam": {
+    "from": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.991592653589793,
+     "pitch": 1.32,
+     "dist": 340,
+     "fov": 50
+    },
+    "to": {
+     "tx": 96,
+     "tz": 70,
+     "yaw": 2.691592653589793,
+     "pitch": 1.12,
+     "dist": 290,
+     "fov": 50
+    },
+    "ease": false
+   },
+   "txt": [
+    {
+     "t0": 0.1,
+     "until": 2.8,
+     "y": 330,
+     "lines": [
+      [
+       "THIS WAS",
+       84,
+       "#ffffff"
+      ],
+      [
+       "MOTOROPOLIS…",
+       104,
+       "#ffd34d"
+      ]
+     ]
+    },
+    {
+     "t0": 3.0,
+     "y": 330,
+     "lines": [
+      [
+       "WE TORE IT",
+       96,
+       "#ffffff"
+      ],
+      [
+       "DOWN…",
+       120,
+       "#ff5a5a"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}
