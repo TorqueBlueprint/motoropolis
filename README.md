@@ -24,3 +24,13 @@ python3 tools/build.py --check  # fails if index.html or a generated page is out
 node tools/test_snapshots.js    # screenshots of main vs this branch + pixel diff (see the file header)
 ```
 `tools/xmas_live.py on|off` and `tools/promote_world.py` edit `src/` and rebuild. `tools/split_index.py` re-creates `src/` from a single-file `index.html` (used once for the split; re-runnable if main moves on).
+
+## Performance switches (city-v2)
+
+- **Run-time merging:** static meshes are merged into one mesh per material and per 120 m chunk, 12 s after they stop changing (`src/js/view3d/merge.js`). Turn it off with `?merge=0`.
+  - Code that changes a mesh only rarely must mark it `userData.nm = 1`, so it is never merged.
+  - A group that the code replaces as a whole must set `userData.mergeRoot = 1`.
+- **Level of detail:** by default, cars beyond 150 m are drawn as boxes in one instanced draw call, people beyond 100 m stop animating, and cars beyond 150 m cast no shadow. Change it with `?lod=cars:250,people:120,shadow:300`, or turn it off with `?lod=off`.
+- **Shadows** follow the camera target when you are close up.
+- The **HUD** canvas is drawn at display resolution.
+- The **recorder page** (`data-rec`) and `?eager` keep full detail.
