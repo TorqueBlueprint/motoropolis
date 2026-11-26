@@ -334,3 +334,5 @@ html[data-rec="1"] .nu-card,html[data-rec="1"] .finder,html[data-rec="1"] .welco
  .stats dd{font-size:21px}
 }
 html[data-rec="1"] .bnav{display:none!important}
+/* small computers / tablets: the viewbar (now with Unlocks) uses the short labels */
+@media (min-width:701px) and (max-width:1000px){.viewbar .lg{display:none}.viewbar .sm{display:inline}.viewbar button{min-height:40px}}
