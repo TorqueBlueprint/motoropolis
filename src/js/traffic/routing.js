@@ -125,7 +125,7 @@ function stepCar(c,dt){
  if(c.state==='road'){
   if(c.ghost<=0){const gp=gapAhead(c);if(gp<6)want=0;else if(gp<46)want=Math.min(want,(gp-6)*3)
    // walkers crossing the road in front: brake and stop ~2.5 m short of them (people/walkers.js)
-   const pg=pedGap(c);if(pg<25)want=0;else if(pg<110)want=Math.min(want,(pg-25)*2.2)}
+   const pg=pedGap(c);c.pedStop=pg<25;if(pg<25)want=0;else if(pg<110)want=Math.min(want,(pg-25)*2.2)}
   if(!c.siren&&tgt&&tgt.stop&&c.pts.length===1){const N=nodes[c.to];const red=lightState(N,axisOf(c))!=='g';if(red||(!N.light&&!N.round&&N.nb.length>=3&&c.stopAt!==c.to&&EDGE(c.from,c.to).w<N.wmax-1)||N.round||N.loop){const d=dist(c,tgt);want=Math.min(want,Math.max(red?0:N.round||N.loop?28:8,(d-1)*2.6))}}
  }
  if(tgt&&tgt.rev)want=Math.min(want,28);
