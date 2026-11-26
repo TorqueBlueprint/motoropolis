@@ -63,9 +63,12 @@ const VIEWS = {
   hills: {tx: 690, tz: -370, yaw: .4, pitch: .55, dist: 380},      // winding road, villas, TV tower
   suburbs: {tx: 640, tz: 250, yaw: .3, pitch: .7, dist: 330},      // loops and cul-de-sacs
   industry: {tx: 170, tz: 420, yaw: .25, pitch: .65, dist: 420},   // industrial zone and the dragway
+  lots: {tx: 368, tz: 150, yaw: .15, pitch: .8, dist: 95},          // Phase 1B step 2: lots turned to follow their road (auto parts, dealership)
+  lotsW: {tx: 50, tz: 140, yaw: -.2, pitch: .8, dist: 110},         // car wash, tire shop, inspection, parking
+  deadend: {tx: 432, tz: 66, yaw: 1.2, pitch: .6, dist: 60},        // turning bulb at the east avenue end (highway not open)
 };
 const pick = (v, all) => v === undefined || v === 'all' ? all : v === 'none' ? [] : String(v).split(',');
-const VIEW_LIST = pick(opt.views, Object.keys(VIEWS).filter(k => !['top', 'overview34', 'plaza', 'harbour', 'hills', 'suburbs', 'industry'].includes(k)));
+const VIEW_LIST = pick(opt.views, Object.keys(VIEWS).filter(k => !['top', 'overview34', 'plaza', 'harbour', 'hills', 'suburbs', 'industry', 'lots', 'lotsW', 'deadend'].includes(k)));
 const INT_LIST = pick(opt.interiors, INTERIORS);
 
 // ---------- deterministic page environment (installed before any page script) ----------

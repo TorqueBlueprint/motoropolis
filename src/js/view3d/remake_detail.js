@@ -17,12 +17,12 @@
   worldMap(mat.asphalt,canvasTex(256,(x,s)=>{noise(x,s,'#34373e',5200,'#2b2e34','#41454d');x.strokeStyle='rgba(20,22,26,.6)';x.lineWidth=1;for(let k=0;k<5;k++){x.beginPath();let px=Math.random()*s,py=Math.random()*s;x.moveTo(px,py);for(let q=0;q<6;q++){px+=Math.random()*30-15;py+=Math.random()*30-15;x.lineTo(px,py)}x.stroke()}}),.06);
   const concrete=(base,a,b)=>canvasTex(256,(x,s)=>{noise(x,s,base,3800,a,b);x.strokeStyle='rgba(0,0,0,.13)';x.lineWidth=2;for(let k=0;k<=s;k+=64){x.beginPath();x.moveTo(k,0);x.lineTo(k,s);x.stroke();x.beginPath();x.moveTo(0,k);x.lineTo(s,k);x.stroke()}});
   worldMap(mat.pad,concrete('#d8d2c5','#cdc6b8','#e2ddd1'),.09);worldMap(mat.curb,concrete('#c4bdb0','#b8b1a3','#cfc9bd'),.12);
-  worldMap(mat.grass,canvasTex(256,(x,s)=>{if(XMAS)noise(x,s,'#e8eef4',7000,'#dbe4ec','#f6f9fc');else noise(x,s,'#6f9c4c',7000,'#5f8c40','#82ad59')}),.03);
+  worldMap(mat.grass,canvasTex(256,(x,s)=>{if(XMAS)noise(x,s,'#e8eef4',7000,'#dbe4ec','#f6f9fc');else noise(x,s,'#6f9c4c',7000,'#5f8c40','#82ad59')}),.03);if(mat.hill)worldMap(mat.hill,mat.grass.map,.03);
   worldMap(mat.roof,canvasTex(256,(x,s)=>{noise(x,s,'#5c636e',6000,'#4f5560','#6b727c');x.strokeStyle='rgba(0,0,0,.18)';x.lineWidth=2;for(let k=0;k<=s;k+=85){x.beginPath();x.moveTo(k,0);x.lineTo(k,s);x.stroke()}}),.12);
   // corner trees and street furniture on every block
   {const tr=[],lf=[],lc=[],bn=[],bins=[],hyd=[];for(const b of buildings){const x0=U(b.x0)-.6,x1=U(b.x1)+.6,z0=U(b.y0)-.6,z1=U(b.y1)+.6;
-    for(const[x,z]of[[x0,z0],[x1,z0],[x0,z1],[x1,z1]]){const s=.75+rnd()*.3;tr.push([x,.3+.7*s,z,0,0,0,s]);lf.push([x,.3+2.1*s,z,rnd(),rnd(),0,s]);lc.push(['#4f8a3c','#3f7a34','#5c9445','#467f38'][Math.floor(rnd()*4)])}
-    const mx=(x0+x1)/2;bins.push([mx+3.2,.3+.45,z1,0,0,0]);hyd.push([x1,.3+.3,(z0+z1)/2+2,0,0,0]);bn.push([mx-3,.3+.25,z1,0,0,0])}
+    for(const[ux,uz]of[[x0,z0],[x1,z0],[x0,z1],[x1,z1]]){const[x,z]=lotP3(b,ux,uz);const s=.75+rnd()*.3;tr.push([x,.3+.7*s,z,0,0,0,s]);lf.push([x,.3+2.1*s,z,rnd(),rnd(),0,s]);lc.push(['#4f8a3c','#3f7a34','#5c9445','#467f38'][Math.floor(rnd()*4)])}
+    const mx=(x0+x1)/2,q1=lotP3(b,mx+3.2,z1),q2=lotP3(b,x1,(z0+z1)/2+2),q3=lotP3(b,mx-3,z1);bins.push([q1[0],.3+.45,q1[1],0,0,0]);hyd.push([q2[0],.3+.3,q2[1],0,0,0]);bn.push([q3[0],.3+.25,q3[1],0,-b.rot,0])}
    inst(new T.CylinderGeometry(.14,.2,1.4,6),mat.trunk,tr,true);inst(new T.IcosahedronGeometry(1,0),M(0xffffff,{flatShading:true}),lf,true,lc);
    inst(new T.CylinderGeometry(.25,.22,.9,10),M(0x2b3f2f,{roughness:.5,metalness:.3}),bins,true);inst(new T.CylinderGeometry(.13,.15,.6,8),M(0xd93a2f,{roughness:.4}),hyd,true);inst(new T.BoxGeometry(1.6,.12,.45),M(0x7a5a3a),bn,true)}
  }

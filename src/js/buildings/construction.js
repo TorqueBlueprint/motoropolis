@@ -51,7 +51,7 @@
   g.add(panel([[`BLUEPRINT ${String(idx).padStart(2,'0')}/${MILESTONES.length-1}`,46,'#c8defa',"'JetBrains Mono',monospace"],[m.label.toUpperCase(),104,'#ffffff'],[`OPENS AT ${m.n.toLocaleString('en-US')} SUBS`,72,'#ffb36b']],'#0f2f5c',13,5.2,L.cx,Y0+3.6,L.z0+2.2,0));
   g.add(box(.25,1.2,.25,mat.dark,L.cx-5,Y0,L.z0+2.2));g.add(box(.25,1.2,.25,mat.dark,L.cx+5,Y0,L.z0+2.2));
   return g}
- const groups={};let sig='';
+ const groups={},gwrap={};let sig='';
  function disposeGroup(g){g.traverse(o=>{if(o.geometry&&o.geometry!==BOX)o.geometry.dispose();if(o.material&&o.material.map){const i=signMats.indexOf(o.material);if(i>=0)signMats.splice(i,1);o.material.map.dispose();o.material.dispose()}})}
  const CB={init:null,at:{},dur:40};
  function syncBuildings(){
@@ -61,7 +61,7 @@
   const building=t=>CITY2&&CB.at[t]!=null&&simTime-CB.at[t]<CB.dur;
   const s=MILESTONES.map(m=>isOpen(m.type)?(building(m.type)?'b'+Math.floor((simTime-CB.at[m.type])/8):1):0).join('')+'|'+(nm?nm.type:'')+'|'+sv+'|'+chan();
   if(s===sig)return;sig=s;
-  for(const m of MILESTONES){const L=LOT[m.type];if(groups[m.type]){scene.remove(groups[m.type]);disposeGroup(groups[m.type])}
-   const g=isOpen(m.type)?(building(m.type)?construction(L,m.label,m.n,.15+.85*(simTime-CB.at[m.type])/CB.dur,true,true):BUILD[m.type](L)):m===nm?construction(L,m.label,m.n,prog,true):blueprint(m,L);scene.add(g);groups[m.type]=g;if(X&&isOpen(m.type))decorateRoofs(g)}
+  for(const m of MILESTONES){const L=LOT[m.type];if(groups[m.type]){scene.remove(gwrap[m.type]||groups[m.type]);disposeGroup(groups[m.type])}
+   const g=isOpen(m.type)?(building(m.type)?construction(L,m.label,m.n,.15+.85*(simTime-CB.at[m.type])/CB.dur,true,true):BUILD[m.type](L)):m===nm?construction(L,m.label,m.n,prog,true):blueprint(m,L);gwrap[m.type]=lotWrap(L.b,g);groups[m.type]=g;if(X&&isOpen(m.type))decorateRoofs(g)}
   applyNight(true);
  }

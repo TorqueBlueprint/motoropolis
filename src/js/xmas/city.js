@@ -10,7 +10,7 @@
   // garlands around every city lot (two sets that blink in turn)
   {const A=[],Ac=[],B2=[],Bc=[];let n=0;for(const k in LOT){const l=LOT[k];if(k==='park')continue;const pts=[];const st=1.25;
     for(let x=l.x0;x<=l.x0+l.w;x+=st){pts.push([x,l.z0]);pts.push([x,l.z0+l.d])}for(let z=l.z0+st;z<l.z0+l.d;z+=st){pts.push([l.x0,z]);pts.push([l.x0+l.w,z])}
-    for(const[x,z]of pts){const h=Y+.55+.18*Math.sin(n*.9);const c=PAL[n%PAL.length];if(n%2){A.push([x,h,z]);Ac.push(c)}else{B2.push([x,h,z]);Bc.push(c)}n++}}
+    for(const[x0,z0]of pts){const[x,z]=lotP3(l.b,x0,z0);const h=Y+.55+.18*Math.sin(n*.9);const c=PAL[n%PAL.length];if(n%2){A.push([x,h,z]);Ac.push(c)}else{B2.push([x,h,z]);Bc.push(c)}n++}}
    XMS.gA=bulbs(A,Ac,bulbA);XMS.gB=bulbs(B2,Bc,bulbB)}
   // ice rink on the pond, and the fountain is gone: the tree stands in the middle of the park
   // the city Christmas tree: grows with the channel, the star goes on at 150 subscribers
@@ -61,7 +61,7 @@
    const T2=i=>stallTops[i*2],T1=i=>stallTops[i*2+1];sag(T1(0),T2(1));sag(T1(2),T2(3));sag(T1(4),T2(5));sag(T2(2),T2(4));sag(T1(3),T1(5));sag(T2(3),T1(4));
    XMS.lights=bulbs(lb,lc,bulbB)}
   // Christmas carousel on the Motoropolis Daily plaza, turning slowly
-  if(X&&X.xcarousel&&LOT.news){const NL=LOT.news,cg=new T.Group();cg.position.set(NL.x0+6.4,Y,NL.z0+14.3);const m=X.xcarousel.clone(true);const bb=new T.Box3().setFromObject(m),sz=bb.getSize(new T.Vector3()),k=5.6/Math.max(sz.x,sz.z);m.scale.setScalar(k);m.position.set(-(bb.min.x+bb.max.x)/2*k,-bb.min.y*k,-(bb.min.z+bb.max.z)/2*k);m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});cg.add(m);scene.add(cg);XMS.carousel=cg}
+  if(X&&X.xcarousel&&LOT.news){const NL=LOT.news,cg=new T.Group();const cp=lotP3(NL.b,NL.x0+6.4,NL.z0+14.3);cg.position.set(cp[0],Y,cp[1]);const m=X.xcarousel.clone(true);const bb=new T.Box3().setFromObject(m),sz=bb.getSize(new T.Vector3()),k=5.6/Math.max(sz.x,sz.z);m.scale.setScalar(k);m.position.set(-(bb.min.x+bb.max.x)/2*k,-bb.min.y*k,-(bb.min.z+bb.max.z)/2*k);m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});cg.add(m);scene.add(cg);XMS.carousel=cg}
   // snowmen around the park
   const coal=M(0x1b1b1b),snowW=M(0xf6f9fc),carrot=M(0xf07a1a);
   [[.08,.3,0.6],[.5,.92,3.1],[.92,.78,-2.2],[.3,.12,1.2],[.62,.92,2.5]].forEach(([fx,fz,ry],k)=>{const g=new T.Group();g.position.set(L.x0+L.w*fx,Y,L.z0+L.d*fz);g.rotation.y=ry;

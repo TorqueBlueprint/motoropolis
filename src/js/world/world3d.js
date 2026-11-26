@@ -160,7 +160,7 @@
    const L2=(t,x,z,y,type,core)=>lbl.push({t,x,z,y,type,core});
    // houses
    const HB=[],HR=[],HBc=[],HRc=[],TRx=[],CHx=[];const BODY=['#f4efe4','#efe3cf','#e6e9ee','#f2dcc3','#dfe7d8','#f7f1e8'],ROOF=['#c0392b','#2f5fa8','#3d7a3a','#d9822b','#7a4a2a','#8a2f2f','#3a3f4a','#b5552b'];
-   const house=(x,z,ry)=>{const w=5+rnd()*2,d=4.4+rnd()*1.6,h=2.8+rnd()*.9,y0=gh(x,z);HB.push({x,y:y0,z,ry,sx:w,sy:h,sz:d});HBc.push(BODY[Math.floor(rnd()*BODY.length)]);HR.push({x,y:y0+h,z,ry,sx:w+.7,sy:1.5+rnd()*.8,sz:d+.9});CHx.push({x:x+Math.cos(ry)*w*.28,y:y0+h+.3,z:z-Math.sin(ry)*w*.28,sx:.7,sy:1.9,sz:.7});HRc.push(ROOF[Math.floor(rnd()*ROOF.length)]);if(rnd()<.6)TRx.push({x:x+Math.cos(ry)*5,z:z-Math.sin(ry)*5})};
+   const house=(x,z,ry)=>{const w=5+rnd()*2,d=4.4+rnd()*1.6,h=2.8+rnd()*.9,y0=CITY.hmin(x,z,3.4);HB.push({x,y:y0,z,ry,sx:w,sy:h,sz:d});HBc.push(BODY[Math.floor(rnd()*BODY.length)]);HR.push({x,y:y0+h,z,ry,sx:w+.7,sy:1.5+rnd()*.8,sz:d+.9});CHx.push({x:x+Math.cos(ry)*w*.28,y:y0+h+.3,z:z-Math.sin(ry)*w*.28,sx:.7,sy:1.9,sz:.7});HRc.push(ROOF[Math.floor(rnd()*ROOF.length)]);if(rnd()<.6)TRx.push({x:x+Math.cos(ry)*5,z:z-Math.sin(ry)*5})};
    // Maple Grove houses fill the suburb streets from the entrance outwards as the channel grows (slots from roads/layout.js)
    {const S1=CITY.slots.suburb,nS=Math.min(S1.length,20+Math.floor(sv*1.2));for(let k=0;k<nS;k++)house(...S1[k])}
    {const S2=CITY.slots.village,vc=CITY.nodes[CITY.NI.VIL];
@@ -175,7 +175,7 @@
    {const slots=CITY.slots.apart;const n=Math.min(slots.length,3+Math.floor(sv/12));for(let k=0;k<n;k++){const[x,z]=slots[k];const h=8+((k*7)%5)*2.4+Math.min(10,sv/150);bld(g,11,h,11,AM[k%AM.length],mat.roof,x,z);B0(g,3,1,2,mat.steel,x+2,h,z)}}
    // the city: downtown, offices, flats and houses between the main buildings
    {const cg=coreG(),C3=cityFill(),CA2=[],NB=[],NBc=[],NR=[],NRc=[],TT=[],TTc=[],CA=[],CAc=[],PD=[],PDc=[];const gr=.78+.22*Math.min(1,sv/3000);
-    for(const f of C3.items){const x=U(f.x),z=U(f.y),y0=gh(x,z),ry=f.ry||0,fs=Math.sin(ry),fc=Math.cos(ry);
+    for(const f of C3.items){const x=U(f.x),z=U(f.y),y0=f.k==='house'?CITY.hmin(x,z,U(f.w)*.55):gh(x,z),ry=f.ry||0,fs=Math.sin(ry),fc=Math.cos(ry);
      if(f.k==='tree'){const s=U(f.r)/1.1;TT.push({x,y:y0+2.1*s,z,sx:s*1.2,sy:s,sz:s*1.2,ry:rnd()*3});TTc.push(['#4f8a3c','#3f7a34','#5c9445','#6a9c45'][Math.floor(rnd()*4)]);continue}
      if(f.k==='car'){CA.push({x,y:y0,z,sx:1.8,sy:1.3,sz:4});CAc.push(f.col);continue}
      if(f.k==='park'){B0(cg,U(f.w),.06,U(f.h),mat.lotAsph,x,y0,z,false);continue}

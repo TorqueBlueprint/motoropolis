@@ -14,8 +14,11 @@
  const C3R={};
  if(WORLD){const gh=CITY.h;
   {const gr=new T.Mesh(new T.PlaneGeometry(7000,6000),mat.grass);gr.rotation.x=-Math.PI/2;gr.position.set(CX,-.02,CZ);gr.receiveShadow=true;scene.add(gr)}
-  for(const q of CITY.L.hills){const w=q.rx*2+10,d=q.rz*2+10,nx=Math.ceil(w/8),nz=Math.ceil(d/8);const pg=new T.PlaneGeometry(w,d,nx,nz);pg.rotateX(-Math.PI/2);const P=pg.attributes.position;
-   for(let k=0;k<P.count;k++){const x=P.getX(k)+q.x,z=P.getZ(k)+q.z;P.setXYZ(k,x,gh(x,z)-.03,z)}pg.computeVertexNormals();const m=new T.Mesh(pg,mat.grass);m.receiveShadow=true;scene.add(m)}
+  for(const q of CITY.L.hills){const w=q.rx*2+10,d=q.rz*2+10,nx=Math.ceil(w/4),nz=Math.ceil(d/4);const pg=new T.PlaneGeometry(w,d,nx,nz);pg.rotateX(-Math.PI/2);const P=pg.attributes.position;
+   for(let k=0;k<P.count;k++){const x=P.getX(k)+q.x,z=P.getZ(k)+q.z;P.setXYZ(k,x,gh(x,z)-.03,z)}pg.computeVertexNormals();
+   // shade the slopes (vertex colours), so the hills read even under snow: darker the steeper, a little darker up high
+   const Nn=pg.attributes.normal,col=new Float32Array(P.count*3);for(let k=0;k<P.count;k++){const sl=Math.sqrt(Math.max(0,1-Nn.getY(k)**2)),hk=P.getY(k)/q.h,s=Math.max(.5,1-1.5*sl)*(1-.1*hk);col[k*3]=XMAS?s*.9:s*.92;col[k*3+1]=XMAS?s*.94:s;col[k*3+2]=XMAS?s:s*.86}
+   pg.setAttribute('color',new T.Float32BufferAttribute(col,3));if(!mat.hill){mat.hill=mat.grass.clone();mat.hill.vertexColors=true}const m=new T.Mesh(pg,mat.hill);m.receiveShadow=true;scene.add(m)}
   // merged ribbons: one mesh per material for the whole map
   const RB={};const addRib=(key,P,w,y,closed)=>{const o=RB[key]||(RB[key]={pos:[],idx:[]});const n=P.length,base=o.pos.length/3;if(n<2)return;
    for(let i=0;i<n;i++){const p=P[i],a=P[closed?(i-1+n)%n:Math.max(0,i-1)],b=P[closed?(i+1)%n:Math.min(n-1,i+1)];let dx=b[0]-a[0],dz=b[1]-a[1];const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
@@ -40,9 +43,12 @@
   // junction patches (the ribbons meet at angles)
   const disc=(key,x,z,r,y,seg)=>{const P=[];for(let k=0;k<=(seg||20);k++){const a=k/(seg||20)*TAU;P.push([x+Math.cos(a)*r/2,z+Math.sin(a)*r/2])}addRib(key,P,r,y,true)};
   CITY.nodes.forEach((n,i)=>{if(n.round||n.edges.length<3)return;let w=0;for(const ei of n.edges)w=Math.max(w,CITY.edges[ei].w);disc('asph',n.x,n.z,w*.75,.0125)});
+  // turning bulbs at the dead ends (traffic/routing.js drives round them), each with a small kerbed island
+  for(const q of CITY.bulbs)disc(q.w<6?'cob':'asph',q.x,q.z,q.r+2.7,.0128,28);
   // roundabout ring
   {const r0=(P0.island+P0.rb+8)/2,P=[];for(let k=0;k<64;k++){const a=k/64*TAU;P.push([P0.x+Math.cos(a)*r0,P0.z+Math.sin(a)*r0])}addRib('asph',P,P0.rb+8-P0.island,.0135,true)}
   C3R.asph=flush('asph',mat.asphalt);C3R.sw=flush('sw',mat.pad);C3R.cob=flush('cob',mat.cobble);
+  {const ig=new T.CylinderGeometry(1,1.06,.3,24),gg=new T.CylinderGeometry(.82,.82,.32,24);for(const q of CITY.bulbs){const r=q.r-2,y=gh(q.x,q.z);const k=new T.Mesh(ig,mat.curb);k.scale.set(r,1,r);k.position.set(q.x,y+.15,q.z);k.receiveShadow=true;scene.add(k);const gi=new T.Mesh(gg,mat.grass2);gi.scale.set(r,1,r);gi.position.set(q.x,y+.17,q.z);gi.receiveShadow=true;scene.add(gi)}}
   {const isl=new T.Mesh(new T.CylinderGeometry(P0.island,P0.island+.2,.3,48),mat.curb);isl.position.set(P0.x,.15,P0.z);isl.receiveShadow=true;scene.add(isl);const gi=new T.Mesh(new T.CylinderGeometry(P0.island-.6,P0.island-.6,.32,48),mat.grass2);gi.position.set(P0.x,.17,P0.z);gi.receiveShadow=true;scene.add(gi)}
   // centre lines (dashed) away from the junctions, as one instanced mesh
   {const D=[];const o=new T.Object3D();for(const e of CITY.edges){if(e.k==='lane')continue;const na=CITY.nodes[e.a],nb=CITY.nodes[e.b],ca=na.round?na.round+8:na.edges.length>2?e.w:2,cb=nb.round?nb.round+8:nb.edges.length>2?e.w:2;let acc=0;

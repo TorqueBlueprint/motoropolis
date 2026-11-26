@@ -33,7 +33,7 @@
   const tl=[],lf=[],lc=[];for(const[x,z,s]of[[.04,.07,1.3],[.95,.08,1.4],[.05,.92,1.4],[.95,.92,1.3],[.12,.6,1.5],[.55,.8,1.2],[.82,.28,1.5],[.62,.22,1.1],[.2,.86,1.1],[.42,.08,1],[.9,.62,1.2]]){const x2=L.x0+L.w*x,z2=L.z0+L.d*z;tl.push([x2,Y0+.7*s,z2,0,0,0,s]);lf.push([x2,Y0+2.1*s,z2,.3,.6,0,s]);lc.push(['#4f8a3c','#3f7a34','#5c9445','#467f38'][Math.floor(rnd()*4)])}
   inst(new T.CylinderGeometry(.18,.25,1.4,6),mat.trunk,tl,true);inst(new T.IcosahedronGeometry(1.25,0),M(0xffffff,{flatShading:true}),lf,true,lc);
   g.add(sign('MOTOROPOLIS PARK',9,1.3,'#2e7d4f','#fff',L.cx,Y0+1.3,L.z0+.5,0));for(const dx of[-4.2,4.2])g.add(box(.2,1.4,.2,mat.dark,L.cx+dx,Y0,L.z0+.5));
-  scene.add(g)}
+  lotWrap(L.b,g)}
  {// MOTOROPOLIS DAILY: newsroom building + kiosk plaza
   const L=LOT.news,g=new T.Group();const bw=L.w-14,bd=L.d-7.2,bx=L.x0+12.8+bw/2,bz=L.z0+6.2+bd/2;
   g.add(box(L.w,.05,L.d,M(0xd9d1c0),L.cx,Y0,L.cz,false));
@@ -53,7 +53,7 @@
   for(let k=0;k<4;k++){const a=k*Math.PI/2+Math.PI/8;const sg=sign('NEWS',1.6,.5,'#d93a2f','#fff',Math.sin(a)*2.37,2.95,Math.cos(a)*2.37,a);sg.scale.set(.9,.9,.3);kg.add(sg)}
   g.add(kg);
   const benchM=M(0x7a5a3a);for(const[x,z]of[[3.8,L.d-3.4],[9,L.d-3.4]]){const bg=new T.Group();bg.add(box(2.4,.12,.7,benchM,0,.45,0));bg.add(box(2.4,.6,.1,benchM,0,.55,.32));bg.position.set(L.x0+x,Y0,L.z0+z);g.add(bg)}
-  scene.add(g)}
+  lotWrap(L.b,g)}
  {// POLICE STATION
   const L=LOT.police,g=new T.Group();g.add(box(L.w,.05,L.d,M(0xc9c4b9),L.cx,Y0,L.cz,false));
   const bw=L.w-16.2,bd=L.d-3.2,bx=L.x0+15+bw/2,bz=L.z0+2+bd/2;const pm=M(0x1d4fb8);
@@ -63,7 +63,7 @@
   const lb=box(.8,.5,.8,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:1.2}),bx-bw/2+3,Y0+3.5,bz-bd/2-.7,false);g.add(lb);
   g.add(box(.2,6,.2,mat.steel,L.x0+13,Y0,L.z0+2));const fl=box(1.6,1,.05,M(0x2f6fd9),L.x0+13.9,Y0+5,L.z0+2,false);g.add(fl);
   for(const x of[1.4,7,12.6])g.add(box(.12,.02,5.2,mat.dash,L.x0+x,Y0+.06,L.z0+11.8,false));
-  hvac(g,bx+bw/4,Y0+6.85,bz);scene.add(g)}
+  hvac(g,bx+bw/4,Y0+6.85,bz);lotWrap(L.b,g)}
  {// COURTHOUSE
   const L=LOT.court,g=new T.Group(),st=M(0xe9e5dc),st2=M(0xd8d1c2);g.add(box(L.w,.05,L.d,M(0xd9d1c0),L.cx,Y0,L.cz,false));
   const bw=L.w-8,bd=L.d-7.2,bx=L.cx,bz=L.z0+6+bd/2;
@@ -76,4 +76,4 @@
   const sc=new T.Group();sc.add(box(.15,2.2,.15,M(0xe8b931,{metalness:.6,roughness:.3}),0,0,0));sc.add(box(2.4,.12,.12,M(0xe8b931,{metalness:.6,roughness:.3}),0,2.1,0));for(const dx of[-1.1,1.1]){const pan=new T.Mesh(new T.CylinderGeometry(.45,.3,.15,14),M(0xe8b931,{metalness:.6,roughness:.3}));pan.position.set(dx,1.5,0);sc.add(pan)}
   sc.position.set(bx,Y0+9.9,L.z0+5.4);g.add(sc);
   for(const x of[2,L.w-2]){const tr=new T.Mesh(new T.IcosahedronGeometry(1.4,0),M(0x4f8a3c,{flatShading:true}));tr.position.set(L.x0+x,Y0+2.4,L.z0+2);tr.castShadow=true;g.add(tr);g.add(box(.3,1.4,.3,mat.trunk,L.x0+x,Y0,L.z0+2))}
-  scene.add(g)}
+  lotWrap(L.b,g)}

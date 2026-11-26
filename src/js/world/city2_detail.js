@@ -7,7 +7,7 @@
    const BN=[],BI=[],PL=[],PB=[],HY=[];let k=0;
    for(const e of CITY.edges){if(!['ring','east','west','spokeN','spokeE','spokeS','south','se','north','ne'].includes(e.road))continue;const na=CITY.nodes[e.a],nb=CITY.nodes[e.b],ca=na.round?na.round+10:e.w+6,cb=nb.round?nb.round+10:e.w+6;
     for(const side of[-1,1]){let s=0;along(e.P,9,side*(e.w/2+1.6),(x,z,a)=>{s+=9;if(s<ca||s>e.len-cb)return;if(Math.hypot(x-P0.x,z-P0.z)>260)return;if(CITY.roadD(x,z)<1)return;
-     if(buildings.some(b=>x*10>b.x0-20&&x*10<b.x1+20&&z*10>b.y0-20&&z*10<b.y1+20))return;const q=(k++)%5,y=gh(x,z),p={x,y,z,ry:a};
+     if(buildings.some(b=>inLotB(b,x*10,z*10,20)))return;const q=(k++)%5,y=gh(x,z),p={x,y,z,ry:a};
      if(q===0)BN.push({...p,sx:1.7,sy:.45,sz:.5});else if(q===1)BI.push({...p,sx:.5,sy:.9,sz:.5});else if(q===2){PL.push({...p,sx:1.3,sy:.55,sz:1.3});PB.push({x,y:y+1.05,z,sx:.85,sy:.7,sz:.85})}else if(q===3)HY.push({x,y,z});C2.pts.push([x,z])})}}
    instG(g,bodyG,M(0x7a5a3a),BN);instG(g,sh(new T.CylinderGeometry(.25,.22,1,10)),M(0x2b3f2f,{roughness:.5,metalness:.3}),BI.map(p=>({...p,y:p.y+.45,sx:1,sy:.9,sz:1})));
    instG(g,bodyG,M(0x9a948a),PL);instG(g,sh(new T.IcosahedronGeometry(.6,0)),M(0x4f8a3c,{flatShading:true}),PB);

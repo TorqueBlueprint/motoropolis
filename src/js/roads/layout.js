@@ -50,6 +50,8 @@ const CITY=(()=>{
  for(const b of bridges)b.half=b.span/2+b.Lr;
  const deck=(x,z)=>{for(const b of bridges){if(Math.abs(x-b.x)>b.w/2+1.5)continue;const dz=Math.abs(z-b.zc);if(dz>b.half)continue;return dz<b.span/2?b.H:b.H*(b.half-dz)/b.Lr}return 0};
  const gy=(x,z)=>h(x,z)+deck(x,z);
+ // lowest ground under a small footprint (houses on the hills sit on it, so no corner floats)
+ const hmin=(x,z,r)=>Math.min(h(x,z),h(x-r,z-r),h(x+r,z-r),h(x-r,z+r),h(x+r,z+r));
  // ---- spatial hash of road segments ----
  const CS=16,RH=new Map();const ck=(i,j)=>i*100003+j;
  for(const r of roads)for(let i=1;i<r.P.length;i++){const a=r.P[i-1],b=r.P[i];const i0=Math.floor(Math.min(a[0],b[0])/CS),i1=Math.floor(Math.max(a[0],b[0])/CS),j0=Math.floor(Math.min(a[1],b[1])/CS),j1=Math.floor(Math.max(a[1],b[1])/CS);
@@ -57,17 +59,25 @@ const CITY=(()=>{
  const roadD=(x,z)=>{let best=1e9;const i=Math.floor(x/CS),j=Math.floor(z/CS);for(let ii=i-1;ii<=i+1;ii++)for(let jj=j-1;jj<=j+1;jj++){const l=RH.get(ck(ii,jj));if(!l)continue;for(const[a,b,hw]of l){const d=segD(x,z,a,b)-hw;if(d<best)best=d}}return best};
  const railD=(x,z)=>{let b=1e9;for(let i=1;i<L.rail.length;i++)b=Math.min(b,segD(x,z,L.rail[i-1],L.rail[i]));return b};
  const hwyD=(x,z)=>{let b=1e9;for(let i=1;i<L.hwy.length;i++)b=Math.min(b,segD(x,z,L.hwy[i-1],L.hwy[i]));return b};
- // ---- service lots ----
+ // ---- service lots: each lot sits along its road, turned to follow it (rot = angle of the road at the lot, sim axes:
+ //      x east, z south; the lot keeps its size and door side, so slots, exteriors and interiors are built in the lot's own axes) ----
  const LW=34.6,LH=21.6,lots={};
- for(const s of L.lots){if(!s.e){lots[s.t]={x0:s.x0,z0:s.z0,seg:null};continue}
+ for(const s of L.lots){if(!s.e){lots[s.t]={x0:s.x0,z0:s.z0,cx:s.x0+LW/2,cz:s.z0+LH/2,rot:0,seg:null};continue}
   const a=NI[s.e[0]],b=NI[s.e[1]],e=edgeOf(a,b);if(!e){console.warn('lot edge missing',s.t);continue}
-  const x0=s.x-LW/2,x1=s.x+LW/2;let zs=[];for(let i=1;i<e.P.length;i++){const p=e.P[i-1],q=e.P[i];for(const x of[x0,x1,s.x])if((p[0]-x)*(q[0]-x)<=0&&p[0]!==q[0]){zs.push(p[1]+(q[1]-p[1])*(x-p[0])/(q[0]-p[0]))}if(p[0]>=x0&&p[0]<=x1)zs.push(p[1])}
-  if(!zs.length){console.warn('lot off road',s.t);zs=[e.P[0][1]]}
-  const off=e.w/2+1.2,N=s.side==='N',z0=N?Math.min(...zs)-off-LH:Math.max(...zs)+off;lots[s.t]={x0,z0,seg:[a,b],side:N?'bottom':'top',slope:Math.max(...zs)-Math.min(...zs)}}
+  const P=e.P,Lc=[0];for(let i=1;i<P.length;i++)Lc.push(Lc[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
+  const at=u=>{u=Math.max(0,Math.min(Lc[Lc.length-1],u));for(let i=1;i<P.length;i++)if(u<=Lc[i]||i===P.length-1){const t=(u-Lc[i-1])/((Lc[i]-Lc[i-1])||1);return[P[i-1][0]+(P[i][0]-P[i-1][0])*t,P[i-1][1]+(P[i][1]-P[i-1][1])*t]}};
+  let sB=-1;for(let i=1;i<P.length;i++){const p=P[i-1],q=P[i];if((p[0]-s.x)*(q[0]-s.x)<=0&&p[0]!==q[0]){sB=Lc[i-1]+(Lc[i]-Lc[i-1])*(s.x-p[0])/(q[0]-p[0]);break}}
+  if(sB<0){console.warn('lot off road',s.t);sB=Lc[Lc.length-1]/2}
+  const o=at(sB),A=at(sB-LW/2),Bq=at(sB+LW/2);let tx=Bq[0]-A[0],tz=Bq[1]-A[1];const tl=Math.hypot(tx,tz)||1;tx/=tl;tz/=tl;if(tx<0){tx=-tx;tz=-tz}
+  const rot=Math.atan2(tz,tx),N=s.side==='N',sg=N?-1:1,nx=-tz*sg,nz=tx*sg,cs=Math.cos(rot),sn=Math.sin(rot);
+  // push the lot off the road until its whole door side keeps clear of the asphalt (curved roads)
+  let off=e.w/2+1.2+LH/2;
+  for(let it=0;it<24;it++){const cx=o[0]+nx*off,cz=o[1]+nz*off;let ok=true;for(let k=0;k<=10&&ok;k++){const lx=-LW/2+LW*k/10,lz=-sg*LH/2;if(roadD(cx+lx*cs-lz*sn,cz+lx*sn+lz*cs)<1.1)ok=false}if(ok)break;off+=.25}
+  const cx=o[0]+nx*off,cz=o[1]+nz*off;
+  lots[s.t]={x0:cx-LW/2,z0:cz-LH/2,cx,cz,rot,seg:[a,b],side:N?'bottom':'top',slope:0}}
  const XST={x0:L.xst[0],z0:L.xst[1],w:L.xst[2],d:L.xst[3]},TL=L.towerlot,F=L.features,P0=L.plaza;
  // ---- occupancy: what a new building or tree must keep clear of ----
  const rects=[];const blockRect=(x0,z0,x1,z1,tag)=>rects.push([x0,z0,x1,z1,tag||'']);
- for(const k in lots){const l=lots[k];blockRect(l.x0-2.5,l.z0-2.5,l.x0+LW+2.5,l.z0+LH+2.5,'lot')}
  blockRect(XST.x0-2,XST.z0-2,XST.x0+XST.w+2,XST.z0+XST.d+2,'lot');blockRect(TL[0]-TL[2]/2-2,TL[1]-TL[3]/2-2,TL[0]+TL[2]/2+2,TL[1]+TL[3]/2+2,'lot');
  const AIR=L.airport;blockRect(AIR[0],AIR[1],AIR[2],AIR[3],'air');
  const fp={w_fire:[30,32,0,-6],w_hosp:[40,36,0,-5],w_stad:[78,62,0,0],w_mall:[70,46,6,10],w_arena:[76,60,0,4],w_train:[64,22,0,2],w_port:[26,150,11,0],apartments:[70,60,0,0],school:[34,26,0,0],tvtower:[34,34,0,0],cityhall:[30,28,0,0]};
@@ -84,8 +94,14 @@ const CITY=(()=>{
  const ihKeys=o=>{const r=Math.hypot(o.hw,o.hd),out=[];for(let i=Math.floor((o.cx-r)/ICS);i<=Math.floor((o.cx+r)/ICS);i++)for(let j=Math.floor((o.cz-r)/ICS);j<=Math.floor((o.cz+r)/ICS);j++)out.push(ck(i,j));return out};
  const ihHit=o=>{for(const k of ihKeys(o)){const l=IH.get(k);if(l)for(const q of l)if(sat(o,q))return true}return false};
  const ihAdd=o=>{for(const k of ihKeys(o)){let l=IH.get(k);if(!l)IH.set(k,l=[]);l.push(o)}};
+ for(const k in lots){const l=lots[k];ihAdd(obb(l.cx,l.cz,LW+5,LH+5,-l.rot))}
+ // turning bulbs at the dead ends of the simulation graph (cul-de-sacs, the east avenue before the highway opens, the
+ // country roads where the map ends): the cars go round a small loop instead of turning on the spot (traffic/routing.js)
+ const bulbs=[];nodes.forEach((n,i)=>{const own=n.edges.filter(ei=>!edges[ei].amb);if(own.length!==1)return;const e=edges[own[0]],P=e.a===i?e.P.slice().reverse():e.P;
+  const q=P[P.length-1];let k=P.length-2;while(k>0&&Math.hypot(q[0]-P[k][0],q[1]-P[k][1])<4)k--;let hx=q[0]-P[k][0],hz=q[1]-P[k][1];const l=Math.hypot(hx,hz)||1;hx/=l;hz/=l;
+  const r=e.w>=8?6:5.2,cx=n.x+hx*3,cz=n.z+hz*3;bulbs.push({n:i,x:cx,z:cz,r,hx,hz,w:e.w});ihAdd(obb(cx,cz,2*r+6,2*r+6,Math.atan2(-hz,hx)))});
  // a building footprint is free when it keeps clear of roads, water, lots, reserved areas, fields and other buildings
- function footFree(o,rm,opt){opt=opt||{};const pts=[[0,0]];for(const a of[-1,0,1])for(const b of[-1,0,1])if(a||b)pts.push([a,b]);
+ function footFree(o,rm,opt){opt=opt||{};const pts=[[0,0]];for(const a of[-1,-.5,0,.5,1])for(const b of[-1,-.5,0,.5,1])if(a||b)pts.push([a,b]);
   for(const[a,b]of pts){const x=o.cx+o.ux[0]*o.hw*a+o.uz[0]*o.hd*b,z=o.cz+o.ux[1]*o.hw*a+o.uz[1]*o.hd*b;
    if(roadD(x,z)<rm)return false;if(inSea(x,z,6)||inRiver(x,z,7))return false;if(inRect(x,z,1.5))return false;if(!opt.field&&inField(x,z,2))return false;
    if(railD(x,z)<6||hwyD(x,z)<12)return false;if(!opt.plaza&&plazaD(x,z)<P0.paved+2)return false;if(opt.maxH!==undefined&&h(x,z)>opt.maxH)return false}
@@ -105,17 +121,17 @@ const CITY=(()=>{
  for(const k of['apartments']){const p=F[k];for(let i=0;i<3;i++)for(let j=0;j<2;j++)slots.apart.push([p[0]-24+i*24,p[1]-12+j*24])}
  // downtown: towers round the plaza, offices further out
  const nearC=(x,z)=>plazaD(x,z)<215;
- for(const b of along(['ring','east','west','spokeN','spokeE','spokeS','se','south','north','ne'],{w:[14,22],d:[12,18],set:4,gap:3,rm:2.2,where:(x,z)=>nearC(x,z)&&plazaD(x,z)>P0.paved+2})){const dd=plazaD(b.x,b.z);fill.push(item(dd<175?'tower':'mid',b))}
- for(const b of along(['ring'],{sides:[1],w:[12,16],d:[10,13],set:3.5,gap:7,rm:2,plaza:true,where:(x,z)=>plazaD(x,z)>34&&plazaD(x,z)<P0.ring-8}))fill.push(item('mid',b));
+ for(const b of along(['ring','east','west','spokeN','spokeE','spokeS','se','south','north','ne'],{w:[14,22],d:[12,18],set:5,gap:8,rm:2.6,where:(x,z)=>nearC(x,z)&&plazaD(x,z)>P0.paved+2})){const dd=plazaD(b.x,b.z);fill.push(item(dd<175?'tower':'mid',b))}
+ for(const b of along(['ring'],{sides:[1],w:[12,16],d:[10,13],set:4,gap:12,rm:2.4,plaza:true,where:(x,z)=>plazaD(x,z)>34&&plazaD(x,z)<P0.ring-8}))fill.push(item('mid',b));
  // flats along the automotive streets and the avenues
- for(const b of along(['garage','auto1','auto2','west','east','south','se'],{w:[12,18],d:[10,14],set:3,gap:3,where:(x,z)=>plazaD(x,z)<330}))fill.push(item('flat',b,{body:BODY[Math.floor(rnd()*6)]}));
+ for(const b of along(['garage','auto1','auto2','west','east','south','se'],{w:[12,18],d:[10,14],set:4,gap:7,rm:2.4,where:(x,z)=>plazaD(x,z)<330}))fill.push(item('flat',b,{body:BODY[Math.floor(rnd()*6)]}));
  // old town: narrow gabled townhouses along the crooked lanes and the quay
  for(const b of along(['otA','otB','otC','otD','quay','west'],{w:[4.4,6.2],d:[7.5,9],set:1.6,gap:.15,skip:1.5,rm:1.2,where:(x,z)=>Math.hypot(x-F.oldtown[0],z-F.oldtown[1])<120}))town.push(b);
  // the hills: villas on the winding road
  for(const b of along(['ne','villa1','villa2'],{w:[9,12],d:[8,10],set:6,gap:14,rm:2,where:(x,z)=>h(x,z)>3}))fill.push(item('house',b,{villa:1,body:BODY[Math.floor(rnd()*6)],roof:ROOF[Math.floor(rnd()*8)]}));
  // suburbs (Maple Grove houses, they appear as the channel grows), the village (Riverside Heights) and the industrial sheds
- for(const b of along(['se','loopA','cul1','cul2','cul3','stadium'],{w:[5.5,7],d:[5,6.4],set:4,gap:4.2,rm:1.6,where:(x,z)=>x>470}))slots.suburb.push([b.x,b.z,b.ry]);
- for(const b of along(['north','vloop','veast','vmouth'],{w:[5.5,7],d:[5,6.4],set:4,gap:4.2,rm:1.6,where:(x,z)=>Math.hypot(x-nodes[NI.VIL].x,z-nodes[NI.VIL].z)<190}))slots.village.push([b.x,b.z,b.ry]);
+ for(const b of along(['se','loopA','cul1','cul2','cul3','stadium'],{w:[5.5,7],d:[5,6.4],set:6,gap:10,rm:2.2,where:(x,z)=>x>470}))slots.suburb.push([b.x,b.z,b.ry]);
+ for(const b of along(['north','vloop','veast','vmouth'],{w:[5.5,7],d:[5,6.4],set:5.5,gap:8,rm:2.2,where:(x,z)=>Math.hypot(x-nodes[NI.VIL].x,z-nodes[NI.VIL].z)<190}))slots.village.push([b.x,b.z,b.ry]);
  for(const b of along(['factory','mill','south'],{w:[20,26],d:[13,17],set:4,gap:6,rm:2,where:(x,z)=>z>300&&z<470}))slots.industry.push([b.x,b.z,b.ry,b.w,b.d]);
  // farmhouses and barns by the fields, a few houses along the coast road and the riverside
  for(const b of along(['farm','coast','river'],{w:[6,9],d:[6,8],set:5,gap:40,rm:2,where:(x,z)=>plazaD(x,z)>260}))fill.push(item('house',b,{body:BODY[Math.floor(rnd()*6)],roof:ROOF[Math.floor(rnd()*8)]}));
@@ -134,8 +150,8 @@ const CITY=(()=>{
   const lane=Math.max(14,Math.min(24,px(e.w)/4)),f={P,L:Lc,len:Lc[Lc.length-1],lane,w:px(e.w),k:e.k};
   const R={P:P.slice().reverse(),L:null,len:f.len,lane,w:f.w,k:e.k};R.L=[0];for(let i=1;i<R.P.length;i++)R.L.push(R.L[i-1]+Math.hypot(R.P[i][0]-R.P[i-1][0],R.P[i][1]-R.P[i-1][1]));
   G.E.set(ekey(e.a,e.b),f);G.E.set(ekey(e.b,e.a),R);G.nodes[e.a].nb.push(e.b);G.nodes[e.b].nb.push(e.a)}
- const lotsPx={};for(const k in lots){const l=lots[k];lotsPx[k]={x0:px(l.x0),y0:px(l.z0),seg:l.seg,side:l.side}}
+ const lotsPx={};for(const k in lots){const l=lots[k];lotsPx[k]={x0:px(l.x0),y0:px(l.z0),cx:px(l.cx),cy:px(l.cz),rot:l.rot,seg:l.seg,side:l.side}}
  const bounds={x0:-560,z0:-700,x1:1250,z1:700};
- return{L,nodes,NI,edges,roads,edgeOf,lots,lotsPx,LW,LH,XST,TL,F,P0,AIR,G,ekey,bridges,deck,h,gy,inSea,inRiver,riverZ,riverW,roadD,railD,hwyD,free,forestK,inField,fill,town,slots,rnd,segD,bounds,W,
+ return{L,nodes,NI,edges,roads,edgeOf,lots,lotsPx,LW,LH,XST,TL,F,P0,AIR,G,ekey,bridges,bulbs,deck,h,gy,hmin,inSea,inRiver,riverZ,riverW,roadD,railD,hwyD,free,forestK,inField,fill,town,slots,rnd,segD,bounds,W,
   districts:L.districts,fields:L.fields,forests:L.forests,rail:L.rail,hwy:L.hwy,busLoop:L.busLoop.map(n=>NI[n])};
 })();

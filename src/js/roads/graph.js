@@ -6,6 +6,9 @@ const nid=(i,j)=>CITY.NI[i]; // kept for old call sites: nid(name)
 const EDGE=(a,b)=>CITY.G.E.get(CITY.ekey(a,b));
 // clearance at a node: where the lanes stop before it and start after it
 for(const n of nodes){let w=0;for(const m of n.nb)w=Math.max(w,EDGE(nodes.indexOf(n),m).w);n.clr=n.round?n.round+46:n.nb.length>=3?w/2+26:n.nb.length===1?40:18}
+// widest road at each node (STOP / give way: a narrower road gives way to a wider one) and the turning bulbs at dead ends
+for(const n of nodes){n.wmax=0;for(const m of n.nb)n.wmax=Math.max(n.wmax,EDGE(nodes.indexOf(n),m).w)}
+for(const q of CITY.bulbs){const n=nodes[q.n];if(n&&n.nb.length===1)n.loop={x:q.x*10,y:q.z*10,r:q.r*10,hx:q.hx,hy:q.hz}}
 // direction of the road leaving node a toward b (unit), measured a few metres in
 function edgeTan(a,b,s){const e=EDGE(a,b);const p=atEdge(e,s||0),q=atEdge(e,Math.min(e.len,(s||0)+30));const dx=q.x-p.x,dy=q.y-p.y,l=Math.hypot(dx,dy)||1;return{x:dx/l,y:dy/l}}
 // traffic lights: junctions of four or more roads (not roundabouts); the roads split into two phases by direction
@@ -23,7 +26,8 @@ function edgeS(a,b,x,y){const e=EDGE(a,b),P=e.P;let best=1e18,bs=0;for(let i=1;i
 // chord direction, right-hand normal, length and end nodes (old call sites); dx/dy also at any s with segAt
 function segDir(a,b){const A=nodes[a],B=nodes[b],e=EDGE(a,b);const p=atEdge(e,0),q=atEdge(e,Math.min(e.len,40));let dx=q.x-p.x,dy=q.y-p.y;const l=Math.hypot(dx,dy)||1;dx/=l;dy/=l;return{dx,dy,rx:-dy,ry:dx,len:e.len,A,B,e}}
 function segAt(a,b,s){const p=atEdge(EDGE(a,b),s);return{dx:p.tx,dy:p.ty,rx:-p.ty,ry:p.tx,x:p.x,y:p.y}}
-function lanePt(a,b,s){const e=EDGE(a,b),c0=nodes[a].clr,c1=nodes[b].clr;s=e.len>c0+c1?clamp(s,c0,e.len-c1):e.len/2;const p=atEdge(e,s);return{x:p.x-p.ty*e.lane,y:p.y+p.tx*e.lane}}
+// a point on the right-hand lane of a->b at arc length s (kept clear of the junctions); ln/s let the cars follow the curve to it
+function lanePt(a,b,s){const e=EDGE(a,b),c0=nodes[a].clr,c1=nodes[b].clr;s=e.len>c0+c1?clamp(s,c0,e.len-c1):e.len/2;const p=atEdge(e,s);return{x:p.x-p.ty*e.lane,y:p.y+p.tx*e.lane,ln:[a,b],s}}
 function stopPt(a,b){const p=lanePt(a,b,1e9);p.stop=true;return p}
 function bfs(start,avoid,goal){
  if(start===goal)return[];
@@ -38,6 +42,10 @@ function turnPts(p0,a,b,c){
  const p2=lanePt(b,c,0),N=nodes[b];
  if(N.round){const RR=N.round,a0=Math.atan2(p0.y-N.y,p0.x-N.x),a1=Math.atan2(p2.y-N.y,p2.x-N.x);let da=a0-a1;while(da<=0.35)da+=TAU;if(da>TAU+.35)da-=TAU;
   const out=[];out.push({x:N.x+Math.cos(a0-.35)*RR,y:N.y+Math.sin(a0-.35)*RR});const n=Math.max(6,Math.round(da/.2));for(let i=1;i<=n;i++){const t=a0-.35-(da-.7)*i/n;out.push({x:N.x+Math.cos(t)*RR,y:N.y+Math.sin(t)*RR})}out.push(p2);return out}
+ // dead end: round the turning bulb (in from the right lane, anticlockwise round the far side, out on the other lane)
+ if(c===a&&N.loop){const L=N.loop,rx=-L.hy,ry=L.hx,h={x:L.hx,y:L.hy},mh={x:-L.hx,y:-L.hy},Ji={x:L.x+rx*L.r,y:L.y+ry*L.r},Jo={x:L.x-rx*L.r,y:L.y-ry*L.r};
+  const bez=(p,h1,q,h2,n,o)=>{const k=Math.hypot(q.x-p.x,q.y-p.y)*.45,c1={x:p.x+h1.x*k,y:p.y+h1.y*k},c2={x:q.x-h2.x*k,y:q.y-h2.y*k};for(let i=1;i<=n;i++){const t=i/n,u=1-t;o.push({x:u*u*u*p.x+3*u*u*t*c1.x+3*u*t*t*c2.x+t*t*t*q.x,y:u*u*u*p.y+3*u*u*t*c1.y+3*u*t*t*c2.y+t*t*t*q.y})}return o};
+  const out=bez(p0,h,Ji,h,5,[]),ai=Math.atan2(ry,rx);for(let i=1;i<=12;i++){const t=ai-Math.PI*i/12;out.push({x:L.x+Math.cos(t)*L.r,y:L.y+Math.sin(t)*L.r})}return bez(Jo,mh,p2,mh,5,out)}
  const ea=EDGE(b,a),t1=atEdge(ea,0),t2=atEdge(EDGE(b,c),0);
  // incoming heading = minus the tangent of b->a at b; outgoing heading = tangent of b->c at b
  const h1x=-t1.tx,h1y=-t1.ty,h2x=t2.tx,h2y=t2.ty;const d=Math.hypot(p2.x-p0.x,p2.y-p0.y);const k=c===a?Math.max(26,d*.9):Math.max(8,d*.42);

@@ -3,17 +3,23 @@
 // ---------- buildings ----------
 const B={},buildings=[];
 function mkB(type,i,j,side,doorX,name){
- // Phase 1B: the lot comes from the city layout (CITY.lotsPx); its size and door side stay what they always were
- const Lp=CITY.lotsPx[type],x0=Lp.x0,y0=Lp.y0,x1=x0+CITY.LW*10,y1=y0+CITY.LH*10;
- const b={type,name,i,j,x0,x1,y0,y1,w:x1-x0,h:y1-y0,side,slots:[]};
- if(side==='top'){b.seg=Lp.seg;b.door={x:x0+doorX,y:y0-8}}
- else if(side==='bottom'){b.seg=Lp.seg;b.door={x:x0+doorX,y:y1+8}}
+ // Phase 1B: the lot comes from the city layout (CITY.lotsPx); its size and door side stay what they always were.
+ // x0..y1 is the lot in its own axes (centred on the lot); rot turns it round its centre to follow the road
+ const Lp=CITY.lotsPx[type],x0=Lp.x0,y0=Lp.y0,x1=x0+CITY.LW*10,y1=y0+CITY.LH*10,rot=Lp.rot||0;
+ const b={type,name,i,j,x0,x1,y0,y1,w:x1-x0,h:y1-y0,side,slots:[],rot,cx:(x0+x1)/2,cy:(y0+y1)/2,cs:Math.cos(rot),sn:Math.sin(rot)};
+ if(side==='top'){b.seg=Lp.seg;b.door=lotPt(b,x0+doorX,y0-8)}
+ else if(side==='bottom'){b.seg=Lp.seg;b.door=lotPt(b,x0+doorX,y1+8)}
  buildings.push(b);B[type]=b;return b;
 }
+// a point given in the lot's own axes (x0..x1, y0..y1) -> the city (ux/uy keep the lot-axes point for the 3D builders)
+function lotPt(b,x,y){const dx=x-b.cx,dy=y-b.cy;return{x:b.cx+dx*b.cs-dy*b.sn,y:b.cy+dx*b.sn+dy*b.cs,ux:x,uy:y}}
+// a city point -> the lot's own axes
+function lotLocal(b,x,y){const dx=x-b.cx,dy=y-b.cy;return{x:b.cx+dx*b.cs+dy*b.sn,y:b.cy-dx*b.sn+dy*b.cs}}
+function inLotB(b,x,y,m){m=m||0;const p=lotLocal(b,x,y);return p.x>b.x0-m&&p.x<b.x1+m&&p.y>b.y0-m&&p.y<b.y1+m}
 // the decorative city between the main buildings (Phase 1B: generated along the roads by roads/layout.js)
 let _city=null;function cityFill(){if(_city)return _city;const T=CITY.TL,X=CITY.XST;_city={blocks:[{type:'towerlot',x0:(T[0]-T[2]/2)*10,y0:(T[1]-T[3]/2)*10,x1:(T[0]+T[2]/2)*10,y1:(T[1]+T[3]/2)*10}],items:CITY.fill,
  xst:XMAS?{x0:X.x0*10,y0:X.z0*10,x1:(X.x0+X.w)*10,y1:(X.z0+X.d)*10,sx:(X.x0+X.w)*10}:null};return _city}
-function mkSlot(b,x,y,ang,o){return Object.assign({x:b.x0+x,y:b.y0+y,ang,b,car:null},o||{})}
+function mkSlot(b,x,y,ang,o){const p=lotPt(b,b.x0+x,b.y0+y);return Object.assign({x:p.x,y:p.y,ux:p.ux,uy:p.uy,ang:ang+b.rot,uang:ang,b,car:null},o||{})}
 function slot(b,x,y,ang,o){const s=mkSlot(b,x,y,ang,o);b.slots.push(s);return s}
 const S=Math.PI/2;
 { let b;
@@ -39,5 +45,5 @@ const S=Math.PI/2;
 }
 const approach=s=>({x:s.x-Math.cos(s.ang)*36,y:s.y-Math.sin(s.ang)*36});
 // the news kiosk stands on the plaza in front of the Motoropolis Daily building
-const inKiosk=(x,y,m=6)=>{const b=B.news;return x>=b.x0-m&&x<=b.x1+m&&y>=b.y0-m&&y<=b.y1+m};
+const inKiosk=(x,y,m=6)=>inLotB(B.news,x,y,m);
 
