@@ -1,0 +1,310 @@
+{
+ "title": "Short · Teaser: the new Motoropolis (Phase 1B)",
+ "light": "dia",
+ "warmup": 90,
+ "hide": [
+  "Hunter-is-gay-af"
+ ],
+ "shots": [
+  {
+   "name": "hook",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": 260,
+     "tz": -20,
+     "yaw": 2.941592653589793,
+     "pitch": 1.38,
+     "dist": 1000,
+     "fov": 50
+    },
+    "to": {
+     "tx": 230,
+     "tz": 0,
+     "yaw": 2.691592653589793,
+     "pitch": 1.2,
+     "dist": 720,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 330,
+     "lines": [
+      [
+       "THE CITY IS",
+       90,
+       "#ffffff"
+      ],
+      [
+       "BEING REBUILT",
+       110,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "plaza",
+   "dur": 5.0,
+   "cam": {
+    "from": {
+     "tx": 180,
+     "tz": 80,
+     "yaw": 2.5,
+     "pitch": 0.95,
+     "dist": 170,
+     "fov": 50
+    },
+    "to": {
+     "tx": 180,
+     "tz": 80,
+     "yaw": 3.3,
+     "pitch": 0.55,
+     "dist": 95,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "NO MORE GRID",
+       96,
+       "#ffffff"
+      ],
+      [
+       "A REAL ROUNDABOUT",
+       80,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "harbour",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": -150,
+     "tz": -80,
+     "yaw": 4.4,
+     "pitch": 0.55,
+     "dist": 170,
+     "fov": 50
+    },
+    "to": {
+     "tx": -150,
+     "tz": -80,
+     "yaw": 4.9,
+     "pitch": 0.42,
+     "dist": 115,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "OLD TOWN",
+       100,
+       "#ffffff"
+      ],
+      [
+       "BY THE BAY",
+       90,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "hills",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": 720,
+     "tz": -400,
+     "yaw": 3.6,
+     "pitch": 0.5,
+     "dist": 300,
+     "fov": 50,
+     "ty": 25
+    },
+    "to": {
+     "tx": 720,
+     "tz": -400,
+     "yaw": 4.2,
+     "pitch": 0.4,
+     "dist": 220,
+     "fov": 50,
+     "ty": 25
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "WINDING",
+       96,
+       "#ffffff"
+      ],
+      [
+       "HILL ROADS",
+       96,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "suburbs",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": 640,
+     "tz": 260,
+     "yaw": 0.4,
+     "pitch": 0.85,
+     "dist": 260,
+     "fov": 50
+    },
+    "to": {
+     "tx": 640,
+     "tz": 260,
+     "yaw": 0.9,
+     "pitch": 0.6,
+     "dist": 180,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "NEW STREETS",
+       90,
+       "#ffffff"
+      ],
+      [
+       "FOR EVERY SUBSCRIBER",
+       72,
+       "#3ee08f"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "drag",
+   "dur": 4.0,
+   "cam": {
+    "from": {
+     "tx": 120,
+     "tz": 482,
+     "yaw": 0.8,
+     "pitch": 0.45,
+     "dist": 140,
+     "fov": 50
+    },
+    "to": {
+     "tx": 120,
+     "tz": 482,
+     "yaw": 1.2,
+     "pitch": 0.3,
+     "dist": 90,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "THE DRAG STRIP",
+       90,
+       "#ffffff"
+      ],
+      [
+       "IS WAITING",
+       96,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "name": "outro",
+   "dur": 4.5,
+   "cam": {
+    "from": {
+     "tx": 180,
+     "tz": 80,
+     "yaw": 3.0,
+     "pitch": 0.7,
+     "dist": 200,
+     "fov": 50
+    },
+    "to": {
+     "tx": 220,
+     "tz": 40,
+     "yaw": 2.8415926535897933,
+     "pitch": 1.25,
+     "dist": 800,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "txt": [
+    {
+     "t0": 0.05,
+     "y": 300,
+     "lines": [
+      [
+       "COMING SOON",
+       100,
+       "#3ee08f"
+      ]
+     ]
+    },
+    {
+     "t0": 1.2,
+     "y": 1560,
+     "lines": [
+      [
+       "SUBSCRIBE AND",
+       76,
+       "#ffffff"
+      ],
+      [
+       "YOUR NAME LIVES HERE",
+       76,
+       "#ffd34d"
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}
