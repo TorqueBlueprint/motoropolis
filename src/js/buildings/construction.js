@@ -43,8 +43,8 @@
  function blueprint(m,L){
   if(!bpTex){const c=document.createElement('canvas');c.width=692;c.height=432;const x=c.getContext('2d');x.fillStyle='#1d5aa8';x.fillRect(0,0,692,432);
    for(let k=0;k<692;k+=20){x.fillStyle=k%100?'rgba(255,255,255,.1)':'rgba(255,255,255,.22)';x.fillRect(k,0,1.5,432)}for(let k=0;k<432;k+=20){x.fillStyle=k%100?'rgba(255,255,255,.1)':'rgba(255,255,255,.22)';x.fillRect(0,k,692,1.5)}
-   x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=4;x.strokeRect(14,14,664,404);bpTex=new T.CanvasTexture(x.canvas);bpTex.colorSpace=T.SRGBColorSpace;bpTex.anisotropy=8}
-  const g=new T.Group();const gp=new T.Mesh(new T.PlaneGeometry(L.w-.4,L.d-.4),new T.MeshStandardMaterial({map:bpTex,roughness:.9}));gp.rotation.x=-Math.PI/2;gp.position.set(L.cx,Y0+.02,L.cz);gp.receiveShadow=true;g.add(gp);
+   x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=4;x.strokeRect(14,14,664,404);bpTex=new T.CanvasTexture(x.canvas);bpTex.colorSpace=T.SRGBColorSpace;bpTex.anisotropy=renderer.capabilities.getMaxAnisotropy()}
+  const g=new T.Group();const gp=new T.Mesh(new T.PlaneGeometry(L.w-.4,L.d-.4),new T.MeshStandardMaterial({map:bpTex,roughness:.9,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));gp.rotation.x=-Math.PI/2;gp.position.set(L.cx,Y0+.06,L.cz);gp.receiveShadow=true;g.add(gp);
   const ghost=BUILD[m.type](L);ghost.traverse(o=>{if(!o.isMesh)return;if(o.material&&o.material.map&&o.material!==bpTex){const i=signMats.indexOf(o.material);if(i>=0){signMats.splice(i,1);o.material.map.dispose();o.material.dispose()}}
    o.material=ghostMat;o.castShadow=false;o.receiveShadow=false;if(o.geometry===BOX&&o.scale.x*o.scale.y*o.scale.z>1.5){const e=new T.LineSegments(EDGES,edgeMat);o.add(e)}});g.add(ghost);
   const idx=MILESTONES.indexOf(m);

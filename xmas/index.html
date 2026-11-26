@@ -2248,8 +2248,8 @@ function make3D(T,X){
  function blueprint(m,L){
   if(!bpTex){const c=document.createElement('canvas');c.width=692;c.height=432;const x=c.getContext('2d');x.fillStyle='#1d5aa8';x.fillRect(0,0,692,432);
    for(let k=0;k<692;k+=20){x.fillStyle=k%100?'rgba(255,255,255,.1)':'rgba(255,255,255,.22)';x.fillRect(k,0,1.5,432)}for(let k=0;k<432;k+=20){x.fillStyle=k%100?'rgba(255,255,255,.1)':'rgba(255,255,255,.22)';x.fillRect(0,k,692,1.5)}
-   x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=4;x.strokeRect(14,14,664,404);bpTex=new T.CanvasTexture(x.canvas);bpTex.colorSpace=T.SRGBColorSpace;bpTex.anisotropy=8}
-  const g=new T.Group();const gp=new T.Mesh(new T.PlaneGeometry(L.w-.4,L.d-.4),new T.MeshStandardMaterial({map:bpTex,roughness:.9}));gp.rotation.x=-Math.PI/2;gp.position.set(L.cx,Y0+.02,L.cz);gp.receiveShadow=true;g.add(gp);
+   x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=4;x.strokeRect(14,14,664,404);bpTex=new T.CanvasTexture(x.canvas);bpTex.colorSpace=T.SRGBColorSpace;bpTex.anisotropy=renderer.capabilities.getMaxAnisotropy()}
+  const g=new T.Group();const gp=new T.Mesh(new T.PlaneGeometry(L.w-.4,L.d-.4),new T.MeshStandardMaterial({map:bpTex,roughness:.9,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));gp.rotation.x=-Math.PI/2;gp.position.set(L.cx,Y0+.06,L.cz);gp.receiveShadow=true;g.add(gp);
   const ghost=BUILD[m.type](L);ghost.traverse(o=>{if(!o.isMesh)return;if(o.material&&o.material.map&&o.material!==bpTex){const i=signMats.indexOf(o.material);if(i>=0){signMats.splice(i,1);o.material.map.dispose();o.material.dispose()}}
    o.material=ghostMat;o.castShadow=false;o.receiveShadow=false;if(o.geometry===BOX&&o.scale.x*o.scale.y*o.scale.z>1.5){const e=new T.LineSegments(EDGES,edgeMat);o.add(e)}});g.add(ghost);
   const idx=MILESTONES.indexOf(m);
@@ -3456,8 +3456,9 @@ function make3D(T,X){
   lab('MOTOR RIVER',260,riverZ(260),6);lab('MARINA',F.marina[0],F.marina[1],8);lab('AIRPORT RESERVE',(CITY.AIR[0]+CITY.AIR[2])/2,CITY.AIR[1]+20,6);
   warp(root);
   // ---- dynamic part: rebuilt when subscribers or unlocks change ----
-  let dyn=null,dsig='';const bpTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');x.fillStyle='#1d5aa8';x.fillRect(0,0,256,256);x.strokeStyle='rgba(255,255,255,.13)';x.lineWidth=1;for(let k=0;k<=256;k+=16){x.beginPath();x.moveTo(k,0);x.lineTo(k,256);x.moveTo(0,k);x.lineTo(256,k);x.stroke()}x.strokeStyle='rgba(255,255,255,.3)';x.lineWidth=2;for(let k=0;k<=256;k+=64){x.beginPath();x.moveTo(k,0);x.lineTo(k,256);x.moveTo(0,k);x.lineTo(256,k);x.stroke()}const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;return t})();
-  const bpMat=new T.MeshStandardMaterial({map:bpTex,roughness:.9}),bpLine=M(0xe8f3ff,{emissive:0x9fc8ff,emissiveIntensity:.25});
+  let dyn=null,dsig='';const bpTex=(()=>{// blueprint grid: few, soft, thick lines + anisotropic filtering, so it doesn't shimmer when the camera moves
+  const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#1d5aa8';x.fillRect(0,0,512,512);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=6;for(let k=0;k<=512;k+=128){x.beginPath();x.moveTo(k,0);x.lineTo(k,512);x.moveTo(0,k);x.lineTo(512,k);x.stroke()}x.strokeStyle='rgba(255,255,255,.26)';x.lineWidth=12;x.beginPath();x.moveTo(0,0);x.lineTo(0,512);x.moveTo(512,0);x.lineTo(512,512);x.moveTo(0,0);x.lineTo(512,0);x.moveTo(0,512);x.lineTo(512,512);x.stroke();const t=new T.CanvasTexture(c);t.colorSpace=T.SRGBColorSpace;t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=renderer.capabilities.getMaxAnisotropy();return t})();
+  const bpMat=new T.MeshStandardMaterial({map:bpTex,roughness:.9,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}),bpLine=M(0xe8f3ff,{emissive:0x9fc8ff,emissiveIntensity:.25});
   const coreG=()=>{const u=new T.Group();u.userData.warped=1;dyn.add(u);return u};
   function bpLot(g,type,cx,cz,w,d,anc){g=anc==='core'?coreG():unit(g,anc?anc[0]:cx,anc?anc[1]:cz);const m=MS[type];const pg=new T.PlaneGeometry(w,d);const uv=pg.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*w/24,uv.getY(i)*d/24);const p=new T.Mesh(pg,bpMat);p.rotation.x=-Math.PI/2;p.position.set(cx,.06,cz);p.receiveShadow=true;g.add(p);
    for(const s of[-1,1]){B0(g,w,.08,.4,bpLine,cx,.06,cz+s*(d/2-.2),false);B0(g,.4,.08,d,bpLine,cx+s*(w/2-.2),.06,cz,false)}
