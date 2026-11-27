@@ -8,7 +8,7 @@
 //@ inside make3D(T,X): uses T (three), X (remake extras), scene, mat, box(), U(), LOT, cam, hctx.... Ordered partial: see src/manifest.txt; //@ lines are dropped by tools/build.py
  // the exterior (world/world3d.js, w_fire): the 24 x 16 m station centred on CITY.F.w_fire, doors facing -z, hose tower behind
  const FIRE={hit:null,lp:null};
- if(WORLD&&CITY.F&&CITY.F.w_fire){const[fx,fz]=CITY.F.w_fire,bb=new T.Box3(new T.Vector3(fx-12.4,0,fz-8.6),new T.Vector3(fx+12.4,12,fz+8.4));FIRE.hit=r=>r.intersectsBox(bb);FIRE.lp={x:fx,y:11.4,z:fz-8.6}}
+ if(WORLD&&CITY.F&&CITY.F.w_fire){const[fx,fz]=CITY.F.w_fire,bb=new T.Box3(new T.Vector3(fx-12.4,0,fz-8.6),new T.Vector3(fx+12.4,12.8,fz+8.4));FIRE.hit=r=>r.intersectsBox(bb);FIRE.lp={x:fx,y:13.4,z:fz-8.6}}
  {
   const FS={built:false,clk:0,t0:-99,v:'',home:{tx:0,tz:-1.5,yaw:.22,pitch:.36,dist:42}};
   let sd=125125;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
@@ -239,37 +239,96 @@
    else if(FS.clk-FS.t0<4)pill('🚨 ALARM DRILL · CREW TO THE ENGINES',HUDW/2,200,24,'rgba(217,58,47,.95)','#fff');
    header('INSIDE THE FIRE STATION')}
   INTS.fire={get scene(){return FS.S},build:buildFire,isBuilt:()=>FS.built,sync:syncFire,labels:labelsFire,get home(){return FS.home},onEnter(){FS.t0=FS.clk}};
-  // ---------- the exterior in the city (world/world3d.js calls FIRE.ext when w_fire is open): one vertex-coloured mesh + one for the lights ----------
-  // local frame: doors face -z, the building is 24 x 16 m; the two engines are the interior's models at 0.6 scale (Engine 1 out on the apron, Ladder 2 in its bay)
-  FIRE.ext=(g,x,z)=>{const L=[],LT=[],BR=0xa9483a,BR2=0x8f3b2f,TR=0xf1eee6,DR=0xb8241c,DRL=0x93201a,IN=0x15171b,CONC=0xc9cbc8,ROOF=0x3b3f46,GL=0x2c4a66,BRASS=0xd9b24a;
-   // apron, kerb stripe and bay lines
-   bx(L,26,.08,12.5,CONC,0,0,-14.2);for(let k=0;k<13;k++)bx(L,2,.1,.5,k%2?TR:DR,-12+k*2,.01,-20.3);
-   for(const bx0 of[-7.6,0,7.6])for(const s of[-1,1])bx(L,.16,.1,10.5,YEL,bx0+s*2.9,.02,-13.6);
-   // main block: plinth, brick walls, white cornice, flat roof with parapet
-   bx(L,24.4,.7,16.4,CONC,0,0,0);bx(L,24,8.6,16,BR,0,.7,0);bx(L,24.2,.18,16.2,BR2,0,5.95,0);bx(L,24.9,.55,16.9,TR,0,9.3,0);bx(L,24.3,.35,16.3,ROOF,0,9.85,0);
-   for(const s of[-1,1]){bx(L,24.6,.7,.3,TR,0,9.85,s*8.2);bx(L,.3,.7,16.6,TR,s*12.2,9.85,0)}
-   // three bays: white pillars and header, two open bays (dark inside), one closed red roller door
-   for(const px of[-11.6,-3.8,3.8,11.6])bx(L,.9,5.9,.6,TR,px,.7,-8.1);bx(L,24.2,.6,.6,TR,0,6.0,-8.1);
-   for(const bx0 of[-7.6,0]){bx(L,6.8,5.3,.2,IN,bx0,.7,-7.9);bx(L,6.8,.35,.3,DR,bx0,5.65,-8.05)} // rolled-up doors in their boxes
-   bx(L,6.8,5.3,.25,DR,7.6,.7,-8.05);for(let k=0;k<10;k++)bx(L,6.8,.06,.28,DRL,7.6,1.1+k*.5,-8.07);for(let k=0;k<4;k++)bx(L,1.2,.5,.3,GL,7.6-2.4+k*1.6,3.6,-8.09);
-   // bay numbers (gold discs) and upper windows with white sills
-   [-7.6,0,7.6].forEach((bx0,k)=>{geo(L,new T.CylinderGeometry(.34,.34,.08,20),BRASS,bx0,6.3,-8.45,Math.PI/2);for(const d of[-2.2,0,2.2]){bx(L,1.3,1.4,.12,GL,bx0+d,7.0+(d?0:0),-8.06);bx(L,1.6,.14,.3,TR,bx0+d,6.92,-8.12);bx(L,1.5,.12,.2,TR,bx0+d,8.44,-8.1)}});
-   // side walls: windows on both floors, a side door with a canopy on the left
-   for(const s of[-1,1])for(const wz of[-4.5,-1.5,1.5,4.5]){bx(L,.12,1.3,1.2,GL,s*12.04,2.6,wz);bx(L,.12,1.3,1.2,GL,s*12.04,7.0,wz);bx(L,.3,.12,1.4,TR,s*12.1,2.5,wz);bx(L,.3,.12,1.4,TR,s*12.1,6.9,wz)}
-   bx(L,.15,2.6,1.4,DR,-12.08,.7,6.6);bx(L,1.2,.12,2.0,TR,-12.6,3.5,6.6);
-   // hose-drying tower (back right): white bands, louvres, a pyramid cap and a flag
-   bx(L,3.6,15,3.6,BR,9,0,4);bx(L,3.8,.4,3.8,TR,9,9.6,4);bx(L,3.9,.5,3.9,TR,9,15,4);for(let k=0;k<5;k++)bx(L,1.6,.18,.12,IN,9,10.6+k*.75,2.15);
-   geo(L,new T.ConeGeometry(2.8,2.2,4),ROOF,9,16.6,4,0,Math.PI/4);cyl(L,.06,.06,3.2,6,TR,9,19.2,4);bx(L,.05,.9,1.5,DR,9,19.6,4.78);
-   // the brass bell on a bracket, hydrants, bollards, a bench and the flagpole
-   bx(L,.12,.12,1.0,IN,12.2,6.6,-8.6);geo(L,new T.CylinderGeometry(.18,.42,.6,14),BRASS,12.2,6.25,-9.0);
-   for(const s of[-1,1]){cyl(L,.26,.3,.8,10,DR,s*13.4,.4,-19.2);cyl(L,.32,.32,.12,10,DR,s*13.4,.86,-19.2);bx(L,.7,.16,.16,DR,s*13.4,.55,-19.2)}
-   for(const px of[-11.6,-3.8,3.8,11.6]){cyl(L,.16,.16,1.0,8,YEL,px,.5,-9.2);bx(L,.34,.12,.34,IN,px,1.0,-9.2)}
-   bx(L,2.2,.12,.6,0x8a5a32,-14.2,.55,-4);for(const s of[-1,1])bx(L,.12,.5,.5,IN,-14.2+s*.95,0,-4);
-   cyl(L,.08,.1,11,8,0xd0d4da,-14.4,5.5,-11);bx(L,.04,1.2,2.0,DR,-14.4,10.0,-10.0);
-   // engines: Engine 1 nose out on the apron, Ladder 2 half out of bay 2 (the interior's builder, scaled down, no door lettering)
-   for(const [ex,ez,lad] of[[-7.6,-13.2,false],[0,-9.6,true]]){const P=xf(ex,0,ez,0,Math.PI,0,.6,.6,.6),p=engine(lad,lad?'lad2':'eng1');
-    for(const q of p.B){q.m=P.clone().multiply(q.m);L.push(q)}for(const q of[...p.LR,...p.LB]){q.m=P.clone().multiply(q.m);LT.push(q)}}
-   const m1=new T.Mesh(mergeParts(L),new T.MeshStandardMaterial({vertexColors:true,roughness:.72,metalness:.05}));m1.castShadow=true;m1.receiveShadow=true;m1.position.set(x,0,z);g.add(m1);
-   const m2=new T.Mesh(mergeParts(LT),new T.MeshBasicMaterial({vertexColors:true}));m2.position.set(x,0,z);g.add(m2);
-   g.add(sign('MOTOROPOLIS FIRE STATION · No. 1',16,1.5,'#d93a2f','#ffffff',x,10.5,z-8.45,0))};
+  // ---------- the exterior in the city (world/world3d.js calls FIRE.ext when w_fire is open) ----------
+  // local frame: doors face -z, the building is 24 x 16 m (x +-12, z +-8), inside the 30 x 32 m lot (x +-15, z -22..10). Bays 1 and 2 are open and hollow
+  // (floor, wainscot, gear rack, hose rack, ceiling lights), bay 3 has its red roller door down. Engine 1 (the interior's model at 0.6 scale) stands on the
+  // apron and is hidden while it is out on a fire call; Ladder 2 noses out of bay 2. Meshes: body (vertex colours), lights, windows (mat.win: they glow at
+  // night like the city's), one small canvas atlas for the sign, bay numbers, clearance plates, fire-lane sign and flag (lit at night with the other signs),
+  // and Engine 1's body + lights (userData.nm, so the run-time merge leaves them alone). Seeded: no Math.random.
+  FIRE.ext=(g,x,z)=>{const L=[],LT=[],WN=[],AX=[],E1=[],E1L=[],BR=0xa9483a,BR2=0x8f3b2f,TR=0xf1eee6,DR=0xb8241c,DRL=0x93201a,IN=0x15171b,CON=0xc9cbc8,ROOF=0x3b3f46,BRASS=0xd9b24a,
+    INW=0x8c3b2e,INF=0x8f959b,GRY=0x6e7378,HYD=0xd93a2f;
+   // atlas: 1024 x 512 canvas; rects are given in the 2048-unit space mergeParts expects (x * 2, y * 4)
+   const AC=document.createElement('canvas');AC.width=1024;AC.height=512;const ac=AC.getContext('2d');ac.textAlign='center';ac.textBaseline='middle';
+   const R4=(x0,y0,w,h)=>[x0*2,y0*4,w*2,h*4],RX={title:R4(0,0,1024,120),n1:R4(0,128,120,120),n2:R4(128,128,120,120),n3:R4(256,128,120,120),clr:R4(384,128,640,90),lane:R4(384,226,640,90),flag:R4(0,256,240,150)};
+   const pa=(x0,y0,w,h,fn)=>{ac.save();ac.translate(x0,y0);ac.beginPath();ac.rect(0,0,w,h);ac.clip();fn(ac,w,h);ac.restore()};
+   pa(0,0,1024,120,(x,W,H)=>{x.fillStyle='#c8231c';x.fillRect(0,0,W,H);x.strokeStyle='#ffd34d';x.lineWidth=6;x.strokeRect(7,7,W-14,H-14);shield(x,58,H/2,36);shield(x,W-58,H/2,36);txt(x,'MOTOROPOLIS FIRE STATION · No. 1',W/2,H/2+4,W-170,80,'#ffffff')});
+   [1,2,3].forEach((n,k)=>pa(k*128,128,120,120,(x,W,H)=>{x.fillStyle='#f1eee6';x.fillRect(0,0,W,H);x.fillStyle='#b8862a';x.beginPath();x.arc(W/2,H/2,56,0,Math.PI*2);x.fill();x.fillStyle='#ffd34d';x.beginPath();x.arc(W/2,H/2,49,0,Math.PI*2);x.fill();txt(x,String(n),W/2,H/2+5,80,86,'#8a1c15')}));
+   pa(384,128,640,90,(x,W,H)=>{x.fillStyle='#ffd34d';x.fillRect(0,0,W,H);x.fillStyle='#16181c';for(let k=-2;k<W/40;k++){x.beginPath();x.moveTo(k*40,H);x.lineTo(k*40+20,H);x.lineTo(k*40+20+H*.4,0);x.lineTo(k*40+H*.4,0);x.fill()}
+    x.fillStyle='#ffd34d';x.fillRect(64,8,W-128,H-16);txt(x,'CLEARANCE 14 ft · 4.3 m',W/2,H/2+3,W-150,60,'#16181c')});
+   pa(384,226,640,90,(x,W,H)=>{x.fillStyle='#ffffff';x.fillRect(0,0,W,H);x.strokeStyle='#c8231c';x.lineWidth=8;x.strokeRect(4,4,W-8,H-8);txt(x,'FIRE LANE · NO PARKING',W/2,H/2+3,W-60,62,'#c8231c')});
+   pa(0,256,240,150,(x,W,H)=>{x.fillStyle='#c8231c';x.fillRect(0,0,W,H);x.fillStyle='#ffffff';x.fillRect(0,H*.4,W,H*.2);shield(x,W*.3,H/2,34)});
+   const at=(k,w,h,px,py,pz,ry,rx)=>AX.push({g:new T.PlaneGeometry(w,h),r:RX[k],m:xf(px,py,pz,rx||0,ry||0,0)});
+   // ---- apron: concrete pad, red/white striped kerb at the street edge, yellow bay lines, a hatched box in front of the closed bay ----
+   bx(L,26.4,.08,12.4,CON,0,0,-14.2);for(let k=0;k<13;k++)bx(L,2.03,.18,.45,k%2?TR:HYD,-12.18+k*2.03,0,-20.2);
+   for(const c0 of[-7.6,0])for(const s of[-1,1])bx(L,.16,.02,11.4,0xe8b931,c0+s*3.0,.08,-14.1);
+   for(const s of[-1,1])bx(L,.16,.02,8,0xe8b931,7.6+s*3.0,.08,-12.4);bx(L,6.16,.02,.16,0xe8b931,7.6,.08,-16.4);for(let k=0;k<5;k++)bx(L,.14,.02,3.1,0xe8b931,5.3+k*1.15,.08,-12.4,.7);
+   // ---- shell: back block, side walls, the solid block behind the closed bay, the floor over the open bays ----
+   bx(L,24,9,5,BR,0,0,5.5);bx(L,.8,9,11,BR,-11.6,0,-2.5);bx(L,8.6,9,11,BR,7.7,0,-2.5);bx(L,14.6,3.4,11,BR,-3.9,5.6,-2.5);
+   bx(L,.8,5.6,.8,BR,-3.8,0,-7.6); // pier between bays 1 and 2
+   // inside the open bays: floor with lane lines, wainscot + white band, ceiling with light strips, door tracks, rolled-up doors, a steel column
+   bx(L,14.4,.1,10.9,INF,-3.9,0,-2.5);for(const c0 of[-7.6,0])for(const s of[-1,1])bx(L,.14,.02,10,0xe8b931,c0+s*2.5,.1,-2.6);
+   bx(L,14.4,1.5,.06,0x9b9f9f,-3.9,.1,2.97);bx(L,14.4,.14,.08,TR,-3.9,1.6,2.96);for(const s of[-1,1]){const wx=s<0?-11.17:3.37;bx(L,.06,1.5,10.9,0x9b9f9f,wx,.1,-2.5);bx(L,.08,.14,10.9,TR,wx,1.6,-2.5)}
+   bx(L,14.4,.06,10.9,0x2a2d33,-3.9,5.54,-2.5);for(const c0 of[-7.6,0])for(const s of[-1,1])bx(LT,.35,.05,8,0xfff1d0,c0+s*1.5,5.49,-2.4);
+   bx(L,.4,5.5,.4,GRY,-3.8,.1,-.5);
+   for(const c0 of[-7.6,0]){for(const s of[-1,1])bx(L,.12,4.9,.16,GRY,c0+s*3.33,.1,-7.7);bx(L,6.8,.55,.6,DRL,c0,4.55,-7.5);for(let k=0;k<3;k++)bx(L,6.8,.04,.62,DR,c0,4.62+k*.16,-7.5)}
+   // the gear rack on the left wall (helmets, coats, boots) and a hose rack with coiled hoses on the back wall of bay 2, a red tool chest
+   {const HEL=[TR,0xf2c12e,0xf2c12e,0x16181c,0xf2c12e];for(let k=0;k<5;k++){const gz=-5.6+k*1.35,gx=-10.85;bx(L,.5,1.5,.9,0xc9a86a,gx,1.6,gz);bx(L,.52,.1,.92,0xf2c12e,gx,1.95,gz);bx(L,.52,.1,.92,0xf2c12e,gx,2.6,gz);
+     bx(L,.5,.4,.7,0x16181c,gx+.1,.1,gz);geo(L,new T.SphereGeometry(.3,10,6,0,Math.PI*2,0,Math.PI/2),HEL[k],gx,3.35,gz);bx(L,.06,.06,1.2,GRY,-11.1,3.3,gz)}
+    const HC=[0xe9e2cf,0xc8231c,0xf2c12e,0x2f6fd9];HC.forEach((c,k)=>geo(L,new T.TorusGeometry(.5,.17,6,14),c,-1.8+k*1.2,2.5,2.7));bx(L,5.2,.1,.5,GRY,-.0,1.8,2.7);
+    bx(L,1.6,1.1,.7,0xc8231c,2.3,.1,2.4);bx(L,1.62,.05,.72,0xb9c0c8,2.3,.6,2.4)}
+   // ---- front facade: white pilasters on concrete bases, white header band with gold bay numbers, the closed roller door ----
+   for(const px of[-11.55,-3.8,3.8,11.55]){bx(L,1.0,5.1,.3,TR,px,0,-8.13);bx(L,1.16,.6,.42,CON,px,0,-8.13);bx(L,1.16,.14,.42,TR,px,5.0,-8.13)}
+   bx(L,24.3,.62,.4,TR,0,5.1,-8.18);bx(L,24.3,.08,.46,BR2,0,5.68,-8.18);
+   [-7.6,0,7.6].forEach((c0,k)=>at('n'+(k+1),.56,.56,c0,5.41,-8.39,Math.PI));
+   for(const c0 of[-7.6,0])at('clr',2.6,.37,c0,4.83,-7.81,Math.PI);
+   bx(L,6.8,4.95,.12,DR,7.6,.1,-8.04);for(let k=0;k<10;k++){const y=.45+k*.46;if(y>2.95&&y<3.9)continue;bx(L,6.8,.05,.05,DRL,7.6,y,-8.12)}
+   for(let k=0;k<4;k++){bx(WN,1.2,.5,.05,0,4.9+k*1.8,3.15,-8.11);bx(L,1.34,.64,.03,TR,4.9+k*1.8,3.08,-8.1)}bx(L,6.8,.12,.06,GRY,7.6,.1,-8.13);bx(L,1.0,.08,.06,GRY,7.6,1.0,-8.14);
+   // lanterns on the pilasters (lit at night with the windows)
+   for(const px of[-11.55,-3.8,3.8,11.55]){bx(L,.36,.08,.3,IN,px,3.6,-8.43);bx(WN,.26,.42,.22,0,px,3.68,-8.43);bx(L,.36,.1,.3,IN,px,4.1,-8.43)}
+   // upper floor: three windows over each bay (white frame, mullion, transom, stone sill, soldier-course lintel)
+   const win=(cx,cy,cz,w,h,face)=>{// face: 'f' front (-z), 'b' back (+z), 'l' / 'r' sides
+    const P=(a,b,c,d,e,f,col,y,o,LL)=>{if(face==='f'||face==='b'){const s=face==='f'?-1:1;bx(LL||L,a,b,c,col,cx+o,y,cz+s*d)}else{const s=face==='l'?-1:1;bx(LL||L,c,b,a,col,cx+s*d,y,cz+o)}};
+    P(w+.2,h+.2,.08,.02,0,0,TR,cy-.1,0);P(w,h,.04,.07,0,0,0,cy,0,WN);P(.08,h,.05,.1,0,0,TR,cy,0);P(w,.08,.05,.1,0,0,TR,cy+h*.68,0);P(w+.4,.12,.26,.1,0,0,CON,cy-.22,0);P(w+.3,.26,.08,.03,0,0,BR2,cy+h+.1,0)};
+   [-7.6,0,7.6].forEach(c0=>{for(const d of[-2.2,0,2.2])win(c0+d,6.35,-8,1.3,1.6,'f')});
+   // cornice, roof, parapet with a white cap, the stepped centre with the station sign
+   bx(L,24.3,.2,16.3,BR2,0,8.8,0);bx(L,24.8,.42,16.8,TR,0,9.0,0);bx(L,23.6,.1,15.6,ROOF,0,9.42,0);
+   for(const s of[-1,1]){bx(L,24.6,.75,.3,BR,0,9.42,s*8.15);bx(L,.3,.75,16.3,BR,s*12.15,9.42,0);bx(L,24.8,.14,.42,TR,0,10.17,s*8.15);bx(L,.42,.14,16.6,TR,s*12.15,10.17,0)}
+   bx(L,10.4,1.9,.7,BR,0,10.17,-7.95);bx(L,10.8,.22,.9,TR,0,12.07,-7.95);for(const s of[-1,1])bx(L,.5,.5,.5,TR,s*5.2,12.29,-7.95);
+   bx(L,9.6,1.42,.1,IN,0,10.4,-8.35);at('title',9.3,1.1,0,11.11,-8.41,Math.PI);
+   // ---- sides and back: windows on both floors, a side door with a canopy, the back door, a downpipe ----
+   for(const s of[-1,1])for(const wz of[-5.2,-1.8,1.6,5.0]){win(s*12,6.35,wz,1.2,1.5,s<0?'l':'r');if(!(s<0&&wz>4))win(s*12,2.0,wz,1.2,1.5,s<0?'l':'r')}
+   bx(L,.12,2.5,1.3,DR,-12.06,.1,5.0);bx(L,.14,2.7,1.5,TR,-12.04,0,5.0);bx(L,1.4,.12,2.0,TR,-12.7,2.9,5.0);for(const s of[-1,1])bx(L,.06,.8,.06,GRY,-13.2,2.2,5.0+s*.9);bx(L,1.6,.12,1.8,CON,-12.8,0,5.0);
+   for(const wx of[-8,-4,4,8])win(wx,6.35,8,1.3,1.5,'b');for(const wx of[-8,-4])win(wx,2.0,8,1.3,1.5,'b');
+   bx(L,1.3,2.5,.12,0x3b4a5c,1.5,.1,8.06);bx(L,1.5,2.7,.14,TR,1.5,0,8.04);bx(L,2,.12,1.3,TR,1.5,2.9,8.6);
+   bx(L,24.2,.6,.12,CON,0,0,8.04);bx(L,.12,.6,16.1,CON,12.04,0,0);bx(L,.12,.6,12.2,CON,-12.04,0,-1.9);bx(L,.12,.6,2.2,CON,-12.04,0,6.9); // concrete plinth
+   for(const[dx,dz]of[[-12.2,-7.9],[12.2,-7.9]])bx(L,.18,9.2,.18,GRY,dx,0,dz);
+   // the AC units and a hatch on the roof
+   for(const[ux,uz]of[[-7,3.5],[-3,3.5]]){bx(L,2,1.1,1.4,0xb9c0c8,ux,9.5,uz);cyl(L,.45,.45,.06,14,0x3a3f46,ux,10.63,uz)}bx(L,1.2,.5,1.2,GRY,3,9.5,-2);
+   // ---- hose-drying tower behind bay 3: brick shaft, white bands, slit windows, an open louvred top with hoses hanging, a pyramid cap and a beacon ----
+   {const tx=9,tz=4,tw=3.6;bx(L,tw,15.6,tw,BR,tx,0,tz);bx(L,tw+.25,.35,tw+.25,TR,tx,10.3,tz);bx(L,tw+.3,.5,tw+.3,TR,tx,13.0,tz);bx(L,tw+.4,.5,tw+.4,TR,tx,15.6,tz);
+    for(const s of[-1,1]){bx(WN,.5,1.4,.05,0,tx,11.2,tz+s*(tw/2+.02));bx(WN,.05,1.4,.5,0,tx+s*(tw/2+.02),11.2,tz)}
+    for(const s of[-1,1])for(const o of[-.85,.85]){bx(L,1.1,1.9,.06,IN,tx+o,13.55,tz+s*(tw/2+.02));bx(L,.06,1.9,1.1,IN,tx+s*(tw/2+.02),13.55,tz+o)}
+    for(const s of[-1,1])for(const[o,c]of[[-1.1,0xe9e2cf],[-.6,0xc8231c],[.6,0xf2c12e],[1.1,0xe9e2cf]]){bx(L,.14,1.7,.14,c,tx+o,13.65,tz+s*(tw/2+.08))}
+    geo(L,new T.ConeGeometry(2.9,2.3,4),ROOF,tx,17.25,tz,0,Math.PI/4);cyl(L,.05,.05,1.0,6,GRY,tx,18.8,tz);bx(LT,.32,.32,.32,0xff3b30,tx,19.2,tz)}
+   // ---- the brass bell under its white yoke on a plinth (left of the apron), hydrants by the kerb, bollards, cones, the flagpole and the fire-lane sign ----
+   {const bxx=-13.7,bz=-10.6;bx(L,1.8,.45,1.4,CON,bxx,0,bz);for(const s of[-1,1])bx(L,.22,2.9,.22,TR,bxx+s*.7,.45,bz);bx(L,1.8,.22,.4,TR,bxx,3.35,bz);bx(L,2.0,.1,.6,0x9a2a20,bxx,3.57,bz);
+    geo(L,new T.LatheGeometry([[.5,0],[.47,.05],[.36,.18],[.3,.38],[.28,.56],[.2,.68],[0,.72]].map(p=>new T.Vector2(p[0],p[1])),16),BRASS,bxx,2.55,bz);cyl(L,.08,.08,.18,8,IN,bxx,3.3,bz);cyl(L,.07,.07,.22,8,BRASS,bxx,2.5,bz)}
+   for(const s of[-1,1]){const hx=s*13.6,hz=-19.1;cyl(L,.42,.42,.1,12,HYD,hx,.05,hz);cyl(L,.27,.3,.9,12,HYD,hx,.55,hz);geo(L,new T.SphereGeometry(.28,12,6,0,Math.PI*2,0,Math.PI/2),HYD,hx,1.0,hz);cyl(L,.07,.07,.16,8,BRASS,hx,1.32,hz);
+    cyl(L,.12,.12,.8,8,HYD,hx,.68,hz,0,0,Math.PI/2);cyl(L,.15,.15,.08,8,BRASS,hx-.4,.68,hz,0,0,Math.PI/2);cyl(L,.15,.15,.08,8,BRASS,hx+.4,.68,hz,0,0,Math.PI/2);cyl(L,.15,.15,.22,8,HYD,hx,.68,hz-.32,Math.PI/2)}
+   for(const px of[-11.55,-3.8,3.8,11.55]){cyl(L,.17,.17,1.05,10,0xf2c12e,px,.53,-8.95);bx(L,.36,.12,.36,IN,px,1.05,-8.95)}
+   for(const[cx,cz]of[[-3.6,-17.2],[-3.6,-14.6],[-11.8,-17.2]]){bx(L,.5,.06,.5,0xe8601c,cx,.08,cz);geo(L,new T.ConeGeometry(.2,.65,10),0xe8601c,cx,.46,cz);cyl(L,.15,.12,.1,10,TR,cx,.5,cz)}
+   {const fx=13.7,fz=-12.5;cyl(L,.6,.7,.3,12,CON,fx,.15,fz);cyl(L,.07,.11,11,8,0xd0d4da,fx,5.8,fz);geo(L,new T.SphereGeometry(.16,10,6),BRASS,fx,11.35,fz);at('flag',2.4,1.5,fx,10.4,fz+1.25,Math.PI/2)}
+   {const lx=-13.9,lz=-16.5;cyl(L,.05,.05,2.2,6,GRY,lx,1.1,lz);bx(L,.06,.56,1.66,IN,lx,2.0,lz);at('lane',1.6,.5,lx-.04,2.28,lz,-Math.PI/2);at('lane',1.6,.5,lx+.04,2.28,lz,Math.PI/2)}
+   // ---- the engines: Engine 1 nose out on the apron, Ladder 2 nosing out of bay 2 (the interior's builder at 0.6, no door lettering) ----
+   for(const[ex,ez,lad,B,LL]of[[-7.6,-14.2,false,E1,E1L],[0,-9.2,true,L,LT]]){const P=xf(ex,0,ez,0,Math.PI,0,.6,.6,.6),p=engine(lad,lad?'lad2':'eng1');
+    for(const q of p.B){q.m=P.clone().multiply(q.m);B.push(q)}for(const q of[...p.LR,...p.LB]){q.m=P.clone().multiply(q.m);LL.push(q)}}
+   // ---- meshes ----
+   const tex=new T.CanvasTexture(AC);tex.colorSpace=T.SRGBColorSpace;tex.anisotropy=8;
+   const BM=new T.MeshStandardMaterial({vertexColors:true,roughness:.72,metalness:.05}),LM=new T.MeshBasicMaterial({vertexColors:true}),
+    SM=new T.MeshStandardMaterial({map:tex,emissiveMap:tex,emissive:0xffffff,emissiveIntensity:0,roughness:.6,side:T.DoubleSide});signMats.push(SM);
+   const mk=(par,list,m,cast)=>{const o=new T.Mesh(mergeParts(list),m);o.castShadow=cast;o.receiveShadow=true;o.userData.fireExt=1;par.add(o);return o};
+   const root=new T.Group();root.position.set(x,0,z);g.add(root);
+   mk(root,L,BM,true);mk(root,LT,LM,false);mk(root,WN,mat.win,false);mk(root,AX,SM,false);
+   const e1=new T.Group();e1.userData.nm=1;root.add(e1);mk(e1,E1,BM,true);mk(e1,E1L,LM,false);
+   if(W3&&W3.anim)W3.anim.push(()=>{e1.visible=!liveCall()})};
  }
