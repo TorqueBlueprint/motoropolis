@@ -239,4 +239,37 @@
    else if(FS.clk-FS.t0<4)pill('🚨 ALARM DRILL · CREW TO THE ENGINES',HUDW/2,200,24,'rgba(217,58,47,.95)','#fff');
    header('INSIDE THE FIRE STATION')}
   INTS.fire={get scene(){return FS.S},build:buildFire,isBuilt:()=>FS.built,sync:syncFire,labels:labelsFire,get home(){return FS.home},onEnter(){FS.t0=FS.clk}};
+  // ---------- the exterior in the city (world/world3d.js calls FIRE.ext when w_fire is open): one vertex-coloured mesh + one for the lights ----------
+  // local frame: doors face -z, the building is 24 x 16 m; the two engines are the interior's models at 0.6 scale (Engine 1 out on the apron, Ladder 2 in its bay)
+  FIRE.ext=(g,x,z)=>{const L=[],LT=[],BR=0xa9483a,BR2=0x8f3b2f,TR=0xf1eee6,DR=0xb8241c,DRL=0x93201a,IN=0x15171b,CONC=0xc9cbc8,ROOF=0x3b3f46,GL=0x2c4a66,BRASS=0xd9b24a;
+   // apron, kerb stripe and bay lines
+   bx(L,26,.08,12.5,CONC,0,0,-14.2);for(let k=0;k<13;k++)bx(L,2,.1,.5,k%2?TR:DR,-12+k*2,.01,-20.3);
+   for(const bx0 of[-7.6,0,7.6])for(const s of[-1,1])bx(L,.16,.1,10.5,YEL,bx0+s*2.9,.02,-13.6);
+   // main block: plinth, brick walls, white cornice, flat roof with parapet
+   bx(L,24.4,.7,16.4,CONC,0,0,0);bx(L,24,8.6,16,BR,0,.7,0);bx(L,24.2,.18,16.2,BR2,0,5.95,0);bx(L,24.9,.55,16.9,TR,0,9.3,0);bx(L,24.3,.35,16.3,ROOF,0,9.85,0);
+   for(const s of[-1,1]){bx(L,24.6,.7,.3,TR,0,9.85,s*8.2);bx(L,.3,.7,16.6,TR,s*12.2,9.85,0)}
+   // three bays: white pillars and header, two open bays (dark inside), one closed red roller door
+   for(const px of[-11.6,-3.8,3.8,11.6])bx(L,.9,5.9,.6,TR,px,.7,-8.1);bx(L,24.2,.6,.6,TR,0,6.0,-8.1);
+   for(const bx0 of[-7.6,0]){bx(L,6.8,5.3,.2,IN,bx0,.7,-7.9);bx(L,6.8,.35,.3,DR,bx0,5.65,-8.05)} // rolled-up doors in their boxes
+   bx(L,6.8,5.3,.25,DR,7.6,.7,-8.05);for(let k=0;k<10;k++)bx(L,6.8,.06,.28,DRL,7.6,1.1+k*.5,-8.07);for(let k=0;k<4;k++)bx(L,1.2,.5,.3,GL,7.6-2.4+k*1.6,3.6,-8.09);
+   // bay numbers (gold discs) and upper windows with white sills
+   [-7.6,0,7.6].forEach((bx0,k)=>{geo(L,new T.CylinderGeometry(.34,.34,.08,20),BRASS,bx0,6.3,-8.45,Math.PI/2);for(const d of[-2.2,0,2.2]){bx(L,1.3,1.4,.12,GL,bx0+d,7.0+(d?0:0),-8.06);bx(L,1.6,.14,.3,TR,bx0+d,6.92,-8.12);bx(L,1.5,.12,.2,TR,bx0+d,8.44,-8.1)}});
+   // side walls: windows on both floors, a side door with a canopy on the left
+   for(const s of[-1,1])for(const wz of[-4.5,-1.5,1.5,4.5]){bx(L,.12,1.3,1.2,GL,s*12.04,2.6,wz);bx(L,.12,1.3,1.2,GL,s*12.04,7.0,wz);bx(L,.3,.12,1.4,TR,s*12.1,2.5,wz);bx(L,.3,.12,1.4,TR,s*12.1,6.9,wz)}
+   bx(L,.15,2.6,1.4,DR,-12.08,.7,6.6);bx(L,1.2,.12,2.0,TR,-12.6,3.5,6.6);
+   // hose-drying tower (back right): white bands, louvres, a pyramid cap and a flag
+   bx(L,3.6,15,3.6,BR,9,0,4);bx(L,3.8,.4,3.8,TR,9,9.6,4);bx(L,3.9,.5,3.9,TR,9,15,4);for(let k=0;k<5;k++)bx(L,1.6,.18,.12,IN,9,10.6+k*.75,2.15);
+   geo(L,new T.ConeGeometry(2.8,2.2,4),ROOF,9,16.6,4,0,Math.PI/4);cyl(L,.06,.06,3.2,6,TR,9,19.2,4);bx(L,.05,.9,1.5,DR,9,19.6,4.78);
+   // the brass bell on a bracket, hydrants, bollards, a bench and the flagpole
+   bx(L,.12,.12,1.0,IN,12.2,6.6,-8.6);geo(L,new T.CylinderGeometry(.18,.42,.6,14),BRASS,12.2,6.25,-9.0);
+   for(const s of[-1,1]){cyl(L,.26,.3,.8,10,DR,s*13.4,.4,-19.2);cyl(L,.32,.32,.12,10,DR,s*13.4,.86,-19.2);bx(L,.7,.16,.16,DR,s*13.4,.55,-19.2)}
+   for(const px of[-11.6,-3.8,3.8,11.6]){cyl(L,.16,.16,1.0,8,YEL,px,.5,-9.2);bx(L,.34,.12,.34,IN,px,1.0,-9.2)}
+   bx(L,2.2,.12,.6,0x8a5a32,-14.2,.55,-4);for(const s of[-1,1])bx(L,.12,.5,.5,IN,-14.2+s*.95,0,-4);
+   cyl(L,.08,.1,11,8,0xd0d4da,-14.4,5.5,-11);bx(L,.04,1.2,2.0,DR,-14.4,10.0,-10.0);
+   // engines: Engine 1 nose out on the apron, Ladder 2 half out of bay 2 (the interior's builder, scaled down, no door lettering)
+   for(const [ex,ez,lad] of[[-7.6,-13.2,false],[0,-9.6,true]]){const P=xf(ex,0,ez,0,Math.PI,0,.6,.6,.6),p=engine(lad,lad?'lad2':'eng1');
+    for(const q of p.B){q.m=P.clone().multiply(q.m);L.push(q)}for(const q of[...p.LR,...p.LB]){q.m=P.clone().multiply(q.m);LT.push(q)}}
+   const m1=new T.Mesh(mergeParts(L),new T.MeshStandardMaterial({vertexColors:true,roughness:.72,metalness:.05}));m1.castShadow=true;m1.receiveShadow=true;m1.position.set(x,0,z);g.add(m1);
+   const m2=new T.Mesh(mergeParts(LT),new T.MeshBasicMaterial({vertexColors:true}));m2.position.set(x,0,z);g.add(m2);
+   g.add(sign('MOTOROPOLIS FIRE STATION · No. 1',16,1.5,'#d93a2f','#ffffff',x,10.5,z-8.45,0))};
  }
