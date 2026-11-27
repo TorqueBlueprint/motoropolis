@@ -4925,7 +4925,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    INTS.mayor={get scene(){return MO.S},build:buildMayorOffice,isBuilt:()=>MO.built,sync:syncMayorOffice,labels:labelsMayorOffice,get home(){return MO.home},onEnter(){MO.t0=MO.clk}};
   }
   // launch gate: the homes go live at HOMES_AT (ms since epoch, UTC; 0 = not yet). Preview with ?homes=1; always on in the recorder and on localhost
-  const HOMES_AT=0,HOMES_ON=(HOMES_AT>0&&Date.now()>=HOMES_AT)||/[?&]homes=1\b/.test(location.search)||document.documentElement.dataset.rec==='1'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const HOMES_AT=1795860000000/* 2026-11-28 10:00 Lisbon (UTC) */,HOMES_ON=(HOMES_AT>0&&Date.now()>=HOMES_AT)||/[?&]homes=1\b/.test(location.search)||document.documentElement.dataset.rec==='1'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
   window.__HOMES_ON=HOMES_ON;
   if(HOMES_ON){
    const hshort=(n,k)=>n.length>k?n.slice(0,k-1)+'…':n;
