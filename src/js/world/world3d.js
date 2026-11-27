@@ -197,7 +197,7 @@
      if(k%4===2)for(let q=0;q<10;q++){const lx=-8+(q%5)*3.1,lz=-d/2-9,c=Math.cos(sry),sn=Math.sin(sry);CT.push({x:sx0+c*lx+sn*lz,y:gh(sx0,sz0)+Math.floor(q/5)*2.6,z:sz0-sn*lx+c*lz,ry:sry,sx:2.6,sy:2.5,sz:6});CTc.push(['#c0392b','#2f6fd9','#e8b931','#2e8b57','#ff7a1a'][q%5])}}}
     instG(g,bodyG,mt.bodyT,CT,CTc)}
    // fire station
-   if(open('w_fire')){const[x,z]=F.w_fire,g=unit(dyn,x,z);B0(g,26,.08,12,mat.pad,x,.02,z-14,false);B0(g,24,7,16,mt.brick,x,0,z);B0(g,24.6,.6,16.6,mat.roofD,x,7,z);for(let q=0;q<3;q++)B0(g,5.4,5,.2,mat.dark,x-7.6+q*7.6,0,z-8.05,false);B0(g,3,12,3,mt.brick,x+9,0,z+4);g.add(sign('FIRE STATION',14,1.8,'#d93a2f','#ffffff',x,8.4,z-8.2,0));const ft=mkCar('#d93a2f',g,true);ft.position.set(x-7.6,0,z-12);L2('FIRE STATION',x,z,12,'w_fire')}
+   if(open('w_fire')){const[x,z]=F.w_fire,g=unit(dyn,x,z);if(FIRE.ext)FIRE.ext(g,x,z);else{B0(g,26,.08,12,mat.pad,x,.02,z-14,false);B0(g,24,7,16,mt.brick,x,0,z);B0(g,24.6,.6,16.6,mat.roofD,x,7,z);for(let q=0;q<3;q++)B0(g,5.4,5,.2,mat.dark,x-7.6+q*7.6,0,z-8.05,false);B0(g,3,12,3,mt.brick,x+9,0,z+4);g.add(sign('FIRE STATION',14,1.8,'#d93a2f','#ffffff',x,8.4,z-8.2,0))}L2('FIRE STATION',x,z,14,'w_fire')}
    else{bpLot(g,'w_fire',F.w_fire[0],F.w_fire[1]-6,26,28);L2('FIRE STATION',F.w_fire[0],F.w_fire[1],10,'w_fire')}
    // hospital
    if(open('w_hosp')||HOSP_PV){const[x,z]=F.w_hosp,g=unit(dyn,x,z);B0(g,30,.08,10,mat.pad,x,.02,z-16,false);bld(g,34,12,22,AM[2],mat.roof,x,z);bld(g,14,20,14,AM[2],mat.roof,x+8,z+2);const hp=new T.Mesh(new T.CylinderGeometry(4.5,4.5,.2,24),mat.dark);hp.position.set(x+8,20.1,z+2);g.add(hp);B0(g,1,.05,5,mt.white,x+8,20.2,z+2,false);
