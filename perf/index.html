@@ -6446,7 +6446,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  function surprise(){const places=PL.filter(p=>p.open()&&p.at()),ppl=WALL.filter(n=>!hid(n)&&(whereN(n)||workPlace(n)));
   if(ppl.length&&(!places.length||rnd(2)===0))goPerson(ppl[rnd(ppl.length)]);else if(places.length)goPlace(places[rnd(places.length)])}
  // ---------- What's new (src/data/ui/whats_new.json; newest 5 that apply on this page) and the unseen dot on the GO TO buttons ----------
- const NEWS=[{"date":"2026-11-28","text":"Every subscriber gets a home (Riverside Heights)","go":"riverside","need":"home"},{"date":"2026-11-27","text":"New: GO TO menu — take the Mayor's tour of the city","go":"tour"},{"date":"2026-11-27","text":"Fire Station: step inside","go":"fire"},{"date":"2026-11-26","text":"Mayor TorqueBlueprint has arrived — visit City Hall","go":"mayor"}],NEWK='mtp-goto-news';
+ const NEWS=[{"date":"2026-11-28","text":"Every subscriber gets a home (Riverside Heights)","go":"riverside","need":"home"},{"date":"2026-11-27","text":"New: GO TO menu — take the Mayor's tour of the city","go":"tour"},{"date":"2026-11-27","text":"Fire Station: step inside","go":"fire"},{"date":"2026-11-27","text":"Mayor TorqueBlueprint has arrived — visit City Hall","go":"mayor"}],NEWK='mtp-goto-news';
  const newsId=it=>it.date+'|'+it.text;
  function newsList(){return NEWS.filter(it=>{if(it.need&&!reg(it.need))return false;if(it.go==='tour'||it.go==='surprise')return true;const pl=byKey(it.go);return !!(pl&&pl.open())}).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0).slice(0,5)}
  function newsSeen(){let s='';try{s=localStorage.getItem(NEWK)||''}catch(e){}return s}
