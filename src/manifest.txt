@@ -67,6 +67,7 @@ interiors/_registry.js
 interiors/news.js
 interiors/police.js
 interiors/court.js
+interiors/fire.js
 interiors/_life.js
 interiors/_staff.js
 interiors/_transitions.js
