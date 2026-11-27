@@ -9,7 +9,7 @@
    const lab={t:'DRAG STRIP',x:(x0+x1)/2,z:zc,y:16,type:'pista'};W3.labels.push(lab);
    const D3={g:null,sig:'',open:false,clock:null,heat:-1,day:null,dayKey:'',cars:[null,null],board:null,tree:null,treeSig:'',boardSig:'',last:null,lanes:[null,null],puffs:[],tag:null};
    // the ground under the strip is not perfectly flat: lift the whole strip just above its highest point
-   const YG=(()=>{let y=0;for(let x=x0-12;x<=x1+12;x+=6)for(let dz=-32;dz<=26;dz+=4)y=Math.max(y,gh(x,zc+dz));return y+.04})();
+   const YG=(()=>{let y=0;for(let x=x0-12;x<=x1+12;x+=6)for(let dz=-32;dz<=26;dz+=4)y=Math.max(y,gh(x,zc+dz));return y+.15})();
    const own=new Set();const ownTex=t=>{own.add(t);return t};
    function dispose(g){root.remove(g);g.traverse(o=>{if(o.userData.keepGeo)return;if(o.geometry&&o.geometry!==BOX&&!SH.has(o.geometry)&&!o.userData.carPart)o.geometry.dispose();const m=o.material;if(m&&!Array.isArray(m)){const i=signMats.indexOf(m);if(i>=0){signMats.splice(i,1);if(m.map)m.map.dispose();m.dispose()}else if(m.map&&own.has(m.map)){own.delete(m.map);m.map.dispose();m.dispose()}}})}
    const cvTex=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const t=ownTex(new T.CanvasTexture(c));t.colorSpace=T.SRGBColorSpace;t.anisotropy=8;return{c,x:c.getContext('2d'),t}};
@@ -50,16 +50,16 @@
      else if(done&&l.et<l.dial){x.fillStyle='#e8b931';x.fillRect(ox,438,cw,52);x.fillStyle='#1d0f02';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('BREAKOUT',ox+16,465)}}
     t.needsUpdate=true}
    function buildOpen(){const g=new T.Group();g.position.y=YG;g.userData.mergeRoot=1;g.userData.warped=1;const L=x1-x0,cx=(x0+x1)/2;
-    const conc=M(0xa9acb0,{roughness:.9}),burn=M(0x24272c,{roughness:.35,metalness:.15}),yel=M(0xe8b931),wall=M(0xd9d6cf,{roughness:.85});
+    const PO={polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4},asp=M(0x2b2e34,Object.assign({roughness:.9},PO)),conc=M(0xa9acb0,Object.assign({roughness:.9},PO)),burn=M(0x24272c,Object.assign({roughness:.35,metalness:.15},PO)),yel=M(0xe8b931),wall=M(0xd9d6cf,{roughness:.85});
     // strip: asphalt, a concrete launch pad, the burnout box, lane lines
-    const strip=new T.Mesh(new T.PlaneGeometry(L,16),M(0x2b2e34,{roughness:.9}));strip.rotation.x=-Math.PI/2;strip.position.set(cx,.04,zc);strip.receiveShadow=true;g.add(strip);
+    const strip=new T.Mesh(new T.PlaneGeometry(L,16),asp);strip.rotation.x=-Math.PI/2;strip.position.set(cx,.04,zc);strip.receiveShadow=true;g.add(strip);
     B0(g,XS+50-x0,.02,15,conc,(x0+XS+50)/2,.04,zc,false);for(const z of LZ)B0(g,XS-3-(x0+3),.025,5.6,burn,(x0+3+XS-3)/2,.05,z,false);
-    B0(g,L,.03,.3,mt.white,cx,.07,zc,false);for(const s of[-1,1])B0(g,L,.03,.25,yel,cx,.07,zc+s*7,false);
-    B0(g,.6,.03,14,mt.white,XS,.07,zc,false);for(let k=0;k<14;k++)B0(g,1,.031,1,k%2?mt.white:mat.dark,XF-.5+(k%2)*0,.07,zc-6.5+k,false);for(let k=0;k<14;k++)B0(g,1,.031,1,k%2?mat.dark:mt.white,XF+.5,.07,zc-6.5+k,false);
+    B0(g,L,.03,.3,mt.white,cx,.12,zc,false);for(const s of[-1,1])B0(g,L,.03,.25,yel,cx,.12,zc+s*7,false);
+    B0(g,.6,.03,14,mt.white,XS,.12,zc,false);for(let k=0;k<14;k++)B0(g,1,.031,1,k%2?mt.white:mat.dark,XF-.5+(k%2)*0,.12,zc-6.5+k,false);for(let k=0;k<14;k++)B0(g,1,.031,1,k%2?mat.dark:mt.white,XF+.5,.12,zc-6.5+k,false);
     for(const s of[-1,1])B0(g,XE-2-x0,1,.5,wall,(x0+XE-2)/2,0,zc+s*8.2);
     // return road (south of the wall) and the exit at the far end
-    const rr2=new T.Mesh(new T.PlaneGeometry(XE+6-x0,6),mat.asphalt);rr2.rotation.x=-Math.PI/2;rr2.position.set((x0+XE+6)/2,.035,ZR);rr2.receiveShadow=true;g.add(rr2);
-    B0(g,10,.02,ZR-zc+3,mat.asphalt,XE+1,.035,(zc+ZR)/2,false);
+    const rr2=new T.Mesh(new T.PlaneGeometry(XE+6-x0,6),asp);rr2.rotation.x=-Math.PI/2;rr2.position.set((x0+XE+6)/2,.035,ZR);rr2.receiveShadow=true;g.add(rr2);
+    B0(g,10,.02,ZR-zc+3,asp,XE+1,.035,(zc+ZR)/2,false);
     // distance markers (both units)
     for(const[d,txt]of[[18.288,'60 FT · 18 M'],[100.584,'330 FT · 101 M'],[201.168,'1/8 MILE · 201 M'],[304.8,'1000 FT · 305 M'],[402.336,'1/4 MILE · 402 M']]){const x=XS+d*S;g.add(sign(txt,6,1,'#22252b','#ffd34d',x,2.2,zc-9.4,0));B0(g,.2,1.7,.2,mat.dark,x,0,zc-9.4)}
     // christmas tree (staging lights) between the lanes, just past the start line; faces the drivers (and the cameras behind)
