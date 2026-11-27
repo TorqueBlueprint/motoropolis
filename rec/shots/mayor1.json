@@ -100,10 +100,30 @@
    "name": "car",
    "plan": 3.0,
    "follow": {
+    "glb": "hothatch",
     "phi": 0.8,
     "pitch": 0.3,
     "dist": 16,
     "sweep": -0.4
+   },
+   "cam": {
+    "from": {
+     "tx": 140,
+     "tz": 70,
+     "yaw": 0.7,
+     "pitch": 0.45,
+     "dist": 70,
+     "fov": 50
+    },
+    "to": {
+     "tx": 135,
+     "tz": 72,
+     "yaw": 0.5,
+     "pitch": 0.42,
+     "dist": 60,
+     "fov": 50
+    },
+    "ease": true
    },
    "dur": 4.5,
    "txt": []
