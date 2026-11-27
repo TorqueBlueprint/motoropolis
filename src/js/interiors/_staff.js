@@ -3,7 +3,6 @@
  // job tags: who works where, inside every building
  function staffTag(m,b,title,k,y){if(!m||!m.visible)return;const n=staffOf(b,title,k);tag(m.position.x,y||3.9,m.position.z,n?`★ ${n} · ${title.toUpperCase()}`:`${title.toUpperCase()} · JOB OPEN`,n?'rgba(46,139,87,.95)':'rgba(16,19,24,.8)',n?'#fff':'#9aa3ae')}
  const XTRA={bomba:{sync(){if(!GS.att){GS.att=mkP(GS.S,'#d93a2f',150,'Fuel Attendant')}loopP(GS.att,[[0,11.5],[24,11.5]],16,0,.25)},labels(){staffTag(GS.cashier,'bomba','Cashier',0);staffTag(GS.att,'bomba','Fuel Attendant',0)}},
-  oficina:{sync(){},labels(){IN.lifts.forEach((L,k)=>staffTag(L.mech,'oficina','Mechanic',k,4.6));if(IN.L)staffTag(IN.L.rec,'oficina','Receptionist',0,4.4)}},
   reboques:{sync(){},labels(){if(TW.L)TW.L.forEach((m,k)=>staffTag(m,'reboques','Tow Truck Driver',k));staffTag(TW.disp,'reboques','Dispatcher',0,4.2)}},
   pneus:{sync(){},labels(){if(TS.L)TS.L.m.forEach((m,k)=>staffTag(m,'pneus','Tire Technician',k))}},
   lavagem:{sync(){},labels(){if(WS.L)WS.L.a.forEach((m,k)=>staffTag(m,'lavagem','Wash Attendant',k,4.6))}},

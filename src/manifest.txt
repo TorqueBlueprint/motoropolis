@@ -9,6 +9,7 @@ sim/milestones.js
 sim/state.js
 traffic/routing.js
 sim/services.js
+sim/shopjobs.js
 sim/setup.js
 sim/update.js
 map2d/background.js

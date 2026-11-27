@@ -97,6 +97,18 @@ Every name on the Wall (`state.json` `names`) has a home once Riverside Heights 
 
 The name is matched exactly, then case-insensitively. Unknown keys and invalid values are ignored (the default stays); nothing from `homes` is ever shown as text. Palette names are case-insensitive.
 
+## Repair Shop as a business (Phase 3 step 1)
+
+The TorqueBlueprint Repair Shop interior runs a **job timetable** for its 6 lifts: `src/js/sim/shopjobs.js` (`SHOP`), drawn by `src/js/interiors/oficina.js`.
+
+- **Seeded and shared:** jobs come only from the UTC clock and `state.json` names (no `Math.random`), so everyone sees the same jobs at the same time. A new job starts every 100 s; job `g` goes on lift `g % 6` (each lift has a 600 s window) and is numbered `J-` + `1000 + g % 9000`. The city's own breakdown → tow → repair loop (`sim/services.js`) is unchanged.
+- **A job:** plate, owner (a Wall of Mechanics resident with their own home-garage car, or a car shown by plate; never the same resident on two lifts at once), fault (weighted like the city's breakdowns; a turbo job only on a turbo car), service, parts (SKU, TC each, qty), labour hours, quote in Torque Coins (parts × price class of the car + labour × rate). **TC is display-only:** nothing is saved, there is no economy yet.
+- **Stages** (7–9.5 min per job): ARRIVED (rolls onto the lift) → DIAGNOSIS (lift half up) → QUOTE (the customer approves at reception) → APPROVED (parts from the counter) → REPAIR (lift up; for brakes, tyres, shocks and clutch the wheels stay on the floor and the discs show) → INSPECTION → READY (the customer pays at the invoice desk) → HANDED OVER (the car backs out).
+- **Mechanics:** job `g` belongs to `staffOf('oficina','Mechanic', g % 5)`; an empty post shows "MECHANIC · JOB OPEN · Comment WORKSHOP MECHANIC". The panel line at the bottom says "<Mechanic> is changing the brakes on <Owner>'s car · J-2148 · 4 min left" (hover or click a car or a mechanic; otherwise it cycles through the jobs).
+- **Boards:** a job card on every lift, the JOB BOARD kanban (left wall), PARTS · STOCK & ORDERS (back wall right; ordered parts come with the parts van when the Auto Parts store is open), THE TILL (back wall left: today's jobs and TC since 00:00 UTC and the latest invoices), the latest invoice with its PAID stamp on the invoice desk. All on one atlas canvas, redrawn only when what they show changes.
+- **Outside:** under "CLICK TO STEP INSIDE" the shop shows "SERVICE IN PROGRESS · n/6 LIFTS BUSY".
+- `node` can run the timetable alone (it only needs `FAULTS`, `MODELS`, `COLORS`, `L2`, `CAR_GLB`, `STATE`, `WALL`, `staffOf`): `SHOP.lifts(t)`, `SHOP.invoices(t, n)`, `SHOP.today(t)`, `SHOP.job(g)`.
+
 ## GO TO menu and deep links
 
 The **📍 Go to** button (viewbar on computers, "Go to" in the phone bottom nav) opens a panel (side panel on computers, bottom sheet on phones) so a viewer can jump straight to a place instead of searching the city by hand. Code: `src/js/ui/goto.js`. Hidden on the recorder page and in trailer mode; Esc closes it.

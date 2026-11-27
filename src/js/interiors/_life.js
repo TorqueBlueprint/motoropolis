@@ -20,12 +20,7 @@
     if(kk<.38)putP(m,pathPos(path,kk/.38),true);else if(kk<.62)putP(m,pathPos(path,1),false,Math.PI);else if(kk<.97)putP(m,pathPos([...path].reverse(),(kk-.62)/.35),true);else m.visible=false})},
   labels(){const L=GS.L;if(!L)return;for(const m of L.drv){if(!m.visible)continue;const c=m.userData.c,k=m.userData.k;tag(m.position.x,3.4,m.position.z,nameOf(c),c&&c.driver?'rgba(255,122,26,.95)':undefined,c&&c.driver?'#1d0f02':undefined);
    if(k>.4&&k<.62){const gal=Math.max(1,(100-c.fuel)*.13);tag(8,4.6,-4,k<.55?'PAYING…':`PAID $${(gal*3.49).toFixed(2)} ✓`,'rgba(92,201,138,.95)','#071a2d')}}}};
- // REPAIR SHOP: owners wait in the lounge while their car is on the lift
- LIFE.oficina={sync(){const S=IN.scene;if(!IN.L){IN.L={w:[0,1,2,3,4].map(i=>mkP(S,null,i+20,'civ')),rec:mkP(S,'#ff7a1a',30,'Receptionist')};S.add(box(6,1.1,1.6,M(0xff7a1a),20,0,7));S.add(box(5,.9,1.2,M(0x2b5c8f),23.5,0,10.2))}
-   const L=IN.L;putP(L.rec,{x:20,z:5.6,ang:0},false);L.rec.rotation.y=Math.sin(simTime*.7)*.4;
-   B.oficina.slots.forEach((s,k)=>{const m=L.w[k];const c=s.car&&s.car.state==='service'&&s.car.kind==='car'?s.car:null;m.visible=!!c;m.userData.c=c;if(!c)return;
-    const el=(c.svcTotal||6)-c.timer,seat=[21.4+k*.9,9.4];if(el<2.2)putP(m,pathPos([[IN.lifts[k].x,1],[18,4],seat],el/2.2),true);else putP(m,{x:seat[0],z:seat[1],ang:Math.PI},false)})},
-  labels(){const L=IN.L;if(!L)return;for(const m of L.w)if(m.visible)tag(m.position.x,3.3,m.position.z,(m.userData.c.driver?'★ ':'')+(m.userData.c.driver||'OWNER')+' · WAITING')}};
+ // REPAIR SHOP: its people (mechanics, receptionist, customers) live in interiors/oficina.js with the job timetable
  // CAR WASH: an attendant guides each car in
  LIFE.lavagem={sync(){const S=WS.scene;if(!WS.L)WS.L={a:[mkP(S,'#3fa7c4',40,'Wash Attendant'),mkP(S,'#3fa7c4',41,'Wash Attendant')],p:mkP(S,null,42,'civ')};WS.lanes.forEach((L,k)=>{const m=WS.L.a[k];const x=L.id?L.car.position.x-5:-22;putP(m,{x:clamp(x,-23,-15),z:L.z+(k?3.2:-3.2),ang:Math.PI/2},!!L.id&&x>-23&&x<-15)});loopP(WS.L.p,[[-23.5,7],[-23.5,9.5],[-18,9.5]],18,0,.3)},
   labels(){if(!WS.L)return;WS.L.a.forEach((m,k)=>{if(WS.lanes[k].id)tag(m.position.x,3.3,m.position.z,'COME FORWARD…','rgba(63,167,196,.95)','#062a36')})}};
