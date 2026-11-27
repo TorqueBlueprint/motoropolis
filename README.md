@@ -105,6 +105,10 @@ The **📍 Go to** button (viewbar on computers, "Go to" in the phone bottom nav
 - **Jobs:** every job in the city with the residents who hold it, read from the city's own assignment (`JOBS` / `staffOf`). A name flies to that person and follows them (drivers by their vehicle); **AT WORK ▶** steps into their workplace, where the staff tags show them. Empty posts say "JOB OPEN · Comment WORKSHOP <JOB>" (every job title is a valid `WORKSHOP <job>` comment for `scripts/update_state.py`).
 - **People:** one search over names, places and jobs; residents get "Home ▶" (`UIX.homeOf`). Find my name is unchanged.
 
+- **🎩 Tour the city:** a guided camera flight (about 75 s) through the highlights with Mayor TorqueBlueprint's speech bubble: City Hall, downtown, the repair shop (Wall of Mechanics), police and courthouse, fire station, Riverside Heights (once the homes are live), the old town and harbour, the next locked milestone ("N more subscribers to open") and back to City Hall. Skip ▶, Stop ✕, Esc, or any drag or zoom on the city ends it. With `?mayor=0` there is no City Hall stop and the bubble says "City guide". Lines are in `tourStops()` in `src/js/ui/goto.js`.
+- **🎲 Surprise me:** goes to a random open place, landmark or resident (never a hidden name). It uses `crypto.getRandomValues`, so the city's own random numbers are not touched.
+- **What's new** (top of Places): `src/data/ui/whats_new.json`, one line per item: `{"date": "2026-11-28", "text": "…", "go": "<place key>" | "tour" | "surprise", "need": "<interior>"}` (`need` is optional: the item only shows when that interior is registered, e.g. `"home"` once the homes are live). Items whose place is not open on the page are skipped; the newest 5 show. A red dot on the Go to button marks an item the viewer has not seen yet (remembered in `localStorage`, `mtp-goto-news`).
+
 **Deep links** (applied once the 3D city has loaded; unknown values are ignored):
 
 | link | opens |
@@ -112,5 +116,6 @@ The **📍 Go to** button (viewbar on computers, "Go to" in the phone bottom nav
 | `?go=police` | flies to a place: a building (`oficina`/`repair`, `market`, `reboques`/`tow`, `bomba`/`gas`, `pneus`/`tires`, `lavagem`/`wash`, `inspecao`/`inspection`, `parque`/`parking`, `pecas`/`parts`, `stand`/`dealership`, `sucata`/`junkyard`, `fabrica`/`factory`, `pista`/`track`, `police`, `court`, `news`, `fire`, `mayor`/`cityhall`, `hosp`/`hospital`, `santa`), a landmark (`park`, `stadium`, `drag`, `mall`, `train`, `arena`, `air`, `port`, `tvtower`, `lighthouse`) or a district (`roundabout`, `downtown`, `oldtown`, `harbour`, `riverside`, `maple`, `hills`, `industrial`, `automotive`, `farms`) |
 | `?home=<name>` | steps into that resident's home |
 | `?find=<name>` | opens the People search with the name and flies to the person |
+| `?tour=1` | starts the Mayor's tour |
 
 They combine with the other switches (`?hosp=1`, `?drag=1`, `?mayor=0`, …), e.g. `?hosp=1&go=hospital`.

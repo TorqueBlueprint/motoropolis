@@ -2,6 +2,7 @@
 //@ (Places, Jobs, People) that flies the 3D camera to a building, a district or a resident, with a STEP INSIDE button for
 //@ interiors. Deep links ?go=<place> ?home=<name> ?find=<name>. Lists are built when the panel opens or a tab changes (no
 //@ per-frame DOM). Never shows the subscriber total: locked places only say how many MORE subscribers they need.
+//@ Also: Tour the city (the Mayor's guided flight, ?tour=1), Surprise me 🎲 and What's new (src/data/ui/whats_new.json).
 //@ Hidden on the recorder page and in trailer mode. closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt
 {
  const REC=document.documentElement.dataset.rec==='1';
@@ -76,7 +77,7 @@
   c.tx=a.tx+(p.x-a.tx)*e;c.tz=a.tz+(p.z-a.tz)*e;c.dist=a.d+(o.dist-a.d)*e+f.hop*Math.sin(Math.PI*e);c.pitch=a.p+(o.pitch-a.p)*e;
   if(o.yaw!=null)c.yaw=angLerp(a.y,o.yaw,e);c.ty=a.ty+(gy(p.x,p.z)-a.ty)*e;
   if(u>=1){FL=null;if(o.done)o.done()}else requestAnimationFrame(step)}
- const stopCam=()=>{FL=null;FOL=null};
+ const stopCam=()=>{FL=null;FOL=null;if(TOUR)tourStop()};
  c3.addEventListener('pointerdown',stopCam);c3.addEventListener('wheel',stopCam,{passive:true});
  // where a resident is now: drivers by their vehicle first, everyone else on foot first (people/walkers.js, people/jobs.js)
  const DRIVES=/Driver$/;
@@ -88,7 +89,7 @@
   const w=whereN(FOL);if(!w||folT>45){FOL=null;return}const p=posW(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50)}
  function enter(k){if(!R3)return;R3.enterIn(k);let n=0;const t=setInterval(()=>{if(!R3||R3.mode()==='in'||++n>30){clearInterval(t);return}R3.enterIn(k)},120);hideDock()}
  // ---------- actions ----------
- const afterPick=()=>{if(phone())P.hidden=true};
+ const afterPick=()=>{if(TOUR)tourStop();if(phone())P.hidden=true};
  function goPlace(pl,opt){opt=opt||{};afterPick();ready3D(()=>{const at=pl.at();if(!at)return;FOL=null;
   const canIn=!!(pl.int&&pl.open());
   if(opt.enter&&canIn){const c=R3.cam;FL=null;Object.assign(c,{tx:at.x,tz:at.z,dist:at.dist,pitch:at.pitch,ty:gy(at.x,at.z)});if(at.yaw!=null)c.yaw=at.yaw;enter(pl.int);return}
@@ -112,6 +113,51 @@
   dock.classList.toggle('pn-open',!P.hidden);dock.hidden=false;
   if(!dockI)dockI=setInterval(()=>{if(R3&&R3.mode()==='in')hideDock();else dock.classList.toggle('pn-open',!P.hidden)},300)}
  dock.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();hideDock()}});
+ // ---------- "Tour the city" with the Mayor: a guided flight through the highlights, one line per stop ----------
+ // Timed by performance.now (no random numbers). Any drag or zoom on the city, Esc, Stop ✕ or entering an interior ends it.
+ const tourBox=$('gtTourBox'),MAYOR_SVG='<svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="23" fill="#173462"/><path d="M8 47c1-9 7-14 16-14s15 5 16 14z" fill="#1f3a6e"/><path d="M13 37l20 9 3-4-19-8z" fill="#ff7a1a"/><circle cx="24" cy="24" r="9" fill="#f2c39b"/><path d="M16.5 27.2c2.2-1.6 4.6-1.6 7.5 0 2.9-1.6 5.3-1.6 7.5 0-1.9 2.6-5 2.2-7.5.6-2.5 1.6-5.6 2-7.5-.6z" fill="#5a3a22"/><circle cx="20.6" cy="22.6" r="1.2" fill="#1d1d1d"/><circle cx="27.4" cy="22.6" r="1.2" fill="#1d1d1d"/><rect x="13" y="15" width="22" height="2.6" rx="1.3" fill="#111"/><rect x="17" y="3" width="14" height="13" rx="1.5" fill="#111"/><rect x="17" y="12" width="14" height="2.4" fill="#ff7a1a"/></svg>',
+  GUIDE_SVG='<svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="23" fill="#173462"/><circle cx="24" cy="24" r="14" fill="none" stroke="#b8cdea" stroke-width="2.4"/><path d="M29 19l-3.2 7.2L19 29l3.2-7.2z" fill="#ff7a1a"/></svg>';
+ let TOUR=null;
+ function tourStops(){const S=[],add=(k,line,o)=>{const pl=byKeyRaw(k);if(!pl||!pl.open()||!pl.at())return;S.push(Object.assign({pl,line},o||{}))};
+  const hall=MAYOR_ON&&byKeyRaw('mayor').open();
+  if(hall)add('mayor',"Welcome to Motoropolis! I'm Mayor TorqueBlueprint. Let me show you around.");
+  add('roundabout',hall?'This is downtown. Every subscriber adds a car to these streets.':'Welcome to Motoropolis! This is downtown: every subscriber adds a car to these streets.');
+  add('oficina',"The repair shop. Every subscriber's name is on the Wall of Mechanics.");
+  add('police','The police station and the courthouse keep our streets safe.');
+  // frame both buildings: the midpoint of the two lots, from the police door side
+  {const st=S[S.length-1],a=B.police,b=B.court;if(st&&st.pl.k==='police'&&a&&b){const p0=st.pl.at(),dd=Math.hypot(a.cx-b.cx,a.cy-b.cy)/10;st.pl=Object.assign({},st.pl,{at:()=>({x:(a.cx+b.cx)/20,z:(a.cy+b.cy)/20,dist:clamp(70+dd*1.1,80,190),pitch:.62,yaw:p0.yaw})})}}
+  add('fire','The fire station: our firefighters answer calls all over town.');
+  if(reg('home')&&isOpen('w_res'))add('riverside','Riverside Heights: every resident has a home of their own.');
+  add('harbour','The old town and the harbour, where the city began.');
+  {const m=nextMilestone(),pl=m&&(PL.find(p=>p.ms===m.type)||(m.type==='w_res'?byKeyRaw('riverside'):null));
+   if(m&&pl&&pl.at())S.push({pl:Object.assign({},pl,{label:m.label}),line:`Coming soon: the ${m.label}!`,sub:more(m.n)})}
+  if(hall)add('mayor','Thanks for visiting! Comment WORKSHOP on any video to move in.');else add('roundabout','Thanks for visiting! Comment WORKSHOP on any video to move in.');
+  return S}
+ function tourShow(){const T=TOUR,s=T.stops[T.i];tourBox.textContent='';const pic=el('span','gt-tr-pic');pic.innerHTML=MAYOR_ON?MAYOR_SVG:GUIDE_SVG;
+  const tx=el('div','gt-tr-tx');tx.append(el('span','gt-tr-who',(MAYOR_ON?'Mayor TorqueBlueprint':'City guide')+` · ${T.i+1}/${T.stops.length}`),el('b',null,s.line));if(s.sub)tx.append(el('small','gt-soon',s.sub));
+  const a=el('div','gt-tr-acts');a.append(btn('gt-in','Skip ▶',()=>tourNext(),'Next stop'),btn('gt-tr-x','Stop ✕',()=>tourStop(),'Stop the tour'));tourBox.append(pic,tx,a);tourBox.hidden=false}
+ function tourGo(){const T=TOUR;if(!T||!R3)return;const s=T.stops[T.i],at=s.pl.at();if(!at){tourNext();return}T.hold=0;tourShow();
+  fly(()=>at,{dist:at.dist,pitch:at.pitch,yaw:at.yaw,done:()=>{if(TOUR!==T)return;T.hold=performance.now()+6500;T.last=performance.now();requestAnimationFrame(tourHold)}})}
+ // at each stop: a slow turn round the place, then the next one
+ function tourHold(){const T=TOUR;if(!T||!T.hold||!R3)return;if(R3.mode()==='in'){tourStop();return}const now=performance.now();R3.cam.yaw+=Math.min(.1,(now-T.last)/1000)*.07;T.last=now;
+  if(now>=T.hold){tourNext();return}requestAnimationFrame(tourHold)}
+ function tourNext(){const T=TOUR;if(!T)return;T.hold=0;FL=null;if(++T.i>=T.stops.length){tourStop();return}tourGo()}
+ function tourStop(){TOUR=null;FL=null;tourBox.hidden=true}
+ function tourStart(){if(REC||trailer)return;P.hidden=true;hideDock();ready3D(()=>{const stops=tourStops();if(!stops.length)return;FOL=null;TOUR={stops,i:0,hold:0};tourGo()})}
+ tourBox.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();tourStop()}});
+ // ---------- "Surprise me 🎲": a random open place, landmark or resident (crypto random: the city's own Math.random stream is untouched) ----------
+ const rnd=n=>{try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n}catch(e){return Math.floor((performance.now()*7919)%n)}};
+ function surprise(){const places=PL.filter(p=>p.open()&&p.at()),ppl=WALL.filter(n=>!hid(n)&&(whereN(n)||workPlace(n)));
+  if(ppl.length&&(!places.length||rnd(2)===0))goPerson(ppl[rnd(ppl.length)]);else if(places.length)goPlace(places[rnd(places.length)])}
+ // ---------- What's new (src/data/ui/whats_new.json; newest 5 that apply on this page) and the unseen dot on the GO TO buttons ----------
+ const NEWS=@@JSON:ui/whats_new.json@@,NEWK='mtp-goto-news';
+ const newsId=it=>it.date+'|'+it.text;
+ function newsList(){return NEWS.filter(it=>{if(it.need&&!reg(it.need))return false;if(it.go==='tour'||it.go==='surprise')return true;const pl=byKey(it.go);return !!(pl&&pl.open())}).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0).slice(0,5)}
+ function newsSeen(){let s='';try{s=localStorage.getItem(NEWK)||''}catch(e){}return s}
+ // the dot: the newest item that applies here is newer than the newest one this viewer has seen (dates compare as text)
+ function newsDot(){const l=newsList(),s=newsSeen(),un=!!(l.length&&newsId(l[0])!==s&&(!s||l[0].date>=s.split('|')[0]));for(const b of[vB,nB])b.classList.toggle('gt-new',un)}
+ function newsMark(){const l=newsList();if(l.length)try{localStorage.setItem(NEWK,newsId(l[0]))}catch(e){}newsDot()}
+ function newsGo(it){if(it.go==='tour')return tourStart();if(it.go==='surprise')return surprise();const pl=byKey(it.go);if(pl)goPlace(pl)}
  // ---------- rows ----------
  function placeRow(pl){const li=el('li','gt-row'+(pl.open()?'':' soon'));const go=btn('gt-go','',()=>goPlace(pl));
   const tx=el('span','gt-tx');tx.append(el('b',null,pl.label));
@@ -135,6 +181,7 @@
  // ---------- tabs ----------
  let tab='places',q='';
  function places(){body.textContent='';const sec=(h,list)=>{if(!list.length)return;body.append(el('h3','gt-h',h));const ul=el('ul','gt-list');for(const p of list)ul.append(placeRow(p));body.append(ul)};
+  {const nl=newsList();if(nl.length){body.append(el('h3','gt-h',"What's new"));const ul=el('ul','gt-list gt-news');for(const it of nl){const li=el('li','gt-row');const tx=el('span','gt-tx gt-nw');tx.append(el('b',null,it.text),el('small',null,new Date(it.date+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'})));const s0=el('div','gt-go gt-static');s0.append(el('span','gt-ic','✨'),tx);li.append(s0,btn('gt-in','Go ▶',()=>newsGo(it),'Go: '+it.text));ul.append(li)}body.append(ul);newsMark()}}
   sec('Buildings',PL.filter(p=>p.g==='b'&&p.open()));sec('Landmarks',PL.filter(p=>p.g==='l'&&p.open()));sec('Districts',PL.filter(p=>p.g==='d'&&p.open()));
   // coming soon: locked milestones (only how many more subscribers each needs)
   if(subs!==null){const soon=ALL_MS.filter(m=>!isOpen(m.type));if(soon.length){body.append(el('h3','gt-h','Coming soon'));const ul=el('ul','gt-list');
@@ -158,25 +205,29 @@
  for(const b of P.querySelectorAll('[data-gt]'))b.addEventListener('click',()=>{tab=b.dataset.gt;const i=render();if(i&&!phone())i.focus()});
  // re-render once when the 3D city (and its interior registry) arrives while the panel is open
  let r3Seen=!!R3,openI=0;
- function open(t){if(UIX.only)UIX.only('goto');if(t)tab=t;P.hidden=false;const i=render();dock.classList.toggle('pn-open',true);
+ function open(t){if(TOUR)tourStop();if(UIX.only)UIX.only('goto');if(t)tab=t;P.hidden=false;const i=render();dock.classList.toggle('pn-open',true);
   if(i&&!phone())i.focus();else{const s=P.querySelector('[data-gt][aria-selected="true"]');if(s&&!phone())try{s.focus({preventScroll:true})}catch(e){}}
   if(!openI)openI=setInterval(()=>{if(P.hidden){clearInterval(openI);openI=0;return}if(!r3Seen&&R3){r3Seen=true;if(tab!=='people')render()}},500)}
  const toggle=()=>{if(P.hidden){if(phone()){const r=$('screen').getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)$('screen').scrollIntoView({block:'start'})}open()}else P.hidden=true};
- UIX.openGoto=open;
+ UIX.openGoto=open;UIX.tour=tourStart;
+ if(!MAYOR_ON)$('gtTour').textContent='🧭 Tour the city';
+ $('gtTour').addEventListener('click',tourStart);$('gtLucky').addEventListener('click',surprise);
  if(REC){vB.hidden=true;nB.hidden=true}
  else{
   vB.addEventListener('click',toggle);nB.addEventListener('click',toggle);
   P.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();P.hidden=true;try{vB.focus({preventScroll:true})}catch(x){}}});
   // Esc closes the panel first (then a second Esc leaves an interior as before)
-  window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!P.hidden){e.stopPropagation();P.hidden=true}},true);
+  window.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!P.hidden){e.stopPropagation();P.hidden=true}else if(TOUR){e.stopPropagation();tourStop()}},true);
+  newsDot();setTimeout(newsDot,4000);
   // trailer mode (recorder hook) films the city only
-  setInterval(()=>{const t=!!trailer;vB.hidden=t;nB.hidden=t;if(t){P.hidden=true;hideDock()}},1000);
+  setInterval(()=>{const t=!!trailer;vB.hidden=t;nB.hidden=t;if(t){P.hidden=true;hideDock();if(TOUR)tourStop()}},1000);
   // ---------- deep links: ?go=<place> ?home=<name> ?find=<name> ----------
-  const sp=new URLSearchParams(location.search),dGo=(sp.get('go')||'').slice(0,40),dHome=(sp.get('home')||'').trim().slice(0,24),dFind=(sp.get('find')||'').trim().slice(0,24);
+  const sp=new URLSearchParams(location.search),dGo=(sp.get('go')||'').slice(0,40),dHome=(sp.get('home')||'').trim().slice(0,24),dFind=(sp.get('find')||'').trim().slice(0,24),dTour=sp.get('tour')==='1';
   const nameOf=v=>{if(!v)return null;const l=v.toLowerCase();return WALL.find(n=>n===v)||WALL.find(n=>n.toLowerCase()===l)||WALL.find(n=>norm(n)===norm(v))||null};
-  if((dGo||dHome||dFind)&&hasGL()){let n=0;const t=setInterval(()=>{if(++n>4000){clearInterval(t);return}
+  if((dGo||dHome||dFind||dTour)&&hasGL()){let n=0;const t=setInterval(()=>{if(++n>4000){clearInterval(t);return}
     if(!R3||subs===null||!JOBSIG)return;if(dHome&&!UIX.homeOf&&n<200)return;clearInterval(t);
     const wc=$('welcome');if(wc&&!wc.hidden)$('wcGo').click();else if(!view3d)setView(true,true);
+    if(dTour){tourStart();return}
     if(dHome){const nm=nameOf(dHome),hm=nm&&UIX.homeOf&&UIX.homeOf(nm);if(hm){ready3D(()=>hm.go());return}}
     if(dFind){const nm=nameOf(dFind);if(nm){q=nm;open('people');goPerson(nm);return}}
     if(dGo){const pl=byKey(dGo);if(pl&&pl.at())goPlace(pl)}},150)}

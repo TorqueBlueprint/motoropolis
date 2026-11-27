@@ -1,0 +1,6 @@
+[
+ {"date": "2026-11-28", "text": "Every subscriber gets a home (Riverside Heights)", "go": "riverside", "need": "home"},
+ {"date": "2026-11-27", "text": "New: GO TO menu — take the Mayor's tour of the city", "go": "tour"},
+ {"date": "2026-11-27", "text": "Fire Station: step inside", "go": "fire"},
+ {"date": "2026-11-26", "text": "Mayor TorqueBlueprint has arrived — visit City Hall", "go": "mayor"}
+]
