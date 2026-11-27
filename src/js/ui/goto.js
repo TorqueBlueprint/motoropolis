@@ -3,9 +3,12 @@
 //@ interiors. Deep links ?go=<place> ?home=<name> ?find=<name>. Lists are built when the panel opens or a tab changes (no
 //@ per-frame DOM). Never shows the subscriber total: locked places only say how many MORE subscribers they need.
 //@ Also: Tour the city (the Mayor's guided flight, ?tour=1), Surprise me 🎲 and What's new (src/data/ui/whats_new.json).
-//@ Hidden on the recorder page and in trailer mode. closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt
+//@ Launch gate GOTO_AT (before it: no button, no deep links; preview ?goto=1). Hidden on the recorder page and in trailer mode. closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt
 {
  const REC=document.documentElement.dataset.rec==='1';
+ // launch gate: the menu goes live at GOTO_AT (2026-11-28 18:00 Lisbon = 18:00 UTC). Preview with ?goto=1; always on on localhost
+ const GOTO_AT=Date.UTC(2026,10,28,18,0,0),GOTO_ON=Date.now()>=GOTO_AT||/[?&]goto=1\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+ if(!GOTO_ON)document.documentElement.dataset.goto='0';
  const P=$('goto'),body=$('gtBody'),dock=$('gtDock'),vB=$('vGoto'),nB=$('nbGoto');
  const phone=()=>matchMedia('(max-width: 700px)').matches;
  const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
@@ -224,7 +227,7 @@
   // ---------- deep links: ?go=<place> ?home=<name> ?find=<name> ----------
   const sp=new URLSearchParams(location.search),dGo=(sp.get('go')||'').slice(0,40),dHome=(sp.get('home')||'').trim().slice(0,24),dFind=(sp.get('find')||'').trim().slice(0,24),dTour=sp.get('tour')==='1';
   const nameOf=v=>{if(!v)return null;const l=v.toLowerCase();return WALL.find(n=>n===v)||WALL.find(n=>n.toLowerCase()===l)||WALL.find(n=>norm(n)===norm(v))||null};
-  if((dGo||dHome||dFind||dTour)&&hasGL()){let n=0;const t=setInterval(()=>{if(++n>4000){clearInterval(t);return}
+  if(GOTO_ON&&(dGo||dHome||dFind||dTour)&&hasGL()){let n=0;const t=setInterval(()=>{if(++n>4000){clearInterval(t);return}
     if(!R3||subs===null||!JOBSIG)return;if(dHome&&!UIX.homeOf&&n<200)return;clearInterval(t);
     const wc=$('welcome');if(wc&&!wc.hidden)$('wcGo').click();else if(!view3d)setView(true,true);
     if(dTour){tourStart();return}

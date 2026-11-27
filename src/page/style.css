@@ -455,3 +455,7 @@ html[data-rec="1"] .gt,html[data-rec="1"] .gt-dock,html[data-rec="1"] #vGoto,htm
  .gt-tr-acts>button{flex:1;min-height:44px}
 }
 html[data-rec="1"] .gt-tour{display:none!important}
+
+/* GO TO launch gate (ui/goto.js GOTO_AT): before launch the menu buttons are hidden and the phone nav keeps 4 items */
+html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto{display:none!important}
+@media (max-width:700px){html[data-goto="0"] .bnav{grid-template-columns:repeat(4,minmax(0,1fr))}}

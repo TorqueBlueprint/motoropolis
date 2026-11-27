@@ -458,6 +458,10 @@ html[data-rec="1"] .gt,html[data-rec="1"] .gt-dock,html[data-rec="1"] #vGoto,htm
  .gt-tr-acts>button{flex:1;min-height:44px}
 }
 html[data-rec="1"] .gt-tour{display:none!important}
+
+/* GO TO launch gate (ui/goto.js GOTO_AT): before launch the menu buttons are hidden and the phone nav keeps 4 items */
+html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto{display:none!important}
+@media (max-width:700px){html[data-goto="0"] .bnav{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
 <div id="app"><div class="app">
   <header class="hero">
@@ -6303,6 +6307,9 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
 }
 {
  const REC=document.documentElement.dataset.rec==='1';
+ // launch gate: the menu goes live at GOTO_AT (2026-11-28 18:00 Lisbon = 18:00 UTC). Preview with ?goto=1; always on on localhost
+ const GOTO_AT=Date.UTC(2026,10,28,18,0,0),GOTO_ON=Date.now()>=GOTO_AT||/[?&]goto=1\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+ if(!GOTO_ON)document.documentElement.dataset.goto='0';
  const P=$('goto'),body=$('gtBody'),dock=$('gtDock'),vB=$('vGoto'),nB=$('nbGoto');
  const phone=()=>matchMedia('(max-width: 700px)').matches;
  const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
@@ -6521,7 +6528,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   // ---------- deep links: ?go=<place> ?home=<name> ?find=<name> ----------
   const sp=new URLSearchParams(location.search),dGo=(sp.get('go')||'').slice(0,40),dHome=(sp.get('home')||'').trim().slice(0,24),dFind=(sp.get('find')||'').trim().slice(0,24),dTour=sp.get('tour')==='1';
   const nameOf=v=>{if(!v)return null;const l=v.toLowerCase();return WALL.find(n=>n===v)||WALL.find(n=>n.toLowerCase()===l)||WALL.find(n=>norm(n)===norm(v))||null};
-  if((dGo||dHome||dFind||dTour)&&hasGL()){let n=0;const t=setInterval(()=>{if(++n>4000){clearInterval(t);return}
+  if(GOTO_ON&&(dGo||dHome||dFind||dTour)&&hasGL()){let n=0;const t=setInterval(()=>{if(++n>4000){clearInterval(t);return}
     if(!R3||subs===null||!JOBSIG)return;if(dHome&&!UIX.homeOf&&n<200)return;clearInterval(t);
     const wc=$('welcome');if(wc&&!wc.hidden)$('wcGo').click();else if(!view3d)setView(true,true);
     if(dTour){tourStart();return}
