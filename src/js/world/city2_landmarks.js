@@ -4,7 +4,7 @@
   if(CITY2){const C2=W3.c2,g=new T.Group();root.add(g);const stone=M(0xe9e4d8,{roughness:.8}),stone2=M(0xd2cbbd,{roughness:.85});
    // ---- CITY HALL: west side of the Old Town square, facing it ----
    {const[hx,hz]=F.cityhall,h=new T.Group();h.position.set(hx,0,hz);h.rotation.y=Math.atan2(F.oldtown[0]-hx,F.oldtown[1]-hz);
-    B0(h,24,1.2,18,stone2,0,0,0);for(let s=0;s<3;s++)B0(h,10,.4,1.2,stone2,0,1.2-s*.4,9.6+s*1.1,false);
+    B0(h,24,1.2,18,stone2,0,0,0);for(let s=0;s<3;s++)B0(h,10,.9-s*.3,1,stone2,0,0,9.5+s,false); // three 0.3 m steps down from the 1.2 m plinth
     B0(h,22,11,14,stone,0,1.2,-1);B0(h,22.8,1,14.8,stone2,0,12.2,-1);
     const WN=[];for(let f=0;f<2;f++)for(let q=-4;q<=4;q++)if(Math.abs(q)>1)WN.push({x:q*2.3,y:3+f*4.4,z:6.05,sx:1.2,sy:2.6,sz:.1});instG(h,sh(W3.bodyG),mat.win,WN,null,false);
     const col=new T.CylinderGeometry(.45,.5,9.6,12);for(let q=-3;q<=3;q++){const c=new T.Mesh(col,stone);c.position.set(q*1.6,6.0,7.6);c.castShadow=true;h.add(c)}

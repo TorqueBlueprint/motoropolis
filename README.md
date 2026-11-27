@@ -40,6 +40,14 @@ The city is laid out from data: `src/data/world/city_layout.json` (metres; x eas
 
 `src/js/traffic/routing.js`: cars follow the curve of their lane; four-way junctions have lights; at junctions without lights the narrower road has a STOP (full stop, then give way) and equal roads give way to the right; a car only enters a junction when its path cannot cross a car already in it and there is room for it on the road it turns into; the roundabout gives way to the cars already going round (anticlockwise); every wait has a time-out, so the town never freezes. Pedestrians walk the sidewalks of the town roads and cross at the junctions (`src/js/people/walkers.js`).
 
+## Mayor TorqueBlueprint (city mascot)
+
+`src/js/world/mayor.js` (inside the world block, after the landmarks): the Mayor (design A) stands at the top of the City Hall steps on the Old Town square, every ~70 s strolls an arc across the square, stops to wave at the fountain and walks back; he waves at the door now and then too. The loop is timed by the world clock only (no random numbers). A "MAYOR'S OFFICE" sign stands beside the steps, and his gold name tag is drawn with the people tags (`W3.tags`, asked by `view3d/labels.js`). He is 8 meshes / 3 materials (the static body is one vertex-coloured mesh), marked `userData.nm`, and stops animating beyond the people LOD distance. Off with `?mayor=0`.
+
+The builder between the `/*MAYOR-BUILD*/` markers only uses `T` (three), so a stand-alone page can load the same code (the reference sheet does).
+
+**Filming him (recorder):** on the recorder page and on localhost, `window.__MAYOR` has `pos()` (`{x, z, y, a, state, t}`; `a` is the heading like the cars), `seek(t)` (jump to `t` seconds into his loop), `cycle`, `times` (`idle`, `walkOut`, `waveSquare`, `walkBack` as `[start, end]` seconds) and `g()`. In a shot list use `"follow": {"mayor": true, "phi": 0, "pitch": 0.2, "dist": 7, "at": 50}` (`at` = seconds into his loop when the shot starts; the camera target follows his height up the steps).
+
 ## Performance switches (city-v2)
 
 - **Run-time merging:** static meshes are merged into one mesh per material and per 120 m chunk, 12 s after they stop changing (`src/js/view3d/merge.js`). Turn it off with `?merge=0`.

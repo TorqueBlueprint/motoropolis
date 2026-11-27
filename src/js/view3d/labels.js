@@ -6,10 +6,11 @@
   hctx.textAlign='center';hctx.textBaseline='middle';if(WORLD&&W3.labelsDraw)W3.labelsDraw();if(WORLD&&W3.dragDraw)W3.dragDraw();if(WORLD&&W3.fish&&cam.dist<220&&mode!=='in'){const F=W3.fish.g.position,q=toHud(F.x,3.2,F.z);if(q)pill('★ Kongcringe · FISHERMAN',q.x,q.y,clamp(2000/cam.dist,12,20),'rgba(46,139,87,.95)','#ffffff')}const sz=clamp(2600/cam.dist,13,26),near=cam.dist<200;
   const items=[];
   if(near)peds.forEach((p,k)=>{if(!p.name)return;const g=pedMeshes[k];items.push({w:g.position,h:2.25,t:p.name+(jobOf(p.name)?' · '+jobOf(p.name).toUpperCase():''),kind:'p'})});
+  if(near&&W3.tags)W3.tags(items); // the Mayor's tag (world/mayor.js)
   for(const c of cars){if(!c.driver||c.hidden||c.removed||c===selected)continue;const g=meshes.get(c.id);if(g&&near)items.push({w:g.position,h:2.1,t:'★ '+c.driver,kind:'d'})}
   const cp=camera.position;for(const it of items)it.d=Math.hypot(it.w.x-cp.x,it.w.y-cp.y,it.w.z-cp.z);items.sort((a,b)=>a.d-b.d);
   let shown=0;for(const it of items){if(shown>=(X?14:36))break;if(X&&it.d>150)continue;const s=toHud(it.w.x,it.w.y+it.h,it.w.z);if(!s||s.x<-50||s.x>CW+50||s.y<0||s.y>CH)continue;shown++;
-   const a=clamp(1.6-it.d/170,.35,1);hctx.globalAlpha=a;if(it.kind==='p')pill(it.t,s.x,s.y,sz,'rgba(16,19,24,.85)','#ffd34d');else pill(it.t,s.x,s.y,sz*.92,'rgba(255,122,26,.92)','#1d0f02')}
+   const a=clamp(1.6-it.d/170,.35,1);hctx.globalAlpha=a;if(it.kind==='p')pill(it.t,s.x,s.y,sz,'rgba(16,19,24,.85)','#ffd34d');else if(it.kind==='m')pill(it.t,s.x,s.y,sz*1.06,'rgba(255,211,77,.96)','#1d0f02','#ff7a1a');else pill(it.t,s.x,s.y,sz*.92,'rgba(255,122,26,.92)','#1d0f02')}
   hctx.globalAlpha=1;
   for(const c of cars){if(!(c.newT>0)||c.hidden)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+2.6,g.position.z);if(!s)continue;const k=c.newT/6;hctx.globalAlpha=k;hctx.font="800 22px 'Barlow Condensed', sans-serif";hctx.fillStyle='#5cc98a';hctx.strokeStyle='rgba(16,19,24,.9)';hctx.lineWidth=4;hctx.strokeText('+1 SUB',s.x,s.y-(1-k)*14);hctx.fillText('+1 SUB',s.x,s.y-(1-k)*14)}
   hctx.globalAlpha=1;
@@ -27,5 +28,7 @@
    {const LBLS={bomba:['STEP INSIDE THE GAS STATION ▶','#d93a2f',7.5,.55],pneus:['STEP INSIDE THE TIRE SHOP ▶','#9aa3ae',9,.7],inspecao:['STEP INSIDE THE INSPECTION CENTER ▶','#1d4fb8',7,.5],parque:['STEP INSIDE THE PARKING ▶','#1d4fb8',4,.5],pecas:['STEP INSIDE AUTO PARTS ▶','#c0392b',8,.5],stand:['STEP INSIDE THE DEALERSHIP ▶','#ff7a1a',8,.5],sucata:['STEP INSIDE THE JUNKYARD ▶','#a08a66',6,.5],fabrica:['STEP INSIDE THE FACTORY ▶','#ff7a1a',10,.4],market:['STEP INSIDE THE SUPERMARKET ▶','#2e7d4f',9,.78],pista:['STEP INSIDE THE PIT GARAGE ▶','#ff7a1a',4,.5]};
     for(const k in LBLS){if(!isOpen(k))continue;const L=LBLS[k],b=B[k],sp=LP(b,b.x0+b.w/2,b.y0+b.h*L[3],L[2]);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+k.length))*sp.k;pill(L[0],sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',L[1]);hctx.globalAlpha=1}}
     {for(const[t2,lab,col,hh]of[['police','STEP INSIDE THE POLICE STATION ▶','#1d4fb8',9.4],['court','STEP INSIDE THE COURTHOUSE ▶','#8a6a2c',12]]){const Lc=LOT[t2],sp=LP(Lc.b,Lc.cx*10,(Lc.cz-2)*10,hh);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+t2.length))*sp.k;pill(lab,sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff',col);hctx.globalAlpha=1}}}
-    {const Ln=LOT.news,sp=LP(Ln.b,(Ln.cx+3)*10,(Ln.cz-2)*10,10.6);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+5))*sp.k;pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}}
+    {const Ln=LOT.news,sp=LP(Ln.b,(Ln.cx+3)*10,(Ln.cz-2)*10,10.6);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+5))*sp.k;pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}
+    // City Hall (world/city2_landmarks.js): the Mayor's office (interiors/mayor_office.js), same distance rules as the boards above
+    if(WORLD&&W3.hallLbl&&zk>0){const q=W3.hallLbl,k=zk*clamp((140-Math.hypot(q.x-cam.tx,q.z-cam.tz))/40,0,1),sp=k>0&&toHud(q.x,q.y,q.z);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+7))*k;pill('STEP INSIDE CITY HALL ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2c14e');hctx.globalAlpha=1}}}
  }
