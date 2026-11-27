@@ -4,7 +4,10 @@
 //@ like the Mayor himself. Seeded (no Math.random). Static furniture is merged into 4 meshes: vertex-coloured wood/fabric, gold/metal,
 //@ glass, and one atlas mesh for every board and picture (one 2048 canvas; the live boards redraw their part of it).
   // ---- CITY DECREE OF THE WEEK: edit this one constant ----
-  const MAYOR_DECREE={no:1,title:'Every subscriber gets a parking spot.',body:'By order of the Mayor, every new subscriber moves into Motoropolis with a car of their own and a place to park it.'};
+  const DECREE1={no:1,title:'Every subscriber gets a parking spot.',body:'By order of the Mayor, every new subscriber moves into Motoropolis with a car of their own and a place to park it.'};
+  // Decree No. 2 replaces No. 1 when the homes go live (window.__HOMES_ON, set by interiors/home.js; read when the office is painted)
+  const DECREE2={no:2,title:'Every subscriber gets a home of their own.',body:'By order of the Mayor, every resident of Motoropolis now has a home in Riverside Heights, with a garage for their car. Find your name and step inside.'};
+  const decree=()=>window.__HOMES_ON?DECREE2:DECREE1;
   if(CITY2&&F.cityhall&&F.oldtown&&!/[?&]mayor=0\b/.test(location.search)){
    const[hx,hz]=F.cityhall,hry=Math.atan2(F.oldtown[0]-hx,F.oldtown[1]-hz);
    // City Hall in the city: a ray against its box (plinth, hall, dome and steps, in the hall's own axes) and the label point over the portico
@@ -80,7 +83,7 @@
    function paintDecree(x,W,H){x.fillStyle='#b8865a';x.fillRect(0,0,W,H);for(let k=0;k<900;k++){x.fillStyle=rnd()<.5?'rgba(90,58,34,.25)':'rgba(240,210,160,.25)';x.fillRect(rnd()*W,rnd()*H,3,3)}
     x.fillStyle='#1f3a6e';x.fillRect(20,20,W-40,70);fit(x,'CITY DECREE OF THE WEEK',W-70,44,800);x.fillStyle='#f2c14e';x.fillText('CITY DECREE OF THE WEEK',W/2,57);
     x.save();x.translate(W/2,H/2+50);x.rotate(-.02);x.fillStyle='#fbf7ec';x.fillRect(-200,-260,400,540);x.fillStyle='rgba(0,0,0,.12)';x.fillRect(-200,276,400,6);
-    font(x,40,800);x.fillStyle='#1f3a6e';x.fillText(`DECREE No. ${MAYOR_DECREE.no}`,0,-212);x.fillStyle='#c8232c';x.fillRect(-150,-184,300,3);
+    font(x,40,800);x.fillStyle='#1f3a6e';const MAYOR_DECREE=decree();x.fillText(`DECREE No. ${MAYOR_DECREE.no}`,0,-212);x.fillStyle='#c8232c';x.fillRect(-150,-184,300,3);
     font(x,38,700,"Georgia,'Times New Roman',serif");x.fillStyle='#22252b';let y=wrap(x,MAYOR_DECREE.title,0,-136,350,44);
     font(x,23,400,"Georgia,'Times New Roman',serif");x.fillStyle='#4a4f57';wrap(x,MAYOR_DECREE.body,0,y+14,340,30);
     cog(x,-110,196,46,12,'#f2c14e');x.fillStyle='#b8862a';x.beginPath();x.arc(-110,196,30,0,Math.PI*2);x.fill();font(x,36,800);x.fillStyle='#fbf7ec';x.fillText('M',-110,198);

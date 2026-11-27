@@ -7,6 +7,7 @@
 //@ and screen); the room is rebuilt when you enter a different person's home.
   // launch gate: the homes go live at HOMES_AT (ms since epoch, UTC; 0 = not yet). Preview with ?homes=1; always on in the recorder and on localhost
   const HOMES_AT=0,HOMES_ON=(HOMES_AT>0&&Date.now()>=HOMES_AT)||/[?&]homes=1\b/.test(location.search)||document.documentElement.dataset.rec==='1'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  window.__HOMES_ON=HOMES_ON;
   if(HOMES_ON){
    const hshort=(n,k)=>n.length>k?n.slice(0,k-1)+'…':n;
    const hhash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,0x5bd1e995);h^=h>>>15;return h>>>0};
