@@ -47,7 +47,7 @@
      const fin=r.done[0]||!r.h.lanes[0],fin2=r.done[1]||!r.h.lanes[1];
      if(l.red&&(done||r.started[k])){x.fillStyle='#ff3b30';x.fillRect(ox,438,cw,52);x.fillStyle='#fff';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('RED LIGHT',ox+16,465)}
      else if(fin&&fin2&&r.h.win===k){x.fillStyle='#38e07b';x.fillRect(ox,438,cw,52);x.fillStyle='#062a14';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('WIN ▲',ox+16,465)}
-     else if(done&&l.et<l.dial){x.fillStyle='#e8b931';x.fillRect(ox,438,cw,52);x.fillStyle='#1d0f02';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('BREAKOUT',ox+16,465)}}
+}
     t.needsUpdate=true}
    function buildOpen(){const g=new T.Group();g.position.y=YG;g.userData.mergeRoot=1;g.userData.warped=1;const L=x1-x0,cx=(x0+x1)/2;
     const PO={polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4},asp=M(0x2b2e34,Object.assign({roughness:.9},PO)),conc=M(0xa9acb0,Object.assign({roughness:.9},PO)),burn=M(0x24272c,Object.assign({roughness:.35,metalness:.15},PO)),yel=M(0xe8b931),wall=M(0xd9d6cf,{roughness:.85});
@@ -91,7 +91,7 @@
    function setHeat(i){const d=D3.day,h=d.heats[i];D3.heat=i;D3.h=h;
     for(let k=0;k<2;k++){if(D3.cars[k]){D3.cg.remove(D3.cars[k].g);D3.cars[k]=null}const l=h.lanes[k];if(!l)continue;const tr=DRAG.run(l.o,true);const g=new T.Group();g.add(carFor(l.e));g.rotation.y=Math.PI/2;g.position.set(x0-8,0,LZ[k]);D3.cg.add(g);
      D3.cars[k]={g,l,tr:tr.trace,tR:tr.tR,cross:false,x:x0-8,z:LZ[k],a:0}}
-    const dm=Math.max(h.lanes[0]?h.lanes[0].dial:0,h.lanes[1]?h.lanes[1].dial:0);D3.ta=h.lanes.map(l=>l?9+(dm-l.dial):0);
+    D3.ta=h.lanes.map(l=>l?9:0); // heads-up: both greens at the same moment
     D3.cur={h,done:[false,false],started:[false,false]};if(!D3.last&&i>0)D3.last={h:d.heats[i-1],done:[true,true],started:[true,true]}}
    const ease=u=>u<0?0:u>1?1:u*u*(3-2*u);
    function laneAt(k,t){const C=D3.cars[k];if(!C)return null;const l=C.l,ta=D3.ta[k],tl=ta+l.rt-C.tR;let x,z=LZ[k],a=0,ph={p:false,s:false,a:false,g:false,r:false},vis=true,smoke=0;

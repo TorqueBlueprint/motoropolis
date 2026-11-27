@@ -75,6 +75,8 @@ The Drag Strip (layout feature `dragway`) opens with the Race Track at 1,000 sub
 
 ## Homes (Riverside Heights, every subscriber)
 
+Launch gate: `HOMES_AT` at the top of `src/js/interiors/home.js` (UTC milliseconds, `0` = not live yet). Before that moment the homes are off on the public pages; preview with `?homes=1` (always on in the recorder and on localhost).
+
 Every name on the Wall (`state.json` `names`) has a home once Riverside Heights is open (100 subscribers). Click a house in Riverside Heights (or a Maple Grove apartment block) to step inside, or use Find my name → "Go to my home". Code: `src/js/interiors/home.js`.
 
 - **Who lives where** (stable, no state needed): names are taken in `names` order (the update job only appends) and each takes the first free slot starting from a hash of the lower-cased name, so a newcomer never moves anyone. 1) the first 40 Riverside Heights houses (always built once the district opens), 2) 48 flats in the three Maple Grove apartment blocks ("FLAT 3B · MAPLE GROVE COURT 2": floors 1-4, flats A-D), 3) the remaining Riverside Heights house slots (shown as "being built" until the district grows that far; the interior is open already).

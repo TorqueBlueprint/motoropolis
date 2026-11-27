@@ -3,9 +3,12 @@
 //@ state.json "homes", see README "Homes"). Registers INTS.home, W3.homeHit (click on a house or a flat block, view3d/camera.js),
 //@ W3.homeLabels (one STEP INSIDE board for the nearest home + a few "★ name" tags when close, view3d/labels.js) and UIX.homeOf
 //@ (Find my name: "Go to my home", ui/welcome.js). Only when isOpen('w_res'). Inside the if(WORLD){ block of world/world3d.js.
-//@ Seeded (no Math.random). Static furniture is merged into 4 meshes (vertex-coloured, metal, glass, one atlas for every board, poster
+//@ Launch gate HOMES_AT (0 = off; preview ?homes=1). Seeded (no Math.random). Static furniture is merged into 4 meshes (vertex-coloured, metal, glass, one atlas for every board, poster
 //@ and screen); the room is rebuilt when you enter a different person's home.
-  {
+  // launch gate: the homes go live at HOMES_AT (ms since epoch, UTC; 0 = not yet). Preview with ?homes=1; always on in the recorder and on localhost
+  const HOMES_AT=1795860000000/* 2026-11-28 10:00 Lisbon (UTC) */,HOMES_ON=(HOMES_AT>0&&Date.now()>=HOMES_AT)||/[?&]homes=1\b/.test(location.search)||document.documentElement.dataset.rec==='1'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  window.__HOMES_ON=HOMES_ON;
+  if(HOMES_ON){
    const hshort=(n,k)=>n.length>k?n.slice(0,k-1)+'…':n;
    const hhash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,0x5bd1e995);h^=h>>>15;return h>>>0};
    // ---------- who lives where ----------

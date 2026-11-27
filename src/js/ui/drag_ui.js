@@ -13,7 +13,7 @@
  function lane(l,win){const r=el('div','dg-ln'+(win?' w':''));if(!l){r.append(el('span','dg-who','Bye run'));return r}
   const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));
   const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));
-  const c=el('span','dg-r',(win?'WIN · ':'')+'RT '+l.rt.toFixed(3)+' s · dial '+l.dial.toFixed(2)+' s'+(!l.red&&l.et<l.dial?' · breakout':''));r.append(a,b,c);return r}
+  const c=el('span','dg-r',(win?'WIN · ':'')+'RT '+l.rt.toFixed(3)+' s · ET '+l.et.toFixed(3)+' s'+(l.red?' · red light':''));r.append(a,b,c);return r}
  function heat(h){const box=el('div','dg-heat');box.append(el('div','dg-hl',h.label));box.append(lane(h.lanes[0],h.win===0&&!!h.lanes[1]),lane(h.lanes[1],h.win===1));return box}
  function today(){const d=day(),f=d.final;body.textContent='';
   const top=el('div','dg-final');top.append(el('div','dg-k',`Today · ${dayName(d.date)}`));
@@ -21,7 +21,7 @@
   else top.append(el('div','dg-sub','The first races start at midnight (UTC).'));body.append(top);
   const el2=d.heats.filter(h=>h.round!=='q');if(el2.length){body.append(el('h3','dg-h','Eliminations'));for(const h of el2.slice().reverse())body.append(heat(h))}
   if(d.quali.length){body.append(el('h3','dg-h','Best qualifiers'));const ol=el('ol','dg-list');d.quali.slice(0,8).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
-  body.append(el('p','dg-note','Bracket racing: every car gets a dial-in (its expected time) and the slower car gets the green first, so any car can win. The first to the line wins, unless it ran quicker than its dial-in (a breakout). The races run at midnight UTC and the strip replays every heat all day. Quarter mile · 402 m.'))}
+  body.append(el('p','dg-note','Heads-up racing: both cars get the green together and the first to the line wins. Leave before the green (red light) and you lose. The races run at midnight UTC and the strip replays every heat all day. Quarter mile · 402 m.'))}
  function week(){const w=DRAG.week(DRAG.today());body.textContent='';body.append(el('p','dg-note','The quickest quarter mile (402 m) of each car since Monday (UTC).'));
   const ol=el('ol','dg-list dg-rank');w.slice(0,10).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model+' · '+dayName(l.date)));const b=el('span','dg-t');b.append(el('b',null,F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
  function me(){body.textContent='';const lb=el('label',null,'Your YouTube name');lb.htmlFor='dgIn';const inp=el('input');inp.id='dgIn';inp.type='text';inp.autocomplete='off';inp.spellcheck=false;inp.placeholder='Start typing your name…';inp.value=meName;

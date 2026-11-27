@@ -2338,16 +2338,14 @@ const DRAG=(()=>{
   const out=named.map(n=>entrant(n.toLowerCase(),n));for(let k=0;out.length<nCars;k++)out.push(entrant(String(k),null));eSig=sig;eCache=out;return out}
  const tuneOf=e=>{const T=typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes;return e.name&&T&&T[e.name]&&TUNES[T[e.name]]?T[e.name]:'stock'};
  // ---- one day of racing (run at 00:00 UTC; the strip replays it all day) ----
- // Bracket racing, so any car can win: every car gets a dial-in (its expected time, rounded up), the slower car gets the
- // green first by the difference, and the first to the line wins unless it ran quicker than its dial-in ("breakout").
- // Red light (left before the green) loses. The weekly leaderboard is the raw quickest time.
+ // Heads-up racing: both cars get the green together and the first to the line wins (reaction time + elapsed time).
+ // Red light (left before the green) loses. The weekly leaderboard is the raw quickest time. (dial = the car's expected time, info only)
  const ROUND={q:'Qualifying',qf:'Quarter-final',sf:'Semi-final',f:'Final'};
  const dayCache=new Map(),dialCache=new Map();
  const dialOf=(glb,tune)=>{const k=glb+'|'+tune;if(!dialCache.has(k))dialCache.set(k,Math.ceil((run({glb,tune,grip:.99}).et+.04)*100)/100);return dialCache.get(k)};
  // who wins a heat: 0 or 1
  function judge(a,b){if(!b)return 0;if(!a)return 1;if(a.red!==b.red)return a.red?1:0;if(a.red)return a.rt<=b.rt?1:0;
-  const ba=a.et<a.dial,bb=b.et<b.dial;if(ba!==bb)return ba?1:0;if(ba)return(a.dial-a.et)<=(b.dial-b.et)?0:1;
-  return(a.rt+a.et-a.dial)<=(b.rt+b.et-b.dial)?0:1}
+  return(a.rt+a.et)<=(b.rt+b.et)?0:1}
  function day(date){const E=entrants();const key=date+'|'+eSig+'|'+JSON.stringify((typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes)||0);if(dayCache.has(key))return dayCache.get(key);
   const r=rng(h32('drag|'+date)),air=.97+r()*.05,track=.96+r()*.06;
   const pass=(e,lane)=>{const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000,res=run({glb:e.glb,tune,grip,power,shiftK,ldl});
@@ -2357,8 +2355,8 @@ const DRAG=(()=>{
   // qualifying: everyone, in pairs, in a seeded order
   const ord=E.slice();for(let i=ord.length-1;i>0;i--){const j=Math.floor(r()*(i+1));const t=ord[i];ord[i]=ord[j];ord[j]=t}
   const heats=[];for(let i=0;i<ord.length;i+=2)heats.push(heat('q'+(i/2+1),'q',ord[i],ord[i+1]||null));
-  // qualifying order: the best "package" (reaction time + how close to the dial-in; a breakout counts double, a red light last)
-  const pk=l=>(l.red?100:0)+(l.rt-.4)+(l.et<l.dial?2:1)*Math.abs(l.et-l.dial);
+  // qualifying order: the quickest pass (elapsed time; a red light last)
+  const pk=l=>(l.red?100:0)+l.et;
   const quali=[];for(const h of heats)for(const l of h.lanes)if(l){l.pk=pk(l);quali.push(l)}quali.sort((a,b)=>a.pk-b.pk);
   // eliminations: the 8 best packages (4 or 2 on a small day), ladder 1-8, 4-5, 2-7, 3-6; higher seed in the left lane
   const nE=quali.length>=8?8:quali.length>=4?4:quali.length>=2?2:0,seeds=quali.slice(0,nE).map(l=>l.e);let champ=null;
@@ -3700,7 +3698,7 @@ function make3D(T,X){
   header('INSIDE THE COURTHOUSE')}
  // the exterior (world/world3d.js, w_fire): the 24 x 16 m station centred on CITY.F.w_fire, doors facing -z, hose tower behind
  const FIRE={hit:null,lp:null};
- if(WORLD&&CITY.F&&CITY.F.w_fire){const[fx,fz]=CITY.F.w_fire,bb=new T.Box3(new T.Vector3(fx-12.4,0,fz-8.6),new T.Vector3(fx+12.4,12,fz+8.4));FIRE.hit=r=>r.intersectsBox(bb);FIRE.lp={x:fx,y:11.4,z:fz-8.6}}
+ if(WORLD&&CITY.F&&CITY.F.w_fire){const[fx,fz]=CITY.F.w_fire,bb=new T.Box3(new T.Vector3(fx-12.4,0,fz-8.6),new T.Vector3(fx+12.4,12.8,fz+8.4));FIRE.hit=r=>r.intersectsBox(bb);FIRE.lp={x:fx,y:13.4,z:fz-8.6}}
  {
   const FS={built:false,clk:0,t0:-99,v:'',home:{tx:0,tz:-1.5,yaw:.22,pitch:.36,dist:42}};
   let sd=125125;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
@@ -3931,6 +3929,98 @@ function make3D(T,X){
    else if(FS.clk-FS.t0<4)pill('🚨 ALARM DRILL · CREW TO THE ENGINES',HUDW/2,200,24,'rgba(217,58,47,.95)','#fff');
    header('INSIDE THE FIRE STATION')}
   INTS.fire={get scene(){return FS.S},build:buildFire,isBuilt:()=>FS.built,sync:syncFire,labels:labelsFire,get home(){return FS.home},onEnter(){FS.t0=FS.clk}};
+  // ---------- the exterior in the city (world/world3d.js calls FIRE.ext when w_fire is open) ----------
+  // local frame: doors face -z, the building is 24 x 16 m (x +-12, z +-8), inside the 30 x 32 m lot (x +-15, z -22..10). Bays 1 and 2 are open and hollow
+  // (floor, wainscot, gear rack, hose rack, ceiling lights), bay 3 has its red roller door down. Engine 1 (the interior's model at 0.6 scale) stands on the
+  // apron and is hidden while it is out on a fire call; Ladder 2 noses out of bay 2. Meshes: body (vertex colours), lights, windows (mat.win: they glow at
+  // night like the city's), one small canvas atlas for the sign, bay numbers, clearance plates, fire-lane sign and flag (lit at night with the other signs),
+  // and Engine 1's body + lights (userData.nm, so the run-time merge leaves them alone). Seeded: no Math.random.
+  FIRE.ext=(g,x,z)=>{const L=[],LT=[],WN=[],AX=[],E1=[],E1L=[],BR=0xa9483a,BR2=0x8f3b2f,TR=0xf1eee6,DR=0xb8241c,DRL=0x93201a,IN=0x15171b,CON=0xc9cbc8,ROOF=0x3b3f46,BRASS=0xd9b24a,
+    INW=0x8c3b2e,INF=0x8f959b,GRY=0x6e7378,HYD=0xd93a2f;
+   // atlas: 1024 x 512 canvas; rects are given in the 2048-unit space mergeParts expects (x * 2, y * 4)
+   const AC=document.createElement('canvas');AC.width=1024;AC.height=512;const ac=AC.getContext('2d');ac.textAlign='center';ac.textBaseline='middle';
+   const R4=(x0,y0,w,h)=>[x0*2,y0*4,w*2,h*4],RX={title:R4(0,0,1024,120),n1:R4(0,128,120,120),n2:R4(128,128,120,120),n3:R4(256,128,120,120),clr:R4(384,128,640,90),lane:R4(384,226,640,90),flag:R4(0,256,240,150)};
+   const pa=(x0,y0,w,h,fn)=>{ac.save();ac.translate(x0,y0);ac.beginPath();ac.rect(0,0,w,h);ac.clip();fn(ac,w,h);ac.restore()};
+   pa(0,0,1024,120,(x,W,H)=>{x.fillStyle='#c8231c';x.fillRect(0,0,W,H);x.strokeStyle='#ffd34d';x.lineWidth=6;x.strokeRect(7,7,W-14,H-14);shield(x,58,H/2,36);shield(x,W-58,H/2,36);txt(x,'MOTOROPOLIS FIRE STATION · No. 1',W/2,H/2+4,W-170,80,'#ffffff')});
+   [1,2,3].forEach((n,k)=>pa(k*128,128,120,120,(x,W,H)=>{x.fillStyle='#f1eee6';x.fillRect(0,0,W,H);x.fillStyle='#b8862a';x.beginPath();x.arc(W/2,H/2,56,0,Math.PI*2);x.fill();x.fillStyle='#ffd34d';x.beginPath();x.arc(W/2,H/2,49,0,Math.PI*2);x.fill();txt(x,String(n),W/2,H/2+5,80,86,'#8a1c15')}));
+   pa(384,128,640,90,(x,W,H)=>{x.fillStyle='#ffd34d';x.fillRect(0,0,W,H);x.fillStyle='#16181c';for(let k=-2;k<W/40;k++){x.beginPath();x.moveTo(k*40,H);x.lineTo(k*40+20,H);x.lineTo(k*40+20+H*.4,0);x.lineTo(k*40+H*.4,0);x.fill()}
+    x.fillStyle='#ffd34d';x.fillRect(64,8,W-128,H-16);txt(x,'CLEARANCE 14 ft · 4.3 m',W/2,H/2+3,W-150,60,'#16181c')});
+   pa(384,226,640,90,(x,W,H)=>{x.fillStyle='#ffffff';x.fillRect(0,0,W,H);x.strokeStyle='#c8231c';x.lineWidth=8;x.strokeRect(4,4,W-8,H-8);txt(x,'FIRE LANE · NO PARKING',W/2,H/2+3,W-60,62,'#c8231c')});
+   pa(0,256,240,150,(x,W,H)=>{x.fillStyle='#c8231c';x.fillRect(0,0,W,H);x.fillStyle='#ffffff';x.fillRect(0,H*.4,W,H*.2);shield(x,W*.3,H/2,34)});
+   const at=(k,w,h,px,py,pz,ry,rx)=>AX.push({g:new T.PlaneGeometry(w,h),r:RX[k],m:xf(px,py,pz,rx||0,ry||0,0)});
+   // ---- apron: concrete pad, red/white striped kerb at the street edge, yellow bay lines, a hatched box in front of the closed bay ----
+   bx(L,26.4,.08,12.4,CON,0,0,-14.2);for(let k=0;k<13;k++)bx(L,2.03,.18,.45,k%2?TR:HYD,-12.18+k*2.03,0,-20.2);
+   for(const c0 of[-7.6,0])for(const s of[-1,1])bx(L,.16,.02,11.4,0xe8b931,c0+s*3.0,.08,-14.1);
+   for(const s of[-1,1])bx(L,.16,.02,8,0xe8b931,7.6+s*3.0,.08,-12.4);bx(L,6.16,.02,.16,0xe8b931,7.6,.08,-16.4);for(let k=0;k<5;k++)bx(L,.14,.02,3.1,0xe8b931,5.3+k*1.15,.08,-12.4,.7);
+   // ---- shell: back block, side walls, the solid block behind the closed bay, the floor over the open bays ----
+   bx(L,24,9,5,BR,0,0,5.5);bx(L,.8,9,11,BR,-11.6,0,-2.5);bx(L,8.6,9,11,BR,7.7,0,-2.5);bx(L,14.6,3.4,11,BR,-3.9,5.6,-2.5);
+   bx(L,.8,5.6,.8,BR,-3.8,0,-7.6); // pier between bays 1 and 2
+   // inside the open bays: floor with lane lines, wainscot + white band, ceiling with light strips, door tracks, rolled-up doors, a steel column
+   bx(L,14.4,.1,10.9,INF,-3.9,0,-2.5);for(const c0 of[-7.6,0])for(const s of[-1,1])bx(L,.14,.02,10,0xe8b931,c0+s*2.5,.1,-2.6);
+   bx(L,14.4,1.5,.06,0x9b9f9f,-3.9,.1,2.97);bx(L,14.4,.14,.08,TR,-3.9,1.6,2.96);for(const s of[-1,1]){const wx=s<0?-11.17:3.37;bx(L,.06,1.5,10.9,0x9b9f9f,wx,.1,-2.5);bx(L,.08,.14,10.9,TR,wx,1.6,-2.5)}
+   bx(L,14.4,.06,10.9,0x2a2d33,-3.9,5.54,-2.5);for(const c0 of[-7.6,0])for(const s of[-1,1])bx(LT,.35,.05,8,0xfff1d0,c0+s*1.5,5.49,-2.4);
+   bx(L,.4,5.5,.4,GRY,-3.8,.1,-.5);
+   for(const c0 of[-7.6,0]){for(const s of[-1,1])bx(L,.12,4.9,.16,GRY,c0+s*3.33,.1,-7.7);bx(L,6.8,.55,.6,DRL,c0,4.55,-7.5);for(let k=0;k<3;k++)bx(L,6.8,.04,.62,DR,c0,4.62+k*.16,-7.5)}
+   // the gear rack on the left wall (helmets, coats, boots) and a hose rack with coiled hoses on the back wall of bay 2, a red tool chest
+   {const HEL=[TR,0xf2c12e,0xf2c12e,0x16181c,0xf2c12e];for(let k=0;k<5;k++){const gz=-5.6+k*1.35,gx=-10.85;bx(L,.5,1.5,.9,0xc9a86a,gx,1.6,gz);bx(L,.52,.1,.92,0xf2c12e,gx,1.95,gz);bx(L,.52,.1,.92,0xf2c12e,gx,2.6,gz);
+     bx(L,.5,.4,.7,0x16181c,gx+.1,.1,gz);geo(L,new T.SphereGeometry(.3,10,6,0,Math.PI*2,0,Math.PI/2),HEL[k],gx,3.35,gz);bx(L,.06,.06,1.2,GRY,-11.1,3.3,gz)}
+    const HC=[0xe9e2cf,0xc8231c,0xf2c12e,0x2f6fd9];HC.forEach((c,k)=>geo(L,new T.TorusGeometry(.5,.17,6,14),c,-1.8+k*1.2,2.5,2.7));bx(L,5.2,.1,.5,GRY,-.0,1.8,2.7);
+    bx(L,1.6,1.1,.7,0xc8231c,2.3,.1,2.4);bx(L,1.62,.05,.72,0xb9c0c8,2.3,.6,2.4)}
+   // ---- front facade: white pilasters on concrete bases, white header band with gold bay numbers, the closed roller door ----
+   for(const px of[-11.55,-3.8,3.8,11.55]){bx(L,1.0,5.1,.3,TR,px,0,-8.13);bx(L,1.16,.6,.42,CON,px,0,-8.13);bx(L,1.16,.14,.42,TR,px,5.0,-8.13)}
+   bx(L,24.3,.62,.4,TR,0,5.1,-8.18);bx(L,24.3,.08,.46,BR2,0,5.68,-8.18);
+   [-7.6,0,7.6].forEach((c0,k)=>at('n'+(k+1),.56,.56,c0,5.41,-8.39,Math.PI));
+   for(const c0 of[-7.6,0])at('clr',2.6,.37,c0,4.83,-7.81,Math.PI);
+   bx(L,6.8,4.95,.12,DR,7.6,.1,-8.04);for(let k=0;k<10;k++){const y=.45+k*.46;if(y>2.95&&y<3.9)continue;bx(L,6.8,.05,.05,DRL,7.6,y,-8.12)}
+   for(let k=0;k<4;k++){bx(WN,1.2,.5,.05,0,4.9+k*1.8,3.15,-8.11);bx(L,1.34,.64,.03,TR,4.9+k*1.8,3.08,-8.1)}bx(L,6.8,.12,.06,GRY,7.6,.1,-8.13);bx(L,1.0,.08,.06,GRY,7.6,1.0,-8.14);
+   // lanterns on the pilasters (lit at night with the windows)
+   for(const px of[-11.55,-3.8,3.8,11.55]){bx(L,.36,.08,.3,IN,px,3.6,-8.43);bx(WN,.26,.42,.22,0,px,3.68,-8.43);bx(L,.36,.1,.3,IN,px,4.1,-8.43)}
+   // upper floor: three windows over each bay (white frame, mullion, transom, stone sill, soldier-course lintel)
+   const win=(cx,cy,cz,w,h,face)=>{// face: 'f' front (-z), 'b' back (+z), 'l' / 'r' sides
+    const P=(a,b,c,d,e,f,col,y,o,LL)=>{if(face==='f'||face==='b'){const s=face==='f'?-1:1;bx(LL||L,a,b,c,col,cx+o,y,cz+s*d)}else{const s=face==='l'?-1:1;bx(LL||L,c,b,a,col,cx+s*d,y,cz+o)}};
+    P(w+.2,h+.2,.08,.02,0,0,TR,cy-.1,0);P(w,h,.04,.07,0,0,0,cy,0,WN);P(.08,h,.05,.1,0,0,TR,cy,0);P(w,.08,.05,.1,0,0,TR,cy+h*.68,0);P(w+.4,.12,.26,.1,0,0,CON,cy-.22,0);P(w+.3,.26,.08,.03,0,0,BR2,cy+h+.1,0)};
+   [-7.6,0,7.6].forEach(c0=>{for(const d of[-2.2,0,2.2])win(c0+d,6.35,-8,1.3,1.6,'f')});
+   // cornice, roof, parapet with a white cap, the stepped centre with the station sign
+   bx(L,24.3,.2,16.3,BR2,0,8.8,0);bx(L,24.8,.42,16.8,TR,0,9.0,0);bx(L,23.6,.1,15.6,ROOF,0,9.42,0);
+   for(const s of[-1,1]){bx(L,24.6,.75,.3,BR,0,9.42,s*8.15);bx(L,.3,.75,16.3,BR,s*12.15,9.42,0);bx(L,24.8,.14,.42,TR,0,10.17,s*8.15);bx(L,.42,.14,16.6,TR,s*12.15,10.17,0)}
+   bx(L,10.4,1.9,.7,BR,0,10.17,-7.95);bx(L,10.8,.22,.9,TR,0,12.07,-7.95);for(const s of[-1,1])bx(L,.5,.5,.5,TR,s*5.2,12.29,-7.95);
+   bx(L,9.6,1.42,.1,IN,0,10.4,-8.35);at('title',9.3,1.1,0,11.11,-8.41,Math.PI);
+   // ---- sides and back: windows on both floors, a side door with a canopy, the back door, a downpipe ----
+   for(const s of[-1,1])for(const wz of[-5.2,-1.8,1.6,5.0]){win(s*12,6.35,wz,1.2,1.5,s<0?'l':'r');if(!(s<0&&wz>4))win(s*12,2.0,wz,1.2,1.5,s<0?'l':'r')}
+   bx(L,.12,2.5,1.3,DR,-12.06,.1,5.0);bx(L,.14,2.7,1.5,TR,-12.04,0,5.0);bx(L,1.4,.12,2.0,TR,-12.7,2.9,5.0);for(const s of[-1,1])bx(L,.06,.8,.06,GRY,-13.2,2.2,5.0+s*.9);bx(L,1.6,.12,1.8,CON,-12.8,0,5.0);
+   for(const wx of[-8,-4,4,8])win(wx,6.35,8,1.3,1.5,'b');for(const wx of[-8,-4])win(wx,2.0,8,1.3,1.5,'b');
+   bx(L,1.3,2.5,.12,0x3b4a5c,1.5,.1,8.06);bx(L,1.5,2.7,.14,TR,1.5,0,8.04);bx(L,2,.12,1.3,TR,1.5,2.9,8.6);
+   bx(L,24.2,.6,.12,CON,0,0,8.04);bx(L,.12,.6,16.1,CON,12.04,0,0);bx(L,.12,.6,12.2,CON,-12.04,0,-1.9);bx(L,.12,.6,2.2,CON,-12.04,0,6.9); // concrete plinth
+   for(const[dx,dz]of[[-12.2,-7.9],[12.2,-7.9]])bx(L,.18,9.2,.18,GRY,dx,0,dz);
+   // the AC units and a hatch on the roof
+   for(const[ux,uz]of[[-7,3.5],[-3,3.5]]){bx(L,2,1.1,1.4,0xb9c0c8,ux,9.5,uz);cyl(L,.45,.45,.06,14,0x3a3f46,ux,10.63,uz)}bx(L,1.2,.5,1.2,GRY,3,9.5,-2);
+   // ---- hose-drying tower behind bay 3: brick shaft, white bands, slit windows, an open louvred top with hoses hanging, a pyramid cap and a beacon ----
+   {const tx=9,tz=4,tw=3.6;bx(L,tw,15.6,tw,BR,tx,0,tz);bx(L,tw+.25,.35,tw+.25,TR,tx,10.3,tz);bx(L,tw+.3,.5,tw+.3,TR,tx,13.0,tz);bx(L,tw+.4,.5,tw+.4,TR,tx,15.6,tz);
+    for(const s of[-1,1]){bx(WN,.5,1.4,.05,0,tx,11.2,tz+s*(tw/2+.02));bx(WN,.05,1.4,.5,0,tx+s*(tw/2+.02),11.2,tz)}
+    for(const s of[-1,1])for(const o of[-.85,.85]){bx(L,1.1,1.9,.06,IN,tx+o,13.55,tz+s*(tw/2+.02));bx(L,.06,1.9,1.1,IN,tx+s*(tw/2+.02),13.55,tz+o)}
+    for(const s of[-1,1])for(const[o,c]of[[-1.1,0xe9e2cf],[-.6,0xc8231c],[.6,0xf2c12e],[1.1,0xe9e2cf]]){bx(L,.14,1.7,.14,c,tx+o,13.65,tz+s*(tw/2+.08))}
+    geo(L,new T.ConeGeometry(2.9,2.3,4),ROOF,tx,17.25,tz,0,Math.PI/4);cyl(L,.05,.05,1.0,6,GRY,tx,18.8,tz);bx(LT,.32,.32,.32,0xff3b30,tx,19.2,tz)}
+   // ---- the brass bell under its white yoke on a plinth (left of the apron), hydrants by the kerb, bollards, cones, the flagpole and the fire-lane sign ----
+   {const bxx=-13.7,bz=-10.6;bx(L,1.8,.45,1.4,CON,bxx,0,bz);for(const s of[-1,1])bx(L,.22,2.9,.22,TR,bxx+s*.7,.45,bz);bx(L,1.8,.22,.4,TR,bxx,3.35,bz);bx(L,2.0,.1,.6,0x9a2a20,bxx,3.57,bz);
+    geo(L,new T.LatheGeometry([[.5,0],[.47,.05],[.36,.18],[.3,.38],[.28,.56],[.2,.68],[0,.72]].map(p=>new T.Vector2(p[0],p[1])),16),BRASS,bxx,2.55,bz);cyl(L,.08,.08,.18,8,IN,bxx,3.3,bz);cyl(L,.07,.07,.22,8,BRASS,bxx,2.5,bz)}
+   for(const s of[-1,1]){const hx=s*13.6,hz=-19.1;cyl(L,.42,.42,.1,12,HYD,hx,.05,hz);cyl(L,.27,.3,.9,12,HYD,hx,.55,hz);geo(L,new T.SphereGeometry(.28,12,6,0,Math.PI*2,0,Math.PI/2),HYD,hx,1.0,hz);cyl(L,.07,.07,.16,8,BRASS,hx,1.32,hz);
+    cyl(L,.12,.12,.8,8,HYD,hx,.68,hz,0,0,Math.PI/2);cyl(L,.15,.15,.08,8,BRASS,hx-.4,.68,hz,0,0,Math.PI/2);cyl(L,.15,.15,.08,8,BRASS,hx+.4,.68,hz,0,0,Math.PI/2);cyl(L,.15,.15,.22,8,HYD,hx,.68,hz-.32,Math.PI/2)}
+   for(const px of[-11.55,-3.8,3.8,11.55]){cyl(L,.17,.17,1.05,10,0xf2c12e,px,.53,-8.95);bx(L,.36,.12,.36,IN,px,1.05,-8.95)}
+   for(const[cx,cz]of[[-3.6,-17.2],[-3.6,-14.6],[-11.8,-17.2]]){bx(L,.5,.06,.5,0xe8601c,cx,.08,cz);geo(L,new T.ConeGeometry(.2,.65,10),0xe8601c,cx,.46,cz);cyl(L,.15,.12,.1,10,TR,cx,.5,cz)}
+   {const fx=13.7,fz=-12.5;cyl(L,.6,.7,.3,12,CON,fx,.15,fz);cyl(L,.07,.11,11,8,0xd0d4da,fx,5.8,fz);geo(L,new T.SphereGeometry(.16,10,6),BRASS,fx,11.35,fz);at('flag',2.4,1.5,fx,10.4,fz+1.25,Math.PI/2)}
+   {const lx=-13.9,lz=-16.5;cyl(L,.05,.05,2.2,6,GRY,lx,1.1,lz);bx(L,.06,.56,1.66,IN,lx,2.0,lz);at('lane',1.6,.5,lx-.04,2.28,lz,-Math.PI/2);at('lane',1.6,.5,lx+.04,2.28,lz,Math.PI/2)}
+   // ---- the engines: Engine 1 nose out on the apron, Ladder 2 nosing out of bay 2 (the interior's builder at 0.6, no door lettering) ----
+   for(const[ex,ez,lad,B,LL]of[[-7.6,-14.2,false,E1,E1L],[0,-9.2,true,L,LT]]){const P=xf(ex,0,ez,0,Math.PI,0,.6,.6,.6),p=engine(lad,lad?'lad2':'eng1');
+    for(const q of p.B){q.m=P.clone().multiply(q.m);B.push(q)}for(const q of[...p.LR,...p.LB]){q.m=P.clone().multiply(q.m);LL.push(q)}}
+   // ---- meshes ----
+   const tex=new T.CanvasTexture(AC);tex.colorSpace=T.SRGBColorSpace;tex.anisotropy=8;
+   const BM=new T.MeshStandardMaterial({vertexColors:true,roughness:.72,metalness:.05}),LM=new T.MeshBasicMaterial({vertexColors:true}),
+    SM=new T.MeshStandardMaterial({map:tex,emissiveMap:tex,emissive:0xffffff,emissiveIntensity:0,roughness:.6,side:T.DoubleSide});signMats.push(SM);
+   const mk=(par,list,m,cast)=>{const o=new T.Mesh(mergeParts(list),m);o.castShadow=cast;o.receiveShadow=true;o.userData.fireExt=1;par.add(o);return o};
+   const root=new T.Group();root.position.set(x,0,z);g.add(root);
+   mk(root,L,BM,true);mk(root,LT,LM,false);mk(root,WN,mat.win,false);mk(root,AX,SM,false);
+   const e1=new T.Group();e1.userData.nm=1;root.add(e1);mk(e1,E1,BM,true);mk(e1,E1L,LM,false);
+   if(W3&&W3.anim)W3.anim.push(()=>{e1.visible=!liveCall()})};
  }
  // ---------- people inside the buildings ----------
  function pathPos(pts,u){let tot=0;const seg=[];for(let i=1;i<pts.length;i++){const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(d);tot+=d}
@@ -4210,7 +4300,7 @@ function make3D(T,X){
      if(k%4===2)for(let q=0;q<10;q++){const lx=-8+(q%5)*3.1,lz=-d/2-9,c=Math.cos(sry),sn=Math.sin(sry);CT.push({x:sx0+c*lx+sn*lz,y:gh(sx0,sz0)+Math.floor(q/5)*2.6,z:sz0-sn*lx+c*lz,ry:sry,sx:2.6,sy:2.5,sz:6});CTc.push(['#c0392b','#2f6fd9','#e8b931','#2e8b57','#ff7a1a'][q%5])}}}
     instG(g,bodyG,mt.bodyT,CT,CTc)}
    // fire station
-   if(open('w_fire')){const[x,z]=F.w_fire,g=unit(dyn,x,z);B0(g,26,.08,12,mat.pad,x,.02,z-14,false);B0(g,24,7,16,mt.brick,x,0,z);B0(g,24.6,.6,16.6,mat.roofD,x,7,z);for(let q=0;q<3;q++)B0(g,5.4,5,.2,mat.dark,x-7.6+q*7.6,0,z-8.05,false);B0(g,3,12,3,mt.brick,x+9,0,z+4);g.add(sign('FIRE STATION',14,1.8,'#d93a2f','#ffffff',x,8.4,z-8.2,0));const ft=mkCar('#d93a2f',g,true);ft.position.set(x-7.6,0,z-12);L2('FIRE STATION',x,z,12,'w_fire')}
+   if(open('w_fire')){const[x,z]=F.w_fire,g=unit(dyn,x,z);if(FIRE.ext)FIRE.ext(g,x,z);else{B0(g,26,.08,12,mat.pad,x,.02,z-14,false);B0(g,24,7,16,mt.brick,x,0,z);B0(g,24.6,.6,16.6,mat.roofD,x,7,z);for(let q=0;q<3;q++)B0(g,5.4,5,.2,mat.dark,x-7.6+q*7.6,0,z-8.05,false);B0(g,3,12,3,mt.brick,x+9,0,z+4);g.add(sign('FIRE STATION',14,1.8,'#d93a2f','#ffffff',x,8.4,z-8.2,0))}L2('FIRE STATION',x,z,14,'w_fire')}
    else{bpLot(g,'w_fire',F.w_fire[0],F.w_fire[1]-6,26,28);L2('FIRE STATION',F.w_fire[0],F.w_fire[1],10,'w_fire')}
    // hospital
    if(open('w_hosp')||HOSP_PV){const[x,z]=F.w_hosp,g=unit(dyn,x,z);B0(g,30,.08,10,mat.pad,x,.02,z-16,false);bld(g,34,12,22,AM[2],mat.roof,x,z);bld(g,14,20,14,AM[2],mat.roof,x+8,z+2);const hp=new T.Mesh(new T.CylinderGeometry(4.5,4.5,.2,24),mat.dark);hp.position.set(x+8,20.1,z+2);g.add(hp);B0(g,1,.05,5,mt.white,x+8,20.2,z+2,false);
@@ -4507,7 +4597,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
      const fin=r.done[0]||!r.h.lanes[0],fin2=r.done[1]||!r.h.lanes[1];
      if(l.red&&(done||r.started[k])){x.fillStyle='#ff3b30';x.fillRect(ox,438,cw,52);x.fillStyle='#fff';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('RED LIGHT',ox+16,465)}
      else if(fin&&fin2&&r.h.win===k){x.fillStyle='#38e07b';x.fillRect(ox,438,cw,52);x.fillStyle='#062a14';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('WIN ▲',ox+16,465)}
-     else if(done&&l.et<l.dial){x.fillStyle='#e8b931';x.fillRect(ox,438,cw,52);x.fillStyle='#1d0f02';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('BREAKOUT',ox+16,465)}}
+}
     t.needsUpdate=true}
    function buildOpen(){const g=new T.Group();g.position.y=YG;g.userData.mergeRoot=1;g.userData.warped=1;const L=x1-x0,cx=(x0+x1)/2;
     const PO={polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4},asp=M(0x2b2e34,Object.assign({roughness:.9},PO)),conc=M(0xa9acb0,Object.assign({roughness:.9},PO)),burn=M(0x24272c,Object.assign({roughness:.35,metalness:.15},PO)),yel=M(0xe8b931),wall=M(0xd9d6cf,{roughness:.85});
@@ -4551,7 +4641,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    function setHeat(i){const d=D3.day,h=d.heats[i];D3.heat=i;D3.h=h;
     for(let k=0;k<2;k++){if(D3.cars[k]){D3.cg.remove(D3.cars[k].g);D3.cars[k]=null}const l=h.lanes[k];if(!l)continue;const tr=DRAG.run(l.o,true);const g=new T.Group();g.add(carFor(l.e));g.rotation.y=Math.PI/2;g.position.set(x0-8,0,LZ[k]);D3.cg.add(g);
      D3.cars[k]={g,l,tr:tr.trace,tR:tr.tR,cross:false,x:x0-8,z:LZ[k],a:0}}
-    const dm=Math.max(h.lanes[0]?h.lanes[0].dial:0,h.lanes[1]?h.lanes[1].dial:0);D3.ta=h.lanes.map(l=>l?9+(dm-l.dial):0);
+    D3.ta=h.lanes.map(l=>l?9:0); // heads-up: both greens at the same moment
     D3.cur={h,done:[false,false],started:[false,false]};if(!D3.last&&i>0)D3.last={h:d.heats[i-1],done:[true,true],started:[true,true]}}
    const ease=u=>u<0?0:u>1?1:u*u*(3-2*u);
    function laneAt(k,t){const C=D3.cars[k];if(!C)return null;const l=C.l,ta=D3.ta[k],tl=ta+l.rt-C.tR;let x,z=LZ[k],a=0,ph={p:false,s:false,a:false,g:false,r:false},vis=true,smoke=0;
@@ -4686,7 +4776,10 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    if(location.hostname==='localhost'||document.documentElement.dataset.rec==='1')window.__MAYOR={pos:()=>({x:st.x,z:st.z,y:st.y,a:Math.PI/2-st.ry,state:st.state,t:((mt%CYC)+CYC)%CYC}),seek:t=>{mt=t;place(0)},cycle:CYC,
     times:{idle:[0,T1],walkOut:[T1,T2],waveSquare:[T2,T3],walkBack:[T3,T4]},g:()=>g}}
   // ---- CITY DECREE OF THE WEEK: edit this one constant ----
-  const MAYOR_DECREE={no:1,title:'Every subscriber gets a parking spot.',body:'By order of the Mayor, every new subscriber moves into Motoropolis with a car of their own and a place to park it.'};
+  const DECREE1={no:1,title:'Every subscriber gets a parking spot.',body:'By order of the Mayor, every new subscriber moves into Motoropolis with a car of their own and a place to park it.'};
+  // Decree No. 2 replaces No. 1 when the homes go live (window.__HOMES_ON, set by interiors/home.js; read when the office is painted)
+  const DECREE2={no:2,title:'Every subscriber gets a home of their own.',body:'By order of the Mayor, every resident of Motoropolis now has a home in Riverside Heights, with a garage for their car. Find your name and step inside.'};
+  const decree=()=>window.__HOMES_ON?DECREE2:DECREE1;
   if(CITY2&&F.cityhall&&F.oldtown&&!/[?&]mayor=0\b/.test(location.search)){
    const[hx,hz]=F.cityhall,hry=Math.atan2(F.oldtown[0]-hx,F.oldtown[1]-hz);
    // City Hall in the city: a ray against its box (plinth, hall, dome and steps, in the hall's own axes) and the label point over the portico
@@ -4762,7 +4855,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    function paintDecree(x,W,H){x.fillStyle='#b8865a';x.fillRect(0,0,W,H);for(let k=0;k<900;k++){x.fillStyle=rnd()<.5?'rgba(90,58,34,.25)':'rgba(240,210,160,.25)';x.fillRect(rnd()*W,rnd()*H,3,3)}
     x.fillStyle='#1f3a6e';x.fillRect(20,20,W-40,70);fit(x,'CITY DECREE OF THE WEEK',W-70,44,800);x.fillStyle='#f2c14e';x.fillText('CITY DECREE OF THE WEEK',W/2,57);
     x.save();x.translate(W/2,H/2+50);x.rotate(-.02);x.fillStyle='#fbf7ec';x.fillRect(-200,-260,400,540);x.fillStyle='rgba(0,0,0,.12)';x.fillRect(-200,276,400,6);
-    font(x,40,800);x.fillStyle='#1f3a6e';x.fillText(`DECREE No. ${MAYOR_DECREE.no}`,0,-212);x.fillStyle='#c8232c';x.fillRect(-150,-184,300,3);
+    font(x,40,800);x.fillStyle='#1f3a6e';const MAYOR_DECREE=decree();x.fillText(`DECREE No. ${MAYOR_DECREE.no}`,0,-212);x.fillStyle='#c8232c';x.fillRect(-150,-184,300,3);
     font(x,38,700,"Georgia,'Times New Roman',serif");x.fillStyle='#22252b';let y=wrap(x,MAYOR_DECREE.title,0,-136,350,44);
     font(x,23,400,"Georgia,'Times New Roman',serif");x.fillStyle='#4a4f57';wrap(x,MAYOR_DECREE.body,0,y+14,340,30);
     cog(x,-110,196,46,12,'#f2c14e');x.fillStyle='#b8862a';x.beginPath();x.arc(-110,196,30,0,Math.PI*2);x.fill();font(x,36,800);x.fillStyle='#fbf7ec';x.fillText('M',-110,198);
@@ -4895,7 +4988,10 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
     header("INSIDE CITY HALL · THE MAYOR'S OFFICE")}
    INTS.mayor={get scene(){return MO.S},build:buildMayorOffice,isBuilt:()=>MO.built,sync:syncMayorOffice,labels:labelsMayorOffice,get home(){return MO.home},onEnter(){MO.t0=MO.clk}};
   }
-  {
+  // launch gate: the homes go live at HOMES_AT (ms since epoch, UTC; 0 = not yet). Preview with ?homes=1; always on in the recorder and on localhost
+  const HOMES_AT=1795860000000/* 2026-11-28 10:00 Lisbon (UTC) */,HOMES_ON=(HOMES_AT>0&&Date.now()>=HOMES_AT)||/[?&]homes=1\b/.test(location.search)||document.documentElement.dataset.rec==='1'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  window.__HOMES_ON=HOMES_ON;
+  if(HOMES_ON){
    const hshort=(n,k)=>n.length>k?n.slice(0,k-1)+'…':n;
    const hhash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,0x5bd1e995);h^=h>>>15;return h>>>0};
    // ---------- who lives where ----------
@@ -6149,7 +6245,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  function lane(l,win){const r=el('div','dg-ln'+(win?' w':''));if(!l){r.append(el('span','dg-who','Bye run'));return r}
   const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));
   const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));
-  const c=el('span','dg-r',(win?'WIN · ':'')+'RT '+l.rt.toFixed(3)+' s · dial '+l.dial.toFixed(2)+' s'+(!l.red&&l.et<l.dial?' · breakout':''));r.append(a,b,c);return r}
+  const c=el('span','dg-r',(win?'WIN · ':'')+'RT '+l.rt.toFixed(3)+' s · ET '+l.et.toFixed(3)+' s'+(l.red?' · red light':''));r.append(a,b,c);return r}
  function heat(h){const box=el('div','dg-heat');box.append(el('div','dg-hl',h.label));box.append(lane(h.lanes[0],h.win===0&&!!h.lanes[1]),lane(h.lanes[1],h.win===1));return box}
  function today(){const d=day(),f=d.final;body.textContent='';
   const top=el('div','dg-final');top.append(el('div','dg-k',`Today · ${dayName(d.date)}`));
@@ -6157,7 +6253,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   else top.append(el('div','dg-sub','The first races start at midnight (UTC).'));body.append(top);
   const el2=d.heats.filter(h=>h.round!=='q');if(el2.length){body.append(el('h3','dg-h','Eliminations'));for(const h of el2.slice().reverse())body.append(heat(h))}
   if(d.quali.length){body.append(el('h3','dg-h','Best qualifiers'));const ol=el('ol','dg-list');d.quali.slice(0,8).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
-  body.append(el('p','dg-note','Bracket racing: every car gets a dial-in (its expected time) and the slower car gets the green first, so any car can win. The first to the line wins, unless it ran quicker than its dial-in (a breakout). The races run at midnight UTC and the strip replays every heat all day. Quarter mile · 402 m.'))}
+  body.append(el('p','dg-note','Heads-up racing: both cars get the green together and the first to the line wins. Leave before the green (red light) and you lose. The races run at midnight UTC and the strip replays every heat all day. Quarter mile · 402 m.'))}
  function week(){const w=DRAG.week(DRAG.today());body.textContent='';body.append(el('p','dg-note','The quickest quarter mile (402 m) of each car since Monday (UTC).'));
   const ol=el('ol','dg-list dg-rank');w.slice(0,10).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model+' · '+dayName(l.date)));const b=el('span','dg-t');b.append(el('b',null,F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
  function me(){body.textContent='';const lb=el('label',null,'Your YouTube name');lb.htmlFor='dgIn';const inp=el('input');inp.id='dgIn';inp.type='text';inp.autocomplete='off';inp.spellcheck=false;inp.placeholder='Start typing your name…';inp.value=meName;

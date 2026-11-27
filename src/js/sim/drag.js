@@ -61,16 +61,14 @@ const DRAG=(()=>{
   const out=named.map(n=>entrant(n.toLowerCase(),n));for(let k=0;out.length<nCars;k++)out.push(entrant(String(k),null));eSig=sig;eCache=out;return out}
  const tuneOf=e=>{const T=typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes;return e.name&&T&&T[e.name]&&TUNES[T[e.name]]?T[e.name]:'stock'};
  // ---- one day of racing (run at 00:00 UTC; the strip replays it all day) ----
- // Bracket racing, so any car can win: every car gets a dial-in (its expected time, rounded up), the slower car gets the
- // green first by the difference, and the first to the line wins unless it ran quicker than its dial-in ("breakout").
- // Red light (left before the green) loses. The weekly leaderboard is the raw quickest time.
+ // Heads-up racing: both cars get the green together and the first to the line wins (reaction time + elapsed time).
+ // Red light (left before the green) loses. The weekly leaderboard is the raw quickest time. (dial = the car's expected time, info only)
  const ROUND={q:'Qualifying',qf:'Quarter-final',sf:'Semi-final',f:'Final'};
  const dayCache=new Map(),dialCache=new Map();
  const dialOf=(glb,tune)=>{const k=glb+'|'+tune;if(!dialCache.has(k))dialCache.set(k,Math.ceil((run({glb,tune,grip:.99}).et+.04)*100)/100);return dialCache.get(k)};
  // who wins a heat: 0 or 1
  function judge(a,b){if(!b)return 0;if(!a)return 1;if(a.red!==b.red)return a.red?1:0;if(a.red)return a.rt<=b.rt?1:0;
-  const ba=a.et<a.dial,bb=b.et<b.dial;if(ba!==bb)return ba?1:0;if(ba)return(a.dial-a.et)<=(b.dial-b.et)?0:1;
-  return(a.rt+a.et-a.dial)<=(b.rt+b.et-b.dial)?0:1}
+  return(a.rt+a.et)<=(b.rt+b.et)?0:1}
  function day(date){const E=entrants();const key=date+'|'+eSig+'|'+JSON.stringify((typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes)||0);if(dayCache.has(key))return dayCache.get(key);
   const r=rng(h32('drag|'+date)),air=.97+r()*.05,track=.96+r()*.06;
   const pass=(e,lane)=>{const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000,res=run({glb:e.glb,tune,grip,power,shiftK,ldl});
@@ -80,8 +78,8 @@ const DRAG=(()=>{
   // qualifying: everyone, in pairs, in a seeded order
   const ord=E.slice();for(let i=ord.length-1;i>0;i--){const j=Math.floor(r()*(i+1));const t=ord[i];ord[i]=ord[j];ord[j]=t}
   const heats=[];for(let i=0;i<ord.length;i+=2)heats.push(heat('q'+(i/2+1),'q',ord[i],ord[i+1]||null));
-  // qualifying order: the best "package" (reaction time + how close to the dial-in; a breakout counts double, a red light last)
-  const pk=l=>(l.red?100:0)+(l.rt-.4)+(l.et<l.dial?2:1)*Math.abs(l.et-l.dial);
+  // qualifying order: the quickest pass (elapsed time; a red light last)
+  const pk=l=>(l.red?100:0)+l.et;
   const quali=[];for(const h of heats)for(const l of h.lanes)if(l){l.pk=pk(l);quali.push(l)}quali.sort((a,b)=>a.pk-b.pk);
   // eliminations: the 8 best packages (4 or 2 on a small day), ladder 1-8, 4-5, 2-7, 3-6; higher seed in the left lane
   const nE=quali.length>=8?8:quali.length>=4?4:quali.length>=2?2:0,seeds=quali.slice(0,nE).map(l=>l.e);let champ=null;
