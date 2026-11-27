@@ -373,3 +373,60 @@ html[data-rec="1"] .dg{display:none!important}
 /* Find my name: the home address and "Go to my home" (interiors/home.js) */
 .fd-tx small.fd-hm{color:#9fd8b5}
 .fd-list li{flex-wrap:wrap}
+/* ===== GO TO menu (ui/goto.js): places, jobs, people; the dock with STEP INSIDE ===== */
+.viewbar .go-btn{background:rgba(10,30,62,.94);border-color:var(--accent);color:#fff;font-weight:700}
+.viewbar .go-btn.is-on{box-shadow:0 0 0 2px #fff,0 4px 14px rgba(0,0,0,.35)}
+.gt-body{display:flex;flex-direction:column;gap:8px;min-height:0}
+.gt-body>label{font-size:13px;color:var(--muted)}
+.gt-res{display:flex;flex-direction:column;gap:8px}
+.gt-h{margin:6px 2px 0;font:700 12.5px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:#8cbcff}
+.gt-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.gt-row{display:flex;align-items:center;gap:6px;background:rgba(140,190,255,.10);border:1px solid rgba(140,190,255,.25);border-radius:12px;padding:3px 5px 3px 3px}
+.gt-row.soon{background:rgba(140,190,255,.05);border-style:dashed}
+.gt-go{flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:46px;border:0;border-radius:10px;background:transparent;padding:2px 6px;text-align:left;color:#fff;white-space:normal;font:inherit}
+button.gt-go:hover{background:rgba(255,122,26,.10)}
+.gt-go:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+.gt-ic{flex:0 0 38px;height:38px;border-radius:10px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}
+.gt-tx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.gt-tx b{font:700 16.5px/1.1 var(--display);letter-spacing:.03em;text-transform:uppercase;overflow-wrap:anywhere}
+.gt-tx b.gt-nm{font:600 15px/1.2 var(--body);text-transform:none;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gt-tx small{font:500 12.5px/1.25 var(--body);color:var(--muted)}
+.gt-tx small.gt-soon{color:var(--gold);font:700 12.5px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase}
+.gt-tx small.gt-hm{color:#9fd8b5}
+.gt-in,.gt-in2{flex:none;min-height:44px;border:0;border-radius:10px;background:var(--accent);color:#1a1205;font:800 14.5px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;padding:0 12px}
+.gt-in2{background:#2e8b57;color:#fff}
+.gt-av{flex:0 0 34px;height:34px;border-radius:17px;font-size:14px}
+.gt-job{background:rgba(140,190,255,.07);border:1px solid rgba(140,190,255,.22);border-radius:12px;padding:8px 9px}
+.gt-jh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.gt-jh b{font:800 16.5px/1.1 var(--display);letter-spacing:.03em;text-transform:uppercase}
+.gt-jh small{font-size:12.5px;color:var(--muted)}
+.gt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.gt-chip{display:inline-flex;align-items:center;gap:7px;min-height:40px;max-width:100%;box-sizing:border-box;padding:3px 12px 3px 3px;border:1px solid #2b4b7c;border-radius:999px;background:#173462;color:#fff;font:600 14px/1.1 var(--body);white-space:nowrap}
+button.gt-chip:hover{border-color:var(--accent)}
+.gt-chip .gt-av{flex-basis:30px;height:30px;border-radius:15px;font-size:12.5px}
+.gt-cn{overflow:hidden;text-overflow:ellipsis}
+.gt-open{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:5px 12px;border-style:dashed;border-radius:12px;background:transparent;color:var(--muted);font:500 12.5px/1.2 var(--body);white-space:normal}
+.gt-open b{font:800 12.5px/1 var(--display);letter-spacing:.1em;color:#9fd8b5}
+.gt-note{margin:2px 0 0;font-size:13px;color:#cfdcf0}
+.gt-dock{position:absolute;z-index:5;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;width:max-content;max-width:calc(100% - 24px);box-sizing:border-box;background:#0d2650;border:1px solid rgba(140,190,255,.45);border-radius:14px;padding:6px 6px 6px 8px;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.gt-dock[hidden]{display:none}
+.gt-dk-ic{flex:0 0 40px;height:40px;border-radius:10px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--gold)}
+.gt-dk-tx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.gt-dk-tx b{font:800 18px/1.05 var(--display);letter-spacing:.03em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gt-dk-tx b.gt-nm{text-transform:none;letter-spacing:0;font:700 17px/1.1 var(--body)}
+.gt-dk-tx small{font:500 12.5px/1.2 var(--body);color:var(--muted)}
+.gt-dk-acts{display:flex;gap:6px;flex:none}
+@media (min-width:701px){.gt-dock{bottom:58px}.gt-dock.pn-open{left:calc(50% - 186px);max-width:calc(100% - 420px)}}
+@media (max-width:700px){
+ .bnav{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .bnav>button,.bnav>a{font-size:12px;letter-spacing:.04em}
+ .viewbar #vGoto{display:none}
+ .screen.fsfake .viewbar #vGoto,.screen:fullscreen .viewbar #vGoto{display:inline-block}
+ .gt-chip{min-height:44px}
+ .gt-chip .gt-av{flex-basis:34px;height:34px;border-radius:17px}
+ .gt-dock{left:8px;right:8px;bottom:40px;transform:none;width:auto;max-width:none;flex-wrap:wrap}
+ .gt-dk-tx{flex:1}
+ .gt-dk-acts{order:3;flex:1 1 100%}
+ .gt-dk-acts>button{flex:1}
+}
+html[data-rec="1"] .gt,html[data-rec="1"] .gt-dock,html[data-rec="1"] #vGoto,html[data-rec="1"] #nbGoto{display:none!important}

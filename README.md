@@ -94,3 +94,21 @@ Every name on the Wall (`state.json` `names`) has a home once Riverside Heights 
 | `model` | the resident's car: `hothatch sport3 saloon90 coupe85 jgt98 rwd24 r32 challenger evo9` (the `glb` ids of the everyday models in `src/data/cars/models.json` that take a paint colour: price up to 90,000, not `keep` in `car_glb.json`) |
 
 The name is matched exactly, then case-insensitively. Unknown keys and invalid values are ignored (the default stays); nothing from `homes` is ever shown as text. Palette names are case-insensitive.
+
+## GO TO menu and deep links
+
+The **📍 Go to** button (viewbar on computers, "Go to" in the phone bottom nav) opens a panel (side panel on computers, bottom sheet on phones) so a viewer can jump straight to a place instead of searching the city by hand. Code: `src/js/ui/goto.js`. Hidden on the recorder page and in trailer mode; Esc closes it.
+
+- **Places:** the open buildings that have an interior on this page (it checks `R3.ints()` and `isOpen`): repair shop, supermarket, towing, gas station, tire shop, car wash, inspection, parking, auto parts, dealership, junkyard, factory, race track, police, courthouse, Motoropolis Daily, fire station, City Hall (Mayor's office), hospital (when open, or with `?hosp=1`) and Santa's workshop (Christmas pages). A tap flies the camera there and shows a **STEP INSIDE ▶** bar; **Inside ▶** goes straight in. Then landmarks (park, stadium, Drag Strip, …) and districts (from `CITY.P0`, `CITY.F` and `CITY.districts`), camera only. "Coming soon" lists the locked milestones with "N more subscribers to open" (never the total).
+- **Jobs:** every job in the city with the residents who hold it, read from the city's own assignment (`JOBS` / `staffOf`). A name flies to that person and follows them (drivers by their vehicle); **AT WORK ▶** steps into their workplace, where the staff tags show them. Empty posts say "JOB OPEN · Comment WORKSHOP <JOB>" (every job title is a valid `WORKSHOP <job>` comment for `scripts/update_state.py`).
+- **People:** one search over names, places and jobs; residents get "Home ▶" (`UIX.homeOf`). Find my name is unchanged.
+
+**Deep links** (applied once the 3D city has loaded; unknown values are ignored):
+
+| link | opens |
+|---|---|
+| `?go=police` | flies to a place: a building (`oficina`/`repair`, `market`, `reboques`/`tow`, `bomba`/`gas`, `pneus`/`tires`, `lavagem`/`wash`, `inspecao`/`inspection`, `parque`/`parking`, `pecas`/`parts`, `stand`/`dealership`, `sucata`/`junkyard`, `fabrica`/`factory`, `pista`/`track`, `police`, `court`, `news`, `fire`, `mayor`/`cityhall`, `hosp`/`hospital`, `santa`), a landmark (`park`, `stadium`, `drag`, `mall`, `train`, `arena`, `air`, `port`, `tvtower`, `lighthouse`) or a district (`roundabout`, `downtown`, `oldtown`, `harbour`, `riverside`, `maple`, `hills`, `industrial`, `automotive`, `farms`) |
+| `?home=<name>` | steps into that resident's home |
+| `?find=<name>` | opens the People search with the name and flies to the person |
+
+They combine with the other switches (`?hosp=1`, `?drag=1`, `?mayor=0`, …), e.g. `?hosp=1&go=hospital`.

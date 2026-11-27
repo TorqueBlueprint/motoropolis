@@ -98,6 +98,7 @@ ui/view_controls.js
 ui/welcome.js
 ui/nav.js
 ui/drag_ui.js
+ui/goto.js
 core/main_loop.js
 recorder/hooks.js
 core/end.js

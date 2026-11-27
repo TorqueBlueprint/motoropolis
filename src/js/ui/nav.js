@@ -5,7 +5,7 @@
 // and the collapsible cards below the city. Never shows the subscriber total: the Unlocks list copies #metas
 // (milestone thresholds, "Open", "N more to go", "Blueprint").
 {
- const PN={finder:$('finder'),unlocks:$('unlocks'),moveIn:$('moveIn'),drag:$('drag')},scr=$('screen'),ul=$('ulList');
+ const PN={finder:$('finder'),unlocks:$('unlocks'),moveIn:$('moveIn'),drag:$('drag'),goto:$('goto')},scr=$('screen'),ul=$('ulList');
  const phone=()=>matchMedia('(max-width: 700px)').matches;
  const only=keep=>{for(const k in PN)if(k!==keep)PN[k].hidden=true};UIX.only=only;
  // the panels live over the city: on a phone, bring the city back into view first
@@ -26,9 +26,9 @@
  for(const id of ['unlocks','moveIn','drag'])PN[id].addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close(id)}});
  setInterval(()=>{if(!PN.unlocks.hidden)fillUnlocks()},5000);
  // keep the buttons in step with whichever panel is open (Find my name can also close itself)
- const sync=()=>{const f=!PN.finder.hidden,u=!PN.unlocks.hidden||!PN.drag.hidden,m=!PN.moveIn.hidden;
-  for(const[b,on]of[[$('vFind'),f],[$('nbFind'),f],[$('vUnlocks'),u],[$('nbUnlocks'),u]]){b.setAttribute('aria-expanded',String(on));b.classList.toggle('is-on',on)}
-  $('nbExplore').classList.toggle('is-on',!f&&!u&&!m)};
+ const sync=()=>{const f=!PN.finder.hidden,u=!PN.unlocks.hidden||!PN.drag.hidden,m=!PN.moveIn.hidden,g=!PN.goto.hidden;
+  for(const[b,on]of[[$('vFind'),f],[$('nbFind'),f],[$('vUnlocks'),u],[$('nbUnlocks'),u],[$('vGoto'),g],[$('nbGoto'),g]]){b.setAttribute('aria-expanded',String(on));b.classList.toggle('is-on',on)}
+  $('nbExplore').classList.toggle('is-on',!f&&!u&&!m&&!g)};
  const mo=new MutationObserver(sync);for(const k in PN)mo.observe(PN[k],{attributes:true,attributeFilter:['hidden']});sync();
  // ---- cards below the city: every header folds its card; phones start with only the news open ----
  const cards=[...document.querySelectorAll('.cards .card')];
