@@ -72,3 +72,25 @@ The Drag Strip (layout feature `dragway`) opens with the Race Track at 1,000 sub
   - `"follow": {"drag": true, "lane": 0, "phi": -2.0, "pitch": 0.28, "dist": 16}` follows a car (lane 0 = left, 1 = right).
   - `"dragCam": "tree"` or `{"from": "overview", "to": "stands", "fromOv": {...}}` uses a camera preset: `overview`, `start`, `tree`, `burnout`, `stands`, `finish`, `board`.
 - **Next step (needs the comment job):** `STATE.drag.tunes = {"<name>": "launch"|"topspeed"}` is already read by the physics. Bets (`BET name amount`) can be settled with `node tools/drag_day.js DATE --json` (the final's winner).
+
+## Homes (Riverside Heights, every subscriber)
+
+Every name on the Wall (`state.json` `names`) has a home once Riverside Heights is open (100 subscribers). Click a house in Riverside Heights (or a Maple Grove apartment block) to step inside, or use Find my name → "Go to my home". Code: `src/js/interiors/home.js`.
+
+- **Who lives where** (stable, no state needed): names are taken in `names` order (the update job only appends) and each takes the first free slot starting from a hash of the lower-cased name, so a newcomer never moves anyone. 1) the first 40 Riverside Heights houses (always built once the district opens), 2) 48 flats in the three Maple Grove apartment blocks ("FLAT 3B · MAPLE GROVE COURT 2": floors 1-4, flats A-D), 3) the remaining Riverside Heights house slots (shown as "being built" until the district grows that far; the interior is open already).
+- **Inside:** one template (living room, kitchen, desk, model-car shelves, garage with the resident's car), different per person: seeded defaults from the name, then the overrides below.
+- **Overrides (read only by the page; the comment job that writes them comes later):**
+
+```json
+"homes": {
+  "<name exactly as in names>": {"wall": "mint", "sofa": "#7a2a22", "rug": "navy", "curtains": "orange", "kitchen": "white", "car": "red", "poster": "drag", "model": "r32"}
+}
+```
+
+| key | allowed values |
+|---|---|
+| `wall`, `sofa`, `rug`, `curtains`, `kitchen`, `car` | a palette name (`red orange yellow green mint teal blue navy purple pink brown black grey white cream beige`) or a hex colour `#rrggbb` |
+| `poster` | `kestrel`, `rally`, `drag` (the big poster by the TV) |
+| `model` | the resident's car: `hothatch sport3 saloon90 coupe85 jgt98 rwd24 r32 challenger evo9` (the `glb` ids of the everyday models in `src/data/cars/models.json` that take a paint colour: price up to 90,000, not `keep` in `car_glb.json`) |
+
+The name is matched exactly, then case-insensitively. Unknown keys and invalid values are ignored (the default stays); nothing from `homes` is ever shown as text. Palette names are case-insensitive.

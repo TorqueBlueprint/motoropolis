@@ -80,6 +80,7 @@ world/city2_landmarks.js
 world/drag3d.js
 world/mayor.js
 interiors/mayor_office.js
+interiors/home.js
 world/world3d_end.js
 interiors/hospital.js
 world/treeify.js
