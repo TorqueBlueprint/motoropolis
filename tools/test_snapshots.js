@@ -45,7 +45,7 @@ const METRICS = !!opt.metrics;
 
 const PAGE_URL = {root: '/', world: '/world/', xmas: '/xmas/', remake: '/remake/', perf: '/perf/', rec: '/rec/'};
 const INTERIORS = ['oficina', 'lavagem', 'reboques', 'bomba', 'pneus', 'inspecao', 'parque', 'pecas', 'stand', 'sucata',
-  'fabrica', 'pista', 'stadium', 'market', 'news', 'police', 'court', 'santa'];
+  'fabrica', 'pista', 'stadium', 'market', 'news', 'police', 'court', 'santa', 'fire'];
 // fixed city cameras (world grid: x 10..354, z 10..190 in 3D units)
 const VIEWS = {
   overview: null, // the page's own home camera
