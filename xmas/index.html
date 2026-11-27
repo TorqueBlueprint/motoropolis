@@ -2274,16 +2274,14 @@ const DRAG=(()=>{
   const out=named.map(n=>entrant(n.toLowerCase(),n));for(let k=0;out.length<nCars;k++)out.push(entrant(String(k),null));eSig=sig;eCache=out;return out}
  const tuneOf=e=>{const T=typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes;return e.name&&T&&T[e.name]&&TUNES[T[e.name]]?T[e.name]:'stock'};
  // ---- one day of racing (run at 00:00 UTC; the strip replays it all day) ----
- // Bracket racing, so any car can win: every car gets a dial-in (its expected time, rounded up), the slower car gets the
- // green first by the difference, and the first to the line wins unless it ran quicker than its dial-in ("breakout").
- // Red light (left before the green) loses. The weekly leaderboard is the raw quickest time.
+ // Heads-up racing: both cars get the green together and the first to the line wins (reaction time + elapsed time).
+ // Red light (left before the green) loses. The weekly leaderboard is the raw quickest time. (dial = the car's expected time, info only)
  const ROUND={q:'Qualifying',qf:'Quarter-final',sf:'Semi-final',f:'Final'};
  const dayCache=new Map(),dialCache=new Map();
  const dialOf=(glb,tune)=>{const k=glb+'|'+tune;if(!dialCache.has(k))dialCache.set(k,Math.ceil((run({glb,tune,grip:.99}).et+.04)*100)/100);return dialCache.get(k)};
  // who wins a heat: 0 or 1
  function judge(a,b){if(!b)return 0;if(!a)return 1;if(a.red!==b.red)return a.red?1:0;if(a.red)return a.rt<=b.rt?1:0;
-  const ba=a.et<a.dial,bb=b.et<b.dial;if(ba!==bb)return ba?1:0;if(ba)return(a.dial-a.et)<=(b.dial-b.et)?0:1;
-  return(a.rt+a.et-a.dial)<=(b.rt+b.et-b.dial)?0:1}
+  return(a.rt+a.et)<=(b.rt+b.et)?0:1}
  function day(date){const E=entrants();const key=date+'|'+eSig+'|'+JSON.stringify((typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes)||0);if(dayCache.has(key))return dayCache.get(key);
   const r=rng(h32('drag|'+date)),air=.97+r()*.05,track=.96+r()*.06;
   const pass=(e,lane)=>{const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000,res=run({glb:e.glb,tune,grip,power,shiftK,ldl});
@@ -2293,8 +2291,8 @@ const DRAG=(()=>{
   // qualifying: everyone, in pairs, in a seeded order
   const ord=E.slice();for(let i=ord.length-1;i>0;i--){const j=Math.floor(r()*(i+1));const t=ord[i];ord[i]=ord[j];ord[j]=t}
   const heats=[];for(let i=0;i<ord.length;i+=2)heats.push(heat('q'+(i/2+1),'q',ord[i],ord[i+1]||null));
-  // qualifying order: the best "package" (reaction time + how close to the dial-in; a breakout counts double, a red light last)
-  const pk=l=>(l.red?100:0)+(l.rt-.4)+(l.et<l.dial?2:1)*Math.abs(l.et-l.dial);
+  // qualifying order: the quickest pass (elapsed time; a red light last)
+  const pk=l=>(l.red?100:0)+l.et;
   const quali=[];for(const h of heats)for(const l of h.lanes)if(l){l.pk=pk(l);quali.push(l)}quali.sort((a,b)=>a.pk-b.pk);
   // eliminations: the 8 best packages (4 or 2 on a small day), ladder 1-8, 4-5, 2-7, 3-6; higher seed in the left lane
   const nE=quali.length>=8?8:quali.length>=4?4:quali.length>=2?2:0,seeds=quali.slice(0,nE).map(l=>l.e);let champ=null;
@@ -4535,7 +4533,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
      const fin=r.done[0]||!r.h.lanes[0],fin2=r.done[1]||!r.h.lanes[1];
      if(l.red&&(done||r.started[k])){x.fillStyle='#ff3b30';x.fillRect(ox,438,cw,52);x.fillStyle='#fff';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('RED LIGHT',ox+16,465)}
      else if(fin&&fin2&&r.h.win===k){x.fillStyle='#38e07b';x.fillRect(ox,438,cw,52);x.fillStyle='#062a14';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('WIN ▲',ox+16,465)}
-     else if(done&&l.et<l.dial){x.fillStyle='#e8b931';x.fillRect(ox,438,cw,52);x.fillStyle='#1d0f02';x.font="800 40px 'Barlow Condensed',sans-serif";x.fillText('BREAKOUT',ox+16,465)}}
+}
     t.needsUpdate=true}
    function buildOpen(){const g=new T.Group();g.position.y=YG;g.userData.mergeRoot=1;g.userData.warped=1;const L=x1-x0,cx=(x0+x1)/2;
     const PO={polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4},asp=M(0x2b2e34,Object.assign({roughness:.9},PO)),conc=M(0xa9acb0,Object.assign({roughness:.9},PO)),burn=M(0x24272c,Object.assign({roughness:.35,metalness:.15},PO)),yel=M(0xe8b931),wall=M(0xd9d6cf,{roughness:.85});
@@ -4579,7 +4577,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    function setHeat(i){const d=D3.day,h=d.heats[i];D3.heat=i;D3.h=h;
     for(let k=0;k<2;k++){if(D3.cars[k]){D3.cg.remove(D3.cars[k].g);D3.cars[k]=null}const l=h.lanes[k];if(!l)continue;const tr=DRAG.run(l.o,true);const g=new T.Group();g.add(carFor(l.e));g.rotation.y=Math.PI/2;g.position.set(x0-8,0,LZ[k]);D3.cg.add(g);
      D3.cars[k]={g,l,tr:tr.trace,tR:tr.tR,cross:false,x:x0-8,z:LZ[k],a:0}}
-    const dm=Math.max(h.lanes[0]?h.lanes[0].dial:0,h.lanes[1]?h.lanes[1].dial:0);D3.ta=h.lanes.map(l=>l?9+(dm-l.dial):0);
+    D3.ta=h.lanes.map(l=>l?9:0); // heads-up: both greens at the same moment
     D3.cur={h,done:[false,false],started:[false,false]};if(!D3.last&&i>0)D3.last={h:d.heats[i-1],done:[true,true],started:[true,true]}}
    const ease=u=>u<0?0:u>1?1:u*u*(3-2*u);
    function laneAt(k,t){const C=D3.cars[k];if(!C)return null;const l=C.l,ta=D3.ta[k],tl=ta+l.rt-C.tR;let x,z=LZ[k],a=0,ph={p:false,s:false,a:false,g:false,r:false},vis=true,smoke=0;
@@ -6179,7 +6177,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  function lane(l,win){const r=el('div','dg-ln'+(win?' w':''));if(!l){r.append(el('span','dg-who','Bye run'));return r}
   const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));
   const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));
-  const c=el('span','dg-r',(win?'WIN · ':'')+'RT '+l.rt.toFixed(3)+' s · dial '+l.dial.toFixed(2)+' s'+(!l.red&&l.et<l.dial?' · breakout':''));r.append(a,b,c);return r}
+  const c=el('span','dg-r',(win?'WIN · ':'')+'RT '+l.rt.toFixed(3)+' s · ET '+l.et.toFixed(3)+' s'+(l.red?' · red light':''));r.append(a,b,c);return r}
  function heat(h){const box=el('div','dg-heat');box.append(el('div','dg-hl',h.label));box.append(lane(h.lanes[0],h.win===0&&!!h.lanes[1]),lane(h.lanes[1],h.win===1));return box}
  function today(){const d=day(),f=d.final;body.textContent='';
   const top=el('div','dg-final');top.append(el('div','dg-k',`Today · ${dayName(d.date)}`));
@@ -6187,7 +6185,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   else top.append(el('div','dg-sub','The first races start at midnight (UTC).'));body.append(top);
   const el2=d.heats.filter(h=>h.round!=='q');if(el2.length){body.append(el('h3','dg-h','Eliminations'));for(const h of el2.slice().reverse())body.append(heat(h))}
   if(d.quali.length){body.append(el('h3','dg-h','Best qualifiers'));const ol=el('ol','dg-list');d.quali.slice(0,8).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model));const b=el('span','dg-t');b.append(el('b',null,l.red?'RED LIGHT':F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
-  body.append(el('p','dg-note','Bracket racing: every car gets a dial-in (its expected time) and the slower car gets the green first, so any car can win. The first to the line wins, unless it ran quicker than its dial-in (a breakout). The races run at midnight UTC and the strip replays every heat all day. Quarter mile · 402 m.'))}
+  body.append(el('p','dg-note','Heads-up racing: both cars get the green together and the first to the line wins. Leave before the green (red light) and you lose. The races run at midnight UTC and the strip replays every heat all day. Quarter mile · 402 m.'))}
  function week(){const w=DRAG.week(DRAG.today());body.textContent='';body.append(el('p','dg-note','The quickest quarter mile (402 m) of each car since Monday (UTC).'));
   const ol=el('ol','dg-list dg-rank');w.slice(0,10).forEach(l=>{const li=el('li');const a=el('span','dg-who');a.append(el('b',null,F.who(l.e)),el('small',null,l.e.model+' · '+dayName(l.date)));const b=el('span','dg-t');b.append(el('b',null,F.et(l.et)),el('small',null,F.spd(l.vt)));li.append(a,b);ol.append(li)});body.append(ol)}
  function me(){body.textContent='';const lb=el('label',null,'Your YouTube name');lb.htmlFor='dgIn';const inp=el('input');inp.id='dgIn';inp.type='text';inp.autocomplete='off';inp.spellcheck=false;inp.placeholder='Start typing your name…';inp.value=meName;
