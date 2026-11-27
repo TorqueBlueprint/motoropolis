@@ -99,6 +99,8 @@
       if (S.inside && R.mode() !== 'in') { R.enterIn(S.inside); st.textContent = 'Loading the inside…'; for (let q = 0; q < 150; q++) { H2.step(1 / 30); R.frame(1 / 30); await new Promise(z => setTimeout(z, 30)) } }
       if (!S.inside && R.mode() === 'in') { R.exitIn(); for (let q = 0; q < 40; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
       if (S.drag && window.__DRAG) { window.__DRAG.seek(S.drag.heat ?? 'f', S.drag.t || 0); R.frame(1 / FPS) }
+      // "telemetry": true | "full" | "mini" shows the Drag Strip telemetry HUD for this shot (off otherwise)
+      if (window.__DRAG && window.__DRAG.hud) window.__DRAG.hud(S.telemetry ? (S.telemetry === 'mini' ? 'mini' : 'full') : false);
       if (S.xms) { for (let q = 0; q < 3; q++) { H2.step(1 / FPS); camAt(S, 0, sst) } }
       if (S.follow && S.follow.mayor) { if (window.__MAYOR) { if (S.follow.at != null) window.__MAYOR.seek(S.follow.at); sst.id = 0 } }
       else if (S.follow && S.follow.ped) { for (let k = 0; k < 40 && sst.id == null; k++) { const c = window.__PEDH && window.__PEDH.pick(S.follow.ped, usedP); if (c != null) { sst.id = c; usedP.push(c) } else H2.step(2) } }
@@ -110,7 +112,7 @@
         if (F % 6 === 0) { bar.style.width = (100 * F / total).toFixed(1) + '%'; st.textContent = (record ? 'Recording… ' : 'Preview… ') + Math.round(100 * F / total) + '%' }
       }
     }
-    bar.style.width = '100%';
+    bar.style.width = '100%'; if (window.__DRAG && window.__DRAG.hud) window.__DRAG.hud(null);
     if (enc) {
       st.textContent = 'Saving video…'; await enc.flush(); enc.close();
       let blob = null; try { if (encErr) throw encErr; blob = mux.finish() } catch (e) { st.innerHTML = '<span class="bad">Recording failed: ' + e.message + '. Tell Claude.</span>'; window.__MANUAL = false; $('rGo').disabled = $('rPv').disabled = false; return }

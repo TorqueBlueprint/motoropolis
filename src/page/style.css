@@ -459,3 +459,6 @@ html[data-rec="1"] .gt-tour{display:none!important}
 /* GO TO launch gate (ui/goto.js GOTO_AT): before launch the menu buttons are hidden and the phone nav keeps 4 items */
 html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto{display:none!important}
 @media (max-width:700px){html[data-goto="0"] .bnav{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* Drag Strip telemetry HUD (world/drag_hud.js): the collapse button on the 3D view */
+.dg-telbtn{position:absolute;z-index:3;font:800 11px 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:.04em;padding:3px 9px;border-radius:9px;border:1px solid rgba(255,122,26,.7);background:rgba(7,13,23,.86);color:#ffd34d;cursor:pointer;line-height:1.3}
+.dg-telbtn:hover{background:rgba(20,30,46,.95)}.dg-telbtn:focus-visible{outline:2px solid #46c8ff;outline-offset:2px}

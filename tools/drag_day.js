@@ -5,6 +5,7 @@
  *   node tools/drag_day.js 2026-11-26      # another day
  *   node tools/drag_day.js --cars          # every car model's quarter mile (stock, launch and topspeed tunes)
  *   node tools/drag_day.js --json DATE     # the day as JSON (for the comment job: settle predictions on the final)
+ *   node tools/drag_day.js --race A B [DATE] [--seed S]   # a one-off heads-up race (A, B = a Wall name or a car model id)
  *
  * The comment job (update_state.py) can call this to settle bets once predictions and tunes exist (next step).
  */
@@ -29,6 +30,14 @@ if (args.includes('--cars')) {
   rows.sort((a, b) => a[1].stock.et - b[1].stock.et);
   for (const [m, r] of rows) {const s = r.stock;
     console.log(`${m.n.padEnd(42)} 60ft ${s.t60.toFixed(2)}  1/8 ${s.t8.toFixed(2)} @ ${(s.v8 * 2.236936).toFixed(0)} mph  1/4 ${F.et(s.et).padStart(8)} @ ${F.spd(s.vt).padEnd(26)} | launch ${r.launch.et.toFixed(3)} @ ${(r.launch.vt * 3.6).toFixed(0)}  topspeed ${r.topspeed.et.toFixed(3)} @ ${(r.topspeed.vt * 3.6).toFixed(0)} km/h`)}
+  process.exit(0);
+}
+if (args.includes('--race')) {
+  const i = args.indexOf('--race'), car = a => mods.some(m => m.glb === a) ? {glb: a} : a, si = args.indexOf('--seed');
+  const h = D.heads(car(args[i + 1]), car(args[i + 2]), {date, seed: si >= 0 ? args[si + 1] : ''});
+  if (!h) {console.error('usage: --race A B'); process.exit(1)}
+  for (const l of h.lanes) console.log(`${F.who(l.e).padEnd(20)} ${l.e.model.padEnd(40)} RT ${l.rt.toFixed(3)}${l.red ? ' RED' : ''}  60ft ${l.t60.toFixed(3)}  1/8 ${l.t8.toFixed(3)} @ ${F.spd(l.v8)}  ET ${F.et(l.et)} @ ${F.spd(l.vt)}`);
+  console.log(`-> ${F.who(h.lanes[h.win].e)} wins${h.margin != null ? ' by ' + h.margin.toFixed(3) + ' s' : ' (red light)'}`);
   process.exit(0);
 }
 const t0 = Date.now(), d = D.day(date), t1 = Date.now(), wk = D.week(date), t2 = Date.now();

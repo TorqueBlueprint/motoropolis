@@ -4,7 +4,7 @@
   if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);cur.labels()}
   else{placeCam();syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);if(XMAS)XMS.sync(dt);applyNight(false);mergeTick(dt);if(CITY2){if(typeof C2W!=='undefined')C2W.sync(dt);if(typeof conTick!=='undefined')conTick(simTime)}placeCam();lodEnd();fitShadow();RENDER(scene);
-  hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);drawLabels();if(XMAS)XMS.labels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
+  hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);drawLabels();if(XMAS)XMS.labels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}if(WORLD&&W3.dragHudDraw)W3.dragHudDraw()}
   if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,HUDW,HUDH)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
  syncBuildings();if(X)decorateRoofs(scene);

@@ -1,5 +1,5 @@
 {
- "title": "Short · Drag Strip: today's final (\"drag\": 1 opens the strip before 1,000 subscribers)",
+ "title": "Short · Drag Strip: today's final (\"drag\": 1 opens the strip before 1,000 subscribers; \"telemetry\": true shows the HUD in a shot)",
  "light": "dia",
  "warmup": 120,
  "drag": 1,
@@ -8,8 +8,8 @@
    "txt": [{"t0": 0.05, "y": 330, "lines": [["MOTOROPOLIS DRAG STRIP", 92, "#ff7a1a"], ["1/4 MILE · 402 M", 64, "#ffffff"]]}]},
   {"name": "burnout", "dur": 2.5, "drag": {"heat": "f", "t": 3.0}, "dragCam": {"from": "burnout", "fromOv": {"yaw": -0.8}, "to": "burnout", "toOv": {"yaw": -0.4, "dist": 20}},
    "txt": [{"t0": 0.05, "y": 330, "lines": [["TODAY'S FINAL", 96, "#ffd34d"]]}]},
-  {"name": "tree", "dur": 2.6, "drag": {"heat": "f", "t": 7.4}, "dragCam": "tree"},
-  {"name": "run", "dur": 9.0, "drag": {"heat": "f", "t": 10.0}, "follow": {"drag": true, "lane": 0, "phi": -2.0, "pitch": 0.28, "dist": 16}},
+  {"name": "tree", "dur": 2.6, "drag": {"heat": "f", "t": 7.4}, "dragCam": "tree", "telemetry": "mini"},
+  {"name": "run", "dur": 9.0, "drag": {"heat": "f", "t": 10.0}, "follow": {"drag": true, "lane": 0, "phi": -2.0, "pitch": 0.28, "dist": 16}, "telemetry": true},
   {"name": "board", "dur": 4.0, "drag": {"heat": "f", "t": 29.0}, "dragCam": "board",
    "txt": [{"t0": 0.3, "y": 1500, "small": "EVERY SUBSCRIBER'S CAR RACES DAILY"}]}
  ]
