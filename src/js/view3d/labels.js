@@ -33,4 +33,6 @@
     {const Ln=LOT.news,sp=LP(Ln.b,(Ln.cx+3)*10,(Ln.cz-2)*10,10.6);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+5))*sp.k;pill('STEP INSIDE MOTOROPOLIS DAILY ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#2e7d4f');hctx.globalAlpha=1}}
     // City Hall (world/city2_landmarks.js): the Mayor's office (interiors/mayor_office.js), same distance rules as the boards above
     if(WORLD&&W3.hallLbl&&zk>0){const q=W3.hallLbl,k=zk*clamp((140-Math.hypot(q.x-cam.tx,q.z-cam.tz))/40,0,1),sp=k>0&&toHud(q.x,q.y,q.z);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+7))*k;pill('STEP INSIDE CITY HALL ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#f2c14e');hctx.globalAlpha=1}}}
+    // the Hospital (interiors/hospital.js): only when open (or ?hosp=1), same distance rules as the boards above
+    if(WORLD&&W3.hospLbl&&zk>0&&hospOpen()){const q=W3.hospLbl,k=zk*clamp((140-Math.hypot(q.x-cam.tx,q.z-cam.tz))/40,0,1),sp=k>0&&toHud(q.x,q.y,q.z);if(sp){hctx.globalAlpha=(.82+.18*Math.sin(simTime*3+8))*k;pill('STEP INSIDE THE HOSPITAL ▶',sp.x,sp.y,clamp(2300/cam.dist,13,22),'#22252b','#ffffff','#d93a2f');hctx.globalAlpha=1}}}
  }

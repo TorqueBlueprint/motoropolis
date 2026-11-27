@@ -81,6 +81,7 @@ world/drag3d.js
 world/mayor.js
 interiors/mayor_office.js
 world/world3d_end.js
+interiors/hospital.js
 world/treeify.js
 view3d/resize.js
 xmas/city.js
