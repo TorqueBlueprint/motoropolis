@@ -78,6 +78,7 @@ world/city2_terrain.js
 world/city2_landmarks.js
 world/drag3d.js
 world/world3d_end.js
+interiors/hospital.js
 world/treeify.js
 view3d/resize.js
 xmas/city.js
