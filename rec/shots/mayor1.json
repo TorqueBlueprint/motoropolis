@@ -1,0 +1,266 @@
+{
+ "title": "Short \u00b7 Mayor TorqueBlueprint debut",
+ "light": "dia",
+ "warmup": 60,
+ "hide": [
+  "Hunter-is-gay-af"
+ ],
+ "shots": [
+  {
+   "name": "mayor_hi",
+   "plan": 3.4,
+   "follow": {
+    "mayor": true,
+    "at": 3.0,
+    "phi": 0,
+    "pitch": 0.22,
+    "dist": 9,
+    "sweep": 0.3
+   },
+   "dur": 4.9,
+   "txt": []
+  },
+  {
+   "name": "overview",
+   "plan": 2.0,
+   "cam": {
+    "from": {
+     "tx": 205,
+     "tz": 70,
+     "yaw": 0.5,
+     "pitch": 0.85,
+     "dist": 760,
+     "fov": 50
+    },
+    "to": {
+     "tx": 200,
+     "tz": 70,
+     "yaw": 0.3,
+     "pitch": 0.75,
+     "dist": 560,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 3.5,
+   "txt": []
+  },
+  {
+   "name": "names",
+   "plan": 4.6,
+   "cam": {
+    "from": {
+     "tx": 140,
+     "tz": 70,
+     "yaw": 0.7,
+     "pitch": 0.5,
+     "dist": 90,
+     "fov": 50
+    },
+    "to": {
+     "tx": 130,
+     "tz": 75,
+     "yaw": 0.4,
+     "pitch": 0.42,
+     "dist": 60,
+     "fov": 50
+    },
+    "ease": false
+   },
+   "dur": 6.1,
+   "txt": []
+  },
+  {
+   "name": "wall",
+   "plan": 2.6,
+   "inside": "oficina",
+   "cam": {
+    "from": {
+     "tx": 0,
+     "tz": -4,
+     "yaw": 0.2,
+     "pitch": 0.34,
+     "dist": 46,
+     "fov": 50
+    },
+    "to": {
+     "tx": 0,
+     "tz": -6,
+     "yaw": 0,
+     "pitch": 0.22,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.1,
+   "txt": []
+  },
+  {
+   "name": "car",
+   "plan": 3.0,
+   "follow": {
+    "phi": 0.8,
+    "pitch": 0.3,
+    "dist": 16,
+    "sweep": -0.4
+   },
+   "dur": 4.5,
+   "txt": []
+  },
+  {
+   "name": "grow",
+   "plan": 2.8,
+   "cam": {
+    "from": {
+     "tx": 180,
+     "tz": 60,
+     "yaw": 2.6,
+     "pitch": 0.32,
+     "dist": 620,
+     "fov": 50
+    },
+    "to": {
+     "tx": 180,
+     "tz": 60,
+     "yaw": 2.9,
+     "pitch": 0.36,
+     "dist": 520,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.3,
+   "txt": []
+  },
+  {
+   "name": "milestone",
+   "plan": 3.0,
+   "cam": {
+    "from": {
+     "tx": 156,
+     "tz": 367,
+     "yaw": 0.4,
+     "pitch": 0.6,
+     "dist": 110,
+     "fov": 50
+    },
+    "to": {
+     "tx": 156,
+     "tz": 367,
+     "yaw": 0.2,
+     "pitch": 0.55,
+     "dist": 80,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.5,
+   "txt": []
+  },
+  {
+   "name": "fire",
+   "plan": 3.4,
+   "inside": "fire",
+   "cam": {
+    "from": {
+     "tx": 0,
+     "tz": -1.5,
+     "yaw": 0.22,
+     "pitch": 0.36,
+     "dist": 42,
+     "fov": 50
+    },
+    "to": {
+     "tx": -2,
+     "tz": -1,
+     "yaw": 0,
+     "pitch": 0.3,
+     "dist": 30,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.9,
+   "txt": []
+  },
+  {
+   "name": "stand",
+   "plan": 2.0,
+   "cam": {
+    "from": {
+     "tx": 386,
+     "tz": 155,
+     "yaw": 0.5,
+     "pitch": 0.55,
+     "dist": 90,
+     "fov": 50
+    },
+    "to": {
+     "tx": 386,
+     "tz": 155,
+     "yaw": 0.3,
+     "pitch": 0.5,
+     "dist": 65,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 3.5,
+   "txt": []
+  },
+  {
+   "name": "office",
+   "plan": 3.0,
+   "inside": "mayor",
+   "cam": {
+    "from": {
+     "tx": 0,
+     "tz": -3,
+     "yaw": 0,
+     "pitch": 0.3,
+     "dist": 36,
+     "fov": 50
+    },
+    "to": {
+     "tx": 2,
+     "tz": -4,
+     "yaw": 0.15,
+     "pitch": 0.25,
+     "dist": 26,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.5,
+   "txt": []
+  },
+  {
+   "name": "end",
+   "end": true,
+   "night": false,
+   "cam": {
+    "from": {
+     "tx": 205,
+     "tz": 70,
+     "yaw": 2.9,
+     "pitch": 1.0,
+     "dist": 420,
+     "fov": 50
+    },
+    "to": {
+     "tx": 205,
+     "tz": 70,
+     "yaw": 2.5,
+     "pitch": 1.0,
+     "dist": 420,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "plan": 5.6,
+   "dur": 6.0,
+   "txt": []
+  }
+ ]
+}

@@ -1,0 +1,260 @@
+{
+ "title": "Short \u00b7 Every subscriber gets a home + the Hospital (open with &hosp=1)",
+ "light": "dia",
+ "warmup": 60,
+ "hide": [
+  "Hunter-is-gay-af"
+ ],
+ "shots": [
+  {
+   "name": "mayor_news",
+   "plan": 2.8,
+   "follow": {
+    "mayor": true,
+    "at": 17.5,
+    "phi": -0.6,
+    "pitch": 0.24,
+    "dist": 10,
+    "sweep": -0.3
+   },
+   "dur": 4.3,
+   "txt": []
+  },
+  {
+   "name": "riverside",
+   "plan": 4.2,
+   "cam": {
+    "from": {
+     "tx": -80,
+     "tz": -445,
+     "yaw": 0.6,
+     "pitch": 0.55,
+     "dist": 200,
+     "fov": 50
+    },
+    "to": {
+     "tx": -80,
+     "tz": -445,
+     "yaw": 0.3,
+     "pitch": 0.45,
+     "dist": 125,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 5.7,
+   "txt": []
+  },
+  {
+   "name": "living",
+   "plan": 2.0,
+   "inside": "home",
+   "pre": "window.__HOME.want('Colin Theo')",
+   "cam": {
+    "from": {
+     "tx": -6,
+     "tz": -1,
+     "yaw": 0.25,
+     "pitch": 0.38,
+     "dist": 28,
+     "fov": 50
+    },
+    "to": {
+     "tx": -8,
+     "tz": -2,
+     "yaw": 0.05,
+     "pitch": 0.32,
+     "dist": 22,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 3.5,
+   "txt": []
+  },
+  {
+   "name": "garage",
+   "plan": 2.2,
+   "inside": "home",
+   "cam": {
+    "from": {
+     "tx": 12,
+     "tz": -1,
+     "yaw": -0.1,
+     "pitch": 0.38,
+     "dist": 26,
+     "fov": 50
+    },
+    "to": {
+     "tx": 13,
+     "tz": -2,
+     "yaw": -0.3,
+     "pitch": 0.3,
+     "dist": 20,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 3.7,
+   "txt": []
+  },
+  {
+   "name": "home2",
+   "plan": 3.8,
+   "inside": "home",
+   "reenter": true,
+   "pre": "window.__HOME.want('Carz163')",
+   "cam": {
+    "from": {
+     "tx": 1,
+     "tz": -1,
+     "yaw": 0.1,
+     "pitch": 0.4,
+     "dist": 44,
+     "fov": 50
+    },
+    "to": {
+     "tx": 1,
+     "tz": -2,
+     "yaw": -0.1,
+     "pitch": 0.36,
+     "dist": 36,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 5.3,
+   "txt": []
+  },
+  {
+   "name": "hosp_ext",
+   "plan": 2.8,
+   "cam": {
+    "from": {
+     "tx": 428,
+     "tz": 169,
+     "yaw": 0.6,
+     "pitch": 0.5,
+     "dist": 110,
+     "fov": 50
+    },
+    "to": {
+     "tx": 428,
+     "tz": 169,
+     "yaw": 0.3,
+     "pitch": 0.45,
+     "dist": 80,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.3,
+   "txt": []
+  },
+  {
+   "name": "hosp_in",
+   "plan": 2.8,
+   "inside": "hosp",
+   "cam": {
+    "from": {
+     "tx": 0,
+     "tz": -3,
+     "yaw": 0.12,
+     "pitch": 0.4,
+     "dist": 40,
+     "fov": 50
+    },
+    "to": {
+     "tx": -6,
+     "tz": -3,
+     "yaw": 0.3,
+     "pitch": 0.35,
+     "dist": 28,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.3,
+   "txt": []
+  },
+  {
+   "name": "ward",
+   "plan": 2.8,
+   "inside": "hosp",
+   "cam": {
+    "from": {
+     "tx": 10,
+     "tz": -5,
+     "yaw": -0.2,
+     "pitch": 0.38,
+     "dist": 26,
+     "fov": 50
+    },
+    "to": {
+     "tx": 12,
+     "tz": -6,
+     "yaw": -0.35,
+     "pitch": 0.3,
+     "dist": 18,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 4.3,
+   "txt": []
+  },
+  {
+   "name": "opens200",
+   "plan": 2.4,
+   "inside": "hosp",
+   "cam": {
+    "from": {
+     "tx": 0,
+     "tz": -3,
+     "yaw": 0.12,
+     "pitch": 0.5,
+     "dist": 44,
+     "fov": 50
+    },
+    "to": {
+     "tx": 0,
+     "tz": -3,
+     "yaw": -0.05,
+     "pitch": 0.45,
+     "dist": 40,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "dur": 3.9,
+   "txt": []
+  },
+  {
+   "name": "end",
+   "end": true,
+   "night": false,
+   "cam": {
+    "from": {
+     "tx": 205,
+     "tz": 70,
+     "yaw": 2.9,
+     "pitch": 1.0,
+     "dist": 420,
+     "fov": 50
+    },
+    "to": {
+     "tx": 205,
+     "tz": 70,
+     "yaw": 2.5,
+     "pitch": 1.0,
+     "dist": 420,
+     "fov": 50
+    },
+    "ease": true
+   },
+   "plan": 5.6,
+   "dur": 6.0,
+   "txt": []
+  }
+ ]
+}

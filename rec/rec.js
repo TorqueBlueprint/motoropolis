@@ -93,7 +93,7 @@
       rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 40e6 }); rec.ondataavailable = e => e.data.size && chunks.push(e.data); rec.start(1000)
     }
     const used = [], usedP = []; const t0 = performance.now();
-    for (const S of SH.shots) {
+    for (const S of SH.shots) { if (S.pre) { try { (0, eval)(S.pre) } catch (e) { console.error('pre', e) } } if (S.reenter && R.mode() === 'in') { R.exitIn(); for (let q = 0; q < 30; q++) { H2.step(1 / 30); R.frame(1 / 30) } }
       const n = Math.round(S.dur * FPS), sst = {};
       if (S.night != null) H2.light(S.night ? 'noite' : (SH.light || 'dia'));
       if (S.inside && R.mode() !== 'in') { R.enterIn(S.inside); st.textContent = 'Loading the inside…'; for (let q = 0; q < 150; q++) { H2.step(1 / 30); R.frame(1 / 30); await new Promise(z => setTimeout(z, 30)) } }

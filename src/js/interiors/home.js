@@ -299,7 +299,7 @@
      if(HM.greet>.2){const p=toHud(m.position.x,4.2,m.position.z);if(p){hctx.globalAlpha=Math.min(1,HM.greet*1.5);pill('HI! WELCOME TO MY PLACE!',p.x,p.y-sz*2.4,sz,'#ffffff','#1f3a6e','#1f3a6e');hctx.globalAlpha=1}}}
     if(HM.car&&HM.cm)tag(HM.car.position.x,4.2,HM.car.position.z,HM.cm.n.toUpperCase(),'rgba(16,19,24,.85)','#ffb36b');
     const a=HM.a;if(MS.w_res)lockedNote('w_res');header(!n?'INSIDE RIVERSIDE HEIGHTS':a&&a.kind==='flat'?`INSIDE ${blockName(a)} · ${flatName(a)} · ${hshort(n,18).toUpperCase()}`:`INSIDE RIVERSIDE HEIGHTS · HOME OF ${hshort(n,18).toUpperCase()}`)}
-   if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__HOME={by:()=>homeAssign().by,want:n=>{HM.want=n},who:()=>HM.who,params:n=>homeParams(n),p:()=>HM.p&&{x:HM.p.position.x,z:HM.p.position.z},
+   if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)||document.documentElement.dataset.rec==='1')window.__HOME={by:()=>homeAssign().by,want:n=>{HM.want=n},who:()=>HM.who,params:n=>homeParams(n),p:()=>HM.p&&{x:HM.p.position.x,z:HM.p.position.z},
     pt:n=>{const a=homeAssign().by[n];if(!a)return null;if(a.kind==='flat')return flatPt(a);const[x,z]=S2[a.k];houseM4(a.k);return{x,y:HY[a.k]+6.2,z}},hit:(x,y)=>{const r=new T.Raycaster();r.setFromCamera(new T.Vector2(x,y),camera);return W3.homeHit(r.ray)?HM.want:null}};
    INTS.home={get scene(){return HM.S},build:buildHome,isBuilt:()=>HM.built&&HM.who===wantName(),sync:syncHome,labels:labelsHome,get home(){return HM.home},onEnter(){HM.t0=HM.clk}};
   }
