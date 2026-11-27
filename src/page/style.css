@@ -370,3 +370,6 @@ html[data-rec="1"] .bnav{display:none!important}
 .dg-me{display:flex;flex-direction:column;gap:8px}
 .fd-tx small.fd-dg{color:#ffd34d}
 html[data-rec="1"] .dg{display:none!important}
+/* Find my name: the home address and "Go to my home" (interiors/home.js) */
+.fd-tx small.fd-hm{color:#9fd8b5}
+.fd-list li{flex-wrap:wrap}

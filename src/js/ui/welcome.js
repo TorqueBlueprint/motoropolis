@@ -25,6 +25,9 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
    const tx=document.createElement('span');tx.className='fd-tx';const b=document.createElement('b');b.textContent=n;const sm=document.createElement('small');
    sm.textContent=(job?job:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);{const db=UIX.dragBest&&UIX.dragBest(n);if(db){const d=document.createElement('small');d.className='fd-dg';d.textContent=db;tx.append(d)}}li.append(av,tx);
    if(w&&R3){const go=document.createElement('button');go.type='button';go.className='fd-go';go.textContent='Fly to me';go.addEventListener('click',()=>flyTo(n));li.append(go)}
+   // their home (interiors/home.js): the address and "Go to my home"
+   {const hm=UIX.homeOf&&UIX.homeOf(n);if(hm){const d=document.createElement('small');d.className='fd-hm';d.textContent='Home: '+hm.label;tx.append(d);if(R3){const gh=document.createElement('button');gh.type='button';gh.className='fd-go';gh.textContent='Go to my home';
+    gh.addEventListener('click',()=>{if(!view3d)setView(true,true);follow=null;hm.go();if(matchMedia('(max-width: 700px)').matches)fd.hidden=true});li.append(gh)}}}
    flist.append(li)}}
  function flyTo(n){const w=where(n);if(!w||!R3)return;if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
   if(matchMedia('(max-width: 700px)').matches)fd.hidden=true}
