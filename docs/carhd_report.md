@@ -11,16 +11,16 @@ car_glb.json (paint, fix, Car_Main for cell paint) present.
 | challenger | Dodge Challenger (2020) | 63,915 / 512 px / 1.65 MB | 39,927 / 512 px / 0.72 MB | OK (0.00%) | = original | = |
 | huracan | Lamborghini Huracán | 39,066 / 512 px / 0.71 MB | 39,066 / 512 px / 0.71 MB | OK (0.14%) | 244,916 / 2048 px / 4.49 MB | OK (0.08%) |
 | mach1 | Ford Mustang Mach 1 | 39,389 / 512 px / 1.27 MB | 39,389 / 512 px / 1.27 MB | OK (0.02%) | 243,900 / 1024 px / 6.08 MB | OK (0.01%) |
-| rearturbo | Porsche 911 GT2 (997.1) | 49,729 / 512 px / 1.20 MB | 39,377 / 512 px / 0.83 MB | OK (0.00%) | = original | = |
+| rearturbo | Porsche 911 GT2 RS (996) | 39,489 / 256 px / 2.00 MB | 39,489 / 256 px / 2.00 MB | OK (0.62%) | 129,156 / 1024 px / 5.30 MB | OK (0.62%) |
 | rwd24 | Subaru BRZ (ZD8) | 36,121 / 512 px / 0.77 MB | 36,121 / 512 px / 0.77 MB | OK (0.23%) | 268,112 / 1024 px / 5.36 MB | OK (0.05%) |
 | svj | Lamborghini Aventador SVJ | 38,613 / 512 px / 0.54 MB | 38,613 / 512 px / 0.54 MB | OK (0.12%) | 247,620 / 2048 px / 3.31 MB | OK (0.14%) |
 | urus | Lamborghini Urus | 33,508 / 512 px / 0.93 MB | 33,508 / 512 px / 0.93 MB | OK (0.12%) | 248,473 / 1024 px / 5.56 MB | OK (0.05%) |
 | etype | Jaguar E-Type | 33,617 / - px / 0.69 MB | 33,617 / - px / 0.69 MB | FAIL (2.72%) | 125,497 / - px / 2.89 MB | FAIL (2.73%) |
 | f40 | Ferrari F40 | 38,317 / - px / 0.55 MB | 38,317 / - px / 0.55 MB | OK (0.10%) | 243,604 / - px / 3.13 MB | OK (0.10%) |
-| amgone | Mercedes-AMG One | 28,315 / 1024 px / 1.15 MB | 28,315 / 512 px / 0.81 MB | OK (0.00%) | = original | = |
+| amgone | Mercedes-AMG One | 38,908 / 256 px / 1.48 MB | 38,908 / 256 px / 1.48 MB | FAIL (1.74%) | 218,865 / 1024 px / 6.12 MB | FAIL (1.74%) |
 | miata | Mazda MX-5 (NA) | 38,732 / 512 px / 0.56 MB | 38,732 / 512 px / 0.56 MB | OK (0.01%) | 51,316 / 1024 px / 0.75 MB | OK (0.01%) |
 | p1 | McLaren P1 | 38,590 / 512 px / 1.08 MB | 38,590 / 512 px / 1.08 MB | OK (0.21%) | 196,914 / 1024 px / 3.65 MB | OK (0.04%) |
-| sedan98 | BMW E46 | 18,447 / 1024 px / 0.73 MB | 18,447 / 512 px / 0.46 MB | OK (0.00%) | = original | = |
+| sedan98 | BMW M3 (E46) | 36,027 / 512 px / 0.56 MB | 36,027 / 512 px / 0.56 MB | FAIL (1.03%) | 245,505 / 2048 px / 3.73 MB | OK (0.94%) |
 | ae86 | Toyota AE86 Trueno | 38,926 / 512 px / 1.11 MB | 38,926 / 512 px / 1.11 MB | OK (0.08%) | 86,343 / 1024 px / 1.96 MB | OK (0.02%) |
 | viper | Dodge Viper RT/10 | 39,003 / 512 px / 1.04 MB | 39,003 / 512 px / 1.04 MB | OK (0.12%) | 232,800 / 512 px / 4.41 MB | OK (0.03%) |
 | venom | Hennessey Venom F5 | 38,941 / - px / 0.57 MB | 38,941 / - px / 0.57 MB | OK (0.04%) | 161,368 / - px / 2.27 MB | OK (0.04%) |
@@ -33,6 +33,9 @@ car_glb.json (paint, fix, Car_Main for cell paint) present.
 | v8sport | Chevrolet Corvette (C7) | 39,334 / 512 px / 0.94 MB | 39,334 / 512 px / 0.94 MB | FAIL (3.96%) | 242,717 / 2048 px / 5.13 MB | FAIL (3.96%) |
 | sportsaloon | Porsche Panamera Sport Turismo | 30,360 / 512 px / 0.90 MB | 30,360 / 512 px / 0.90 MB | OK (0.67%) | 30,360 / 1024 px / 1.13 MB | OK (0.67%) |
 | sport3 | BMW M3 (G80) | 38,144 / 512 px / 1.54 MB | 38,144 / 512 px / 1.54 MB | OK (0.68%) | 248,278 / 1024 px / 7.62 MB | OK (0.68%) |
+| gt12 | Ferrari 599 GTO | 38,565 / 256 px / 1.24 MB | 38,565 / 256 px / 1.24 MB | FAIL (1.53%) | 75,577 / 2048 px / 2.80 MB | FAIL (1.53%) |
+| coupe85 | BMW M3 (E30) | 38,483 / 256 px / 0.84 MB | 38,483 / 256 px / 0.84 MB | FAIL (1.58%) | 114,455 / 1024 px / 3.76 MB | FAIL (1.60%) |
+| saloon90 | Mercedes 190E Evo | 38,723 / 512 px / 0.76 MB | 38,723 / 512 px / 0.76 MB | FAIL (4.61%) | 177,032 / 2048 px / 2.91 MB | FAIL (4.61%) |
 
 Notes (HD v2): every replaced car comes from its original high-quality Sketchfab source (credits in src/page/app.html),
 processed by tools/carhd/ (prep.mjs: badges/plates removed, open doors closed, skins baked, BLEND windows named *_glass,
@@ -44,4 +47,6 @@ assets/cars/<id>.glb (fallback / pages without LOD) is now the same file as the 
 v8sport and sportsaloon keep car_glb.json "cell" paint: their body paint is the Car_Main material (white 64 px
 texture, every paint vertex mapped to the cell). Cars without "hd" (challenger, sedan98, rearturbo, amgone ...) had
 no better source. Known FAILs (proportions of the new model, not a bug): etype (new E-Type source is 10.7% taller
-than the old model at the same length), v8sport (the C7 is 20% wider / 5% lower than the old stylised placeholder).
+than the old model at the same length), v8sport (the C7 is 20% wider / 5% lower than the old stylised placeholder), amgone (+8% wide, +3% tall),
+gt12 (599 GTO +7% wide), coupe85 (M3 E30 box flares +8% wide), saloon90 (roof antenna +16% tall), sedan98 (M3 E46
+coupe 2-3% narrower/lower than the old saloon).

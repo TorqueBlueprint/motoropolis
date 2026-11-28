@@ -44,5 +44,7 @@ assets/cars/<id>.glb (fallback / pages without LOD) is now the same file as the 
 v8sport and sportsaloon keep car_glb.json "cell" paint: their body paint is the Car_Main material (white 64 px
 texture, every paint vertex mapped to the cell). Cars without "hd" (challenger, sedan98, rearturbo, amgone ...) had
 no better source. Known FAILs (proportions of the new model, not a bug): etype (new E-Type source is 10.7% taller
-than the old model at the same length), v8sport (the C7 is 20% wider / 5% lower than the old stylised placeholder).`;
+than the old model at the same length), v8sport (the C7 is 20% wider / 5% lower than the old stylised placeholder), amgone (+8% wide, +3% tall),
+gt12 (599 GTO +7% wide), coupe85 (M3 E30 box flares +8% wide), saloon90 (roof antenna +16% tall), sedan98 (M3 E46
+coupe 2-3% narrower/lower than the old saloon).`;
 fs.writeFileSync(path.join(ROOT,'docs/carhd_report.md'),md);console.log(md);process.exit(bad.length?1:0);

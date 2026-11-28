@@ -15,9 +15,9 @@
   "hd": "assets/cars/hd/mach1.glb"
  },
  "rearturbo": {
-  "name": "Porsche 911 GT2 (997.1)",
+  "name": "Porsche 911 GT2 RS (996)",
   "light": "assets/cars/lod/rearturbo.glb",
-  "hd": null
+  "hd": "assets/cars/hd/rearturbo.glb"
  },
  "rwd24": {
   "name": "Subaru BRZ (ZD8)",
@@ -47,7 +47,7 @@
  "amgone": {
   "name": "Mercedes-AMG One",
   "light": "assets/cars/lod/amgone.glb",
-  "hd": null
+  "hd": "assets/cars/hd/amgone.glb"
  },
  "miata": {
   "name": "Mazda MX-5 (NA)",
@@ -60,9 +60,9 @@
   "hd": "assets/cars/hd/p1.glb"
  },
  "sedan98": {
-  "name": "BMW E46",
+  "name": "BMW M3 (E46)",
   "light": "assets/cars/lod/sedan98.glb",
-  "hd": null
+  "hd": "assets/cars/hd/sedan98.glb"
  },
  "ae86": {
   "name": "Toyota AE86 Trueno",
@@ -123,5 +123,20 @@
   "name": "BMW M3 (G80)",
   "light": "assets/cars/lod/sport3.glb",
   "hd": "assets/cars/hd/sport3.glb"
+ },
+ "gt12": {
+  "name": "Ferrari 599 GTO",
+  "light": "assets/cars/lod/gt12.glb",
+  "hd": "assets/cars/hd/gt12.glb"
+ },
+ "coupe85": {
+  "name": "BMW M3 (E30)",
+  "light": "assets/cars/lod/coupe85.glb",
+  "hd": "assets/cars/hd/coupe85.glb"
+ },
+ "saloon90": {
+  "name": "Mercedes 190E Evo",
+  "light": "assets/cars/lod/saloon90.glb",
+  "hd": "assets/cars/hd/saloon90.glb"
  }
 }

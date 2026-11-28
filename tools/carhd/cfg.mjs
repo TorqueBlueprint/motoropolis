@@ -28,4 +28,12 @@ export const CFG={
  sport3:{src:U+'bmw_m3_g80_2025.glb',removeTree:'badge|logo',rename:{mat_237_41:'CarPaint'}},
  wrxsti:{src:'/home/claude/car_sources/z_a54f92de-2018_subaru_wrx_sti/x/scene.gltf',ref:'/home/claude/carhd_work/orig/rwd24.glb',removeMat:'Badge|ManufacturerPlate',removeTree:'Badge|ManufacturerPlate'},
  brz_zc6:{src:U+'a5272e4a-subaru_brz_zc6.glb',ref:'/home/claude/carhd_work/orig/rwd24.glb'},
+
+ amgone:{src:U+'9fda3155-mercedes_amg_one.glb',removeMat:'^Decalchassis'},
+ gt12:{src:U+'f1c17dbd-2010_ferrari_599_gto.glb',removeTree:'Badges_High|LicensePlate_High',cellPaint:{mat:'Fphong4SG1',cell:[8,0,8,8]}},
+ coupe85:{src:U+'e4f26dc0-free_bmw_m3_e30.glb',removeMat:'^(BMW_E30_M3_EMBLEMS|Logo_Plane)$',removeTree:'^Logo_Plane',rename:{BMW_E30_M3_PAINT:'Body'}},
+ sedan98:{src:U+'fc5f636f-bmw_m3_e46.glb'},
+ saloon90:{src:U+'01914019-mercedes_190e_evo_1982_3d_model_free.glb',removeMat:'^(emblem|badge|baddge2)$',removeTree:'emblem|badge',
+  rename:{Car_body_color:'Car_paint',material_43:'rims_color',Tyre:'rubber',rotor:'disc',caliper:'brake_color',head_light:'windshield',black:'blackplastic',Car_turn_light:'yellow_glow',Car_Windows_All_black:'white_glow',Car_backlight_glass_red:'red_glow'}},
+ rearturbo:{src:U+'382d4a41-porsche_911_gt2_rs_996.glb',removeMat:'Ref1Mtl$|^(Lp1Mtl|Vehreg1Mtl|Trunkbaypartalphalogo1Mtl)$|^Seatspartdecal',rename:{Paint1Mtl:'New_Material'}},
 };

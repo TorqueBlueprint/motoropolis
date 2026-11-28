@@ -6,7 +6,7 @@ await b.close();fs.writeFileSync('/tmp/sheet.json',JSON.stringify(cells));
 execFileSync('python3',['-c',`import json,sys
 from PIL import Image,ImageDraw,ImageFont
 C=json.load(open('/tmp/sheet.json'));F=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',20)
-W,H=640,400;n=len(C);cols=3;rows=(n+cols-1)//cols;o=Image.new('RGB',(W*cols,(H+34)*rows),(18,24,38));d=ImageDraw.Draw(o)
+W,H=640,400;n=len(C);cols=int(__import__('os').environ.get('COLS','3'));rows=(n+cols-1)//cols;o=Image.new('RGB',(W*cols,(H+34)*rows),(18,24,38));d=ImageDraw.Draw(o)
 for i,(l,f) in enumerate(C):
   x,y=(i%cols)*W,(i//cols)*(H+34);o.paste(Image.open(f),(x,y+34));d.text((x+8,y+6),l,font=F,fill=(255,255,255))
 o.save(sys.argv[1])`,out]);console.log(out);
