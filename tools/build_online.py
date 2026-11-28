@@ -42,7 +42,15 @@ s = sub(s, "A 3D city that grows with the TorqueBlueprint channel. Every car, ev
 s = sub(s, "Tip: comment <b>WORKSHOP</b> on any video to move in and get a job.", "Tip: the <b>Sign in with YouTube</b> button is at the top right.")
 banner = ('<div class="on-banner" role="note">Season 1 — everyone starts at $0'
           '<small>Motoropolis Online · early test</small></div>')
-s = sub(s, "<body>", "<body>" + banner)
+# no subscriber thresholds on the map or the 3D boards: a canvas text filter that runs before the city script
+nosubs = rd("nosubs.js")
+assert "</script" not in nosubs.lower()
+s = sub(s, "<body>", "<body>" + banner + "<script>" + nosubs + "</script>")
+# ... and none in the Go to panel ("Blueprint · N more subscribers to open") or the news ticker
+s = sub(s, "const more=n=>{const l=Math.max(0,n-(subs||0));return `${l.toLocaleString('en-US')} more subscriber${l===1?'':'s'} to open`};",
+        "const more=n=>'Coming soon';")
+s = sub(s, "news(`Coming soon: the ${nm.label} opens at ${nm.n.toLocaleString('en-US')} subscribers`,'city',",
+        "news(`Coming soon: the ${nm.label}`,'city',")
 s = sub(s, '<style id="css">', '<style id="online-css">' + rd("online.css") + '</style><style id="css">')
 js = rd("online.js")
 assert "</script" not in js.lower()

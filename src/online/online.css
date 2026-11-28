@@ -2,6 +2,11 @@
 /* no subscriber numbers on this page: hide the milestone progress, the next-unlock card and the counters */
 html[data-online] .hero .count,html[data-online] #heroNext,html[data-online] .hero .prog,html[data-online] #nuCard,html[data-online] #stSubs{display:none!important}
 html[data-online] .hero{position:relative}
+/* the milestones list (hero card and the Unlocks panel) without the subscriber numbers */
+html[data-online] .metas li{grid-template-columns:1fr auto}
+html[data-online] .metas .n{display:none}
+html[data-online] .metas li.next .chip{font-size:0}
+html[data-online] .metas li.next .chip::after{content:'Next';font-size:12px}
 html[data-online] .hero h1 .on-h1{display:inline-block;margin-left:.25em;font-size:.42em;vertical-align:.95em;padding:.18em .45em;border-radius:8px;background:#ffd34d;color:#13233f;text-shadow:none;letter-spacing:.06em}
 .on-banner{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 12px;background:linear-gradient(90deg,#ff7a1a,#e8322a);color:#fff;font:800 15px/1.25 var(--display,sans-serif);letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:9px 16px}
 .on-banner small{font:600 13px/1.25 var(--body,sans-serif);letter-spacing:0;text-transform:none;opacity:.95}

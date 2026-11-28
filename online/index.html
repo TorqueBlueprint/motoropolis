@@ -1,10 +1,44 @@
-<!doctype html><html data-online="1" data-xmas="1"><head><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"}}</script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><div class="on-banner" role="note">Season 1 — everyone starts at $0<small>Motoropolis Online · early test</small></div><title>Motoropolis Online · Season 1</title>
+<!doctype html><html data-online="1" data-xmas="1"><head><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"}}</script><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><div class="on-banner" role="note">Season 1 — everyone starts at $0<small>Motoropolis Online · early test</small></div><script>/* Motoropolis Online: no subscriber thresholds on this page. Injected by tools/build_online.py as the first <script>
+   in <body>, before the city script, so every canvas label (3D boards and pills, 2D map cards) is drawn without them:
+   "HARBOR · 3,000 SUBS" -> "HARBOR", "OPENS AT 650 SUBS" -> "COMING SOON", "12 subscribers to go" -> "". */
+(function () {
+  'use strict';
+  function strip(t) {
+    if (typeof t !== 'string' || !/\d/.test(t) || !/SUBS|subscriber/i.test(t)) return t;
+    var o = t;
+    o = o.replace(/^[\d,]+ MORE SUBSCRIBERS? TO OPEN$/, 'COMING SOON');
+    o = o.replace(/\s*·\s*(?:UNLOCKS |OPENS |STAR )?AT [\d,]+ SUBS\b/g, '');
+    o = o.replace(/\s*·\s*[\d,]+ SUBS\b/g, '');
+    o = o.replace(/^(.*?)\s*OPENS AT [\d,]+ SUBS$/, function (m, a) { return a ? a + ' · COMING SOON' : 'COMING SOON'; });
+    o = o.replace(/^[\d,]+ (?:more )?subscribers? to (?:go|open)$/i, '');
+    return o;
+  }
+  [window.CanvasRenderingContext2D, window.OffscreenCanvasRenderingContext2D].forEach(function (C) {
+    if (!C || !C.prototype) return;
+    ['fillText', 'strokeText', 'measureText'].forEach(function (k) {
+      var f = C.prototype[k];
+      if (typeof f !== 'function') return;
+      C.prototype[k] = function (t) {
+        var a = Array.prototype.slice.call(arguments);
+        a[0] = strip(t);
+        return f.apply(this, a);
+      };
+    });
+  });
+  window.__onlineStripSubs = strip;
+})();
+</script><title>Motoropolis Online · Season 1</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
 <style id="online-css">/* Motoropolis Online: account button, panel and Season banner. Injected by tools/build_online.py. */
 /* no subscriber numbers on this page: hide the milestone progress, the next-unlock card and the counters */
 html[data-online] .hero .count,html[data-online] #heroNext,html[data-online] .hero .prog,html[data-online] #nuCard,html[data-online] #stSubs{display:none!important}
 html[data-online] .hero{position:relative}
+/* the milestones list (hero card and the Unlocks panel) without the subscriber numbers */
+html[data-online] .metas li{grid-template-columns:1fr auto}
+html[data-online] .metas .n{display:none}
+html[data-online] .metas li.next .chip{font-size:0}
+html[data-online] .metas li.next .chip::after{content:'Next';font-size:12px}
 html[data-online] .hero h1 .on-h1{display:inline-block;margin-left:.25em;font-size:.42em;vertical-align:.95em;padding:.18em .45em;border-radius:8px;background:#ffd34d;color:#13233f;text-shadow:none;letter-spacing:.06em}
 .on-banner{position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 12px;background:linear-gradient(90deg,#ff7a1a,#e8322a);color:#fff;font:800 15px/1.25 var(--display,sans-serif);letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:9px 16px}
 .on-banner small{font:600 13px/1.25 var(--body,sans-serif);letter-spacing:0;text-transform:none;opacity:.95}
@@ -2307,7 +2341,7 @@ function newsBreakdown(c,f){const n=who(c),fault=f.n.toLowerCase();
 function newsSeed(){
  if(XMAS)news(xmasLine().replace(/^\S+ /,'').replace(/^./,c=>c)+' in Motoropolis','city','The Christmas market is open in Motoropolis Park, the city tree grows with every subscriber and Santa has been spotted over the city. Comment WORKSHOP ELF or WORKSHOP VENDOR to work at the market.');
  news('First edition: Motoropolis gets its own newspaper','city','Everything that happens in the city now makes the news, from breakdowns to new jobs. Pick up your copy at the kiosk in front of the Motoropolis Daily building, in the new district next to Motoropolis Park.');
- const nm=nextMilestone();if(nm)news(`Coming soon: the ${nm.label} opens at ${nm.n.toLocaleString('en-US')} subscribers`,'city','Every new subscriber brings the next building closer.');
+ const nm=nextMilestone();if(nm)news(`Coming soon: the ${nm.label}`,'city','Every new subscriber brings the next building closer.');
  const open=Object.keys(JOBS).length,slots=JOB_SLOTS();if(slots>open)news(`Help wanted: ${slots-open} job${slots-open>1?'s':''} open in Motoropolis`,'jobs','Comment WORKSHOP on any TorqueBlueprint video and you get a job in the city.');
  WALL.slice(-3).forEach(n=>{const j=jobOf(n);news(j?`Welcome, ${n}! The city's newest ${j}`:`Welcome, ${n}! Now looking for a job`,'people',j?`${n} joined Motoropolis from the comments and starts work today.`:'')})}
 function newsSummary(){const s=stats;const opts=[];
@@ -7950,7 +7984,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  const btn=(cls,txt,fn,label)=>{const b=el('button',cls,txt);b.type='button';if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b};
  const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const hid=n=>!!(window.__HIDE&&n&&window.__HIDE.some(h=>String(n).includes(h)));// recordings can hide names (view3d/labels.js pill())
- const more=n=>{const l=Math.max(0,n-(subs||0));return `${l.toLocaleString('en-US')} more subscriber${l===1?'':'s'} to open`};
+ const more=n=>'Coming soon';
  const initials=n=>String(n).replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'?';
  const HOSP_PV=WORLD&&/[?&]hosp=1\b/.test(location.search);// same switch as interiors/hospital.js
  const MAYOR_ON=CITY2&&!!(CITY.F&&CITY.F.cityhall&&CITY.F.oldtown)&&!/[?&]mayor=0\b/.test(location.search);// same as interiors/mayor_office.js
