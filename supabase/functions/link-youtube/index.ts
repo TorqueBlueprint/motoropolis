@@ -5,6 +5,8 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const ALLOWED = [
+  "https://torqueblueprint.com",
+  "https://www.torqueblueprint.com",
   "https://torqueblueprint.github.io",
   "https://raw.githack.com",
   "https://rawcdn.githack.com",
