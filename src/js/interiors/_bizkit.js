@@ -32,6 +32,8 @@
  const OFC=(()=>{
   const pix=new Map();
   function texData(t){if(!t||!t.image)return null;const id=t.uuid;if(pix.has(id))return pix.get(id);let d=null;try{const im=t.image,w=im.width||im.videoWidth,h=im.height||im.videoHeight;if(w&&h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0);d={w,h,a:x.getImageData(0,0,w,h).data,flip:t.flipY}}}catch(e){d=null}pix.set(id,d);return d}
+  // the texel of texture data td (from texData) at vertex k's uv, as a linear colour in out
+  function texel(td,UV,k,out){let u=UV.getX(k),w=UV.getY(k);u=u-Math.floor(u);w=w-Math.floor(w);const px=Math.min(td.w-1,Math.floor(u*td.w)),py=Math.min(td.h-1,Math.floor((td.flip?1-w:w)*td.h)),ii=(py*td.w+px)*4;return out.setRGB(td.a[ii]/255,td.a[ii+1]/255,td.a[ii+2]/255,T.SRGBColorSpace)}
   const glbReady=m=>!!(X&&X.cars&&m&&m.glb&&X.cars[m.glb]&&!X.cars[m.glb].lazyCar);
   function build(j){const spec={kind:'car',len:j.m.len,wid:j.m.wid,color:j.color,m:j.m};const root=carMesh(spec);if(!glbReady(j.m))return{g:root,wh:null,hub:null,lazy:!!(X&&X.cars&&j.m.glb)};
    try{const r=split(root);if(r)return r}catch(e){console.warn('lift car',e)}return{g:root,wh:null,hub:null,lazy:false}}
@@ -45,10 +47,12 @@
    const B={p:[],n:[],c:[]},G={p:[],n:[],c:[]},Wh={p:[],n:[],c:[]},nm=new T.Matrix3(),c=new T.Color(),tc=new T.Color(),e=new T.Color(),vA=[new T.Vector3(),new T.Vector3(),new T.Vector3()],nA=[new T.Vector3(),new T.Vector3(),new T.Vector3()],cA=[new T.Color(),new T.Color(),new T.Color()];
    ms.forEach((o,i)=>{const g=o.geometry,P=g.attributes.position,N=g.attributes.normal,UV=g.attributes.uv,CO=g.attributes.color,I=g.index,mt=o.material;nm.getNormalMatrix(mats[i]);
     const glass=(mt.transparent&&mt.opacity<.98)||/glass|window/i.test(mt.name||''),td=mt.map?texData(mt.map):null;c.copy(mt.color||tc.set(0xffffff));e.copy(mt.emissive||tc.set(0)).multiplyScalar(Math.min(1,(mt.emissiveIntensity||0)*.5));
+    // the emissive colour is masked by its emissive map (a glTF with lights in an emission palette has emissive = white): sample the map, never add the bare colour
+    const hasE=e.r+e.g+e.b>0,ed=hasE&&mt.emissiveMap?texData(mt.emissiveMap):null,eOn=hasE&&(!mt.emissiveMap||(ed&&UV));
     const n=I?I.count:P.count;for(let t=0;t<n;t+=3){let cxs=0,cys=0,czs=0;for(let q=0;q<3;q++){const k=I?I.getX(t+q):t+q;vA[q].fromBufferAttribute(P,k).applyMatrix4(mats[i]);cxs+=vA[q].x;cys+=vA[q].y;czs+=vA[q].z;
       if(N)nA[q].fromBufferAttribute(N,k).applyMatrix3(nm).normalize();else nA[q].set(0,1,0);const cc=cA[q].copy(c);
-      if(td&&UV){let u=UV.getX(k),w=UV.getY(k);u=u-Math.floor(u);w=w-Math.floor(w);const px=Math.min(td.w-1,Math.floor(u*td.w)),py=Math.min(td.h-1,Math.floor((td.flip?1-w:w)*td.h)),ii=(py*td.w+px)*4;tc.setRGB(td.a[ii]/255,td.a[ii+1]/255,td.a[ii+2]/255,T.SRGBColorSpace);cc.multiply(tc)}
-      if(CO)cc.multiply(tc.setRGB(CO.getX(k),CO.getY(k),CO.getZ(k)));cc.add(e)}
+      if(td&&UV)cc.multiply(texel(td,UV,k,tc));
+      if(CO)cc.multiply(tc.setRGB(CO.getX(k),CO.getY(k),CO.getZ(k)));if(eOn)cc.add(ed?texel(ed,UV,k,tc).multiply(e):e)}
      const D=glass?G:inW(cxs/3,cys/3,czs/3)?Wh:B;for(let q=0;q<3;q++){D.p.push(vA[q].x,vA[q].y,vA[q].z);D.n.push(nA[q].x,nA[q].y,nA[q].z);D.c.push(cA[q].r,cA[q].g,cA[q].b)}}});
    const mk=(D,m)=>{if(!D.p.length)return null;const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(D.p,3));g.setAttribute('normal',new T.Float32BufferAttribute(D.n,3));g.setAttribute('color',new T.Float32BufferAttribute(D.c,3));g.computeBoundingSphere();return new T.Mesh(g,m)};
    const out=new T.Group(),body=mk(B,OFM.body),gl=mk(G,OFM.glass),wh=mk(Wh,OFM.wheel);if(body){body.castShadow=true;out.add(body)}if(gl)out.add(gl);

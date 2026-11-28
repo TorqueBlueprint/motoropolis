@@ -9,7 +9,7 @@
  // ===== INSPECTION CENTER =====
  const IC={built:false,home:{tx:0,tz:-.5,yaw:.25,pitch:.38,dist:45},lanes:[],v:{},hover:null,pin:null,A:[]};
  // the car's x at each stage (BRAKES: the axle on the rollers is placed per car), rollers, lanes
- const ICL={Z:[-4,4],POS:[-19,-11.5,0,6,13,19.5],ROLL:-1,CS:1.55};
+ const ICL={Z:[-4,4],POS:[-19,-11.5,0,6,13,19.5],ROLL:-1,CS:1.55,TYW:[-1,0,1,0],CLERK:16.2};
  const ICA=bizAtlas({card0:[0,0,384,320],card1:[384,0,384,320],scr0:[768,0,512,320],scr1:[1280,0,512,320],cert:[0,320,512,880],kan:[512,320,1280,720],till:[512,1040,640,512],
   sTitle:[1152,1040,896,112],sDesk:[1152,1152,512,96],sWait:[1152,1248,512,96],sL:[1664,1152,384,80],sB:[1664,1232,384,80],sE:[1664,1312,384,80],sS:[1664,1392,384,80],rules:[0,1200,512,512]});
  const icStageCol=['#7a8088','#e8b931','#c8231c','#7a3fb0','#2f6fd9','#2e8b57','#22252b'];
@@ -124,9 +124,14 @@
  function icPeople(A0,t,dt){const E=INSPJOBS;IC.inspJob=bizStaffJobs(E,A0,s=>s<=5);
   IC.insp.forEach((m,i)=>{const a=IC.inspJob[i],L=IC.lanes[i],side=L.z+2.7;let x,z,ang;if(a){const s=a.s;
     if(s===0){x=L.x+L.hl*.4;z=side;ang=Math.PI}else if(s===1){x=-7.6;z=side;ang=-Math.PI/2}else if(s===2){x=-4.2+.9;z=L.z+3.9;ang=Math.PI}
-    else if(s===3){x=L.x-L.hl-.6;z=L.z+.9;ang=Math.PI/2}else if(s===4){x=13+Math.sin(simTime*.35)*L.hl*.8;z=side;ang=Math.PI}else{x=13.2;z=7;ang=Math.PI}}
-   else{x=10+i*1.6;z=6.4;ang=Math.PI}bizMove(m,x,z,ang,dt);m.visible=true});
-  putP(IC.clerk,{x:13.6,z:7,ang:Math.sin(simTime*.7)*.4},false);
+    else if(s===3){x=L.x-L.hl-.6;z=L.z+.9;ang=Math.PI/2}
+    // SUSPENSION · TYRES: front wheel, middle, rear wheel, middle, held 5 s each (a target that crept along a sine made them slide in
+    // the stand pose and pop in and out of the walk), kept clear of the check-in clerk
+    else if(s===4){x=13+ICL.TYW[(Math.floor(simTime/5)+i*2)&3]*Math.min(1.5,L.hl*.7);z=side;ang=Math.PI}
+    // RESULT: at the near end of the check-in desk, one spot per lane (they used to stand inside the clerk)
+    else{x=10.15;z=7.75+i*1.05;ang=Math.PI/2}}
+   else{x=9.2+i*1.3;z=6.2;ang=Math.PI}bizMove(m,x,z,ang,dt);m.visible=true});
+  putP(IC.clerk,{x:ICL.CLERK,z:7.05,ang:Math.sin(simTime*.7)*.4},false);
   const staff=[0,1].map(i=>staffOf('inspecao','Inspector',i));
   IC.cust.forEach((m,i)=>{const a=A0[i]&&A0[i].j.name&&!staff.includes(A0[i].j.name)?A0[i]:null;m.visible=!!a&&a.s<6;m.userData.a=a;if(!m.visible){m.userData.p=null;return}const L=IC.lanes[i];let x,z,ang=Math.PI;
    if(a.s===0){x=12+i*1.2;z=9.6}else if(a.s===5){x=15.4+i*.9;z=9.6}else{x=2+i*3;z=9.9}
