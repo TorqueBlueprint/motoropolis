@@ -360,5 +360,17 @@
   ],
   "sport": true,
   "glb": "evo9"
+ },
+ {
+  "n": "Lamborghini Huracán",
+  "len": 30,
+  "wid": 16,
+  "price": 260000,
+  "v": [
+   112,
+   130
+  ],
+  "sport": true,
+  "glb": "huracan"
  }
 ]
