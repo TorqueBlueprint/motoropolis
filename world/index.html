@@ -4703,7 +4703,7 @@ function make3D(T,X){
   bx(V,6.6,4.6,.22,DARK,6.6,2.2,Z0+.38);q('lead',6.4,4.27,6.6,4.5,Z0+.52);
   // the turntable: plinth with a light ring; the turning deck is its own mesh; a ring light above on cables
   {const[tx,tz]=DSL.TT;cyl(V,DSL.TR+.25,DSL.TR+.35,.3,48,0x2a2e35,tx,.15,tz);cyl(GW,DSL.TR+.27,DSL.TR+.27,.05,48,0xffb36b,tx,.27,tz);
-   const tor=new T.TorusGeometry(3.4,.12,8,48);tor.rotateX(Math.PI/2);GW.push({g:tor,c:0xffffff,m:OFG.xf(tx,7.4,tz)});for(let k=0;k<3;k++){const a=k/3*Math.PI*2;bx(V,.03,RH-7.4,.03,DARK,tx+Math.cos(a)*3.4,7.4,tz+Math.sin(a)*3.4)}}
+   const tor=new T.TorusGeometry(2.8,.1,8,48);tor.rotateX(Math.PI/2);GW.push({g:tor,c:0xffffff,m:OFG.xf(tx,6.5,tz)});for(let k=0;k<3;k++){const a=k/3*Math.PI*2;bx(V,.03,RH-6.5,.03,DARK,tx+Math.cos(a)*2.8,6.5,tz+Math.sin(a)*2.8)}}
   // spec stands: a slim lectern with a tilted card, beside every car
   DSL.SPEC.forEach(([x,z,ry],k)=>{bx(V,.7,.1,.5,DARK,x,0,z,ry);bx(V,.12,1.25,.12,STEEL,x,.1,z,ry);bx(V,1.62,2.12,.08,DARK,x,1.2,z,ry,-.32);q('spec'+k,1.5,2,x+Math.sin(ry)*.08,2.28,z+Math.cos(ry)*.08,ry);Q[Q.length-1].m=OFG.xf(x+Math.sin(ry)*.06,2.27,z+Math.cos(ry)*.06,-.32,ry,0)});
   // sales desks: desk, monitor, chairs, a hanging deal card and the name plate
