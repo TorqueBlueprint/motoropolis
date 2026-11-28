@@ -96,7 +96,7 @@ const SHOP=(()=>{
   'Failed water pump':['WATER PUMP','replacing the water pump on',0,2.5,[WPUMP,BELT,COOL]]};
  const FL=FAULTS.filter(f=>SVC[f.n]).map(f=>({f,w:f.k==='tire'?f.w*.35:f.w}));
  const RATE=60;
- return SHOPS.make({b:'oficina',role:'Mechanic',bays:6,act:5,step:720,out:8,seed:'shop',prefix:'J-',crew:'The shop crew',
+ return SHOPS.make({b:'oficina',role:'Mechanic',bays:6,act:6,step:720,out:8,seed:'shop',prefix:'J-',crew:'The shop crew',
   stages:['ARRIVED','DIAGNOSIS','QUOTE','APPROVED','REPAIR','INSPECTION','READY','HANDED OVER'],split:[.05,.12,.08,.04,.47,.12,.12],
   fill(r,c){const m=c.m;
    // the fault: weighted like the city's breakdowns; a turbo job only on a car that has a turbo (drag_specs asp 'T', not the display name)

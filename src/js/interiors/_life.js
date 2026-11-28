@@ -33,11 +33,7 @@
  // AUTO PARTS: workers carry boxes to the counter
  LIFE.pecas={sync(){const S=PW.S;if(!PW.L){PW.L=[0,1,2].map(i=>mkP(S,'#c0392b',90+i,'Warehouse Worker'));PW.L.forEach(m=>{const b=box(.8,.6,.8,M(0xc79a62),0,1.3,.5,false);m.add(b)})}
    PW.L.forEach((m,k)=>loopP(m,[[-18+k*12,-6.5],[-18+k*12,-1.5],[16,4.6]],16+k*3,k*.33,.15))},labels(){}};
- // DEALERSHIP: customers browse the cars, the salesman follows
- LIFE.stand={sync(){const S=DS.S;if(!DS.L)DS.L={c:[0,1,2].map(i=>mkP(S,null,100+i,'civ')),s:mkP(S,'#22252b',104,'Car Salesman')};
-   DS.L.c.forEach((m,k)=>{const a=simTime*.35+k*2.1,cx=[-15,-5,5,15][(Math.floor(simTime/12)+k)%4];putP(m,{x:cx+Math.cos(a)*4.4,z:-2+Math.sin(a)*4.4,ang:a+Math.PI},true)});
-   const t=DS.L.c[0];putP(DS.L.s,{x:t.position.x+1.4,z:t.position.z+1.2,ang:t.rotation.y},true)},
-  labels(){if(DS.L)tag(DS.L.s.position.x,3.4,DS.L.s.position.z,'SALESMAN','rgba(255,122,26,.95)','#1d0f02')}};
+ // DEALERSHIP: its people (salesmen, buyers, staff) live in interiors/stand.js with the deal timetable (sim/dealer.js)
  // JUNKYARD / FACTORY / PITS: workers at their stations
  LIFE.sucata={sync(){const S=JY.S;if(!JY.L)JY.L=[mkP(S,'#e8b931',110,'Crusher Operator'),mkP(S,'#e8b931',111,'Crusher Operator')];loopP(JY.L[0],[[-1,4],[4,4]],10,0,.3);loopP(JY.L[1],[[8,8],[18,8]],14,.4,.3)},labels(){}};
  LIFE.fabrica={sync(){const S=FC.S;if(!FC.L)FC.L=[0,1,2,3,4].map(i=>mkP(S,'#2f6fd9',120+i,'Assembly Worker'));FC.L.forEach((m,k)=>loopP(m,[[-18+k*8,-.2],[-15+k*8,-.2]],5+k,k*.2,.3))},labels(){}};

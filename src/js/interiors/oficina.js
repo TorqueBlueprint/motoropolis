@@ -82,8 +82,8 @@
   gq(1000,'PAINT BOOTH',L=>{bx(L,7,5.6,.2,0x9fd4ff,0,0,2.4);bx(L,7,5.6,.2,0x9fd4ff,0,0,-2.4);bx(L,.2,5.6,5,0x9fd4ff,3.5,0,0);bx(L,7.4,.4,5.4,0x3ee08f,0,5.6,0)},-19,9.6);
   gq(5000,'DYNO',L=>{bx(L,4.6,.3,2.4,DARK,0,0,0);for(const dz of[-.6,.6])cyl(L,.35,.35,2,16,0xdfe5ec,dz*2.2,.35,0,Math.PI/2);bx(L,.2,2.4,.2,DARK,3,0,-1.4);bx(L,1.6,1,.15,0x0b3d2a,3,2.4,-1.4)},-8.5,9.6);
   IN.gear=G;IN.gearKey='';IN.gearM=[];
-  // people: 5 mechanics, the receptionist, up to 3 waiting customers
-  IN.mech=[0,1,2,3,4].map(i=>{const m=mkP(S,'#1d4fb8',60+i,'Mechanic');m.userData.p=null;return m});
+  // people: 6 mechanics (one per lift), the receptionist, up to 3 waiting customers
+  IN.mech=[0,1,2,3,4,5].map(i=>{const m=mkP(S,'#1d4fb8',60+i,'Mechanic');m.userData.p=null;return m});
   IN.rec=mkP(S,'#ff7a1a',30,'Receptionist');IN.cust=[0,1,2].map(i=>{const m=mkP(S,null,20+i,'civ');m.visible=false;m.userData.p=null;return m});
   // hover / click: the panel line for a car on a lift or a mechanic
   bizPointer('oficina',IN,ofHit);
@@ -180,9 +180,9 @@
   if(up.length)OFA.tex.needsUpdate=true}
  // mechanics go where their job needs them; customers check in, wait, pay and collect
  const ofMove=bizMove;
- const OF_IDLE=[[-23.6,-7.6,Math.PI],[-21.6,-8.8,Math.PI],[-22.4,2.8,1.2],[24.6,-5.6,Math.PI],[26,7.2,-1.2]];
+ const OF_IDLE=[[-23.6,-7.6,Math.PI],[-21.6,-8.8,Math.PI],[-22.4,2.8,1.2],[24.6,-5.6,Math.PI],[26,7.2,-1.2],[-20.2,-7.2,Math.PI]];
  function ofPeople(A0,t,dt){const LZ=OFL.Z,mt=[];
-  for(let m=0;m<5;m++){let best=null,pr=-1;for(const a of A0){if(!a||a.j.mech!==m)continue;const q=[1,3,0,2,5,4,0,0][a.s];if(q>pr){pr=q;best=a}}mt.push(pr>0?best:null)}
+  for(let m=0;m<6;m++){let best=null,pr=-1;for(const a of A0){if(!a||a.j.mech!==m)continue;const q=[1,3,0,2,5,4,0,0][a.s];if(q>pr){pr=q;best=a}}mt.push(pr>0?best:null)}
   IN.mechJob=mt;
   IN.mech.forEach((m,i)=>{const a=mt[i];let x,z,ang;if(a){const L=IN.lifts[a.j.lift];const s=i%2?1:-1;
     if(a.s===4){if(L.h>1.4){x=L.x+s*.55;z=LZ+.9+(i%3)*.3;ang=Math.PI+Math.sin(simTime*.8+i)*.6}else{x=L.x+s*2.0;z=LZ+3.4;ang=Math.PI}}
@@ -191,7 +191,7 @@
    ofMove(m,x,z,ang,dt);m.visible=true});
   putP(IN.rec,{x:20.3,z:5.2,ang:Math.sin(simTime*.7)*.4},false);
   // customers: residents only, the first three by lift
-  const staff=[0,1,2,3,4].map(i=>staffOf('oficina','Mechanic',i)).concat(staffOf('oficina','Receptionist',0)),cs=A0.filter(a=>a&&a.j.name&&!staff.includes(a.j.name)).slice(0,3),SEAT=[[22.7,9.9],[24,10.1],[25.3,9.9]];
+  const staff=[0,1,2,3,4,5].map(i=>staffOf('oficina','Mechanic',i)).concat(staffOf('oficina','Receptionist',0)),cs=A0.filter(a=>a&&a.j.name&&!staff.includes(a.j.name)).slice(0,3),SEAT=[[22.7,9.9],[24,10.1],[25.3,9.9]];
   IN.cust.forEach((m,i)=>{const a=cs[i];m.visible=!!a;m.userData.a=a||null;if(!a){m.userData.p=null;return}const L=IN.lifts[a.j.lift];let x,z,ang=Math.PI;
    if(a.s===0){const u=ofEase(a.inS/((a.j.st[1]-a.j.st[0])||1));x=L.x+(20.3-L.x)*u;z=(LZ+7)+(8-(LZ+7))*u}else if(a.s===2){x=19.4+i*.9;z=8;}else if(a.s===6){x=13.4+i*.8;z=8.2}else if(a.s===7){x=L.x+2.4;z=L.z+4;ang=Math.PI}else{[x,z]=SEAT[i];ang=Math.PI}
    if(!m.userData.p&&a.s!==0)m.userData.p={x,z};ofMove(m,x,z,ang,dt)})}

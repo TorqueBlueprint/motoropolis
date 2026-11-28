@@ -46,13 +46,13 @@
    x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=4;x.strokeRect(14,14,664,404);bpTex=new T.CanvasTexture(x.canvas);bpTex.colorSpace=T.SRGBColorSpace;bpTex.anisotropy=renderer.capabilities.getMaxAnisotropy()}
   const g=new T.Group();const gp=new T.Mesh(new T.PlaneGeometry(L.w-.4,L.d-.4),new T.MeshStandardMaterial({map:bpTex,roughness:.9,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-8}));gp.rotation.x=-Math.PI/2;gp.position.set(L.cx,Y0+.06,L.cz);gp.receiveShadow=true;g.add(gp);
   const ghost=BUILD[m.type](L);ghost.traverse(o=>{if(!o.isMesh)return;if(o.material&&o.material.map&&o.material!==bpTex){const i=signMats.indexOf(o.material);if(i>=0){signMats.splice(i,1);o.material.map.dispose();o.material.dispose()}}
-   o.material=ghostMat;o.castShadow=false;o.receiveShadow=false;if(o.geometry===BOX&&o.scale.x*o.scale.y*o.scale.z>1.5){const e=new T.LineSegments(EDGES,edgeMat);o.add(e)}});g.add(ghost);
+   o.material=ghostMat;o.castShadow=false;o.receiveShadow=false;if(o.geometry===BOX&&o.scale.x*o.scale.y*o.scale.z>1.5){const e=new T.LineSegments(EDGES,edgeMat);o.add(e)}});ghost.traverse(o=>{if(o.userData.bp)o.visible=true;if(o.userData.bpHide)o.visible=false});g.add(ghost);
   const idx=MILESTONES.indexOf(m);
   g.add(panel([[`BLUEPRINT ${String(idx).padStart(2,'0')}/${MILESTONES.length-1}`,46,'#c8defa',"'JetBrains Mono',monospace"],[m.label.toUpperCase(),104,'#ffffff'],[`OPENS AT ${m.n.toLocaleString('en-US')} SUBS`,72,'#ffb36b']],'#0f2f5c',13,5.2,L.cx,Y0+3.6,L.z0+2.2,0));
   g.add(box(.25,1.2,.25,mat.dark,L.cx-5,Y0,L.z0+2.2));g.add(box(.25,1.2,.25,mat.dark,L.cx+5,Y0,L.z0+2.2));
   return g}
  const groups={},gwrap={};let sig='';
- function disposeGroup(g){g.traverse(o=>{if(o.geometry&&o.geometry!==BOX)o.geometry.dispose();if(o.material&&o.material.map){const i=signMats.indexOf(o.material);if(i>=0)signMats.splice(i,1);o.material.map.dispose();o.material.dispose()}})}
+ function disposeGroup(g){const keep=new Set();g.traverse(o=>{if(o.userData.keepGeo||(o.parent&&keep.has(o.parent))){keep.add(o);return}if(o.geometry&&o.geometry!==BOX)o.geometry.dispose();if(o.material&&o.material.map){const i=signMats.indexOf(o.material);if(i>=0)signMats.splice(i,1);o.material.map.dispose();o.material.dispose()}})}
  const CB={init:null,at:{},dur:40};
  function syncBuildings(){
   const nm=nextMilestone(),sv=subs||0;const pv=[...ALL_MS].reverse().find(m=>m.n<=sv),base=pv?pv.n:0;const prog=nm?clamp((sv-base)/Math.max(1,nm.n-base),0,1):1;
