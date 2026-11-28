@@ -97,9 +97,12 @@ var DRV=null;// read by view3d/frame.js, view3d/labels.js, ui/goto.js, ui/welcom
   let tx=-wy,ty=wx;const ca=Math.cos(ST.a),sa=Math.sin(ST.a);if(tx*ca+ty*sa<0){tx=-tx;ty=-ty}
   if(Math.abs(tx*ca+ty*sa)>.35)ST.a=angLerp(ST.a,Math.atan2(ty,tx),.06);
   const nx=ST.x+ST.vx*KPX*H,ny=ST.y+ST.vy*KPX*H;if(fits(nx,ny,ST.a)){ST.x=nx;ST.y=ny}else if(!fits(ST.x,ST.y,ST.a))ST.a=ST.pa}
- // the four corners of the car (a little inside) must be on drivable ground
- function fits(x,y,a){const c=ST.c,ca=Math.cos(a),sa=Math.sin(a),hl=c.len*.46,hw=c.wid*.42;
-  return okPx(x+ca*hl-sa*hw,y+sa*hl+ca*hw)&&okPx(x+ca*hl+sa*hw,y+sa*hl-ca*hw)&&okPx(x-ca*hl-sa*hw,y-sa*hl+ca*hw)&&okPx(x-ca*hl+sa*hw,y-sa*hl-ca*hw)}
+ // the car's outline (a little inside) must be on drivable ground: corners plus points along the sides and ends, no gap wider
+ // than about 0.8 m, so a parked car can't slip in between two corners
+ function fits(x,y,a){const c=ST.c,ca=Math.cos(a),sa=Math.sin(a),hl=c.len*.46,hw=c.wid*.42,nl=Math.max(2,Math.ceil(2*hl/8)),nw=Math.max(1,Math.ceil(2*hw/8));
+  for(let i=0;i<=nl;i++){const l=-hl+2*hl*i/nl;if(!okPx(x+ca*l-sa*hw,y+sa*l+ca*hw)||!okPx(x+ca*l+sa*hw,y+sa*l-ca*hw))return false}
+  for(let i=1;i<nw;i++){const w=-hw+2*hw*i/nw;if(!okPx(x+ca*hl-sa*w,y+sa*hl+ca*w)||!okPx(x-ca*hl-sa*w,y-sa*hl+ca*w))return false}
+  return true}
  // the other cars: two circles each (front and back); push out and bounce off (the AI car is not moved)
  function carHits(c){const r1=c.wid*.5,d1=c.len*.5-r1,ca=Math.cos(ST.a),sa=Math.sin(ST.a);
   for(let i=0;i<cars.length;i++){const o=cars[i];if(o===c||o.hidden||o.removed||o.state==='home'||o.ghost>0)continue;
