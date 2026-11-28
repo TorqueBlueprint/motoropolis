@@ -29,5 +29,6 @@
  "charger":     {"hp": 600,  "kg": 1700, "drive": "RWD", "eng": "F", "gears": 4, "v1": 95,  "vtop": 270, "shift": 0.40, "cda": 0.82, "mu": 0.92, "launch": 0.32, "rpm": 6500, "asp": "S", "fuel": "P", "boost": 0.6},
  "challenger":  {"hp": 717,  "kg": 1990, "drive": "RWD", "eng": "F", "gears": 8, "v1": 75,  "vtop": 320, "shift": 0.15, "cda": 0.80, "mu": 1.12, "launch": 0.30, "rpm": 6200, "asp": "S", "fuel": "P", "boost": 0.8},
  "urus":        {"hp": 650,  "kg": 2200, "drive": "AWD", "eng": "F", "gears": 8, "v1": 62,  "vtop": 310, "shift": 0.15, "cda": 0.95, "mu": 1.12, "launch": 0.42, "rpm": 6800, "asp": "T", "fuel": "P", "boost": 1.2, "spool": 0.32, "lag": 0.35},
- "evo9":        {"hp": 286,  "kg": 1400, "drive": "AWD", "eng": "F", "gears": 5, "v1": 60,  "vtop": 250, "shift": 0.35, "cda": 0.72, "mu": 1.08, "launch": 0.55, "rpm": 7000, "asp": "T", "fuel": "P", "boost": 1.4, "spool": 0.45, "lag": 0.5}
+ "evo9":        {"hp": 286,  "kg": 1400, "drive": "AWD", "eng": "F", "gears": 5, "v1": 60,  "vtop": 250, "shift": 0.35, "cda": 0.72, "mu": 1.08, "launch": 0.55, "rpm": 7000, "asp": "T", "fuel": "P", "boost": 1.4, "spool": 0.45, "lag": 0.5},
+ "huracan":     {"hp": 631,  "kg": 1422, "drive": "AWD", "eng": "M", "gears": 7, "v1": 80,  "vtop": 325, "shift": 0.08, "cda": 0.66, "mu": 1.18, "launch": 0.45, "rpm": 8500, "asp": "NA", "fuel": "P"}
 }

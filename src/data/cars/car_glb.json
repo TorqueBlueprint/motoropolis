@@ -254,5 +254,9 @@
   "file": "cs_postvan.glb",
   "yaw": -20.5,
   "keep": 1
+ },
+ "huracan": {
+  "file": "huracan.glb",
+  "keep": 1
  }
 }
