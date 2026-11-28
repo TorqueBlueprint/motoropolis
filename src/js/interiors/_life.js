@@ -21,20 +21,9 @@
   labels(){const L=GS.L;if(!L)return;for(const m of L.drv){if(!m.visible)continue;const c=m.userData.c,k=m.userData.k;tag(m.position.x,3.4,m.position.z,nameOf(c),c&&c.driver?'rgba(255,122,26,.95)':undefined,c&&c.driver?'#1d0f02':undefined);
    if(k>.4&&k<.62){const gal=Math.max(1,(100-c.fuel)*.13);tag(8,4.6,-4,k<.55?'PAYING…':`PAID $${(gal*3.49).toFixed(2)} ✓`,'rgba(92,201,138,.95)','#071a2d')}}}};
  // REPAIR SHOP: its people (mechanics, receptionist, customers) live in interiors/oficina.js with the job timetable
- // CAR WASH: an attendant guides each car in
- LIFE.lavagem={sync(){const S=WS.scene;if(!WS.L)WS.L={a:[mkP(S,'#3fa7c4',40,'Wash Attendant'),mkP(S,'#3fa7c4',41,'Wash Attendant')],p:mkP(S,null,42,'civ')};WS.lanes.forEach((L,k)=>{const m=WS.L.a[k];const x=L.id?L.car.position.x-5:-22;putP(m,{x:clamp(x,-23,-15),z:L.z+(k?3.2:-3.2),ang:Math.PI/2},!!L.id&&x>-23&&x<-15)});loopP(WS.L.p,[[-23.5,7],[-23.5,9.5],[-18,9.5]],18,0,.3)},
-  labels(){if(!WS.L)return;WS.L.a.forEach((m,k)=>{if(WS.lanes[k].id)tag(m.position.x,3.3,m.position.z,'COME FORWARD…','rgba(63,167,196,.95)','#062a36')})}};
+ // CAR WASH, TIRE SHOP, INSPECTION: their people (staff, customers) live in interiors/lavagem.js, pneus.js, inspecao.js with the job timetables
  // TOW DEPOT: drivers wait by their truck, run when a call comes in
  LIFE.reboques={sync(){const S=TW.scene;if(!TW.L)TW.L=[0,1,2].map(i=>mkP(S,'#f2a51a',50+i,'Tow Truck Driver'));B.reboques.slots.forEach((s,k)=>{const m=TW.L[k],bay=TW.bays[k];m.visible=!!bay.id;if(bay.id)loopP(m,[[bay.x+3,-1],[bay.x+3,1.5],[17,3.5]],20+k*3,k*.3,.3)})},labels(){}};
- // TIRE SHOP: mechanics roll wheels to the balancer
- LIFE.pneus={sync(){const S=TS.S;if(!TS.L)TS.L={m:[0,1,2].map(i=>mkP(S,'#22252b',60+i,'Tire Technician')),c:[0,1,2].map(i=>mkP(S,null,63+i,'civ'))};
-   B.pneus.slots.forEach((s,k)=>{const x=[-8,3,14][k],busy=s.car&&s.car.state==='service';const m=TS.L.m[k];if(busy)loopP(m,[[x-2.6,0],[x+4.4,1.4]],6,k*.3,.25);else putP(m,{x:x+3,z:-6,ang:0},false);
-    const cu=TS.L.c[k];cu.visible=!!busy;if(busy)putP(cu,{x:-22+k*1.6,z:8,ang:Math.PI},false);cu.userData.c=busy?s.car:null})},
-  labels(){if(!TS.L)return;for(const m of TS.L.c)if(m.visible)tag(m.position.x,3.3,m.position.z,nameOf(m.userData.c)+' · WAITING')}};
- // INSPECTION: the inspector walks round each car and gives a verdict
- LIFE.inspecao={sync(){const S=IC.S;if(!IC.L)IC.L=[mkP(S,'#e8b931',70,'Inspector'),mkP(S,'#e8b931',71,'Inspector')];IC.insp.visible=false;
-   B.inspecao.slots.forEach((s,k)=>{const m=IC.L[k],z=k?4:-4,c=s.car&&s.car.state==='service'?s.car:null;m.userData.c=c;if(c){const a=simTime*1.2+k*3;putP(m,{x:-2+Math.cos(a)*4.2,z:z+Math.sin(a)*2.6,ang:a+Math.PI},true);m.userData.k=1-c.timer/(c.svcTotal||5)}else putP(m,{x:12,z:z>0?6:-6,ang:0},false)})},
-  labels(){if(!IC.L)return;for(const m of IC.L){const c=m.userData.c;if(c&&m.userData.k>.7)tag(-2,4.6,m.position.z>0?4:-4,c.health<55?'FAIL ✗':'PASS ✓',c.health<55?'rgba(255,90,79,.95)':'rgba(92,201,138,.95)','#071a2d')}}};
  // PARKING: drivers walk to the exit after parking and come back before leaving
  LIFE.parque={sync(){const S=PK.S;if(!PK.L)PK.L=[...Array(10)].map((_,i)=>mkP(S,null,80+i,'civ'));
    B.parque.slots.forEach((s,k)=>{const m=PK.L[k],c=s.car&&s.car.state==='service'?s.car:null,h=PK.h[k];m.userData.c=c;if(!c){m.visible=false;return}

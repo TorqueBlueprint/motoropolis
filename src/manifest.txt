@@ -49,6 +49,7 @@ view3d/particles.js
 view3d/details.js
 view3d/camera.js
 view3d/labels.js
+interiors/_bizkit.js
 interiors/oficina.js
 interiors/lavagem.js
 interiors/reboques.js
