@@ -72,7 +72,7 @@ const SHOPS=(()=>{
    return `${me} ${doing} · ${j.no}${tl}`+(sn?'':` · ${ROLE} JOB OPEN`)}
   const busy=t=>bays(t).filter(a=>a&&a.s<NS-1).length;
   return{cfg,BAYS,LIFTS:BAYS,ACT,STEP,STAGES,NS,RD,ROLE,OPEN:`Comment WORKSHOP ${ROLE}`,job,bays,lifts:bays,invoices,today,stageAt,line,staffName,mechName:staffName,busy,hidden,tc,now,h32,rng,open:isOpenNow}}
- return{make,h32,rng,cls,residentCar,hidden,tc,now,pickW}})();
+ return{make,h32,rng,cls,residentCar,hidden,tc,now,pickW,hasTurbo}})();
 
 // ===== the Repair Shop (Phase 3 step 1): 6 lifts, 5 mechanics, a job every 12 min, 40-55 min each =====
 const SHOP=(()=>{
@@ -100,7 +100,7 @@ const SHOP=(()=>{
   stages:['ARRIVED','DIAGNOSIS','QUOTE','APPROVED','REPAIR','INSPECTION','READY','HANDED OVER'],split:[.05,.12,.08,.04,.47,.12,.12],
   fill(r,c){const m=c.m;
    // the fault: weighted like the city's breakdowns; a turbo job only on a car that has a turbo (drag_specs asp 'T', not the display name)
-   let f=null;for(let k=0;k<8&&!f;k++){let tw=0;for(const q of FL)tw+=q.w;let x=r()*tw;for(const q of FL){x-=q.w;if(x<=0){f=q.f;break}}if(!f)f=FL[0].f;if(f.n==='Failed turbo'&&!hasTurbo(m))f=null}
+   let f=null;for(let k=0;k<8&&!f;k++){let tw=0;for(const q of FL)tw+=q.w;let x=r()*tw;for(const q of FL){x-=q.w;if(x<=0){f=q.f;break}}if(!f)f=FL[0].f;if(f.n==='Failed turbo'&&!SHOPS.hasTurbo(m))f=null}
    const S=SVC[f.n],k=c.k,rate=Math.round(RATE*(1+(k-1)*.35)),parts=S[4].map(p=>({n:p[0],sku:p[1],each:Math.round(p[2]*k),qty:p[3]}));
    const partsTC=parts.reduce((a,p)=>a+p.each*p.qty,0),labTC=Math.round(S[3]*rate),total=partsTC+labTC;
    const dur=Math.round(Math.min(3300,Math.max(2400,2250+S[3]*140)));
