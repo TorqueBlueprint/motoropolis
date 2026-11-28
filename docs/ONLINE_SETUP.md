@@ -105,6 +105,8 @@ delete from auth.users where id in ('11111111-1111-4111-8111-111111111111', '222
 
 ## Before a public launch
 
+Full launch pack (privacy/terms pages, account deletion, Google verification, production runbook): **`docs/ONLINE_LAUNCH.md`**.
+
 - Google **verification** of the OAuth app is required for more than 100 users / to drop the "unverified app" warning. `youtube.readonly`
   is a sensitive scope: Google asks for a **privacy policy page** (public URL), a home page, an app logo, a short video showing the sign-in
   and how the YouTube data is used, and the authorized domain (`torqueblueprint.github.io`) verified in Search Console.
