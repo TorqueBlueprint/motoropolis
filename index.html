@@ -376,6 +376,9 @@ html[data-rec="1"] .dg{display:none!important}
 /* Find my name: the home address and "Go to my home" (interiors/home.js) */
 .fd-tx small.fd-hm{color:#9fd8b5}
 .fd-list li{flex-wrap:wrap}
+/* Find my name: the buttons get their own row under the name, so two buttons (Fly to me + Go to my home) never squeeze the text on phones */
+.fd-acts{flex:1 0 100%;box-sizing:border-box;max-width:100%;display:flex;gap:8px}.fd-acts .fd-go{flex:1 1 0;min-width:0;font-size:14px;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:520px){.fd-acts{padding-left:48px}}
 /* ===== GO TO menu (ui/goto.js): places, jobs, people; the dock with STEP INSIDE ===== */
 .viewbar .go-btn{background:rgba(10,30,62,.94);border-color:var(--accent);color:#fff;font-weight:700}
 .viewbar .go-btn.is-on{box-shadow:0 0 0 2px #fff,0 4px 14px rgba(0,0,0,.35)}
@@ -6586,11 +6589,12 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   for(const n of hits){const li=document.createElement('li');const w=where(n),job=jobOf(n);
    const av=document.createElement('span');av.className='fd-av';av.textContent=n.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'?';
    const tx=document.createElement('span');tx.className='fd-tx';const b=document.createElement('b');b.textContent=n;const sm=document.createElement('small');
-   sm.textContent=(job?job:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);{const db=UIX.dragBest&&UIX.dragBest(n);if(db){const d=document.createElement('small');d.className='fd-dg';d.textContent=db;tx.append(d)}}li.append(av,tx);
-   if(w&&R3){const go=document.createElement('button');go.type='button';go.className='fd-go';go.textContent='Fly to me';go.addEventListener('click',()=>flyTo(n));li.append(go)}
+   sm.textContent=(job?job:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);{const db=UIX.dragBest&&UIX.dragBest(n);if(db){const d=document.createElement('small');d.className='fd-dg';d.textContent=db;tx.append(d)}}li.append(av,tx);const acts=document.createElement('div');acts.className='fd-acts';
+   if(w&&R3){const go=document.createElement('button');go.type='button';go.className='fd-go';go.textContent='Fly to me';go.addEventListener('click',()=>flyTo(n));acts.append(go)}
    // their home (interiors/home.js): the address and "Go to my home"
    {const hm=UIX.homeOf&&UIX.homeOf(n);if(hm){const d=document.createElement('small');d.className='fd-hm';d.textContent='Home: '+hm.label;tx.append(d);if(R3){const gh=document.createElement('button');gh.type='button';gh.className='fd-go';gh.textContent='Go to my home';
-    gh.addEventListener('click',()=>{if(!view3d)setView(true,true);follow=null;hm.go();if(matchMedia('(max-width: 700px)').matches)fd.hidden=true});li.append(gh)}}}
+    gh.addEventListener('click',()=>{if(!view3d)setView(true,true);follow=null;hm.go();if(matchMedia('(max-width: 700px)').matches)fd.hidden=true});acts.append(gh)}}
+   if(acts.childElementCount)li.append(acts)}
    flist.append(li)}}
  function flyTo(n){const w=where(n);if(!w||!R3)return;if(DRV&&DRV.on)DRV.stop();if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
   if(matchMedia('(max-width: 700px)').matches)fd.hidden=true}
