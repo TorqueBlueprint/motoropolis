@@ -170,5 +170,7 @@
   const key=new T.DirectionalLight(o.key||0xfff3e0,1.5);key.position.set(14,26,22);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-32,right:32,top:20,bottom:-20,near:2,far:80});key.shadow.bias=-.0006;S.add(key);
   for(const x of o.lamps||[-16,0,16]){const pl=new T.PointLight(o.light||0xfff1d0,o.lampI||38,24,1.6);pl.position.set(x,(o.h||10)-1,-1);S.add(pl)}}
  // exterior: "SERVICE IN PROGRESS · n/N BAYS BUSY" under a shop's STEP INSIDE board (view3d/labels.js)
- const BIZ_EXT={pneus:()=>[TYREJOBS,'BAYS'],lavagem:()=>[WASHJOBS,'LANES'],inspecao:()=>[INSPJOBS,'LANES']};
- function bizExtPill(type,s,sz,alpha){const f=BIZ_EXT[type];if(!f||!s)return;const[E,w]=f(),n=E.busy(),z=sz*.8;hctx.globalAlpha=alpha==null?1:alpha;pill(n?`SERVICE IN PROGRESS · ${n}/${E.BAYS} ${w} BUSY`:`ALL ${w} OPEN`,s.x,s.y+z*1.9,z,n?'rgba(255,122,26,.95)':'rgba(46,139,87,.95)',n?'#1d0f02':'#ffffff');hctx.globalAlpha=1}
+ const BIZ_EXT={pneus:()=>[TYREJOBS,'BAYS'],lavagem:()=>[WASHJOBS,'LANES'],inspecao:()=>[INSPJOBS,'LANES'],
+  // the dealership (sim/dealer.js): its own wording, [engine, unit, text(n busy) -> [text, background, colour]]
+  stand:()=>[DEALJOBS,'DESKS',n=>{const k=9+B.stand.slots.filter(q=>q.car&&q.car.isNew&&q.car.state==='service').length;return[`OPEN · ${k} CARS ON DISPLAY`+(n?` · ${n} SALE${n>1?'S':''} IN PROGRESS`:''),'rgba(46,139,87,.95)','#ffffff']}]};
+ function bizExtPill(type,s,sz,alpha){const f=BIZ_EXT[type];if(!f||!s)return;const[E,w,tx]=f(),n=E.busy(),z=sz*.8;hctx.globalAlpha=alpha==null?1:alpha;if(tx){const o=tx(n);pill(o[0],s.x,s.y+z*1.9,z,o[1],o[2]);hctx.globalAlpha=1;return}pill(n?`SERVICE IN PROGRESS · ${n}/${E.BAYS} ${w} BUSY`:`ALL ${w} OPEN`,s.x,s.y+z*1.9,z,n?'rgba(255,122,26,.95)':'rgba(46,139,87,.95)',n?'#1d0f02':'#ffffff');hctx.globalAlpha=1}

@@ -10,6 +10,7 @@ sim/state.js
 traffic/routing.js
 sim/services.js
 sim/shopjobs.js
+sim/dealer.js
 sim/setup.js
 sim/update.js
 map2d/background.js
@@ -31,6 +32,7 @@ buildings/lots3d.js
 buildings/district3d.js
 buildings/kit3d.js
 buildings/exteriors.js
+buildings/stand_ext.js
 buildings/construction.js
 buildings/junk_pile.js
 roads/remake_world.js
