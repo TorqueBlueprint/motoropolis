@@ -58,6 +58,15 @@ The builder between the `/*MAYOR-BUILD*/` markers only uses `T` (three), so a st
 - The **HUD** canvas is drawn at display resolution.
 - The **recorder page** (`data-rec`) and `?eager` keep full detail.
 
+## Car names
+
+The 30 city cars show their **real make and model as text** (`n` in `src/data/cars/models.json`, e.g. "Nissan Skyline GT-R (R32)"), in the car panel, labels, drag board, challenge cards, shop job cards and news. Rules:
+
+- Names are text only. No logos, badges, emblems or brand symbols on the 3D cars or as images anywhere . Embedded GLB textures that still carry maker marks (to blank or check that they are not mapped to visible faces): `ae86.glb` (Toyota logo and wordmark, materials `lights__env_50_spec`, `misc__env_19_spec`), `rwd24.glb` (Subaru logo, `extras`), `jgt98.glb` (Toyota logo on the wheel texture, `wheel.1`), `awd99.glb` ("SKYLINE" plate, `Material`), `challenger.glb` (SRT cat-head logo, `…LightB_Materia`); supplier marks: BBS (`rearturbo.glb` wheels), Brembo and Enkei (`rwd24.glb`), American Racing (`charger.glb`), Motegi (`evo9.glb`), Goodyear (`viper.glb`), Bridgestone (`ae86.glb`). Badge-shaped details modelled as geometry also appear on several cars (e.g. roundels on `coupe85`/`sedan98`, pony on `fastback65`, GT-R badges on `r32`/`awd99`, horse on `f40`).
+- Code never matches a car by its name: the key is always `glb` (homes overrides, shot lists, drag entrants, dealer). Turbo repair jobs use `asp` in `drag_specs.json`; the SUV body uses `suv: true` in `models.json`.
+- The footer credits say the names identify the real cars, trademarks belong to their owners, and Motoropolis is not affiliated with any maker.
+- `drag_specs.json` is the game's tuning and was not changed with the names. Known differences from the real cars (power, mass, drive, gears) are listed in the car-names report; the biggest: `taxi` (spec 150 hp FWD, the model is a V8 RWD Crown Victoria), `rearturbo` (spec is a 992 Turbo S: 640 hp AWD PDK; the model is a 997 GT2: 530 PS RWD manual), `gt12` (spec is an 812 Superfast: 789 hp; the model is a 599 GTB: 620 PS), `offroad` (spec 278 hp 3.0 V6 diesel, 6 gears; the Ranger Raptor is a 213 PS 2.0 diesel with 10 gears, or a 3.0 V6 petrol in the 2022+ model), `challenger` (spec 717 hp = Hellcat; the model is a Super Stock, 807 hp), `etype` (spec is a 3.8 six; the model is a Series 3 V12).
+
 ## Drag Strip (Phase 2C step 1, hidden until 1,000 subscribers)
 
 The Drag Strip (layout feature `dragway`) opens with the Race Track at 1,000 subscribers. Until then the 3D city shows its blueprint board ("DRAG STRIP · OPENS AT 1,000 SUBS" / "N MORE SUBSCRIBERS TO OPEN") and the page shows nothing else about it.
