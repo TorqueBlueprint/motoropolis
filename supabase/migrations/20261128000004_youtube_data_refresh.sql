@@ -1,5 +1,3 @@
--- PROPOSAL, NOT APPLIED to any project yet (needs the owner's OK: it enables pg_cron and clears data on a schedule).
--- To adopt: move to supabase/migrations/ with the next number, apply on dev, then on prod.
 -- Motoropolis Online - YouTube API data freshness (YouTube API Services Developer Policies III.E.4.c:
 -- Authorized Data other than tokens may be kept for no longer than 30 days, then it must be refreshed or deleted).
 --

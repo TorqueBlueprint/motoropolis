@@ -62,8 +62,8 @@ Supabase prod → **Authentication → Sign In / Providers**:
 - **Email** → **disable** (Motoropolis Online only uses Google).
 
 Supabase prod → **Authentication → URL Configuration**:
-- **Site URL**: `https://torqueblueprint.github.io/motoropolis/online/`
-- **Redirect URLs**: `https://torqueblueprint.github.io/motoropolis/online/**`
+- **Site URL**: `https://torqueblueprint.com/online/`
+- **Redirect URLs**: `https://torqueblueprint.com/online/**`
   (no githack / localhost entries in production)
 
 ## 5. Point the page at production

@@ -51,9 +51,9 @@ No secret goes into the repo. The Google **Client Secret** goes only into the Su
 
 **Authentication → URL Configuration**:
 
-- **Site URL**: `https://torqueblueprint.github.io/motoropolis/online/`
+- **Site URL**: `https://torqueblueprint.com/online/`
 - **Redirect URLs** → **Add URL** for each of:
-  - `https://torqueblueprint.github.io/motoropolis/online/**`
+  - `https://torqueblueprint.com/online/**`
   - `https://raw.githack.com/TorqueBlueprint/motoropolis/wip-accounts/online/index.html**`
   - (optional, for local tests) `http://localhost:8000/**`
 

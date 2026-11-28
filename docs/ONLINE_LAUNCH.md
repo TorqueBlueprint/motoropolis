@@ -17,7 +17,7 @@ Projeto de teste: Supabase **motoropolis-dev** (ref `bxjitnmvmjbampgyrsxf`). App
 
 | Peça | Ficheiro | Estado |
 |---|---|---|
-| Política de privacidade (EN) | `online/privacy.html` → `https://torqueblueprint.github.io/motoropolis/online/privacy.html` | Pronta, falta o email de contacto (`CONTACT_EMAIL`) |
+| Política de privacidade (EN) | `online/privacy.html` → `https://torqueblueprint.com/online/privacy.html` | Pronta, falta o email de contacto (`CONTACT_EMAIL`) |
 | Termos de utilização (EN) | `online/terms.html` → `…/online/terms.html` | Pronta, falta `CONTACT_EMAIL` |
 | Logótipo 120×120 (e 512×512) | `online/logo-120.png`, `online/logo-512.png` | Gerado (navy + "Mo" + estrada). Podes trocar por outro. |
 | Links "Privacy · Terms" | `src/online/online.html` (rodapé da página e fundo do painel "My account") | Feito |
@@ -34,7 +34,7 @@ Como o GitHub Pages serve os ficheiros: `tools/build.py`/`build_online.py` só r
 
 1. **Email de contacto** — escolhe um email público (ex.: um Gmail só para o canal) e substitui o marcador nas duas páginas:
    ```bash
-   sed -i 's/CONTACT_EMAIL/o.teu.email@exemplo.com/g' online/privacy.html online/terms.html
+   (feito: torqueblueprint@gmail.com)
    ```
    Tira também o realce amarelo, se quiseres: apaga `<span class="todo">` / `</span>` à volta do email (ou deixa, fica só destacado).
    Usa o mesmo email como "User support email" e "Developer contact" na Google.
@@ -60,9 +60,9 @@ Como o GitHub Pages serve os ficheiros: `tools/build.py`/`build_online.py` só r
 | App name | `Motoropolis Online` (tem de ser igual ao que aparece na página e no vídeo) |
 | User support email | o teu email de contacto |
 | App logo | `online/logo-120.png` (PNG, 120×120, quadrado). Atenção: com logótipo a app passa a precisar de verificação de marca; é o que queremos. |
-| Application home page | `https://torqueblueprint.github.io/motoropolis/online/` |
-| Application privacy policy link | `https://torqueblueprint.github.io/motoropolis/online/privacy.html` |
-| Application terms of service link | `https://torqueblueprint.github.io/motoropolis/online/terms.html` |
+| Application home page | `https://torqueblueprint.com/online/` |
+| Application privacy policy link | `https://torqueblueprint.com/online/privacy.html` |
+| Application terms of service link | `https://torqueblueprint.com/online/terms.html` |
 | Authorized domains | `torqueblueprint.github.io`. A documentação do Supabase manda acrescentar também `<PROD_REF>.supabase.co` (domínio do callback). Se a verificação reclamar desse domínio (não o podes provar na Search Console), as saídas são o *Custom Domain* do Supabase (add-on pago) ou perguntar ao revisor; não dá para resolver só com ficheiros. |
 | Developer contact information | o teu email |
 
@@ -100,7 +100,7 @@ Requisitos da Google: mostrar o fluxo OAuth completo **em inglês**, o ecrã de 
 
 Guião / lista de planos:
 
-1. **(0:00) Página inicial** — abrir `https://torqueblueprint.github.io/motoropolis/online/`. Mostrar o nome "Motoropolis Online", o rodapé com **Privacy policy · Terms**. Clicar em Privacy policy, fazer scroll rápido até à secção 3 (uso do YouTube) e à frase "Limited Use"; voltar.
+1. **(0:00) Página inicial** — abrir `https://torqueblueprint.com/online/`. Mostrar o nome "Motoropolis Online", o rodapé com **Privacy policy · Terms**. Clicar em Privacy policy, fazer scroll rápido até à secção 3 (uso do YouTube) e à frase "Limited Use"; voltar.
    Narração/legenda: *"This is Motoropolis Online, a free fan game of the TorqueBlueprint YouTube channel. Here is our privacy policy."*
 2. **(0:30) Sign in** — clicar **Sign in with YouTube**. No ecrã da Google, **clicar na barra de endereço e mostrar o URL** com `client_id=…apps.googleusercontent.com` (pausa de 2–3 s). Escolher a conta.
 3. **(0:50) Consentimento** — mostrar o ecrã com "Motoropolis Online" e a permissão **"View your YouTube account"**. Legenda: *"We request youtube.readonly only to identify which YouTube channel the user owns."* Clicar **Continue/Allow**.
