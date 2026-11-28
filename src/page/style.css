@@ -373,6 +373,9 @@ html[data-rec="1"] .dg{display:none!important}
 /* Find my name: the home address and "Go to my home" (interiors/home.js) */
 .fd-tx small.fd-hm{color:#9fd8b5}
 .fd-list li{flex-wrap:wrap}
+/* Find my name: the buttons get their own row under the name, so two buttons (Fly to me + Go to my home) never squeeze the text on phones */
+.fd-acts{flex:1 0 100%;box-sizing:border-box;max-width:100%;display:flex;gap:8px}.fd-acts .fd-go{flex:1 1 0;min-width:0;font-size:14px;padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:520px){.fd-acts{padding-left:48px}}
 /* ===== GO TO menu (ui/goto.js): places, jobs, people; the dock with STEP INSIDE ===== */
 .viewbar .go-btn{background:rgba(10,30,62,.94);border-color:var(--accent);color:#fff;font-weight:700}
 .viewbar .go-btn.is-on{box-shadow:0 0 0 2px #fff,0 4px 14px rgba(0,0,0,.35)}
