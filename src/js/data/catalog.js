@@ -2,7 +2,7 @@
 //@ closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt; //@ lines are dropped by tools/build.py
 // ---------- data ----------
 const MODELS=@@JSON:cars/models.json@@;
-// low-poly car models (no logos, no brand names): file in assets/cars, body colour cell in the palette texture
+// low-poly car models (real make/model names as text in models.json `n`; no logos or badges): file in assets/cars, body colour cell in the palette texture
 const CAR_GLB=@@JSON:cars/car_glb.json@@;
 const ASSET_BASE=/\/(world|remake|xmas|perf)\//.test(location.pathname)?'../':'';
 const COLORS=@@JSON:cars/colors.json@@;

@@ -44,7 +44,7 @@
    for(const z of[-L*.32,L*.3])for(const x of[-1,1])wheelX(g,x*Wd/2,z,.4);
    g.userData.lb=[add(Wd*.38,.2,.3,M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2}),-Wd*.2,1.75,L*.36,false),add(Wd*.38,.2,.3,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:2}),Wd*.2,1.75,L*.36,false)];
    add(Wd*.72,.14,.05,mat.hl,0,.6,L/2+.01,false);g.userData.tl=add(Wd*.72,.14,.05,mat.tailOff,0,.7,-L/2-.01,false);return g}
-  const type=c.kind==='police'?'police':c.kind==='van'?'van':m.sport?'sport':m.classic?'classic':m.pickup?'pickup':m.wagon?'wagon':/SUV/.test(m.n||'')?'suv':L<2.75?'compact':'sedan';
+  const type=c.kind==='police'?'police':c.kind==='van'?'van':m.sport?'sport':m.classic?'classic':m.pickup?'pickup':m.wagon?'wagon':(m.suv||/SUV/.test(m.n||''))?'suv':L<2.75?'compact':'sedan';
   if(type==='pickup'){const cab=new T.Mesh(bodyGeo('suv',L*.62,Wd),body);cab.position.z=L*.19;cab.castShadow=true;g.add(cab);add(Wd,.62,L*.42,body,0,.28,-L*.29);add(Wd*.86,.08,L*.38,mat.dark,0,.86,-L*.29,false)}
   else{const b=new T.Mesh(bodyGeo(type,L,Wd),body);b.castShadow=true;g.add(b)}
   // glass band

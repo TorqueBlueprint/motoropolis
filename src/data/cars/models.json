@@ -1,6 +1,6 @@
 [
  {
-  "n": "Hot hatch 2.0 turbo",
+  "n": "Honda Civic Type R (FL5)",
   "len": 32,
   "wid": 15,
   "price": 45900,
@@ -11,7 +11,7 @@
   "glb": "hothatch"
  },
  {
-  "n": "Italian GT V12",
+  "n": "Ferrari 599 GTB Fiorano",
   "len": 33,
   "wid": 16,
   "price": 265000,
@@ -23,7 +23,7 @@
   "glb": "gt12"
  },
  {
-  "n": "1963 American coupe V8",
+  "n": "Chevrolet Corvette Sting Ray (C2)",
   "len": 33,
   "wid": 16,
   "price": 120000,
@@ -35,7 +35,7 @@
   "glb": "v8sport"
  },
  {
-  "n": "Sport saloon 4-door",
+  "n": "Porsche Panamera Sport Turismo",
   "len": 35,
   "wid": 16,
   "price": 112000,
@@ -46,7 +46,7 @@
   "glb": "sportsaloon"
  },
  {
-  "n": "German sport sedan 3.0",
+  "n": "BMW M3 (G80)",
   "len": 34,
   "wid": 15,
   "price": 82000,
@@ -58,7 +58,7 @@
   "glb": "sport3"
  },
  {
-  "n": "1990 rally sedan 2.5",
+  "n": "Mercedes-Benz 190E 2.5-16 Evo II",
   "len": 32,
   "wid": 15,
   "price": 48000,
@@ -70,7 +70,7 @@
   "glb": "saloon90"
  },
  {
-  "n": "City taxi",
+  "n": "Ford Crown Victoria taxi",
   "len": 34,
   "wid": 15,
   "price": 31000,
@@ -82,7 +82,7 @@
   "taxi": true
  },
  {
-  "n": "Off-road pickup 3.0 V6",
+  "n": "Ford Ranger Raptor",
   "len": 39,
   "wid": 17,
   "price": 78000,
@@ -94,7 +94,7 @@
   "glb": "offroad"
  },
  {
-  "n": "1985 German coupe 2.3",
+  "n": "BMW M3 (E30)",
   "len": 31,
   "wid": 15,
   "price": 38000,
@@ -106,7 +106,7 @@
   "glb": "coupe85"
  },
  {
-  "n": "1998 German sedan 2.5",
+  "n": "BMW 323i (E46)",
   "len": 32,
   "wid": 15,
   "price": 14900,
@@ -117,7 +117,7 @@
   "glb": "sedan98"
  },
  {
-  "n": "1965 American fastback V8",
+  "n": "1965 Ford Mustang Fastback",
   "len": 33,
   "wid": 16,
   "price": 95000,
@@ -129,7 +129,7 @@
   "glb": "fastback65"
  },
  {
-  "n": "Mid-engine supercar V10",
+  "n": "Audi R8 V10 performance",
   "len": 32,
   "wid": 16,
   "price": 195000,
@@ -141,7 +141,7 @@
   "glb": "midv10"
  },
  {
-  "n": "1998 Japanese GT 3.0 turbo",
+  "n": "Toyota Supra Turbo (A80)",
   "len": 32,
   "wid": 15,
   "price": 90000,
@@ -153,7 +153,7 @@
   "glb": "jgt98"
  },
  {
-  "n": "1999 Japanese AWD coupe",
+  "n": "Nissan Skyline GT-R (R34)",
   "len": 33,
   "wid": 15,
   "price": 160000,
@@ -165,7 +165,7 @@
   "glb": "awd99"
  },
  {
-  "n": "German rear-engine turbo coupe",
+  "n": "Porsche 911 GT2 (997)",
   "len": 32,
   "wid": 16,
   "price": 250000,
@@ -177,7 +177,7 @@
   "glb": "rearturbo"
  },
  {
-  "n": "Japanese RWD coupe 2.4",
+  "n": "Subaru BRZ (ZD8)",
   "len": 31,
   "wid": 15,
   "price": 32000,
@@ -189,7 +189,7 @@
   "glb": "rwd24"
  },
  {
-  "n": "1983 Japanese hatchback coupe 1.6",
+  "n": "Toyota Sprinter Trueno (AE86)",
   "len": 30,
   "wid": 15,
   "price": 35000,
@@ -202,7 +202,7 @@
   "glb": "ae86"
  },
  {
-  "n": "1987 Italian twin-turbo supercar",
+  "n": "Ferrari F40",
   "len": 31,
   "wid": 16,
   "price": 2500000,
@@ -215,7 +215,7 @@
   "glb": "f40"
  },
  {
-  "n": "American twin-turbo V8 hypercar",
+  "n": "Hennessey Venom F5",
   "len": 33,
   "wid": 16,
   "price": 2100000,
@@ -227,7 +227,7 @@
   "glb": "venom"
  },
  {
-  "n": "German F1-engine hypercar",
+  "n": "Mercedes-AMG ONE",
   "len": 33,
   "wid": 16,
   "price": 2700000,
@@ -239,7 +239,7 @@
   "glb": "amgone"
  },
  {
-  "n": "British hybrid hypercar",
+  "n": "McLaren P1",
   "len": 32,
   "wid": 16,
   "price": 1350000,
@@ -251,7 +251,7 @@
   "glb": "p1"
  },
  {
-  "n": "1961 British roadster",
+  "n": "Jaguar E-Type V12 Roadster (S3)",
   "len": 31,
   "wid": 15,
   "price": 180000,
@@ -263,7 +263,7 @@
   "glb": "etype"
  },
  {
-  "n": "1992 American V10 roadster",
+  "n": "Dodge Viper RT/10",
   "len": 31,
   "wid": 16,
   "price": 70000,
@@ -276,7 +276,7 @@
   "glb": "viper"
  },
  {
-  "n": "1989 Japanese roadster 1.6",
+  "n": "Mazda MX-5 Miata (NA)",
   "len": 28,
   "wid": 15,
   "price": 25000,
@@ -289,7 +289,7 @@
   "glb": "miata"
  },
  {
-  "n": "Italian V12 supercar",
+  "n": "Lamborghini Aventador SVJ",
   "len": 33,
   "wid": 17,
   "price": 520000,
@@ -301,7 +301,7 @@
   "glb": "svj"
  },
  {
-  "n": "1989 Japanese AWD coupe 2.6",
+  "n": "Nissan Skyline GT-R (R32)",
   "len": 32,
   "wid": 15,
   "price": 60000,
@@ -314,7 +314,7 @@
   "glb": "r32"
  },
  {
-  "n": "1970 American muscle car V8 supercharged",
+  "n": "1970 Dodge Charger R/T (blown)",
   "len": 33,
   "wid": 16,
   "price": 150000,
@@ -327,7 +327,7 @@
   "glb": "charger"
  },
  {
-  "n": "2020 American muscle coupe V8 supercharged",
+  "n": "Dodge Challenger SRT Super Stock",
   "len": 33,
   "wid": 15,
   "price": 90000,
@@ -339,7 +339,7 @@
   "glb": "challenger"
  },
  {
-  "n": "Italian super SUV V8",
+  "n": "Lamborghini Urus",
   "len": 34,
   "wid": 17,
   "price": 230000,
@@ -347,10 +347,11 @@
    106,
    124
   ],
-  "glb": "urus"
+  "glb": "urus",
+  "suv": true
  },
  {
-  "n": "2006 Japanese rally sedan AWD",
+  "n": "Mitsubishi Lancer Evolution IX",
   "len": 31,
   "wid": 15,
   "price": 45000,
