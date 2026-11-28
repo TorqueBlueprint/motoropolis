@@ -3180,7 +3180,7 @@ function make3D(T,X){
   FL.forEach(([x,z],i)=>{b(V,.08,4.6,.08,STEEL,x,0,z);b(V,.3,.2,.3,DARK,x,0,z);const fr=i>=5?-Math.PI/2:Math.PI,fx=i>=5?0:.36,fz=i>=5?.36:0;q2(i%2?'flag2':'flag',.62,3.3,x+fx,2.95,z+fz,fr);q2(i%2?'flag2':'flag',.62,3.3,x+fx,2.95,z+fz,fr+Math.PI)});
   {const pole=FL.slice(0,5);for(let k=0;k<pole.length-1;k++){const[a,za]=pole[k],[c2,zc]=pole[k+1];for(let s=1;s<8;s++){const u=s/8,x=a+(c2-a)*u,y=4.4-Math.sin(u*Math.PI)*.55;b(V,.26,.26,.03,[ORANGE,0xffffff,0x2f6fd9,0xffd34d][s%4],x,y-.13,za,0,0,Math.PI/4)}}}
   for(const[x0,x1]of[[.4,14.6],[20.4,33]]){b(V,x1-x0,.36,.6,0x9aa3ae,(x0+x1)/2,0,.32);b(V,x1-x0-.1,.06,.5,SOIL,(x0+x1)/2,.36,.32);for(let x=x0+.5;x<x1-.3;x+=.9)V.push({g:new T.IcosahedronGeometry(.32,0),c:[GRN,0x4f9f4a,0x2e7d4f][Math.round(x*3)%3],m:OFG.xf(X0+x,Y+.62,Z0+.32,0,x,0,1,.8,1)})}
-  for(const[x,z]of[[.7,12.4],[24.9,.8],[16.4,9.8]]){cyl(V,.14,.18,1.8,8,SOIL,X0+x,Y+.9,Z0+z);V.push({g:new T.IcosahedronGeometry(1.25,1),c:GRN,m:OFG.xf(X0+x,Y+2.5,Z0+z,0,x,0,1,1.15,1)})}
+  for(const[x,z]of[[.7,12.4],[24.9,.8]]){cyl(V,.14,.18,1.8,8,SOIL,X0+x,Y+.9,Z0+z);V.push({g:new T.IcosahedronGeometry(1.25,1),c:GRN,m:OFG.xf(X0+x,Y+2.5,Z0+z,0,x,0,1,1.15,1)})}
   for(const x of[CX-4.4,CX+4.4]){b(V,1.2,.6,1.2,0x9aa3ae,x,0,SZ0-3.3);V.push({g:new T.IcosahedronGeometry(.55,0),c:0x4f9f4a,m:OFG.xf(X0+x,Y+1,Z0+SZ0-3.3,0,0,0,1,.9,1)})}
   for(const[x,z]of[[16.4,.9],[34,.9],[34,12.6],[.8,9.6]]){b(V,.16,5.6,.16,DARK,x,0,z);b(V,1.2,.16,.36,DARK,x+(x>20?-.5:.5),5.5,z);b(LM,.9,.06,.28,0xffffff,x+(x>20?-.5:.5),5.47,z)}
   // the pylon by the drive-in (both faces)
@@ -3195,8 +3195,8 @@ function make3D(T,X){
   const edges=OFG.edges(BP.concat(V.filter(e=>e.box&&e.m.elements[5]>2.5)));
   const sm=new T.Mesh(OFG.merge(V),SX.vc||(SX.vc=new T.MeshStandardMaterial({vertexColors:true,roughness:.62,metalness:.12})));sm.castShadow=true;sm.receiveShadow=true;g.add(sm);
   const gm=SX.glass||(SX.glass=new T.MeshStandardMaterial({vertexColors:true,roughness:.05,metalness:.55,transparent:true,opacity:.34,depthWrite:false}));const glm=new T.Mesh(OFG.merge(GL),gm);g.add(glm);
-  // the glow (ceiling panels, the lit back wall): emissive at night through signMats (a map-less material: disposeGroup keeps it, so reuse it)
-  if(!SX.glow){SX.glow=new T.MeshStandardMaterial({vertexColors:true,emissive:0xfff2d6,emissiveIntensity:0,roughness:.5});signMats.push(SX.glow)}g.add(new T.Mesh(OFG.merge(GW),SX.glow));
+  // the glow (ceiling panels, the lit back wall, skylights): brighter at night (set with the turntable in CON_ANIM; a map-less material: disposeGroup keeps it)
+  if(!SX.glow)SX.glow=new T.MeshStandardMaterial({vertexColors:true,emissive:0xfff2d6,emissiveIntensity:.1,roughness:.5});g.add(new T.Mesh(OFG.merge(GW),SX.glow));
   g.add(new T.Mesh(OFG.merge(LM),mat.lamp));
   const tex=sxPaint(D),am=new T.MeshStandardMaterial({map:tex,emissiveMap:tex,emissive:0xffffff,emissiveIntensity:0,roughness:.55});signMats.push(am);const qm=new T.Mesh(OFG.merge(Q),am);qm.receiveShadow=true;g.add(qm);
   const ln=new T.LineSegments(edges,edgeMat);ln.visible=false;ln.userData.bp=1;g.add(ln);
@@ -3214,7 +3214,7 @@ function make3D(T,X){
   // a customer's car in the customer bays
   car({m:D.show[4].m,col:'#7a8088'},18.25,0,8.6,0);
   // one animation entry for every rebuild (the latest turntable turns)
-  SX.tt=[tt,t0];if(CITY2&&!SX.anim){SX.anim={g:{parent:1},f:t=>{const a=t*.32;for(const o of SX.tt)o.rotation.y=a}};CON_ANIM.push(SX.anim)}
+  SX.tt=[tt,t0];if(CITY2&&!SX.anim){SX.anim={g:{parent:1},f:t=>{const a=t*.32;for(const o of SX.tt)o.rotation.y=a;SX.glow.emissiveIntensity=.1+1.7*nightLevel()}};CON_ANIM.push(SX.anim)}
   return g}
  // phase 1 (city-v2): scaffolding round the frame, a tower crane that slews and lifts, workers in hard hats
  const CON_ANIM=[];
