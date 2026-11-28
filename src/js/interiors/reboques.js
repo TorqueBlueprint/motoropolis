@@ -48,7 +48,7 @@
   TW.beacon.emissiveIntensity=tows.some(t=>!t.idle&&!t.hidden)?(Math.sin(simTime*10)>0?3:.2):.4;
   TW.disp.rotation.y=Math.PI+Math.sin(simTime*.8)*.3;
   B.reboques.slots.forEach((s,k)=>{const bay=TW.bays[k];const t=tows.find(q=>q.home===s);const inBay=t&&t.idle&&!t.hidden;const id=inBay?t.id:null;
-   if(id!==bay.id){bay.id=id;while(bay.truck.children.length)bay.truck.remove(bay.truck.children[0]);if(inBay){const m=carMesh(t);m.scale.setScalar(1.5);m.rotation.y=Math.PI;bay.truck.add(m)}}});
+   if(id!==bay.id){bay.id=id;while(bay.truck.children.length)bay.truck.remove(bay.truck.children[0]);if(inBay){const m=carMesh(t,{hd:1});m.scale.setScalar(1.5);m.rotation.y=Math.PI;bay.truck.add(m)}}});
   // pins on the wall map for broken-down cars
   while(TW.mapPins.children.length)TW.mapPins.remove(TW.mapPins.children[0]);
   for(const q of cars){if(q.state!=='broken'&&q.state!=='towed')continue;const pin=new T.Mesh(new T.SphereGeometry(.14,8,6),q.state==='towed'?mat.tlG:mat.tlR);pin.position.set(25.6,4.4+2.53-q.y/CH*5.06,-3-4.5+q.x/1920*9);TW.mapPins.add(pin)}}

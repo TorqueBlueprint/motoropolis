@@ -42,7 +42,7 @@
    p[i]=s.x+(r-.5)*1.4;p[i+1]=5.2-ph*5;p[i+2]=s.z+(((r*97)%1)-.5)*5.4;cc.setHex(s.col);c[i]=cc.r;c[i+1]=cc.g;c[i+2]=cc.b;i+=3}
   WS.pts.geometry.attributes.position.needsUpdate=true;WS.pts.geometry.attributes.color.needsUpdate=true;
   B.lavagem.slots.forEach((s,k)=>{const L=WS.lanes[k];if(!L)return;const c=s.car&&s.car.state==='service'&&!s.car.removed?s.car:null;const id=c?c.id:null;
-   if(id!==L.id){L.id=id;while(L.car.children.length)L.car.remove(L.car.children[0]);if(c){const m=carMesh(c);m.scale.setScalar(1.6);m.rotation.y=Math.PI/2;L.car.add(m)}}
+   if(id!==L.id){L.id=id;while(L.car.children.length)L.car.remove(L.car.children[0]);if(c){const m=carMesh(c,{hd:1});m.scale.setScalar(1.6);m.rotation.y=Math.PI/2;L.car.add(m)}}
    if(c){const tot=c.svcTotal||6,k2=clamp(1-c.timer/tot,0,1);L.car.position.set(-20+40*k2,.1,L.z)}});
  }
  function drawWashLabels(){hctx.textAlign='center';hctx.textBaseline='middle';const sz=clamp(1100/cam.dist,14,26);

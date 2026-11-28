@@ -87,7 +87,7 @@
    // ---------- the loop through the day's heats ----------
    const secOfDay=()=>{const n=Date.now();return(n%864e5)/1000};
    function carFor(e){const c={kind:'car',len:(MODELS.find(m=>m.glb===e.glb)||{len:32}).len,wid:16,color:e.color,m:MODELS.find(m=>m.glb===e.glb)||{}};
-    const g=X&&X.cars&&X.cars[e.glb]?glbCar(c,e.glb):carMesh(c);g.traverse(o=>{o.userData.carPart=1});return g}
+    const g=X&&X.cars&&X.cars[e.glb]?glbCar(c,e.glb,{hd:1}):carMesh(c);g.traverse(o=>{o.userData.carPart=1});return g}
    function setHeat(i){const d=D3.day,h=d.heats[i];D3.heat=i;D3.h=h;
     for(let k=0;k<2;k++){if(D3.cars[k]){D3.cg.remove(D3.cars[k].g);D3.cars[k]=null}const l=h.lanes[k];if(!l)continue;const tr=DRAG.run(l.o,true);const g=new T.Group();g.add(carFor(l.e));g.rotation.y=Math.PI/2;g.position.set(x0-8,0,LZ[k]);D3.cg.add(g);
      D3.cars[k]={g,l,tr:tr.trace,tR:tr.tR,cross:false,x:x0-8,z:LZ[k],a:0}}

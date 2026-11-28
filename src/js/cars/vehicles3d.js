@@ -3,7 +3,7 @@
  // ---------- vehicles ----------
  const colCache={};const colMat=c=>colCache[c]||(colCache[c]=X?new T.MeshPhysicalMaterial({color:c,roughness:.38,metalness:.35,clearcoat:.6,clearcoatRoughness:.25}):M(c,{roughness:.32,metalness:.35}));
  const WHEEL=new T.CylinderGeometry(.3,.3,.22,14).rotateZ(Math.PI/2);
- function carMesh(c){if(X){const xm=carMeshX(c);if(xm)return xm}
+ function carMesh(c,o){if(X){const xm=carMeshX(c,o);if(xm)return xm}
   const g=new T.Group(),L=c.len/10,Wd=c.wid/10*.92,body=colMat(c.color),m=c.m||{};
   const add=(w,h,d,mt,x,y,z,cast)=>{const b=box(w,h,d,mt,x,y,z,cast);g.add(b);return b};
   if(c.kind==='tow'){add(Wd*.9,.45,L*.96,mat.dark,0,.28,0);add(Wd,1.15,L*.3,body,0,.35,L*.3);add(Wd*1.01,.42,L*.12,mat.carGlass,0,1.0,L*.42,false);add(Wd,.28,L*.56,mat.steel,0,.72,-L*.17);

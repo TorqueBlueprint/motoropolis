@@ -1,0 +1,67 @@
+{
+ "challenger": {
+  "name": "Dodge Challenger (2020)",
+  "light": "assets/cars/lod/challenger.glb",
+  "hd": null
+ },
+ "huracan": {
+  "name": "Lamborghini Huracán",
+  "light": "assets/cars/lod/huracan.glb",
+  "hd": null
+ },
+ "mach1": {
+  "name": "Ford Mustang Mach 1",
+  "light": "assets/cars/lod/mach1.glb",
+  "hd": null
+ },
+ "rearturbo": {
+  "name": "Porsche 911 GT2 (997.1)",
+  "light": "assets/cars/lod/rearturbo.glb",
+  "hd": null
+ },
+ "rwd24": {
+  "name": "Subaru BRZ (ZD8)",
+  "light": "assets/cars/lod/rwd24.glb",
+  "hd": null
+ },
+ "svj": {
+  "name": "Lamborghini Aventador SVJ",
+  "light": "assets/cars/lod/svj.glb",
+  "hd": null
+ },
+ "urus": {
+  "name": "Lamborghini Urus",
+  "light": "assets/cars/lod/urus.glb",
+  "hd": null
+ },
+ "etype": {
+  "name": "Jaguar E-Type",
+  "light": "assets/cars/lod/etype.glb",
+  "hd": null
+ },
+ "f40": {
+  "name": "Ferrari F40",
+  "light": "assets/cars/lod/f40.glb",
+  "hd": null
+ },
+ "amgone": {
+  "name": "Mercedes-AMG One",
+  "light": "assets/cars/lod/amgone.glb",
+  "hd": null
+ },
+ "miata": {
+  "name": "Mazda MX-5 (NA)",
+  "light": "assets/cars/lod/miata.glb",
+  "hd": null
+ },
+ "p1": {
+  "name": "McLaren P1",
+  "light": "assets/cars/lod/p1.glb",
+  "hd": null
+ },
+ "sedan98": {
+  "name": "BMW E46",
+  "light": "assets/cars/lod/sedan98.glb",
+  "hd": null
+ }
+}

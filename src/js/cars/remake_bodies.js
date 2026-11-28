@@ -13,25 +13,34 @@
  const glassX=()=>mat.carGlass;
  function wheelX(g,x,z,r){const w=new T.Mesh(WHEEL,mat.tire);w.scale.set(1.05,r/.3,r/.3);w.position.set(x,r,z);g.add(w);const rim=new T.Mesh(WHEEL,mat.chrome);rim.scale.set(1.12,r/.3*.62,r/.3*.62);rim.position.set(x,r,z);g.add(rim)}
  const GLBMAT={};
- function glbBody(c,key,g){const src=X.cars[key],cfg=CAR_GLB[key],L=c.len/10;const m0=src.clone(true);const s=L*(cfg.lenK||1)/cfg.len;m0.position.set(-(cfg.cx||0),-(cfg.y0||0),-(cfg.cz||0));const m=new T.Group();m.add(m0);m.scale.setScalar(s);m.rotation.y=cfg.rot||0;
-  const col=c.color||'#2f6fd9',mk=key+col;
+ function glbBody(c,key,g,hdSrc){const src=hdSrc||X.cars[key],cfg=CAR_GLB[key],L=c.len/10;const m0=src.clone(true);const s=L*(cfg.lenK||1)/cfg.len;m0.position.set(-(cfg.cx||0),-(cfg.y0||0),-(cfg.cz||0));const m=new T.Group();m.add(m0);m.scale.setScalar(s);m.rotation.y=cfg.rot||0;
+  const col=c.color||'#2f6fd9',mk=key+col+(hdSrc?'#hd':'');
   m.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;
    // bodies exported as see-through (alpha blend) show the far-side wheels through the panels: make them solid, keep glass see-through
    if(o.material&&o.material.transparent&&!/glass/i.test(o.material.name||'')){const kk='opq'+o.material.uuid;if(!GLBMAT[kk]){const nm=o.material.clone();nm.transparent=false;nm.alphaTest=.5;nm.depthWrite=true;GLBMAT[kk]=nm}o.material=GLBMAT[kk]}
    if(cfg.keep)return;if(cfg.paint&&o.material&&[].concat(cfg.paint).includes(o.material.name)){const mk2=mk+o.material.name;if(!GLBMAT[mk2]){const nm=o.material.clone();if(!cfg.tint)nm.map=null;nm.color.set(col);nm.metalness=.35;nm.roughness=.35;nm.transparent=false;nm.opacity=1;GLBMAT[mk2]=nm}o.material=GLBMAT[mk2];return}if(o.material&&o.material.map&&o.material.name==='Car_Main'){if(!GLBMAT[mk]){const base=o.material,img=base.map.image;const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;const x=cv.getContext('2d');x.drawImage(img,0,0);
      const[cx,cy,cw,ch]=cfg.cell,k=img.width/64;x.fillStyle=col;x.fillRect(cx*k,cy*k,cw*k,ch*k);const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;t.flipY=base.map.flipY;t.magFilter=T.NearestFilter;t.minFilter=T.NearestFilter;t.generateMipmaps=false;
      const nm=base.clone();nm.map=t;nm.metalness=Math.min(nm.metalness,.5);GLBMAT[mk]=nm}o.material=GLBMAT[mk]}});
-  g.add(m);return m}
+  g.add(m);g.userData.body=m;g.userData.carKey=key;g.userData.carC=c;return m}
  // a car with a model: built at once; while the model is still loading (lazy assets) it is a plain box in the car's
  // colour, swapped for the real body when the file lands (same group, same tail light)
- function glbCar(c,key){const cfg=CAR_GLB[key],L=c.len/10,s=L*(cfg.lenK||1)/cfg.len;const g=new T.Group();
-  if(X.cars[key].lazyCar){const b=X.carBox[key],w=Math.min(b[3]-b[0],b[5]-b[2])*s,h=cfg.h*s;const ph=new T.Mesh(BOX,colMat(c.color||'#2f6fd9'));ph.scale.set(w,h*.8,L*(cfg.lenK||1)*.96);ph.position.y=h*.4;ph.castShadow=true;g.add(ph);
-   (X.carWait[key]||(X.carWait[key]=[])).push(()=>{g.remove(ph);glbBody(c,key,g);g.children.unshift(g.children.pop())})}
+ function glbCar(c,key,o){const cfg=CAR_GLB[key],L=c.len/10,s=L*(cfg.lenK||1)/cfg.len;const g=new T.Group();
+  if(X.cars[key].lazyCar){const b=X.carBox[key],w=Math.min(b[3]-b[0],b[5]-b[2])*s,h=cfg.h*s;const ph=new T.Mesh(BOX,colMat(c.color||'#2f6fd9'));ph.scale.set(w,h*.8,L*(cfg.lenK||1)*.96);ph.position.y=h*.4;ph.castShadow=true;g.add(ph);g.userData.carKey=key;
+   (X.carWait[key]||(X.carWait[key]=[])).push(()=>{g.remove(ph);glbBody(c,key,g);g.children.unshift(g.children.pop());if(g.userData.wantHD)carHD(g,true,1)})}
   else glbBody(c,key,g);
-  const tl=box(L*.5,.08,.05,mat.tailOff,0,.62*s*cfg.len/4.4,-L/2+.02,false);tl.visible=false;g.add(tl);g.userData.tl=tl;return g}
+  const tl=box(L*.5,.08,.05,mat.tailOff,0,.62*s*cfg.len/4.4,-L/2+.02,false);tl.visible=false;g.add(tl);g.userData.tl=tl;if(o&&o.hd)carHD(g,true);return g}
+ // car LOD: swap a car group's body between the light model (traffic) and the HD model (close-up), same place in the
+ // group, same paint; HD loads once per model on demand (X.carHD, view3d/loader.js) and stays light if it fails
+ function carBodySwap(g,src){const ud=g.userData,old=ud.body;if(!old||old.parent!==g)return;const idx=g.children.indexOf(old),vis=old.visible;let fl=null;old.traverse(o=>{if(!fl&&o.isMesh)fl=o.userData});
+  g.remove(old);const m=glbBody(ud.carC,ud.carKey,g,src);g.children.splice(g.children.indexOf(m),1);g.children.splice(idx,0,m);m.visible=vis;
+  const ex={};if(fl)for(const k in fl)if(k!=='cs0')ex[k]=fl[k];m.traverse(o=>{if(!o.isMesh)return;Object.assign(o.userData,ex);if(ud.lodCS===false){o.userData.cs0=true;o.castShadow=false}});
+  if(ud.lodKids){const i=ud.lodKids.indexOf(old);if(i>=0)ud.lodKids[i]=m}}
+ function carHD(g,on,force){const ud=g.userData;if(!ud.carKey||!X.carHD)return;if(!force&&ud.wantHD===on)return;ud.wantHD=on;if(!ud.body)return;
+  if(!on){if(ud.hd){ud.hd=false;carBodySwap(g,null)}return}
+  X.carHD(ud.carKey).then(sc=>{if(!sc||!ud.wantHD||ud.hd)return;ud.hd=true;carBodySwap(g,sc)})}
  if(X)X.carArrived=k=>{const L=X.carWait&&X.carWait[k];if(!L)return;X.carWait[k]=null;for(const f of L)f()};
- function carMeshX(c){if(X.cars&&['tow','fire','amb','garbage','van'].includes(c.kind)&&X.cars[c.kind]){const g=glbCar(c,c.kind);if(c.kind==='fire'||c.kind==='amb'){const L=c.len/10;g.userData.lb=[box(.5,.14,.3,M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2.5}),-.35,2.1,L*.3,false),box(.5,.14,.3,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:2.5}),.35,2.1,L*.3,false)];g.userData.lb.forEach(b=>g.add(b))}return g}
-  if(c.kind==='tow')return null;if(c.m&&c.m.glb&&X.cars&&X.cars[c.m.glb])return glbCar(c,c.m.glb);
+ function carMeshX(c,o){if(X.cars&&['tow','fire','amb','garbage','van'].includes(c.kind)&&X.cars[c.kind]){const g=glbCar(c,c.kind);if(c.kind==='fire'||c.kind==='amb'){const L=c.len/10;g.userData.lb=[box(.5,.14,.3,M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2.5}),-.35,2.1,L*.3,false),box(.5,.14,.3,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:2.5}),.35,2.1,L*.3,false)];g.userData.lb.forEach(b=>g.add(b))}return g}
+  if(c.kind==='tow')return null;if(c.m&&c.m.glb&&X.cars&&X.cars[c.m.glb])return glbCar(c,c.m.glb,o);
   if(c.kind==='bus'&&X.cars&&X.cars.bus)return glbCar(c,'bus');
   if(c.kind==='police'&&X.cars&&X.cars.police){const g=glbCar(c,'police'),L=c.len/10,H=CAR_GLB.police.h*L/CAR_GLB.police.len;g.userData.lb=[box(.42,.1,.22,M(0xff3b30,{emissive:0xff3b30,emissiveIntensity:2.5}),-.26,H-.16,-.02*L,false),box(.42,.1,.22,M(0x2f6fd9,{emissive:0x2f6fd9,emissiveIntensity:2.5}),.26,H-.16,-.02*L,false)];g.userData.lb.forEach(b=>g.add(b));return g}const g=new T.Group(),L=c.len/10,Wd=c.wid/10*.94,body=colMat(c.color),m=c.m||{};const add=(w,h,d,mt,x,y,z,cast)=>{const b=box(w,h,d,mt,x,y,z,cast);g.add(b);return b};
   if(c.kind==='bus'){add(Wd,2.3,L*.98,body,0,.35,0);add(Wd*1.01,.85,L*.86,mat.carGlass,0,1.35,-.02,false);add(Wd*1.01,.6,L*.06,mat.carGlass,0,1.3,L*.47,false);add(Wd*.98,.12,L*.94,M(0xeef3fb),0,2.66,0,false);

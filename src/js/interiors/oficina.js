@@ -80,7 +80,7 @@
   for(const gq of IN.gear){const on=sv>=gq.n;gq.real.visible=on;gq.ghost.visible=!on}
   // cars on the lifts mirror the city's repair shop
   B.oficina.slots.forEach((s,k)=>{const L=IN.lifts[k];const c=s.car&&s.car.state==='service'&&!s.car.removed?s.car:null;const id=c?c.id:null;
-   if(id!==L.id){L.id=id;while(L.car.children.length)L.car.remove(L.car.children[0]);if(c){const m=carMesh(c);m.scale.setScalar(1.55);m.rotation.y=Math.PI;L.car.add(m)}}
+   if(id!==L.id){L.id=id;while(L.car.children.length)L.car.remove(L.car.children[0]);if(c){const m=carMesh(c,{hd:1});m.scale.setScalar(1.55);m.rotation.y=Math.PI;L.car.add(m)}}
    let lift=0;if(c&&c.kind==='car'&&c.task&&c.task.type!=='parts'){const tot=c.svcTotal||6,el=tot-c.timer;lift=Math.min(2.4,el*1.4,Math.max(0,c.timer)*1.4)}
    L.car.position.y=lift;L.arms.position.y=lift+.2;
    L.mech.visible=!!c||!!staffOf('oficina','Mechanic',k);if(!c&&L.mech.visible){L.mech.position.set(L.x+3.4,0,1.6);L.mech.rotation.y=Math.PI+Math.sin(simTime*.6+k)*.5}if(c){const ph=simTime*2+k;L.mech.position.set(L.x+3.4+Math.sin(ph)*.3,0,-2+Math.cos(ph*.7)*1.6);L.mech.rotation.y=-Math.PI/2+Math.sin(ph)*.4}});

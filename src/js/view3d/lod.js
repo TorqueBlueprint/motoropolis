@@ -1,8 +1,9 @@
 //@ view3d/lod.js - level of detail and shadow distance for cars and people (performance)
 //@ inside make3D(T,X). Defaults on the city pages: cars beyond 200 m are drawn as boxes in their colour (all of them in
 //@ ONE instanced draw call), pedestrians beyond 100 m keep their pose, cars beyond 200 m cast no shadow.
-//@ The recorder page and ?eager keep full detail. Override: ?lod=cars:250,people:120,shadow:300, ?lod=off, window.__LOD3.
- const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity}:{cars:200,people:100,shadow:200};
+//@ The recorder page and ?eager keep full detail. Override: ?lod=cars:250,people:120,shadow:300,hd:40, ?lod=off, window.__LOD3.
+//@ hd: cars closer than this (60 m on the recorder page) swap to their HD model (car_lod.json), back to light beyond 1.6x.
+ const LOD3=(()=>{const full=LAZY_EAGER;const o=full?{cars:Infinity,people:Infinity,shadow:Infinity,hd:60}:{cars:200,people:100,shadow:200,hd:40};
   try{Object.assign(o,window.__LOD3||{});const q=new URLSearchParams(location.search).get('lod');if(q==='off'){o.cars=o.people=o.shadow=Infinity}else if(q)for(const kv of q.split(',')){const[k,v]=kv.split(':');if(k in o&&+v>0)o[k]=+v}}catch(e){}
   o.on=isFinite(o.cars)||isFinite(o.people)||isFinite(o.shadow);return o})();
  const _lodV=new T.Vector3(),_lodM=new T.Matrix4(),_lodC=new T.Color();
@@ -15,7 +16,9 @@
    if(LODB.im){for(let i=0;i<LODB.n;i++){LODB.im.getMatrixAt(i,_lodM);im.setMatrixAt(i,_lodM);LODB.im.getColorAt(i,_lodC);im.setColorAt(i,_lodC)}scene.remove(LODB.im)}else im.setColorAt(0,_lodC.set(1,1,1));LODB.im=im;LODB.max=max;scene.add(im)}
   const ud=g.userData;g.updateMatrix();_lodM.copy(g.matrix).multiply(ud.lodBM);LODB.im.setMatrixAt(LODB.n,_lodM);LODB.im.setColorAt(LODB.n,_lodC.set(c.color||'#2f6fd9'));LODB.n++}
  // called by syncCars after it has positioned a car group
- function lodCar(g,c){if(!LOD3.on)return;const d=lodDist(g),far=d>LOD3.cars,ud=g.userData;
+ function lodCar(g,c){const ud=g.userData;let d=-1;
+  if(ud.carKey&&LOD3.hd>0){d=lodDist(g);if(d<LOD3.hd)carHD(g,true);else if(d>LOD3.hd*1.6)carHD(g,false)}
+  if(!LOD3.on)return;if(d<0)d=lodDist(g);const far=d>LOD3.cars;
   if(far){if(!ud.lodFar){ud.lodKids=g.children.slice();ud.lodVis=ud.lodKids.map(o=>o.visible);ud.lodFar=true}
    // a lazy model that lands while the car is far: hide it too and size the box again
    for(const o of g.children)if(!ud.lodKids.includes(o)){ud.lodKids.push(o);ud.lodVis.push(o.visible);ud.lodBM=null}

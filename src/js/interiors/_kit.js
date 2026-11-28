@@ -41,7 +41,7 @@
  function lockedNote(type){if(isOpen(type))return;const m=MS[type];const p=toHud(0,4,2);if(p)pill(`BLUEPRINT PREVIEW · OPENS AT ${m.n.toLocaleString('en-US')} SUBS`,p.x,p.y,24,'rgba(15,47,92,.94)','#c8defa','#9fd0ff')}
  // mirror the cars parked in a building's slots into an interior
  function mirror(slots,holders,scale,place){slots.forEach((s,k)=>{const h=holders[k];if(!h)return;const c=s.car&&!s.car.removed&&(s.car.state==='service')?s.car:null;const id=c?c.id:null;
-  if(id!==h.id){h.id=id;while(h.g.children.length)h.g.remove(h.g.children[0]);if(c){const m=carMesh(c);m.scale.setScalar(scale);h.g.add(m)}}if(place)place(h,c,k)})}
+  if(id!==h.id){h.id=id;while(h.g.children.length)h.g.remove(h.g.children[0]);if(c){const m=carMesh(c,{hd:1});m.scale.setScalar(scale);h.g.add(m)}}if(place)place(h,c,k)})}
  function carTags(holders,y,extra){const sz=clamp(1100/cam.dist,14,24);holders.forEach(h=>{if(!h.id)return;const c=cars.find(q=>q.id===h.id);if(!c)return;const p=toHud(h.g.position.x,h.g.position.y+y,h.g.position.z);if(!p)return;
   pill(c.driver?'★ '+c.driver:c.plate,p.x,p.y,sz,c.driver?'rgba(255,122,26,.95)':'#fafafa',c.driver?'#1d0f02':'#111');if(extra){const t=extra(c);if(t){const p2=toHud(h.g.position.x,h.g.position.y+y-.9,h.g.position.z);if(p2)pill(t,p2.x,p2.y,sz*.8,'rgba(16,19,24,.85)','#ffb36b')}}})}
  const holderRow=(R,n,xs,z,ry)=>xs.slice(0,n).map(x=>{const g=new T.Group();g.position.set(x,0,z);g.rotation.y=ry||0;R.add(g);return{g,id:null}});

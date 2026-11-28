@@ -6,7 +6,7 @@
 window.__mtpLoad={st:0,n:0,d:0};
 // The recorder page (data-rec) and ?eager load everything before the first frame, as before.
 const LAZY_EAGER=document.documentElement.dataset.rec==='1'||/[?&]eager\b/.test(location.search);
-const CAR_BOX=@@JSON:cars/car_bounds.json@@,XMAS_BOX=@@JSON:world/xmas_bounds.json@@;
+const CAR_BOX=@@JSON:cars/car_bounds.json@@,CAR_LOD=@@JSON:cars/car_lod.json@@,XMAS_BOX=@@JSON:world/xmas_bounds.json@@;
 // a stand-in scene with the real model's bounding box (invisible): code can clone it and measure it at once;
 // when the model lands every clone gets the real meshes (keeping the shadow flags set on the stand-in)
 function lazyScene(T,X,name,b){const root=new T.Group(),list=[root];
@@ -43,13 +43,23 @@ async function loadR3(){
      if(XMAS){const XM=[['xmas_truck','xtruck'],['xmas_tree','xtree'],['xmas_stall','xstall'],['xmas_carousel','xcarousel'],['xmas_sleigh','xsl'],['xmas_reindeer','xrd']];
       if(LAZY_EAGER){try{const g=await ld.loadAsync(ASSET_BASE+'assets/world/xmas_truck.glb');X.xtruck=g.scene}catch(e){console.warn('xmas truck',e)}try{X.xtree=(await ld.loadAsync(ASSET_BASE+'assets/world/xmas_tree.glb')).scene}catch(e){console.warn('xmas tree',e)}try{const[a,b]=await Promise.all(['xmas_stall','xmas_carousel'].map(n=>ld.loadAsync(ASSET_BASE+'assets/world/'+n+'.glb')));X.xstall=a.scene;X.xcarousel=b.scene}catch(e){console.warn('xmas market',e)}try{const[a,b]=await Promise.all([ld.loadAsync(ASSET_BASE+'assets/world/xmas_sleigh.glb'),ld.loadAsync(ASSET_BASE+'assets/world/xmas_reindeer.glb')]);X.xsl=a.scene;X.xrd=b.scene}catch(e){console.warn('xmas sleigh',e)}}
       else for(const[n,key]of XM){X[key]=lazyScene(T,X,n,XMAS_BOX[n]);X.lazyQ.push({pri:2,name:n,run:async()=>{const g=await ld.loadAsync(ASSET_BASE+'assets/world/'+n+'.glb');X.lazyFill[n](g.scene)}})}}}
-   if(LAZY_EAGER){await Promise.all(Object.entries(CAR_GLB).map(async([k,v])=>{try{const g=await ld.loadAsync(ASSET_BASE+'assets/cars/'+v.file);if(v.yaw!=null){g.scene.rotation.y=(v.yaw-90)*Math.PI/180;g.scene.updateMatrixWorld(true)}const bb=new T.Box3().setFromObject(g.scene,v.yaw!=null),sz=bb.getSize(new T.Vector3());v.len=Math.max(sz.x,sz.z);v.h=sz.y;v.y0=bb.min.y;v.cx=(bb.min.x+bb.max.x)/2;v.cz=(bb.min.z+bb.max.z)/2;if(v.rot==null)v.rot=(sz.x>sz.z?Math.PI/2:0)+(v.flip?Math.PI:0);
+   // car LOD (src/data/cars/car_lod.json): traffic and far cars load the LIGHT file (<= 40k triangles, 512 px textures),
+   // the HD level (car_lod.json hd, else the original assets/cars/<file>) loads only on demand for cars seen up close
+   // (cars/remake_bodies.js carHD: interiors, garage, drag strip, the followed/driven car, recorder close-ups); cached per
+   // model, falling back to the light model if it fails. Same bounds as the original, so car_bounds.json still applies.
+   const carPrep=(g,v)=>{if(v.yaw!=null){g.scene.rotation.y=(v.yaw-90)*Math.PI/180;g.scene.updateMatrixWorld(true)}if(v.fix)g.scene.traverse(o=>{if(!o.isMesh||!o.material)return;const f=v.fix[o.material.name];if(!f)return;const m=o.material;m.color.setHex(f[0]);m.map=null;if(f[1]){m.emissive.setHex(f[0]);m.emissiveIntensity=1.2}if(f[2]){m.transparent=true;m.opacity=f[2]}m.metalness=Math.min(m.metalness,.4);m.needsUpdate=true});slimCar(T,g.scene,v);return g.scene};
+   const carFile=(k,v,hd)=>{const e=CAR_LOD[k];return ASSET_BASE+((e&&(hd?e.hd:e.light))||('assets/cars/'+v.file))};
+   const carLoad=async(k,v)=>{try{return await ld.loadAsync(carFile(k,v,false))}catch(e){if(!CAR_LOD[k])throw e;console.warn('car light model',k,e);return ld.loadAsync(ASSET_BASE+'assets/cars/'+v.file)}};
+   X.carsHD={};X.carHD=k=>{const v=CAR_GLB[k];if(!CAR_LOD[k]||!v)return Promise.resolve(null);// null: this car has a single level
+    return X.carsHD[k]||(X.carsHD[k]=ld.loadAsync(carFile(k,v,true)).then(g=>carPrep(g,v)).catch(e=>{console.warn('car HD model',k,e);return null}))};
+   if(LAZY_EAGER){await Promise.all(Object.entries(CAR_GLB).map(async([k,v])=>{try{const g=await carLoad(k,v);if(v.yaw!=null){g.scene.rotation.y=(v.yaw-90)*Math.PI/180;g.scene.updateMatrixWorld(true)}const bb=new T.Box3().setFromObject(g.scene,v.yaw!=null),sz=bb.getSize(new T.Vector3());v.len=Math.max(sz.x,sz.z);v.h=sz.y;v.y0=bb.min.y;v.cx=(bb.min.x+bb.max.x)/2;v.cz=(bb.min.z+bb.max.z)/2;if(v.rot==null)v.rot=(sz.x>sz.z?Math.PI/2:0)+(v.flip?Math.PI:0);
+   const b0=CAR_LOD[k]&&CAR_BOX[k];if(b0){v.len=b0.len;v.h=b0.h;v.y0=b0.y0;v.cx=b0.cx;v.cz=b0.cz}
    if(v.fix)g.scene.traverse(o=>{if(!o.isMesh||!o.material)return;const f=v.fix[o.material.name];if(!f)return;const m=o.material;m.color.setHex(f[0]);m.map=null;if(f[1]){m.emissive.setHex(f[0]);m.emissiveIntensity=1.2}if(f[2]){m.transparent=true;m.opacity=f[2]}m.metalness=Math.min(m.metalness,.4);m.needsUpdate=true});slimCar(T,g.scene,v);X.cars[k]=g.scene}catch(e){console.warn('car model',k,e)}}))}
    else{X.carBox={};X.carWait={};
     // car models arrive after the first frame: sizes come from src/data/cars/car_bounds.json (measured from the same
     // files), every car is built at once with a low-poly stand-in that the real model replaces when it lands
     for(const[k,v]of Object.entries(CAR_GLB)){const b=CAR_BOX[k];if(!b)continue;v.len=b.len;v.h=b.h;v.y0=b.y0;v.cx=b.cx;v.cz=b.cz;if(v.rot==null&&b.rot!=null)v.rot=b.rot;X.carBox[k]=b.box;X.cars[k]={lazyCar:true};
-     X.lazyQ.push({pri:1,name:k,run:async()=>{const g=await ld.loadAsync(ASSET_BASE+'assets/cars/'+v.file);if(v.yaw!=null){g.scene.rotation.y=(v.yaw-90)*Math.PI/180;g.scene.updateMatrixWorld(true)}
+     X.lazyQ.push({pri:1,name:k,run:async()=>{const g=await carLoad(k,v);if(v.yaw!=null){g.scene.rotation.y=(v.yaw-90)*Math.PI/180;g.scene.updateMatrixWorld(true)}
       if(v.fix)g.scene.traverse(o=>{if(!o.isMesh||!o.material)return;const f=v.fix[o.material.name];if(!f)return;const m=o.material;m.color.setHex(f[0]);m.map=null;if(f[1]){m.emissive.setHex(f[0]);m.emissiveIntensity=1.2}if(f[2]){m.transparent=true;m.opacity=f[2]}m.metalness=Math.min(m.metalness,.4);m.needsUpdate=true});slimCar(T,g.scene,v);X.cars[k]=g.scene;if(X.carArrived)X.carArrived(k)}})}}}catch(e){console.warn('gltf loader unavailable',e)}}}if(document.fonts&&document.fonts.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]);R3=make3D(T,X);if(X&&X.lazyQ)startLazy(X);return R3}
  catch(e){console.warn('3D view unavailable',e);R3=null;return null}
 }

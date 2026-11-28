@@ -281,7 +281,7 @@
     add(AT,new T.MeshStandardMaterial({map:tex,emissive:0xffffff,emissiveMap:tex,emissiveIntensity:.45,roughness:.8}),false);
     const gl=add(GL,new T.MeshStandardMaterial({color:0xcfe8ff,transparent:true,opacity:.16,roughness:.05,metalness:.1,depthWrite:false}),false);if(gl)gl.renderOrder=2;
     // the resident's car (the city's own car models, same as the traffic), picked for the resident; faces the roller door
-    const cm=P.model,car=carMesh({kind:'car',len:cm?cm.len:32,wid:cm?cm.wid:15,color:P.car,m:cm||{}});car.scale.setScalar(2);car.position.set(15.5,0,-1.1);car.rotation.y=H2;car.userData.share=1;R.add(car);HM.car=car;HM.cm=cm;
+    const cm=P.model,car=carMesh({kind:'car',len:cm?cm.len:32,wid:cm?cm.wid:15,color:P.car,m:cm||{}},{hd:1});car.scale.setScalar(2);car.position.set(15.5,0,-1.1);car.rotation.y=H2;car.userData.share=1;R.add(car);HM.car=car;HM.cm=cm;
     // the resident (civilian clothes at home) and a walk round the house
     HM.p=mkP(HM.S,null,(hh>>>8)%40,'civ');HM.p.userData.share=1;HM.wt=0;putP(HM.p,{x:-16.3,z:-2.5,ang:-H2},false);
     const S1=[-16.3,-2.5],K2=[-20,-7.6],S3=[1.3,-7.3],S4=[11.2,-8],S5=[20.6,-1.2],DL=[3,-5],DR=[7.2,-5];
