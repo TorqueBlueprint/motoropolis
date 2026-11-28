@@ -220,8 +220,9 @@ function drawHUD(){
  if(NEWUI&&!subsW){subsX=x;subsW=120}
  if(sv>MAXCARS&&!NEWUI){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
  if(subToast){const k=subToast.t/3;ctx.globalAlpha=1-k*k;ctx.font="800 34px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(16,19,24,.9)';const ty=118+k*40;ctx.strokeText(subToast.text,subsX+subsW/2,ty);ctx.fillText(subToast.text,subsX+subsW/2,ty);ctx.globalAlpha=1}
- // call to action
- ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;
+ // call to action and the news ticker (left out while the Drag Strip telemetry covers the bottom of the 3D view)
+ const dragTel=DRAG.hudAt&&performance.now()-DRAG.hudAt<250;
+ if(!dragTel){ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;
  const bxw=cw2+150,bxx=VW-22-bxw,bxy=VH-22-58-(NARROW?170:0);ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,bxx,bxy,bxw,58,10);ctx.fill();
  ctx.fillStyle='#e8322a';rrect(ctx,bxx+12,bxy+12,112,34,6);ctx.fill();ctx.fillStyle='#fff';ctx.font="800 18px 'Barlow Condensed', sans-serif";ctx.textAlign='center';ctx.fillText('SUBSCRIBE',bxx+68,bxy+35);
  ctx.textAlign='left';ctx.font="800 22px 'Barlow Condensed', sans-serif";ctx.fillStyle='#fff';ctx.fillText(cta,bxx+136,bxy+37);
@@ -229,7 +230,7 @@ function drawHUD(){
  if(rows.length){ctx.textAlign='left';const h=rows.length*30+16;ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,VH-22-h,760,h,10);ctx.fill();
   rows.forEach((r,i)=>{const y=VH-22-h+30+i*30;ctx.fillStyle=r.kind==='ok'?'#5cc98a':r.kind==='bad'?'#ff5a4f':'#6cb6ff';ctx.fillRect(38,y-14,5,18);
    ctx.font="500 15px 'JetBrains Mono', monospace";ctx.fillStyle='#9aa3ae';ctx.fillText(r.time,52,y);
-   ctx.font="500 18px 'Barlow', sans-serif";ctx.fillStyle=`rgba(238,240,242,${i===0?1:.82})`;let txt=r.text;while(ctx.measureText(txt).width>640&&txt.length>10)txt=txt.slice(0,-2);if(txt!==r.text)txt=txt.trim()+'…';ctx.fillText(txt,112,y)})}
+   ctx.font="500 18px 'Barlow', sans-serif";ctx.fillStyle=`rgba(238,240,242,${i===0?1:.82})`;let txt=r.text;while(ctx.measureText(txt).width>640&&txt.length>10)txt=txt.slice(0,-2);if(txt!==r.text)txt=txt.trim()+'…';ctx.fillText(txt,112,y)})}}
  ctx.restore();
 }
 function drawCeleb(){

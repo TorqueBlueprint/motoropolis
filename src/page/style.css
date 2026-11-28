@@ -537,3 +537,6 @@ html[data-rec="1"] .dv,html[data-rec="1"] .cd-dock,html[data-rec="1"] .cd-acts{d
 .ch-body{display:flex;flex-direction:column;gap:8px}
 .ch-body>*{flex:none}
 .ch-body input{width:100%}
+/* Drag Strip telemetry HUD (world/drag_hud.js): the collapse button on the 3D view */
+.dg-telbtn{position:absolute;z-index:3;font:800 11px 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:.04em;padding:3px 9px;border-radius:9px;border:1px solid rgba(255,122,26,.7);background:rgba(7,13,23,.86);color:#ffd34d;cursor:pointer;line-height:1.3}
+.dg-telbtn:hover{background:rgba(20,30,46,.95)}.dg-telbtn:focus-visible{outline:2px solid #46c8ff;outline-offset:2px}

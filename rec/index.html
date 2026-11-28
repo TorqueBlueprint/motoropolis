@@ -540,6 +540,9 @@ html[data-rec="1"] .dv,html[data-rec="1"] .cd-dock,html[data-rec="1"] .cd-acts{d
 .ch-body{display:flex;flex-direction:column;gap:8px}
 .ch-body>*{flex:none}
 .ch-body input{width:100%}
+/* Drag Strip telemetry HUD (world/drag_hud.js): the collapse button on the 3D view */
+.dg-telbtn{position:absolute;z-index:3;font:800 11px 'Barlow Condensed','Arial Narrow',sans-serif;letter-spacing:.04em;padding:3px 9px;border-radius:9px;border:1px solid rgba(255,122,26,.7);background:rgba(7,13,23,.86);color:#ffd34d;cursor:pointer;line-height:1.3}
+.dg-telbtn:hover{background:rgba(20,30,46,.95)}.dg-telbtn:focus-visible{outline:2px solid #46c8ff;outline-offset:2px}
 </style>
 <div id="app"><div class="app">
   <header class="hero">
@@ -2011,8 +2014,9 @@ function drawHUD(){
  if(NEWUI&&!subsW){subsX=x;subsW=120}
  if(sv>MAXCARS&&!NEWUI){ctx.font="600 14px 'Barlow', sans-serif";ctx.fillStyle='rgba(16,19,24,.86)';const t=`1 car ≈ ${Math.ceil(sv/MAXCARS).toLocaleString('en-US')} subscribers`;const tw2=ctx.measureText(t).width+20;rrect(ctx,VW-22-tw2,96,tw2,26,6);ctx.fill();ctx.fillStyle='#ffb36b';ctx.fillText(t,VW-32,114)}
  if(subToast){const k=subToast.t/3;ctx.globalAlpha=1-k*k;ctx.font="800 34px 'Barlow Condensed', sans-serif";ctx.fillStyle='#5cc98a';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='rgba(16,19,24,.9)';const ty=118+k*40;ctx.strokeText(subToast.text,subsX+subsW/2,ty);ctx.fillText(subToast.text,subsX+subsW/2,ty);ctx.globalAlpha=1}
- // call to action
- ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;
+ // call to action and the news ticker (left out while the Drag Strip telemetry covers the bottom of the 3D view)
+ const dragTel=DRAG.hudAt&&performance.now()-DRAG.hudAt<250;
+ if(!dragTel){ctx.textAlign='left';const cta='SUBSCRIBE AND HELP THE CITY GROW';ctx.font="800 22px 'Barlow Condensed', sans-serif";const cw2=ctx.measureText(cta).width;
  const bxw=cw2+150,bxx=VW-22-bxw,bxy=VH-22-58-(NARROW?170:0);ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,bxx,bxy,bxw,58,10);ctx.fill();
  ctx.fillStyle='#e8322a';rrect(ctx,bxx+12,bxy+12,112,34,6);ctx.fill();ctx.fillStyle='#fff';ctx.font="800 18px 'Barlow Condensed', sans-serif";ctx.textAlign='center';ctx.fillText('SUBSCRIBE',bxx+68,bxy+35);
  ctx.textAlign='left';ctx.font="800 22px 'Barlow Condensed', sans-serif";ctx.fillStyle='#fff';ctx.fillText(cta,bxx+136,bxy+37);
@@ -2020,7 +2024,7 @@ function drawHUD(){
  if(rows.length){ctx.textAlign='left';const h=rows.length*30+16;ctx.fillStyle='rgba(16,19,24,.86)';rrect(ctx,22,VH-22-h,760,h,10);ctx.fill();
   rows.forEach((r,i)=>{const y=VH-22-h+30+i*30;ctx.fillStyle=r.kind==='ok'?'#5cc98a':r.kind==='bad'?'#ff5a4f':'#6cb6ff';ctx.fillRect(38,y-14,5,18);
    ctx.font="500 15px 'JetBrains Mono', monospace";ctx.fillStyle='#9aa3ae';ctx.fillText(r.time,52,y);
-   ctx.font="500 18px 'Barlow', sans-serif";ctx.fillStyle=`rgba(238,240,242,${i===0?1:.82})`;let txt=r.text;while(ctx.measureText(txt).width>640&&txt.length>10)txt=txt.slice(0,-2);if(txt!==r.text)txt=txt.trim()+'…';ctx.fillText(txt,112,y)})}
+   ctx.font="500 18px 'Barlow', sans-serif";ctx.fillStyle=`rgba(238,240,242,${i===0?1:.82})`;let txt=r.text;while(ctx.measureText(txt).width>640&&txt.length>10)txt=txt.slice(0,-2);if(txt!==r.text)txt=txt.trim()+'…';ctx.fillText(txt,112,y)})}}
  ctx.restore();
 }
 function drawCeleb(){
@@ -2613,7 +2617,7 @@ function drawPeopleNames(){
 //  STATE.drag.tunes = {"<name>":"launch"|"topspeed"} is read when present (written later by the comment job); bets will be
 //  {name, pick:<entrant name>, coins, day} and are settled against day(date).heats.find(h=>h.id==='f').
 const DRAG=(()=>{
- const SPEC={"_doc":"Drag strip specs per car model (key = glb in models.json). hp at the crank, kg kerb mass (a driver of 80 kg is added), drive FWD/RWD/AWD, eng F/M/R = front/mid/rear engine (weight on the driven wheels), gears = forward gears, v1 / vtop = km/h at the rev limiter in 1st / top gear, shift = seconds without drive per gear change, cda = drag coefficient x frontal area (m2), mu = tyre grip on a prepared strip, launch = launch rpm as a fraction of the rev limiter. Fictional generic cars: no brands.","hothatch":{"hp":280,"kg":1420,"drive":"FWD","eng":"F","gears":6,"v1":62,"vtop":270,"shift":0.25,"cda":0.7,"mu":1.08,"launch":0.45},"gt12":{"hp":789,"kg":1630,"drive":"RWD","eng":"F","gears":7,"v1":88,"vtop":345,"shift":0.12,"cda":0.72,"mu":1.2,"launch":0.4},"v8sport":{"hp":300,"kg":1430,"drive":"RWD","eng":"F","gears":4,"v1":85,"vtop":235,"shift":0.45,"cda":0.75,"mu":0.9,"launch":0.4},"sportsaloon":{"hp":560,"kg":2000,"drive":"AWD","eng":"F","gears":8,"v1":64,"vtop":310,"shift":0.15,"cda":0.66,"mu":1.1,"launch":0.42},"sport3":{"hp":473,"kg":1730,"drive":"RWD","eng":"F","gears":8,"v1":62,"vtop":300,"shift":0.15,"cda":0.68,"mu":1.12,"launch":0.4},"saloon90":{"hp":238,"kg":1200,"drive":"RWD","eng":"F","gears":5,"v1":60,"vtop":250,"shift":0.4,"cda":0.66,"mu":1.02,"launch":0.48},"taxi":{"hp":150,"kg":1600,"drive":"FWD","eng":"F","gears":6,"v1":55,"vtop":215,"shift":0.35,"cda":0.72,"mu":0.98,"launch":0.38},"offroad":{"hp":278,"kg":2200,"drive":"AWD","eng":"F","gears":6,"v1":52,"vtop":200,"shift":0.35,"cda":1.15,"mu":0.95,"launch":0.35},"coupe85":{"hp":185,"kg":1200,"drive":"RWD","eng":"F","gears":5,"v1":60,"vtop":240,"shift":0.4,"cda":0.66,"mu":0.98,"launch":0.48},"sedan98":{"hp":170,"kg":1450,"drive":"RWD","eng":"F","gears":5,"v1":55,"vtop":225,"shift":0.4,"cda":0.68,"mu":0.98,"launch":0.42},"fastback65":{"hp":271,"kg":1400,"drive":"RWD","eng":"F","gears":4,"v1":80,"vtop":220,"shift":0.45,"cda":0.8,"mu":0.88,"launch":0.4},"midv10":{"hp":610,"kg":1500,"drive":"AWD","eng":"M","gears":7,"v1":80,"vtop":330,"shift":0.1,"cda":0.64,"mu":1.15,"launch":0.45},"jgt98":{"hp":320,"kg":1500,"drive":"RWD","eng":"F","gears":6,"v1":68,"vtop":285,"shift":0.35,"cda":0.68,"mu":1.05,"launch":0.5},"awd99":{"hp":330,"kg":1560,"drive":"AWD","eng":"F","gears":6,"v1":62,"vtop":280,"shift":0.35,"cda":0.7,"mu":1.08,"launch":0.55},"rearturbo":{"hp":640,"kg":1640,"drive":"AWD","eng":"R","gears":8,"v1":70,"vtop":330,"shift":0.09,"cda":0.66,"mu":1.18,"launch":0.48},"rwd24":{"hp":228,"kg":1280,"drive":"RWD","eng":"F","gears":6,"v1":62,"vtop":240,"shift":0.35,"cda":0.62,"mu":1.02,"launch":0.48},"ae86":{"hp":128,"kg":950,"drive":"RWD","eng":"F","gears":5,"v1":56,"vtop":210,"shift":0.4,"cda":0.62,"mu":0.95,"launch":0.52},"f40":{"hp":478,"kg":1100,"drive":"RWD","eng":"M","gears":5,"v1":95,"vtop":330,"shift":0.4,"cda":0.66,"mu":1.08,"launch":0.45},"venom":{"hp":1817,"kg":1360,"drive":"RWD","eng":"M","gears":7,"v1":115,"vtop":480,"shift":0.1,"cda":0.62,"mu":1.3,"launch":0.3},"amgone":{"hp":1049,"kg":1695,"drive":"AWD","eng":"M","gears":7,"v1":100,"vtop":360,"shift":0.1,"cda":0.85,"mu":1.22,"launch":0.4},"p1":{"hp":903,"kg":1490,"drive":"RWD","eng":"M","gears":7,"v1":95,"vtop":360,"shift":0.08,"cda":0.72,"mu":1.25,"launch":0.35},"etype":{"hp":265,"kg":1250,"drive":"RWD","eng":"F","gears":4,"v1":80,"vtop":240,"shift":0.45,"cda":0.62,"mu":0.88,"launch":0.42},"viper":{"hp":400,"kg":1490,"drive":"RWD","eng":"F","gears":6,"v1":85,"vtop":300,"shift":0.4,"cda":0.72,"mu":1.05,"launch":0.35},"miata":{"hp":116,"kg":960,"drive":"RWD","eng":"F","gears":5,"v1":55,"vtop":200,"shift":0.35,"cda":0.62,"mu":0.98,"launch":0.5},"svj":{"hp":759,"kg":1525,"drive":"AWD","eng":"M","gears":7,"v1":85,"vtop":350,"shift":0.08,"cda":0.7,"mu":1.2,"launch":0.45},"r32":{"hp":276,"kg":1430,"drive":"AWD","eng":"F","gears":5,"v1":65,"vtop":260,"shift":0.38,"cda":0.7,"mu":1.05,"launch":0.55},"charger":{"hp":600,"kg":1700,"drive":"RWD","eng":"F","gears":4,"v1":95,"vtop":270,"shift":0.4,"cda":0.82,"mu":0.92,"launch":0.32},"challenger":{"hp":717,"kg":1990,"drive":"RWD","eng":"F","gears":8,"v1":75,"vtop":320,"shift":0.15,"cda":0.8,"mu":1.12,"launch":0.3},"urus":{"hp":650,"kg":2200,"drive":"AWD","eng":"F","gears":8,"v1":62,"vtop":310,"shift":0.15,"cda":0.95,"mu":1.12,"launch":0.42},"evo9":{"hp":286,"kg":1400,"drive":"AWD","eng":"F","gears":5,"v1":60,"vtop":250,"shift":0.35,"cda":0.72,"mu":1.08,"launch":0.55}};
+ const SPEC={"_doc":"Drag strip specs per car model (key = glb in models.json). hp at the crank, kg kerb mass (a driver of 80 kg is added), drive FWD/RWD/AWD, eng F/M/R = front/mid/rear engine (weight on the driven wheels), gears = forward gears, v1 / vtop = km/h at the rev limiter in 1st / top gear, shift = seconds without drive per gear change, cda = drag coefficient x frontal area (m2), mu = tyre grip on a prepared strip, launch = launch rpm as a fraction of the rev limiter. Fictional generic cars: no brands. Telemetry only (the HUD; never used for the times): rpm = rev limiter, asp NA/T/S = naturally aspirated / turbo / supercharged, fuel P/D = petrol / diesel, boost = peak boost in bar (gauge), spool = fraction of the rev limiter at full boost, lag = turbo spool time constant in seconds.","hothatch":{"hp":280,"kg":1420,"drive":"FWD","eng":"F","gears":6,"v1":62,"vtop":270,"shift":0.25,"cda":0.7,"mu":1.08,"launch":0.45,"rpm":6800,"asp":"T","fuel":"P","boost":1.6,"spool":0.45,"lag":0.45},"gt12":{"hp":789,"kg":1630,"drive":"RWD","eng":"F","gears":7,"v1":88,"vtop":345,"shift":0.12,"cda":0.72,"mu":1.2,"launch":0.4,"rpm":8900,"asp":"NA","fuel":"P"},"v8sport":{"hp":300,"kg":1430,"drive":"RWD","eng":"F","gears":4,"v1":85,"vtop":235,"shift":0.45,"cda":0.75,"mu":0.9,"launch":0.4,"rpm":6000,"asp":"NA","fuel":"P"},"sportsaloon":{"hp":560,"kg":2000,"drive":"AWD","eng":"F","gears":8,"v1":64,"vtop":310,"shift":0.15,"cda":0.66,"mu":1.1,"launch":0.42,"rpm":7000,"asp":"T","fuel":"P","boost":1.5,"spool":0.38,"lag":0.4},"sport3":{"hp":473,"kg":1730,"drive":"RWD","eng":"F","gears":8,"v1":62,"vtop":300,"shift":0.15,"cda":0.68,"mu":1.12,"launch":0.4,"rpm":7200,"asp":"T","fuel":"P","boost":1.7,"spool":0.35,"lag":0.35},"saloon90":{"hp":238,"kg":1200,"drive":"RWD","eng":"F","gears":5,"v1":60,"vtop":250,"shift":0.4,"cda":0.66,"mu":1.02,"launch":0.48,"rpm":7600,"asp":"NA","fuel":"P"},"taxi":{"hp":150,"kg":1600,"drive":"FWD","eng":"F","gears":6,"v1":55,"vtop":215,"shift":0.35,"cda":0.72,"mu":0.98,"launch":0.38,"rpm":5000,"asp":"NA","fuel":"P"},"offroad":{"hp":278,"kg":2200,"drive":"AWD","eng":"F","gears":6,"v1":52,"vtop":200,"shift":0.35,"cda":1.15,"mu":0.95,"launch":0.35,"rpm":4800,"asp":"T","fuel":"D","boost":1.6,"spool":0.3,"lag":0.45},"coupe85":{"hp":185,"kg":1200,"drive":"RWD","eng":"F","gears":5,"v1":60,"vtop":240,"shift":0.4,"cda":0.66,"mu":0.98,"launch":0.48,"rpm":7250,"asp":"NA","fuel":"P"},"sedan98":{"hp":170,"kg":1450,"drive":"RWD","eng":"F","gears":5,"v1":55,"vtop":225,"shift":0.4,"cda":0.68,"mu":0.98,"launch":0.42,"rpm":6500,"asp":"NA","fuel":"P"},"fastback65":{"hp":271,"kg":1400,"drive":"RWD","eng":"F","gears":4,"v1":80,"vtop":220,"shift":0.45,"cda":0.8,"mu":0.88,"launch":0.4,"rpm":6000,"asp":"NA","fuel":"P"},"midv10":{"hp":610,"kg":1500,"drive":"AWD","eng":"M","gears":7,"v1":80,"vtop":330,"shift":0.1,"cda":0.64,"mu":1.15,"launch":0.45,"rpm":8500,"asp":"NA","fuel":"P"},"jgt98":{"hp":320,"kg":1500,"drive":"RWD","eng":"F","gears":6,"v1":68,"vtop":285,"shift":0.35,"cda":0.68,"mu":1.05,"launch":0.5,"rpm":6800,"asp":"T","fuel":"P","boost":1.1,"spool":0.55,"lag":0.7},"awd99":{"hp":330,"kg":1560,"drive":"AWD","eng":"F","gears":6,"v1":62,"vtop":280,"shift":0.35,"cda":0.7,"mu":1.08,"launch":0.55,"rpm":8000,"asp":"T","fuel":"P","boost":1.0,"spool":0.5,"lag":0.6},"rearturbo":{"hp":640,"kg":1640,"drive":"AWD","eng":"R","gears":8,"v1":70,"vtop":330,"shift":0.09,"cda":0.66,"mu":1.18,"launch":0.48,"rpm":7200,"asp":"T","fuel":"P","boost":1.4,"spool":0.35,"lag":0.3},"rwd24":{"hp":228,"kg":1280,"drive":"RWD","eng":"F","gears":6,"v1":62,"vtop":240,"shift":0.35,"cda":0.62,"mu":1.02,"launch":0.48,"rpm":7500,"asp":"NA","fuel":"P"},"ae86":{"hp":128,"kg":950,"drive":"RWD","eng":"F","gears":5,"v1":56,"vtop":210,"shift":0.4,"cda":0.62,"mu":0.95,"launch":0.52,"rpm":7600,"asp":"NA","fuel":"P"},"f40":{"hp":478,"kg":1100,"drive":"RWD","eng":"M","gears":5,"v1":95,"vtop":330,"shift":0.4,"cda":0.66,"mu":1.08,"launch":0.45,"rpm":7750,"asp":"T","fuel":"P","boost":1.1,"spool":0.55,"lag":0.8},"venom":{"hp":1817,"kg":1360,"drive":"RWD","eng":"M","gears":7,"v1":115,"vtop":480,"shift":0.1,"cda":0.62,"mu":1.3,"launch":0.3,"rpm":8000,"asp":"T","fuel":"P","boost":1.9,"spool":0.5,"lag":0.55},"amgone":{"hp":1049,"kg":1695,"drive":"AWD","eng":"M","gears":7,"v1":100,"vtop":360,"shift":0.1,"cda":0.85,"mu":1.22,"launch":0.4,"rpm":11000,"asp":"T","fuel":"P","boost":2.0,"spool":0.3,"lag":0.12},"p1":{"hp":903,"kg":1490,"drive":"RWD","eng":"M","gears":7,"v1":95,"vtop":360,"shift":0.08,"cda":0.72,"mu":1.25,"launch":0.35,"rpm":8500,"asp":"T","fuel":"P","boost":2.0,"spool":0.45,"lag":0.35},"etype":{"hp":265,"kg":1250,"drive":"RWD","eng":"F","gears":4,"v1":80,"vtop":240,"shift":0.45,"cda":0.62,"mu":0.88,"launch":0.42,"rpm":5500,"asp":"NA","fuel":"P"},"viper":{"hp":400,"kg":1490,"drive":"RWD","eng":"F","gears":6,"v1":85,"vtop":300,"shift":0.4,"cda":0.72,"mu":1.05,"launch":0.35,"rpm":6000,"asp":"NA","fuel":"P"},"miata":{"hp":116,"kg":960,"drive":"RWD","eng":"F","gears":5,"v1":55,"vtop":200,"shift":0.35,"cda":0.62,"mu":0.98,"launch":0.5,"rpm":7200,"asp":"NA","fuel":"P"},"svj":{"hp":759,"kg":1525,"drive":"AWD","eng":"M","gears":7,"v1":85,"vtop":350,"shift":0.08,"cda":0.7,"mu":1.2,"launch":0.45,"rpm":8700,"asp":"NA","fuel":"P"},"r32":{"hp":276,"kg":1430,"drive":"AWD","eng":"F","gears":5,"v1":65,"vtop":260,"shift":0.38,"cda":0.7,"mu":1.05,"launch":0.55,"rpm":8000,"asp":"T","fuel":"P","boost":0.8,"spool":0.5,"lag":0.6},"charger":{"hp":600,"kg":1700,"drive":"RWD","eng":"F","gears":4,"v1":95,"vtop":270,"shift":0.4,"cda":0.82,"mu":0.92,"launch":0.32,"rpm":6500,"asp":"S","fuel":"P","boost":0.6},"challenger":{"hp":717,"kg":1990,"drive":"RWD","eng":"F","gears":8,"v1":75,"vtop":320,"shift":0.15,"cda":0.8,"mu":1.12,"launch":0.3,"rpm":6200,"asp":"S","fuel":"P","boost":0.8},"urus":{"hp":650,"kg":2200,"drive":"AWD","eng":"F","gears":8,"v1":62,"vtop":310,"shift":0.15,"cda":0.95,"mu":1.12,"launch":0.42,"rpm":6800,"asp":"T","fuel":"P","boost":1.2,"spool":0.32,"lag":0.35},"evo9":{"hp":286,"kg":1400,"drive":"AWD","eng":"F","gears":5,"v1":60,"vtop":250,"shift":0.35,"cda":0.72,"mu":1.08,"launch":0.55,"rpm":7000,"asp":"T","fuel":"P","boost":1.4,"spool":0.45,"lag":0.5}};
  const QM=402.336,EM=201.168,FT60=18.288,ROLL=.3,G=9.81,RHO=1.2,DT=.002;
  const FORCE0=typeof location!=='undefined'&&/[?&]drag=1\b/.test(location.search);let force=FORCE0;
  // ---- seeded numbers ----
@@ -2634,26 +2638,59 @@ const DRAG=(()=>{
   const wr=s.eng==='R'?.61:s.eng==='M'?.57:.5,wf=s.eng==='F'?.62:1-wr;
   return{m:s.kg+80,P:s.hp*745.7*eff*tu.power,vg,n,shift:s.shift,cda:s.cda*tu.cda,mu:s.mu*tu.grip,drive:s.drive,wr,wf,launch:Math.min(.75,Math.max(.25,s.launch+tu.launch))}}
  const pw=x=>{if(x<=0)return 0;const y=x+x*x-x*x*x;return y<.05?.05:y};
- // o: {glb, tune, grip (day x run), power (day air x run), shiftK (driver's shift time x), ldl (launch rpm +-)}; trace: also sample x every 0.05 s (for the 3D replay)
+ // o: {glb, tune, grip (day x run), power (day air x run), shiftK (driver's shift time x), ldl (launch rpm +-), amb (air
+ // temperature in C, telemetry only)}; trace: also sample every 0.05 s from the moment the car moves (for the 3D replay):
+ // trace = x (m), tel = the telemetry HUD's time-series (see telem()). The telemetry is read from the integrator's own state
+ // (speed, gear, rpm, traction limit, throttle) and never feeds back into it, so the times are the same with or without it.
+ const SPL=[[18.288,'t60'],[100.584,'t330'],[201.168,'t8'],[304.8,'t1000']];
  function run(o,trace){const c=prep(o.glb,o.tune),m=c.m,mi=m*1.05,W=m*G,roll=.013*W;
-  const shT=c.shift*(o.shiftK||1),lch=Math.min(.8,Math.max(.2,c.launch+(o.ldl||0)));let x=0,v=0,a=0,t=0,g=0,sh=0,tr=null,t60=0,t8=0,v8=0,tR=0,last=0;const out=trace?[0]:null;const P=c.P*(o.power||1),mu=c.mu*(o.grip||1);
+  const shT=c.shift*(o.shiftK||1),lch=Math.min(.8,Math.max(.2,c.launch+(o.ldl||0)));let x=0,v=0,a=0,t=0,g=0,sh=0,tr=null,t60=0,t330=0,t8=0,t1000=0,v8=0,tR=0,last=0;const out=trace?[0]:null;const P=c.P*(o.power||1),mu=c.mu*(o.grip||1);
+  const TL=trace?telem(o.glb,o.amb,lch,shT):null;
   for(let it=0;it<20000;it++){
-   let F=0;
-   if(sh>0){sh-=DT;if(sh<=0)g++}
-   else{const vmax=c.vg[g];let r=v/vmax;if(g===0&&r<lch)r=lch;
-    if(r>=1&&g<c.n-1){sh=shT;F=0}
+   let F=0,F0=0,rr=0,th=1;
+   if(sh>0){sh-=DT;if(sh<=0)g++;
+    if(TL){const rB=g<c.n-1||sh<=0?v/c.vg[sh>0?g+1:g]:1;rr=sh>0?1+(rB-1)*(1-sh/shT):rB;th=TL.flat?1:0}}
+   else{const vmax=c.vg[g];let r=v/vmax;if(g===0&&r<lch)r=lch;rr=r;
+    if(r>=1&&g<c.n-1){sh=shT;F=0;if(TL){TL.sh.push(t);th=TL.flat?1:0}}
     else if(r<1.02){const vr=r*vmax;F=P*pw(r/.88)/(vr>v?vr:v>.5?v:.5)}}
    // traction limit
-   const fr=c.drive==='AWD'?.98:c.drive==='FWD'?c.wf-.25*a/G:c.wr+.25*a/G,Tm=mu*W*(fr<.2?.2:fr);if(F>Tm)F=Tm;
+   const fr=c.drive==='AWD'?.98:c.drive==='FWD'?c.wf-.25*a/G:c.wr+.25*a/G,Tm=mu*W*(fr<.2?.2:fr);F0=F;if(F>Tm)F=Tm;
    const Fd=.5*RHO*c.cda*v*v+(v>0?roll:0);a=(F-Fd)/mi;v+=a*DT;if(v<0)v=0;const x0=x;x+=v*DT;t+=DT;
+   if(TL)TL.step(rr,th,F0>F&&F0>0?(F0-F)/F0:0,v);
    if(!tR&&x>=ROLL)tR=t-(x-ROLL)/(v||1);
    const cross=d=>t-(x-d)/(v||1);
    if(!t60&&x>=FT60+ROLL)t60=cross(FT60+ROLL)-tR;
+   if(!t330&&x>=100.584+ROLL)t330=cross(100.584+ROLL)-tR;
    if(!t8&&x>=EM+ROLL){t8=cross(EM+ROLL)-tR;v8=v}
-   if(trace&&t-last>=.05-1e-9){last+=.05;out.push(x)}
-   if(x>=QM+ROLL){const et=cross(QM+ROLL)-tR;if(trace)out.push(x);return{t60,t8,v8,et,vt:v,tR,trace:out}}
+   if(!t1000&&x>=304.8+ROLL)t1000=cross(304.8+ROLL)-tR;
+   if(trace&&t-last>=.05-1e-9){last+=.05;out.push(x);TL.push(v,g)}
+   if(x>=QM+ROLL){const et=cross(QM+ROLL)-tR;if(trace){out.push(x);TL.push(v,g)}return{t60,t330,t8,t1000,v8,et,vt:v,tR,trace:out,tel:TL&&TL.done()}}
    if(x0===x&&it>1000)break}
-  return{t60:99,t8:99,v8:0,et:99,vt:0,tR:0,trace:out}}
+  return{t60:99,t330:99,t8:99,t1000:99,v8:0,et:99,vt:0,tR:0,trace:out,tel:TL&&TL.done()}}
+ // ---- telemetry (the HUD only): rpm, gear, throttle, wheelspin, boost, intake air and exhaust gas temperatures ----
+ // rpm = the integrator's engine speed (road speed / gear, the clutch-slip launch rpm, the fall to the next gear while
+ // shifting) x the rev limiter. Throttle: flat out, lifted while a manual gearbox shifts (quick gearboxes shift flat, with
+ // an ignition cut). Wheelspin: the share of the engine's drive the tyres cannot put down (the traction limit).
+ // Boost (bar, gauge): turbo = spools with rpm and load through a first-order lag ("turbo lag"), dumps when the throttle
+ // closes; supercharged = follows rpm at once; NA = 0. Intake air: ambient + heat soak + what the intercooler leaves of the
+ // compressor's heat (isentropic rise / 72 % efficiency); exhaust gas: idle to full load with rpm, slower thermal lag.
+ // Diesel soot: fuel ahead of air (load with the boost still behind its target) = black smoke.
+ // Uses Math.pow: display only, never part of a result.
+ function telem(glb,amb,lch,shT){const s=SPEC[glb]||SPEC.hothatch,asp=s.asp||'NA',dsl=s.fuel==='D',B=s.boost||0,sp=s.spool||.45,lag=s.lag||.5,Ta=amb==null?15:amb;
+  const tgt=(r,th)=>asp==='T'?B*th*(r<=sp-.22?0:r>=sp?1:(u=>u*u*(3-2*u))((r-sp+.22)/.22)):asp==='S'?B*th*(.75+.25*(r>.6?1:r/.6)):0;
+  const Tid=dsl?180:380,Tfull=dsl?720:asp==='T'?900:asp==='S'?840:820,eps=asp==='S'?.62:.72;
+  const iatT=(b,v)=>{const pr=(b+1.013)/1.013,dT=(Ta+273.15)*(Math.pow(pr,.2857)-1)/.72;return Ta+7*(1-.6*(v>40?1:v/40))+(1-eps)*dT};
+  const egtT=(r,th)=>Tid+(Tfull-Tid)*th*(.55+.45*r);
+  // before the green: launch control holds lch against the clutch with little load (a quarter); turbo petrol cars get a
+  // 2-step (retarded spark: some boost and a hotter exhaust), a diesel only light boost
+  const two=asp==='T'&&!dsl,bLC=tgt(lch,.25)+(two?B*.4:0),lc={r:lch,b:bLC>B?B:bLC,iat:iatT(bLC,0),egt:egtT(lch,.35)+(two?120:0)};
+  const idle={r:(dsl?800:850)/s.rpm,b:0,iat:Ta+7,egt:Tid};
+  let b=lc.b,iat=lc.iat,egt=lc.egt,rr=lch,th=1,spn=0,so=0;const A={v:[0],r:[lch],g:[0],th:[1],sp:[0],b:[b],iat:[iat],egt:[egt],so:[0]},sh=[];
+  return{flat:shT<.2,sh,
+   step(r,t,spin,v){rr=r;th=t;spn=spin;const bt=tgt(r,t),k=bt>b?DT/(asp==='T'?lag:.05):DT/.12;b+=(bt-b)*(k>1?1:k);
+    iat+=(iatT(b,v)-iat)*DT/1.2;egt+=(egtT(r,t)-egt)*DT/.9;so=dsl&&t>0?Math.min(1,.15+(bt>b?(bt-b)/(B||1):0)*1.6):0},
+   push(v,g){A.v.push(v);A.r.push(rr);A.g.push(g);A.th.push(th);A.sp.push(spn);A.b.push(b);A.iat.push(iat);A.egt.push(egt);A.so.push(so)},
+   done(){const o={dt:.05,rpm:s.rpm,asp,fuel:dsl?'D':'P',boost:B,hp:s.hp,drive:s.drive,gears:s.gears,lc,idle,sh};for(const k in A)o[k]=Float32Array.from(A[k]);return o}}}
  // ---- who races: every subscriber car (up to what the streets hold); Wall of Mechanics names drive theirs ----
  const plateOf=k=>{const r=rng(h32('plate|'+k)),l=()=>L2[Math.floor(r()*L2.length)];return `${l()}${l()}${l()} ${String(Math.floor(r()*10000)).padStart(4,'0')}`};
  function entrant(key,name){const hm=h32('car|'+key),m=MODELS[hm%MODELS.length],hc=h32('col|'+key),r=rng(h32('drv|'+key));
@@ -2668,13 +2705,29 @@ const DRAG=(()=>{
  const ROUND={q:'Qualifying',qf:'Quarter-final',sf:'Semi-final',f:'Final'};
  const dayCache=new Map(),dialCache=new Map();
  const dialOf=(glb,tune)=>{const k=glb+'|'+tune;if(!dialCache.has(k))dialCache.set(k,Math.ceil((run({glb,tune,grip:.99}).et+.04)*100)/100);return dialCache.get(k)};
+ // one pass down the strip for entrant e in a lane: the driver's day (grip, air, shift and launch consistency, reaction time)
+ // from the seeded numbers r; air and track are the day's conditions. amb = the air temperature (telemetry only).
+ function passOf(r,air,track,e,lane){const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000,res=run({glb:e.glb,tune,grip,power,shiftK,ldl});
+  return{e,lane,o:{glb:e.glb,tune,grip,power,shiftK,ldl,amb:ambOf(air)},dial:dialOf(e.glb,tune),rt,red:rt<.4,t60:res.t60,t8:res.t8,v8:res.v8,et:res.et,vt:res.vt,tR:res.tR,tune}}
+ // the day's air temperature from its air density factor (ideal gas: 3 % denser air = about 9 C colder); telemetry only
+ const ambOf=air=>Math.round((15+(1-air)*290)*10)/10;
+ // margin at the line in seconds (null for a bye or a red light)
+ const margin=h=>{const a=h.lanes[0],b=h.lanes[1];return!a||!b||a.red||b.red?null:Math.abs((a.rt+a.et)-(b.rt+b.et))};
+ // ---- a one-off heads-up race between two given cars (the "Challenge to a drag race" button) ----
+ // car: a Wall of Mechanics name (string; their own car) or {glb, name?, plate?, color?}. Seeded by the UTC date, both cars
+ // and o.seed, so the same challenge gives the same race for every viewer on the same day; the day's air and track.
+ function carOf(c){if(typeof c==='string'){const k=c.toLowerCase(),f=entrants().find(q=>q.name&&q.name.toLowerCase()===k);return f||entrant(k,c)}
+  if(!c||!c.glb)return null;const key=String(c.name||c.plate||c.glb).toLowerCase(),e=entrant(key,c.name||null),m=MODELS.find(q=>q.glb===c.glb);
+  return Object.assign(e,{id:'c:'+key+'|'+c.glb,glb:c.glb,model:m?m.n:c.glb,plate:c.plate||e.plate,color:c.color||e.color})}
+ function heads(a,b,o){o=o||{};const date=o.date||today(),A=carOf(a),Bc=carOf(b);if(!A||!Bc)return null;
+  const r0=rng(h32('drag|'+date)),air=.97+r0()*.05,track=.96+r0()*.06,r=rng(h32('h2h|'+date+'|'+(o.seed||'')+'|'+A.id+'|'+Bc.id));
+  const L=[passOf(r,air,track,A,0),passOf(r,air,track,Bc,1)],h={id:'h2h',round:'h2h',label:o.label||'Challenge',lanes:L,win:judge(L[0],L[1]),date};h.margin=margin(h);return h}
  // who wins a heat: 0 or 1
  function judge(a,b){if(!b)return 0;if(!a)return 1;if(a.red!==b.red)return a.red?1:0;if(a.red)return a.rt<=b.rt?1:0;
   return(a.rt+a.et)<=(b.rt+b.et)?0:1}
  function day(date){const E=entrants();const key=date+'|'+eSig+'|'+JSON.stringify((typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes)||0);if(dayCache.has(key))return dayCache.get(key);
   const r=rng(h32('drag|'+date)),air=.97+r()*.05,track=.96+r()*.06;
-  const pass=(e,lane)=>{const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000,res=run({glb:e.glb,tune,grip,power,shiftK,ldl});
-   return{e,lane,o:{glb:e.glb,tune,grip,power,shiftK,ldl},dial:dialOf(e.glb,tune),rt,red:rt<.4,t60:res.t60,t8:res.t8,v8:res.v8,et:res.et,vt:res.vt,tR:res.tR,tune}};
+  const pass=(e,lane)=>passOf(r,air,track,e,lane);
   const heat=(id,round,a,b)=>{const L=[a?pass(a,0):null,b?pass(b,1):null];
    return{id,round,label:round==='q'?ROUND.q:ROUND[round]+(/\d/.test(id)?' '+id.replace(/\D/g,''):''),lanes:L,win:judge(L[0],L[1])}};
   // qualifying: everyone, in pairs, in a seeded order
@@ -2705,7 +2758,7 @@ const DRAG=(()=>{
  const fmt={et:t=>t.toFixed(3)+' s',rt:t=>t.toFixed(3)+' s',mph:v=>(v*2.236936).toFixed(1)+' mph',kmh:v=>(v*3.6).toFixed(1)+' km/h',spd:v=>(v*2.236936).toFixed(1)+' mph · '+(v*3.6).toFixed(1)+' km/h',who:e=>e.name||e.plate,
   QM:'1/4 mile · 402 m',EM:'1/8 mile · 201 m',FT60:'60 ft · 18 m'};
  const isOpenNow=()=>force||(subs!==null&&subs>=MS.pista.n);
- return{SPEC,TUNES,judge,dialOf,QM,EM,FT60,ROLL,run,day,week,person,entrants,today,addDays,weekDays,fmt,isOpen:isOpenNow,force:v=>{force=!!v||FORCE0},forced:()=>force,h32,rng}})();
+ return{SPEC,TUNES,judge,heads,margin,ambOf,SPL,dialOf,QM,EM,FT60,ROLL,run,day,week,person,entrants,today,addDays,weekDays,fmt,hudAt:0,isOpen:isOpenNow,force:v=>{force=!!v||FORCE0},forced:()=>force,h32,rng}})();
 // ---------- 3D view (three.js, loaded on demand; the simulation above stays the same) ----------
 const THREE_URL='https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js';
 const ADDON=p=>'https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/'+p;
@@ -5546,17 +5599,70 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
     for(let q=0;q<5;q++)for(const s of[-1,1]){const x=x0+20+q*(L-40)/4,z=zc+s*(s<0?26:16.5);if(s>0&&Math.abs(x-(XF-12))<16)continue;B0(g,.3,12,.3,mat.dark,x,0,z);B0(g,2.4,.4,.8,mat.dark,x,12,z)}
     // the two race cars (rebuilt for every heat) and the burnout smoke
     const cg=new T.Group();cg.userData.nm=1;g.add(cg);D3.cg=cg;D3.cars=[null,null];
-    D3.puffs=[];const smk=mt.smoke;for(let k=0;k<2;k++)for(let q=0;q<5;q++){const p=new T.Mesh(new T.SphereGeometry(1,10,8),smk);p.visible=false;p.castShadow=false;cg.add(p);D3.puffs.push({m:p,k,q})}
+    fxBuild(cg);
     return g}
+   // ---------- effects: one instanced mesh for all the smoke, one for the exhaust flames (2 draw calls, none when idle) ----------
+   // fixed pools, no allocation per frame. Tyre smoke: the burnout and wheelspin at the launch (the traction limit of the
+   // pass); diesel: black smoke while the fuel is ahead of the air (launch, every shift); petrol cars of 450 hp and more pop
+   // flames on every upshift; turbo petrol cars crackle on the 2-step before the green.
+   const NS=140,NF=24,FX={sm:null,fl:null,p:new Float32Array(NS*3),v:new Float32Array(NS*3),age:new Float32Array(NS),life:new Float32Array(NS),s0:new Float32Array(NS),s1:new Float32Array(NS),kind:new Uint8Array(NS),
+    fp:new Float32Array(NF*3),fk:new Int8Array(NF),fage:new Float32Array(NF),flife:new Float32Array(NF),flen:new Float32Array(NF),si:0,fi:0,live:0,flive:0,seed:12345,m4:new T.Matrix4(),col:new T.Color(),c0:new T.Color(0xdfe1e4),c1:new T.Color(0x18181a),c2:new T.Color(0x8d9096),c3:new T.Color(0xffffff),c4:new T.Color(0xff6a3a)};
+   const frnd=()=>{FX.seed=(FX.seed*1664525+1013904223)>>>0;return FX.seed/4294967296}; // visual jitter only (not Math.random, not the races)
+   // exhaust flame: a slim teardrop (narrow at the pipe, fullest a quarter of the way out, tapering to a point): a blue-ish
+   // root, an orange outer flame that reddens and fades out to the tip, and a short white-yellow core at the pipe. Colours
+   // carry alpha (normal blending, so it still reads as orange on the snow and the pale concrete).
+   function flameGeo(){const P=[],C=[],I=[];
+    // stops: [t, r, g, b, a] along the flame (t 0 at the pipe, 1 at the tip)
+    function layer(len,rad,stops){const prof=[],N=10;for(let k=0;k<=N;k++){const t=k/N,r=rad*(t<.22?.42+2.6*t:Math.max(0,(1-t)/.78)**.8);prof.push(new T.Vector2(Math.max(r,k===N?0:.004),t*len))}
+     const g=new T.LatheGeometry(prof,10),pos=g.attributes.position,b=P.length/3;
+     for(let v=0;v<pos.count;v++){const t=Math.min(1,pos.getY(v)/len);let s=0;while(s<stops.length-2&&t>stops[s+1][0])s++;const A=stops[s],B=stops[s+1],f=Math.min(1,Math.max(0,(t-A[0])/(B[0]-A[0])));
+      P.push(pos.getX(v),pos.getY(v),pos.getZ(v));for(let q=1;q<5;q++)C.push(A[q]+(B[q]-A[q])*f)}
+     const ix=g.index.array;for(let k=0;k<ix.length;k++)I.push(ix[k]+b);g.dispose()}
+    layer(1,.08,[[0,.4,.5,1,.5],[.1,1,.55,.1,.92],[.45,1,.34,.02,.88],[.8,.88,.14,0,.4],[1,.6,.06,0,0]]);
+    layer(.36,.036,[[0,1,1,.92,1],[.5,1,.9,.5,.95],[1,1,.6,.1,0]]);
+    const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setAttribute('color',new T.Float32BufferAttribute(C,4));g.setIndex(I);g.rotateZ(Math.PI/2);return g}
+   function fxBuild(cg){const sm=new T.InstancedMesh(new T.IcosahedronGeometry(1,1),new T.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.45,roughness:1,depthWrite:false}),NS);
+    const fl=new T.InstancedMesh(flameGeo(),new T.MeshBasicMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,fog:false,toneMapped:false,side:T.DoubleSide}),NF);
+    FX.m4.makeScale(0,0,0);for(let i=0;i<NS;i++){sm.setMatrixAt(i,FX.m4);sm.setColorAt(i,FX.c0);FX.age[i]=FX.life[i]=0}for(let i=0;i<NF;i++){fl.setMatrixAt(i,FX.m4);fl.setColorAt(i,FX.c3);FX.fage[i]=FX.flife[i]=0}
+    for(const m of[sm,fl]){m.frustumCulled=false;m.castShadow=false;m.receiveShadow=false;m.visible=false;m.userData.nm=1;cg.add(m)}FX.sm=sm;FX.fl=fl;FX.live=FX.flive=0}
+   // kind: 0 tyre smoke (light grey), 1 diesel soot (black, greys as it thins), 2 exhaust haze
+   function puff(x,y,z,vx,vy,vz,life,s0,s1,kind){const i=FX.si;FX.si=(i+1)%NS;const j=i*3;FX.p[j]=x;FX.p[j+1]=y;FX.p[j+2]=z;FX.v[j]=vx;FX.v[j+1]=vy;FX.v[j+2]=vz;FX.age[i]=0;FX.life[i]=life;FX.s0[i]=s0;FX.s1[i]=s1;FX.kind[i]=kind;FX.live=NS}
+   // flames ride with the car: fp holds the offset from the car's tail (fk = its lane)
+   function flame(C,x,y,z,life,len){const i=FX.fi;FX.fi=(i+1)%NF;const j=i*3;FX.fk[i]=D3.cars.indexOf(C);FX.fp[j]=x;FX.fp[j+1]=y;FX.fp[j+2]=z;FX.fage[i]=0;FX.flife[i]=life;FX.flen[i]=len;FX.flive=NF}
+   function fxLane(C,t,dt){if(!FX.sm||!C.g.visible)return;const S2=C.st,A=C.acc,ex=C.x+C.rear,y0=.42;
+    // tyre smoke: the burnout, then the launch while the tyres spin
+    let rate=S2.ph===1?30:S2.ph===4&&S2.sp>.1&&S2.v<28?24*S2.sp*(1-S2.v/28):0;
+    if(rate){A[0]+=rate*dt;while(A[0]>=1){A[0]--;const side=frnd()<.5?-1:1,b=S2.ph===1;puff(ex+.9+frnd()*.3,.35,C.z+side*C.half,-.6-frnd()*.8,.5+frnd()*.5,side*(.3+frnd()*.4),b?1.1+frnd()*.6:.7+frnd()*.4,.3,b?1.7+frnd()*.7:1+frnd()*.5,0)}}
+    // diesel: soot while the fuel is ahead of the air
+    rate=C.dsl&&(S2.ph===3||S2.ph===4)?(S2.so>.2?S2.so*30:S2.so*8):0;
+    if(rate){A[1]+=rate*dt;while(A[1]>=1){A[1]--;puff(ex-.1,y0,C.z-.45,-1.2-frnd(),.9+frnd()*.6,(frnd()-.5)*.6,1+frnd()*.5,.18,.8+frnd()*.6*S2.so,1)}}
+    // flames: upshifts (petrol, 450 hp and more), the 2-step crackle before the green (turbo petrol)
+    const sh=C.tel.sh;if(S2.ph===4){if(C.ptt<0)C.shI=0;while(C.shI<sh.length&&sh[C.shI]<=S2.tt){if(C.pops&&S2.tt-sh[C.shI]<.3){for(const s of[-.42,.42])flame(C,0,y0,s,.16,.8+frnd()*.4);A[3]=.09}C.shI++}C.ptt=S2.tt}else C.ptt=-1;
+    if(A[3]>0){A[3]-=dt;if(A[3]<=0&&C.pops)for(const s of[-.42,.42])flame(C,0,y0,s,.1,.55+frnd()*.3)}
+    if(S2.ph===3&&C.two){A[2]+=dt*(5+frnd()*4);if(A[2]>=1){A[2]=0;flame(C,0,y0,frnd()<.5?-.42:.42,.07,.4+frnd()*.3);puff(ex-.1,y0,C.z,-.5,.6,0,.6,.15,.6,2)}}}
+   function fxStep(dt){if(!FX.sm)return;const M4=FX.m4;
+    if(FX.live){let live=0;for(let i=0;i<NS;i++){if(FX.age[i]>=FX.life[i]){continue}FX.age[i]+=dt;const j=i*3,u=FX.age[i]/FX.life[i];
+      if(u>=1){M4.makeScale(0,0,0);FX.sm.setMatrixAt(i,M4);continue}live++;const dr=1-1.6*dt;FX.v[j]*=dr;FX.v[j+2]*=dr;FX.p[j]+=FX.v[j]*dt;FX.p[j+1]+=FX.v[j+1]*dt;FX.p[j+2]+=FX.v[j+2]*dt;
+      const sc=(FX.s0[i]+(FX.s1[i]-FX.s0[i])*Math.sqrt(u))*(u>.75?1-(u-.75)*3.2:1);M4.makeScale(sc,sc*.8,sc).setPosition(FX.p[j],FX.p[j+1],FX.p[j+2]);FX.sm.setMatrixAt(i,M4);
+      const k=FX.kind[i];if(k===1)FX.col.copy(FX.c1).lerp(FX.c2,u*.8);else FX.col.copy(k===2?FX.c2:FX.c0);FX.sm.setColorAt(i,FX.col)}
+     FX.sm.instanceMatrix.needsUpdate=true;FX.sm.instanceColor.needsUpdate=true;FX.live=live;FX.sm.visible=live>0;if(!live){M4.makeScale(0,0,0);for(let i=0;i<NS;i++)FX.sm.setMatrixAt(i,M4)}}
+    if(FX.flive){let live=0;for(let i=0;i<NF;i++){if(FX.fage[i]>=FX.flife[i])continue;FX.fage[i]+=dt;const u=FX.fage[i]/FX.flife[i];if(u>=1){M4.makeScale(0,0,0);FX.fl.setMatrixAt(i,M4);continue}const Cf=D3.cars[FX.fk[i]];if(!Cf||!Cf.g.visible){FX.fage[i]=FX.flife[i];M4.makeScale(0,0,0);FX.fl.setMatrixAt(i,M4);continue}live++;
+      const j=i*3,L=FX.flen[i]*(u<.2?.45+2.75*u:1.25-.75*u),w=(1-.4*u)*(.88+.24*Math.sin(FX.fage[i]*90+i));M4.makeScale(L,w,w).setPosition(Cf.x+Cf.rear+FX.fp[j],FX.fp[j+1],Cf.z+FX.fp[j+2]);FX.fl.setMatrixAt(i,M4);FX.col.copy(FX.c3).lerp(FX.c4,u);FX.fl.setColorAt(i,FX.col)}
+     FX.fl.instanceMatrix.needsUpdate=true;FX.fl.instanceColor.needsUpdate=true;FX.flive=live;FX.fl.visible=live>0}}
    // ---------- the loop through the day's heats ----------
    const secOfDay=()=>{const n=Date.now();return(n%864e5)/1000};
    function carFor(e){const c={kind:'car',len:(MODELS.find(m=>m.glb===e.glb)||{len:32}).len,wid:16,color:e.color,m:MODELS.find(m=>m.glb===e.glb)||{}};
     const g=X&&X.cars&&X.cars[e.glb]?glbCar(c,e.glb):carMesh(c);g.traverse(o=>{o.userData.carPart=1});return g}
-   function setHeat(i){const d=D3.day,h=d.heats[i];D3.heat=i;D3.h=h;
-    for(let k=0;k<2;k++){if(D3.cars[k]){D3.cg.remove(D3.cars[k].g);D3.cars[k]=null}const l=h.lanes[k];if(!l)continue;const tr=DRAG.run(l.o,true);const g=new T.Group();g.add(carFor(l.e));g.rotation.y=Math.PI/2;g.position.set(x0-8,0,LZ[k]);D3.cg.add(g);
-     D3.cars[k]={g,l,tr:tr.trace,tR:tr.tR,cross:false,x:x0-8,z:LZ[k],a:0}}
+   // a heat: the day's heat i, or hh (a one-off challenge race, i = -2). The pass is run again with its telemetry (same
+   // inputs, same times) for the replay, the HUD and the effects.
+   function setHeat(i,hh){const d=D3.day,h=hh||d.heats[i];D3.heat=hh?-2:i;D3.h=h;
+    for(let k=0;k<2;k++){if(D3.cars[k]){D3.cg.remove(D3.cars[k].g);D3.cars[k]=null}const l=h.lanes[k];if(!l)continue;const tr=DRAG.run(l.o,true);const g=new T.Group(),cm=carFor(l.e),bb=new T.Box3().setFromObject(cm);g.add(cm);g.rotation.y=Math.PI/2;g.position.set(x0-8,0,LZ[k]);D3.cg.add(g);
+     const sp=DRAG.SPEC[l.e.glb]||{};
+     D3.cars[k]={g,l,tr:tr.trace,tR:tr.tR,tel:tr.tel,spl:[tr.t60,tr.t330,tr.t8,tr.t1000,tr.et],v8:tr.v8,vt:tr.vt,rear:bb.min.z,half:Math.max(.6,bb.max.x*.78),
+      pops:sp.fuel!=='D'&&sp.hp>=450,two:sp.asp==='T'&&sp.fuel!=='D'&&sp.hp>=250,dsl:sp.fuel==='D',cross:false,x:x0-8,z:LZ[k],a:0,
+      st:{ph:0,tt:-1,el:-1,x:0,v:0,r:0,g:0,th:0,sp:0,b:0,iat:0,egt:0,so:0,fin:false,vis:true},shI:0,ptt:-1,acc:[0,0,0,0]}}
     D3.ta=h.lanes.map(l=>l?9:0); // heads-up: both greens at the same moment
-    D3.cur={h,done:[false,false],started:[false,false]};if(!D3.last&&i>0)D3.last={h:d.heats[i-1],done:[true,true],started:[true,true]}}
+    D3.cur={h,done:[false,false],started:[false,false]};if(!D3.last&&i>0&&!hh)D3.last={h:d.heats[i-1],done:[true,true],started:[true,true]}}
    const ease=u=>u<0?0:u>1?1:u*u*(3-2*u);
    function laneAt(k,t){const C=D3.cars[k];if(!C)return null;const l=C.l,ta=D3.ta[k],tl=ta+l.rt-C.tR;let x,z=LZ[k],a=0,ph={p:false,s:false,a:false,g:false,r:false},vis=true,smoke=0;
     if(t<3){x=x0-8+(XB-(x0-8))*ease(t/3)}
@@ -5574,34 +5680,180 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
        if(w<2.5){const q=ease(w/2.5);x=x+6*Math.sin(q*Math.PI/2);z=LZ[k]+(ZR+(k?1.5:-1.5)-LZ[k])*(1-Math.cos(q*Math.PI/2));a=-q*Math.PI*.98}
        else{x=x+6-(w-2.5)*11;z=ZR+(k?1.5:-1.5);a=-Math.PI;if(x<x0-6)vis=false}}}
      if(!D3.cur.started[k]){D3.cur.started[k]=true;D3.boardSig=''}}
+    telAt(C,t,tl);
     return{x,z,a,ph,vis,smoke}}
+   // ---------- telemetry state of a lane at cycle time t (the car moves at tl); read by the HUD (world/drag_hud.js) ----------
+   // before the car moves: idle, the burnout, rolling into the beams, then the launch-control rev from 8.2 s (the values the
+   // integrator starts from); the run: the pass's own time-series (0.05 s samples, interpolated); after the line: coasting.
+   const lerp=(a,b,u)=>a+(b-a)*u;
+   function telAt(C,t,tl){const S2=C.st,T2=C.tel,lc=T2.lc,id=T2.idle,tc=C.l.et+C.tR;S2.vis=C.g.visible;
+    if(t<tl){S2.tt=-1;S2.el=-1;S2.x=0;S2.v=0;S2.g=0;S2.sp=0;S2.so=0;S2.fin=false;
+     if(t>=3&&t<5){S2.ph=1;S2.r=.55+.03*Math.sin(t*23);S2.th=.75;S2.sp=1;S2.b=lc.b*.8;S2.iat=id.iat;S2.egt=lerp(id.egt,lc.egt,Math.min(1,(t-3)/1.2))}
+     else if(t>=8.2){const u=1-Math.exp(-(t-8.2)/.35),w=1-Math.exp(-(t-8.2)/.7);S2.ph=3;S2.r=lerp(id.r,lc.r,u)*(1+.014*Math.sin(t*41)*u);S2.th=1;S2.b=lerp(0,lc.b,w);S2.iat=lerp(id.iat,lc.iat,w);S2.egt=lerp(id.egt,lc.egt,w);S2.so=C.dsl?.25*u:0}
+     else{S2.ph=t<3?0:2;S2.r=id.r;S2.th=0;S2.b=0;S2.iat=id.iat;S2.egt=t>=5?lerp(id.egt,lc.egt,Math.max(0,1-(t-5)/2)):id.egt}
+     return}
+    const tt=t-tl;S2.tt=tt;S2.el=tt-C.tR;
+    if(tt<tc){S2.ph=4;S2.fin=false;const fi=tt/T2.dt,n=T2.v.length-1,i0=fi<n?Math.floor(fi):n,i1=i0<n?i0+1:n,u=fi<n?fi-i0:0;
+     const tr=C.tr;S2.x=tr[Math.min(i0,tr.length-1)]+(tr[Math.min(i1,tr.length-1)]-tr[Math.min(i0,tr.length-1)])*u;
+     S2.v=lerp(T2.v[i0],T2.v[i1],u);S2.r=lerp(T2.r[i0],T2.r[i1],u);S2.g=T2.g[i1];S2.th=T2.th[i1];S2.sp=lerp(T2.sp[i0],T2.sp[i1],u);S2.b=lerp(T2.b[i0],T2.b[i1],u);S2.iat=lerp(T2.iat[i0],T2.iat[i1],u);S2.egt=lerp(T2.egt[i0],T2.egt[i1],u);S2.so=lerp(T2.so[i0],T2.so[i1],u)}
+    else{const n=T2.v.length-1,vs=C.vt*S,Dst=XE-10-XF,dec=vs*vs/(2*Dst),ts=vs/dec,q=tt-tc,u=Math.min(q,ts);S2.ph=5;S2.fin=true;S2.x=DRAG.QM+DRAG.ROLL+(vs*u-.5*dec*u*u)/S;
+     S2.v=Math.max(0,(vs-dec*u)/S);const ratio=T2.r[n]/(T2.v[n]||1);S2.g=T2.g[n];S2.r=Math.max(id.r,S2.v*ratio);S2.th=0;S2.sp=0;S2.so=0;const e1=Math.exp(-q/.25),e2=Math.exp(-q/2.5);
+     S2.b=T2.b[n]*e1;S2.iat=lerp(id.iat,T2.iat[n],e2);S2.egt=lerp(id.egt,T2.egt[n],e2)}}
    function tick(dt){const open=DRAG.isOpen(),m=MS.pista;const sig=open?'open':'lock|'+Math.max(0,m.n-(subs||0))+'|'+(m===nextMilestone()?1:0);
     lab.type=open?undefined:'pista';
     if(sig!==D3.sig){D3.sig=sig;if(D3.g)dispose(D3.g);D3.open=open;D3.heat=-1;D3.last=null;D3.cur=null;D3.g=open?buildOpen():buildLocked();root.add(D3.g)}
     if(!open)return;
     if(D3.clock==null)D3.clock=secOfDay();D3.clock+=dt;
     const date=DRAG.today(),dk=date+'|'+(subs||0);if(dk!==D3.dayKey){D3.dayKey=dk;D3.day=DRAG.day(date);D3.heat=-1}
-    const d=D3.day,N=d.heats.length;if(!N)return;
-    const sec=((D3.clock%86400)+86400)%86400,i=Math.floor(sec/CYC)%N,t=sec%CYC;if(i!==D3.heat){setHeat(i);D3.boardSig=''}
-    const ph=[{},{}];
+    const d=D3.day,N=d.heats.length;
+    let t;
+    if(D3.one){const o=D3.one;o.t+=dt;if(o.t>=CYC){D3.one=null;D3.heat=-1;D3.last={h:o.h,done:[true,true],started:[true,true]};D3.boardSig='';if(o.onEnd)try{o.onEnd(o.res)}catch(e){console.error(e)}}
+     else{t=o.t;if(D3.heat!==-2){setHeat(-2,o.h);D3.boardSig=''}}}
+    if(t==null){if(!N)return;const sec=((D3.clock%86400)+86400)%86400,i=Math.floor(sec/CYC)%N;t=sec%CYC;if(i!==D3.heat){setHeat(i);D3.boardSig=''}}
+    D3.t=t;const ph=[{},{}];
     for(let k=0;k<2;k++){const s=laneAt(k,t),C=D3.cars[k];if(!s||!C)continue;C.g.visible=s.vis;C.g.position.set(s.x,0,s.z);C.g.rotation.y=Math.PI/2+s.a;C.x=s.x;C.z=s.z;C.a=s.a;ph[k]=s.ph;
-     for(const p of D3.puffs)if(p.k===k){p.m.visible=s.smoke>0;if(s.smoke){const u=((t*1.7+p.q*.2)%1);p.m.position.set(s.x-1.8-u*3,.4+u*1.1,s.z+(p.q%2?.9:-.9));p.m.scale.setScalar(.35+u*1.1)}}}
-    for(const p of D3.puffs)if(!D3.cars[p.k])p.m.visible=false;
+     // launch control: the car shakes on the limiter and squats a little
+     const lc=C.st.ph===3?Math.min(1,(t-8.2)/.3):0;C.g.rotation.z=lc*.006*Math.sin(t*47+k);C.g.position.y=lc*.012*Math.sin(t*61+k*2);
+     fxLane(C,t,dt)}
+    fxStep(dt);
     D3.ph=ph;const ts=JSON.stringify(ph);if(ts!==D3.treeSig){D3.treeSig=ts;bulbs()}
     const bs=D3.last?D3.last.h.id+D3.last.done.join()+D3.last.started.join():'';if(bs!==D3.boardSig){D3.boardSig=bs;drawBoard()}}
    W3.dragTick=tick;
    // name tags over the cars (driver name, or the plate for a subscriber without a name), and the round over the tree
-   W3.dragDraw=()=>{if(!D3.open||!D3.h||cam.dist>420)return;const sz=clamp(2400/cam.dist,12,20);
+   W3.dragDraw=()=>{tags();if(W3.dragHud)W3.dragHud()};
+   function tags(){if(!D3.open||!D3.h||cam.dist>420)return;const sz=clamp(2400/cam.dist,12,20);
     for(let k=0;k<2;k++){const C=D3.cars[k];if(!C||!C.g.visible)continue;const s=toHud(C.x,2.5+YG,C.z);if(!s)continue;if(C.l.e.name)pill('★ '+C.l.e.name,s.x,s.y,sz,'rgba(255,122,26,.95)','#1d0f02');else pill(C.l.e.plate,s.x,s.y,sz,'rgba(250,250,250,.95)','#111')}
-    if(cam.dist<260){const s=toHud(XS+5,7.2+YG,zc);if(s)pill(D3.h.label.toUpperCase()+' · NOW RACING',s.x,s.y,sz*.9,'rgba(13,38,80,.94)','#ffd34d')}};
+    if(cam.dist<260){const s=toHud(XS+5,7.2+YG,zc);if(s)pill(D3.h.label.toUpperCase()+' · NOW RACING',s.x,s.y,sz*.9,'rgba(13,38,80,.94)','#ffd34d')}}
    // recorder / test hooks: force open, jump to a heat, car positions, camera presets
    const CAMS={overview:{tx:(x0+x1)/2,tz:zc,yaw:Math.PI-.55,pitch:.5,dist:250},start:{tx:XS-2,tz:zc,yaw:-Math.PI/2+.42,pitch:.22,dist:30},tree:{tx:XS+5,tz:zc,ty:3.4,yaw:-Math.PI/2-.35,pitch:.1,dist:13},
     stands:{tx:XS+90,tz:zc,yaw:Math.PI-.25,pitch:.28,dist:60},finish:{tx:XF,tz:zc,yaw:Math.PI/2+.5,pitch:.2,dist:55},board:{tx:XF-12,tz:zc+22,ty:9,yaw:Math.PI+.15,pitch:.12,dist:30},
     burnout:{tx:XB,tz:zc,yaw:-.6,pitch:.25,dist:24}};
+   // a one-off race summary (both units are formatted by the caller with DRAG.fmt); who = the name, or the plate when hidden
+   const sumOf=h=>({id:h.id,label:h.label,date:h.date,win:h.win,margin:h.margin,winner:h.lanes[h.win]?who(h.lanes[h.win].e):null,
+    lanes:h.lanes.map(l=>l&&{who:who(l.e),name:l.e.name,plate:l.e.plate,model:l.e.model,glb:l.e.glb,color:l.e.color,rt:l.rt,red:l.red,t60:l.t60,t8:l.t8,v8:l.v8,et:l.et,vt:l.vt,mph:l.vt*2.236936,kmh:l.vt*3.6})});
+   // the telemetry HUD reads the strip through this (world/drag_hud.js)
+   W3.dragS={D3,CYC,XS,XF,x0,x1,zc,who,hidden};
    window.__DRAG={force:v=>{DRAG.force(v)},open:()=>DRAG.isOpen(),
-    seek:(h,t)=>{const d=DRAG.day(DRAG.today()),N=d.heats.length,i=typeof h==='number'?h:d.heats.findIndex(q=>q.id===h);if(i<0||i>=N)return false;let c=(Math.floor(secOfDay()/(CYC*N))*N+i)*CYC;if(c+CYC>86400)c=i*CYC;D3.clock=c+(t||0);D3.heat=-1;return true},
+    // race(a, b, {seed, label, play, onEnd, t}): a one-off heads-up race between two cars, played on the strip (one 36 s
+    // cycle: staging, launch control, the run, the board), then the daily loop carries on. a / b: a Wall of Mechanics
+    // name or {glb, name?, plate?, color?}. Returns the summary at once (also when the strip is closed: played = false).
+    race:(a,b,o)=>{o=o||{};const h=DRAG.heads(a,b,o);if(!h)return null;const res=sumOf(h);res.played=false;
+     if(o.play!==false&&D3.open){D3.one={h,t:Math.max(0,Math.min(CYC-1,o.t||0)),onEnd:o.onEnd||null,res};D3.heat=-1;D3.last=null;D3.boardSig='';res.played=true}return res},
+    stopRace:()=>{if(!D3.one)return false;D3.one=null;D3.heat=-1;return true},racing:()=>D3.one?{t:D3.one.t,cycle:CYC,heat:D3.one.res}:null,
+    // telemetry HUD: hud(null) = normal (the viewer's toggle), hud(false) = off, hud('full' | 'mini' | true) = on (also in
+    // the recorder's trailer mode); tel() = both lanes' telemetry now (for checks)
+    hud:v=>{W3.dragHudForce=v===true?'full':v===false?false:v==null?null:String(v)},
+    tel:()=>D3.cars.map(C=>C&&Object.assign({who:who(C.l.e),glb:C.l.e.glb,shifts:Array.from(C.tel.sh),moves:D3.ta[C.l.lane]+C.l.rt-C.tR},C.st)),fx:()=>({smoke:FX.live,flames:FX.flive,t:D3.t}),
+    seek:(h,t)=>{D3.one=null;const d=DRAG.day(DRAG.today()),N=d.heats.length,i=typeof h==='number'?h:d.heats.findIndex(q=>q.id===h);if(i<0||i>=N)return false;let c=(Math.floor(secOfDay()/(CYC*N))*N+i)*CYC;if(c+CYC>86400)c=i*CYC;D3.clock=c+(t||0);D3.heat=-1;return true},
     pos:k=>{const C=D3.cars[k||0];return C?{x:C.x,z:C.z,y:YG,a:-C.a}:null},cam:n=>CAMS[n]?Object.assign({fov:50},CAMS[n]):null,cams:()=>Object.keys(CAMS),
-    info:()=>D3.h?{heat:D3.h.id,label:D3.h.label,t:D3.clock%CYC,lanes:D3.h.lanes.map(l=>l&&{who:l.e.name||l.e.plate,et:l.et,dial:l.dial})}:null};
+    info:()=>D3.h?{heat:D3.h.id,label:D3.h.label,t:D3.one?D3.one.t:D3.clock%CYC,lanes:D3.h.lanes.map(l=>l&&{who:l.e.name||l.e.plate,et:l.et,dial:l.dial})}:null};
+  }
+  if(CITY2&&W3.dragS){const S0=W3.dragS,D3=S0.D3,ACC=['#ff7a1a','#46c8ff'],FONT="'Barlow Condensed','Arial Narrow',sans-serif",MONO="'JetBrains Mono',ui-monospace,monospace";
+   // default: full cards on a computer, one line per lane on a phone (the button switches; the choice is remembered)
+   let userMode=(screenEl.clientWidth||999)<=640?'mini':'full';try{const v=localStorage.getItem('mtp-drag-tel');if(v==='mini'||v==='full')userMode=v}catch(e){}
+   const btn=document.createElement('button');btn.type='button';btn.id='dgTelBtn';btn.className='dg-telbtn';btn.hidden=true;screenEl.appendChild(btn);
+   const btnText=()=>{btn.textContent=userMode==='full'?'▾ TELEMETRY':'▸ TELEMETRY';btn.setAttribute('aria-expanded',String(userMode==='full'));btn.title=userMode==='full'?'Collapse the drag telemetry':'Show the full drag telemetry'};btnText();
+   btn.addEventListener('click',e=>{e.stopPropagation();userMode=userMode==='full'?'mini':'full';btnText();try{localStorage.setItem('mtp-drag-tel',userMode)}catch(err){}});
+   for(const ev of['pointerdown','mousedown','touchstart','wheel'])btn.addEventListener(ev,e=>e.stopPropagation(),{passive:true});
+   let btnCss='',lastDraw=0;
+   // the button goes away with the HUD (inside a building, the 2D map: no 3D frame draws it)
+   setInterval(()=>{if(!btn.hidden&&performance.now()-lastDraw>400)btn.hidden=true},500);
+   const x=hctx,f1=n=>n.toFixed(1),f3=n=>n.toFixed(3),C2F=c=>c*9/5+32;
+   const font=(px,w,mono)=>{x.font=`${w||700} ${px}px ${mono?MONO:FONT}`};
+   const T=(s,px,py,size,col,align,w,mono)=>{font(size,w,mono);x.fillStyle=col;x.textAlign=align||'left';x.fillText(s,px,py)};
+   const fit=(s,max,size,w,mono)=>{font(size,w,mono);if(x.measureText(s).width<=max)return s;let t=s;while(t.length>1&&x.measureText(t+'…').width>max)t=t.slice(0,-1);return t+'…'};
+   const box=(px,py,w,h,r,fill)=>{rrect(x,px,py,w,h,r);x.fillStyle=fill;x.fill()};
+   const xAt=(C,tt)=>{const tr=C.tr,i=tt/.05,n=tr.length-1;if(tt<=0)return 0;if(i>=n)return tr[n];const k=Math.floor(i);return tr[k]+(tr[k+1]-tr[k])*(i-k)};
+   const rpmTxt=r=>Math.round(r/10)*10;
+   const LAD=[['R/T',''],['60 ft','18 m'],['330 ft','101 m'],['1/8','201 m'],['1000 ft','305 m'],['1/4','402 m']];
+   // the commentary: who leads by how much, then the result with the margin at the line
+   function comment(){const A=D3.cars[0],B=D3.cars[1],h=D3.h,t=D3.t||0,one=A&&B?null:(A||B);
+    if(one){const s=one.st,n=S0.who(one.l.e);if(s.ph<4)return[`${n} · ${h.label} · solo run (bye)`,'#ffffff'];if(!s.fin)return[`${n} · ${f1(s.el>0?s.x-DRAG.ROLL:0)} m · ${f1((s.el>0?s.x-DRAG.ROLL:0)*3.28084)} ft down the strip`,'#ffffff'];
+     return[`${n} · ${f3(one.l.et)} s @ ${f1(one.l.vt*2.236936)} mph · ${f1(one.l.vt*3.6)} km/h`,'#ffd34d']}
+    if(!A)return['',''];const nA=S0.who(A.l.e),nB=S0.who(B.l.e),sa=A.st,sb=B.st;
+    const red=[A,B].findIndex(C=>C.l.red&&C.st.tt>=0);
+    if(red>=0){const W=red?A:B;return[`${S0.who(D3.cars[red].l.e)} RED LIGHT · ${S0.who(W.l.e)} WINS`,'#ff5a4f']}
+    if(sa.fin&&sb.fin){const w=h.win,W=w?B:A,L=w?A:B,m=DRAG.margin(h);
+     // the loser's distance from the line when the winner crossed it (both greens at the same moment)
+     const tl=W.l.rt+W.l.et-L.l.rt+L.tR,gap=Math.max(0,DRAG.QM+DRAG.ROLL-xAt(L,tl));
+     return[`${S0.who(W.l.e)} WINS by ${f3(m)} s · ${f1(gap)} m / ${Math.round(gap*3.28084)} ft`,'#38e07b']}
+    if(sa.fin||sb.fin){const F=sa.fin?A:B;return[`${S0.who(F.l.e)} takes the stripe · ${f3(F.l.et)} s @ ${f1(F.l.vt*2.236936)} mph · ${f1(F.l.vt*3.6)} km/h`,'#ffd34d']}
+    if(sa.tt>=0||sb.tt>=0){if(sa.tt<0||sb.tt<0){const F=sa.tt>=0?A:B;return[`${S0.who(F.l.e)} leaves first`,'#ffffff']}
+     const g=sa.x-sb.x,ga=Math.abs(g);if(ga<.3)return['Side by side!','#ffffff'];return[`${g>0?nA:nB} leads by ${f1(ga)} m / ${Math.round(ga*3.28084)} ft`,'#ffffff']}
+    if(sa.ph===3){const ra=rpmTxt(sa.r*A.tel.rpm).toLocaleString('en-US'),rb=rpmTxt(sb.r*B.tel.rpm).toLocaleString('en-US');return[`Launch control · ${nA} ${ra} rpm · ${nB} ${rb} rpm`,'#ffd34d',`Launch control · ${ra} / ${rb} rpm`]}
+    if(t>=5)return[`${nA} and ${nB} roll into the beams`,'#ffffff'];
+    if(t>=3)return[`Burnouts · ${h.label}`,'#ffffff'];return[`${nA} vs ${nB} · ${h.label}`,'#ffffff']}
+   // shift lights: 5 LEDs from 80 % to 96 % of the rev limiter, all flashing at the limiter
+   function leds(px,py,w,r){const n=5,col=['#38e07b','#38e07b','#ffd34d','#ff5a4f','#ff5a4f'],fl=r>=.965&&(Math.floor((D3.t||0)*14)%2===0);
+    for(let i=0;i<n;i++){const on=fl||r>=.8+i*.04;x.beginPath();x.arc(px+(i+.5)*w/n,py,3,0,7);x.fillStyle=on?(fl?'#7fb2ff':col[i]):'rgba(255,255,255,.12)';x.fill()}}
+   function tach(cx,cy,R,s,T2,g){const a0=Math.PI*.75,sw=Math.PI*1.5,r=Math.max(0,Math.min(1.02,s.r));x.lineCap='butt';
+    x.lineWidth=4.5;x.strokeStyle='rgba(255,255,255,.13)';x.beginPath();x.arc(cx,cy,R,a0,a0+sw);x.stroke();
+    x.strokeStyle='#ff3b30';x.lineWidth=2;x.beginPath();x.arc(cx,cy,R+3,a0+sw*.92,a0+sw);x.stroke();
+    x.lineWidth=4.5;x.strokeStyle=r>.92?'#ff5a4f':r>.8?'#ffd34d':'#38e07b';x.beginPath();x.arc(cx,cy,R,a0,a0+sw*Math.min(1,r));x.stroke();
+    const k=Math.ceil(T2.rpm/1000);x.strokeStyle='rgba(255,255,255,.45)';x.lineWidth=1;for(let i=0;i<=k;i++){const a=a0+sw*Math.min(1,i*1000/T2.rpm);x.beginPath();x.moveTo(cx+Math.cos(a)*(R-7),cy+Math.sin(a)*(R-7));x.lineTo(cx+Math.cos(a)*(R-3.5),cy+Math.sin(a)*(R-3.5));x.stroke()}
+    const a=a0+sw*Math.min(1,r);x.strokeStyle='#ffffff';x.lineWidth=1.5;x.beginPath();x.moveTo(cx+Math.cos(a)*9,cy+Math.sin(a)*9);x.lineTo(cx+Math.cos(a)*(R-2),cy+Math.sin(a)*(R-2));x.stroke();
+    T(g,cx,cy+6,17,'#ffffff','center',800,true);T(rpmTxt(r*T2.rpm).toLocaleString('en-US')+' rpm',cx,cy+R+8,8,'#c9d6e6','center',700)}
+   // the ladder's time-of-day: the splits reached so far
+   const lastSplit=(C,s)=>{if(C.l.red&&s.tt>=0)return'R/T '+f3(C.l.rt)+' s · RED LIGHT';if(s.fin)return`ET ${f3(C.l.et)} s · ${Math.round(mph0(C))} mph · ${Math.round(C.l.vt*3.6)} km/h`;
+    if(s.el>=0){let j=-1;for(let q=0;q<4;q++)if(s.el>=C.spl[q])j=q;return j<0?'R/T '+f3(C.l.rt)+' s':`${LAD[j+1][0]} · ${LAD[j+1][1]}  ${f3(C.spl[j])} s`}return s.ph===3?'LAUNCH CONTROL':s.ph===1?'BURNOUT':''};
+   function card(C,k,px,py,w,h,md){const s=C.st,T2=C.tel,e=C.l.e,acc=ACC[k],h0=D3.h,both=D3.cars.every((q,i)=>!h0.lanes[i]||(q&&q.st.fin)),win=both&&h0.win===k&&!!h0.lanes[1-k],m=DRAG.margin(h0);
+    box(px,py,w,h,7,'rgba(7,13,23,.82)');x.fillStyle=acc;x.fillRect(px,py+4,3,h-8);
+    const g=s.ph<4&&s.ph!==3&&s.ph!==1?'N':String(s.g+1),kmh=s.v*3.6,mph=s.v*2.236936;
+    // result badge: WIN for the winner, the margin in seconds for the other lane, RED LIGHT
+    let badge=null;if(C.l.red&&s.tt>=0)badge=['RED LIGHT','#ff3b30','#ffffff'];else if(both&&h0.lanes[1-k])badge=win?['WIN ▲','#38e07b','#062a14']:[m!=null?`+${f3(m)} s`:'','rgba(255,255,255,.16)','#e6edf5'];
+    const bw=badge?(font(9,800),x.measureText(badge[0]).width+10):0;x.textBaseline='alphabetic';
+    if(md==='mini'){// row 1: name, the last split reached (or the result badge); row 2: gear, rpm bar, speed in both units
+     const ls=lastSplit(C,s);let rx=px+w-6;
+     if(badge){box(rx-bw,py+3,bw,14,7,badge[1]);T(badge[0],rx-bw/2,py+13.5,9,badge[2],'center',800);rx-=bw+5}
+     else if(ls){const lt=fit(ls,w*.55,9,700);T(lt,rx,py+13,9,'#c9d6e6','right',700);rx-=x.measureText(lt).width+6}
+     T(fit(S0.who(e),rx-px-10,11,800),px+8,py+13,11,'#ffffff','left',800);
+     box(px+8,py+19.5,13,14,3,'rgba(255,255,255,.14)');T(g,px+14.5,py+30.5,11,'#ffd34d','center',800,true);
+     const sp=`${Math.round(kmh)} km/h · ${Math.round(mph)} mph`;font(10,800);const spw=x.measureText(sp).width;T(sp,px+w-6,py+30.5,10,'#ffffff','right',800);
+     const bx0=px+26,bwid=Math.max(10,w-6-spw-8-bx0+px),r=Math.min(1,s.r);box(bx0,py+24,bwid,6,3,'rgba(255,255,255,.12)');box(bx0,py+24,Math.max(6,bwid*r),6,3,r>.92?'#ff5a4f':r>.8?'#ffd34d':'#38e07b');return}
+    // ---- full card ----
+    const nw=w<200,lane=nw?(k?'R':'L'):(k?'RIGHT LANE':'LEFT LANE'),lw=badge?bw:(font(8,800),x.measureText(lane).width);
+    T(fit(S0.who(e),w-20-lw,12,800),px+8,py+13,12,'#ffffff','left',800);
+    if(badge){box(px+w-6-bw,py+3,bw,14,7,badge[1]);T(badge[0],px+w-6-bw/2,py+13.5,9,badge[2],'center',800)}else T(lane,px+w-7,py+13,8,acc,'right',800);
+    const spec=`${T2.hp} hp · ${Math.round(T2.hp*.7457)} kW · ${T2.fuel==='D'?'DIESEL ':''}${T2.asp==='T'?'TURBO':T2.asp==='S'?'SUPERCHARGED':'NA'} · ${T2.drive}`;
+    T(fit(spec,w-15,8,700),px+8,py+24,8,'#9fb0c4','left',700);
+    const gw=nw?54:64,vf=nw?8.5:9;leds(px+6,py+32,gw-12,s.r);tach(px+6+(gw-12)/2,py+59,nw?17:20,s,T2,g);
+    // speed, boost, temperatures, throttle
+    const cx=px+gw,cw=w-gw-15;
+    T(String(Math.round(kmh)),cx+cw*.5,py+48,nw?17:19,'#ffffff','right',800,true);T('km/h',cx+cw*.5+2,py+48,nw?7:8,'#9fb0c4','left',700);
+    T(`${Math.round(mph)}`,cx+cw,py+48,nw?11:12,'#ffffff','right',800,true);T('mph',cx+cw,py+35,7,'#9fb0c4','right',700);
+    if(s.sp>.05){box(cx,py+26,34,9.5,4.75,'#ff7a1a');T(`SPIN ${Math.round(s.sp*100)}%`,cx+17,py+33.5,7,'#1d0f02','center',800)}
+    const bmax=Math.max(1,(T2.boost||0)*1.15),bv=Math.max(0,s.b);
+    T('BOOST',cx,py+58,nw?6.5:7.5,'#7d8a9a','left',800);T(T2.asp==='NA'?(nw?'0.00 bar · 0.0 psi':'NA · 0.00 bar · 0.0 psi'):`${bv.toFixed(2)} bar · ${f1(bv*14.5038)} psi`,cx+cw,py+58,vf,'#ffffff','right',700);
+    box(cx,py+60.5,cw,3,1.5,'rgba(255,255,255,.12)');if(bv>0)box(cx,py+60.5,Math.max(3,cw*Math.min(1,bv/bmax)),3,1.5,'#46c8ff');
+    T('IAT',cx,py+74,nw?6.5:7.5,'#7d8a9a','left',800);T(`${Math.round(s.iat)}°C · ${Math.round(C2F(s.iat))}°F`,cx+cw,py+74,vf,'#ffffff','right',700);
+    T('EGT',cx,py+85,nw?6.5:7.5,'#7d8a9a','left',800);T(`${Math.round(s.egt)}°C · ${Math.round(C2F(s.egt))}°F`,cx+cw,py+85,vf,s.egt>880?'#ffb36b':'#ffffff','right',700);
+    const tx=px+w-10,th=s.th;box(tx,py+28,4.5,52,2,'rgba(255,255,255,.12)');if(th>0)box(tx,py+28+52*(1-th),4.5,52*th,2,'#38e07b');T('THR',tx+2.2,py+88,6,'#7d8a9a','center',800);
+    // timing ladder: label (both units), time, and the speeds at 1/8 and 1/4 (trap)
+    const ly=py+93,rh=(h-97)/6,tc=px+(nw?84:92),sf=nw?7.5:8.5;
+    x.fillStyle='rgba(255,255,255,.1)';x.fillRect(px+6,ly-1,w-12,1);
+    for(let q=0;q<6;q++){const yy=ly+rh*(q+.8),last=q===5;let tv=null,red=false;
+     if(q===0){if(s.tt>=0){tv=C.l.rt;red=C.l.red}}else if(s.el>=0&&s.el>=C.spl[q-1]-1e-9)tv=C.spl[q-1];
+     if(last&&tv!=null){x.fillStyle='rgba(255,211,77,.14)';x.fillRect(px+5,ly+rh*q,w-10,rh)}
+     const lf=nw?7.5:8.5;T(LAD[q][0],px+8,yy,lf,'#c9d6e6','left',800);if(LAD[q][1])T(LAD[q][1],px+8+(font(lf,800),x.measureText(LAD[q][0]).width)+2.5,yy,lf-1,'#7d8a9a','left',700);
+     T(tv==null?'—':f3(tv)+(red?' RED':''),tc,yy,nw?8.5:9,red?'#ff5a4f':tv==null?'#4a5566':last?'#ffd34d':'#ffffff','right',800,true);
+     if((q===3||q===5)&&tv!=null){const v=q===3?C.v8:C.vt;T(fit(nw?`${Math.round(v*2.236936)} mph · ${Math.round(v*3.6)} km/h`:`${f1(v*2.236936)} mph · ${f1(v*3.6)} km/h`,w-(tc-px)-10,sf,700),px+w-7,yy,sf,last?'#ffd34d':'#c9d6e6','right',700)}
+     else if(q===5)T('ET · TRAP',px+w-7,yy,7.5,'#4a5566','right',700)}}
+   const mph0=C=>C.l.vt*2.236936;
+   // two steps per frame: dragHud() with the labels decides whether it shows (and tells the page HUD, drawn next, to leave
+   // the bottom corners free: DRAG.hudAt), dragHudDraw() at the very end of the frame draws it over everything
+   let curMd=null;
+   W3.dragHud=()=>{const F=W3.dragHudForce,near=cam.tx>S0.x0-40&&cam.tx<S0.x1+40&&cam.tz>S0.zc-70&&cam.tz<S0.zc+60&&cam.dist<(F?600:340);
+    const on=D3.open&&D3.h&&mode!=='in'&&near&&D3.cars.some(c=>c),md=!on||F===false?null:F?(F==='mini'?'mini':'full'):trailer?null:userMode;
+    const showBtn=!!md&&!F&&!trailer;if(btn.hidden===showBtn)btn.hidden=!showBtn;curMd=md;if(!md)return;lastDraw=DRAG.hudAt=performance.now()};
+   W3.dragHudDraw=()=>{const md=curMd;curMd=null;if(!md)return;
+    const sh=screenEl.clientHeight||HUDH,swc=screenEl.clientWidth||HUDW,u=HUDH/sh,f=Math.max(1,Math.min(1.35,swc/390,sh/520)),K=u*f,W=swc/f,H=sh/f;
+    const phone=swc<=640,BOT=(HUD_FULL?sh*.17:phone?34:8)/f,G=6,cw=Math.min(240,(W-3*G)/2),chh=md==='mini'?37:160,cy=H-BOT-chh,ty=cy-24;
+    x.save();x.scale(K,K);x.textBaseline='alphabetic';
+    for(let k=0;k<2;k++){const C=D3.cars[k];const px=k?W-G-cw:G;if(C)card(C,k,px,cy,cw,chh,md);else{box(px,cy,cw,chh,7,'rgba(7,13,23,.6)');T('BYE RUN',px+cw/2,cy+chh/2+4,11,'#7d8a9a','center',800)}}
+    let [txt,col,alt]=comment();if(txt){const bw=2*cw+G;font(11.5,800);if(alt&&x.measureText(txt).width+24>bw)txt=alt;const tw=Math.min(bw,x.measureText(txt).width+24),bx=W/2-tw/2;box(bx,ty,tw,19,9.5,'rgba(7,13,23,.88)');T(fit(txt,tw-14,11.5,800),W/2,ty+13.5,11.5,col,'center',800)}
+    x.restore();
+    // the collapse button sits at the right end of the commentary line (CSS pixels)
+    const css=`right:${Math.round(G*f)}px;bottom:${Math.round((H-ty+3)*f)}px`;if(css!==btnCss){btnCss=css;btn.style.cssText=css}};
   }
   /*MAYOR-BUILD*/
   const mayorBuild=(T)=>{
@@ -6963,7 +7215,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
   if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);cur.labels()}
   else{placeCam();if(DRV&&DRV.on)DRV.frame(dt,fadeTo);syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);if(XMAS)XMS.sync(dt);applyNight(false);mergeTick(dt);if(CITY2){if(typeof C2W!=='undefined')C2W.sync(dt);if(typeof conTick!=='undefined')conTick(simTime)}placeCam();lodEnd();fitShadow();RENDER(scene);
-  hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);drawLabels();if(XMAS)XMS.labels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer&&!(DRV&&DRV.on))hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
+  hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);drawLabels();if(XMAS)XMS.labels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer&&!(DRV&&DRV.on))hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}if(WORLD&&W3.dragHudDraw)W3.dragHudDraw()}
   if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,HUDW,HUDH)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
  syncBuildings();if(X)decorateRoofs(scene);
