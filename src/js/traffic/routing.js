@@ -104,6 +104,8 @@ function atNode(c){
 function gapAhead(c){
  const hx=Math.cos(c.ang),hy=Math.sin(c.ang);let gp=1e9;c.gapO=null;
  for(const o of cars){
+  // the car a viewer drives (cars/drive.js): anything in our path, whatever way it faces
+  if(o.state==='drive'){if(o===c||o.hidden)continue;const dx=o.x-c.x,dy=o.y-c.y,al=dx*hx+dy*hy;if(al>0&&al<120&&Math.abs(-dx*hy+dy*hx)<(c.wid+o.wid)/2+8){const gg=al-(c.len+o.len)/2;if(gg<gp){gp=gg;c.gapO=o}}continue}
   if(o===c||o===c.towing||o.state==='lot'||o.state==='service'||o.state==='waitlift'||o.hidden||(c.task&&c.task.target===o))continue;
   // same directed road: measure along the road, so cars still finishing a turn see the queue in front of them
   if(o.state==='road'&&o.from===c.from&&o.to===c.to){const dx=o.x-c.x,dy=o.y-c.y,dd=Math.hypot(dx,dy),al=dx*hx+dy*hy;if(dd<120&&(al>4||al>-4&&o.id<c.id)){const gg=dd-(c.len+o.len)/2;if(gg<gp){gp=gg;c.gapO=o}}continue}

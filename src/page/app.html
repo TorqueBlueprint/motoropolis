@@ -65,6 +65,22 @@
       <p class="pn-sub">The city reads new comments every 30 minutes. Then look for your name in Find me.</p>
       <div class="mi-acts"><a class="mi-go" href="https://www.youtube.com/@TorqueBlueprint/videos" target="_blank" rel="noopener">Open the videos</a><a class="mi-sub" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener">Subscribe</a></div>
     </section>
+    <section class="finder pn ch" id="chal" hidden="" aria-labelledby="chTitle">
+      <div class="fd-head"><h2 id="chTitle">⚑ Drag race</h2><button type="button" class="fd-x" data-close="chal" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div class="ch-body" id="chBody"></div>
+    </section>
+    <div class="gt-dock cd-dock" id="carDock" hidden="" role="region" aria-label="Selected car"></div>
+    <div class="dv" id="drv" hidden="">
+      <div class="dv-who"><b id="dvName"></b><small id="dvModel"></small></div>
+      <button type="button" class="dv-x" id="dvExit" aria-label="Stop driving (Esc)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg><span>Exit</span><kbd>Esc</kbd></button>
+      <div class="dv-gauge" aria-hidden="true"><div class="dv-spd"><b id="dvKmh">0</b><span>km/h</span></div><div class="dv-mph"><b id="dvMph">0</b><span>mph</span></div>
+        <div class="dv-row"><span class="dv-gear" id="dvGear">1</span><div class="dv-rpm"><i id="dvRpm"></i></div><span class="dv-rpmn" id="dvRpmN">0.9k</span></div></div>
+      <p class="dv-help" id="dvHelp"><kbd>W</kbd><kbd>↑</kbd> gas · <kbd>S</kbd><kbd>↓</kbd> brake / reverse · <kbd>A</kbd><kbd>D</kbd> steer · <kbd>Space</kbd> handbrake · <kbd>Esc</kbd> exit</p>
+      <div class="dv-touch" id="dvTouch" hidden="">
+        <div class="dv-steer"><button type="button" data-k="l" aria-label="Steer left"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="M15 5 7 12l8 7z" fill="currentColor"/></svg></button><button type="button" data-k="r" aria-label="Steer right"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="m9 5 8 7-8 7z" fill="currentColor"/></svg></button></div>
+        <div class="dv-ped"><button type="button" data-k="hb" class="dv-hb" aria-label="Handbrake">HAND<br>BRAKE</button><button type="button" data-k="dn" class="dv-brk" aria-label="Brake, hold to reverse">BRAKE</button><button type="button" data-k="up" class="dv-gas" aria-label="Gas">GAS</button></div>
+      </div>
+    </div>
   </div>
   <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click any building to step inside it in 3D (locked ones show a blueprint preview).</p>
   <div class="news-tk" id="newsTicker" aria-label="Latest news from Motoropolis Daily"><b>MOTOROPOLIS DAILY</b><div class="tk-win"><div class="tk-run"></div></div></div>
@@ -93,6 +109,7 @@
       <div class="card-b" id="cb-car">
         <p class="empty" id="carEmpty">Click a car on the map to see its plate, mileage, fuel and engine condition.</p>
         <div id="carInfo" hidden=""></div>
+        <div class="car-actions cd-acts" id="carActs" hidden=""></div>
       </div>
     </section>
     <section class="card cr-card" data-card="crime">

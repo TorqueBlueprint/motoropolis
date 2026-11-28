@@ -99,6 +99,8 @@ ui/welcome.js
 ui/nav.js
 ui/drag_ui.js
 ui/goto.js
+cars/drive.js
+ui/challenge.js
 core/main_loop.js
 recorder/hooks.js
 core/end.js

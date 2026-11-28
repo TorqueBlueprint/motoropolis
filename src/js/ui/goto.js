@@ -92,7 +92,7 @@
   const w=whereN(FOL);if(!w||folT>45){FOL=null;return}const p=posW(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50)}
  function enter(k){if(!R3)return;R3.enterIn(k);let n=0;const t=setInterval(()=>{if(!R3||R3.mode()==='in'||++n>30){clearInterval(t);return}R3.enterIn(k)},120);hideDock()}
  // ---------- actions ----------
- const afterPick=()=>{if(TOUR)tourStop();if(phone())P.hidden=true};
+ const afterPick=()=>{if(TOUR)tourStop();if(DRV&&DRV.on)DRV.stop();if(phone())P.hidden=true};
  function goPlace(pl,opt){opt=opt||{};afterPick();ready3D(()=>{const at=pl.at();if(!at)return;FOL=null;
   const canIn=!!(pl.int&&pl.open());
   if(opt.enter&&canIn){const c=R3.cam;FL=null;Object.assign(c,{tx:at.x,tz:at.z,dist:at.dist,pitch:at.pitch,ty:gy(at.x,at.z)});if(at.yaw!=null)c.yaw=at.yaw;enter(pl.int);return}
@@ -103,6 +103,9 @@
  function workPlace(n){const j=JOBS[n];if(!j||j.free)return null;const k=WORK_IN[j.b]||j.b;const pl=PL.find(p=>p.k===k)||(j.b==='w_res'?byKey('riverside'):j.b==='w_stad'?byKey('stadium'):null);return pl&&pl.open()?pl:null}
  function goPerson(n){afterPick();ready3D(()=>{const w=whereN(n),j=jobOf(n),wp=workPlace(n),hm=UIX.homeOf&&UIX.homeOf(n);
   const acts=[];if(wp&&wp.int)acts.push(['AT WORK ▶','gt-in',()=>goPlace(wp,{enter:true})]);if(hm)acts.push(['HOME ▶','gt-in2',()=>{stopCam();hideDock();hm.go()}]);
+  // their car (cars/drive.js) and a heads-up drag race against them (ui/challenge.js)
+  {const car=cars.find(q=>q.driver===n&&q.kind==='car'&&!q.removed);if(car&&DRV&&DRV.canDrive(car))acts.push(['DRIVE ▶','gt-in',()=>{stopCam();hideDock();DRV.start(car)}])}
+  if(UIX.challenge)acts.push(['RACE ⚑','gt-in2',()=>{stopCam();hideDock();UIX.challenge({name:n})}]);
   const sub=(j&&j!=='Homeless'?j:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):wp?' · at work':'');
   if(w){const get=()=>{const q=whereN(n);return q?posW(q):null};FOL=null;fly(get,{dist:34,pitch:.62,done:()=>follow(n)});showDock('★',hid(n)?'A resident':n,sub,acts);return}
   if(wp){const at=wp.at();if(at)fly(()=>at,{dist:at.dist,pitch:at.pitch,yaw:at.yaw});showDock('★',hid(n)?'A resident':n,sub,acts);return}
@@ -146,7 +149,7 @@
   if(now>=T.hold){tourNext();return}requestAnimationFrame(tourHold)}
  function tourNext(){const T=TOUR;if(!T)return;T.hold=0;FL=null;if(++T.i>=T.stops.length){tourStop();return}tourGo()}
  function tourStop(){TOUR=null;FL=null;tourBox.hidden=true}
- function tourStart(){if(REC||trailer)return;P.hidden=true;hideDock();ready3D(()=>{const stops=tourStops();if(!stops.length)return;FOL=null;TOUR={stops,i:0,hold:0};tourGo()})}
+ function tourStart(){if(REC||trailer)return;if(DRV&&DRV.on)DRV.stop();P.hidden=true;hideDock();ready3D(()=>{const stops=tourStops();if(!stops.length)return;FOL=null;TOUR={stops,i:0,hold:0};tourGo()})}
  tourBox.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();tourStop()}});
  // ---------- "Surprise me 🎲": a random open place, landmark or resident (crypto random: the city's own Math.random stream is untouched) ----------
  const rnd=n=>{try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n}catch(e){return Math.floor((performance.now()*7919)%n)}};
@@ -212,7 +215,7 @@
   if(i&&!phone())i.focus();else{const s=P.querySelector('[data-gt][aria-selected="true"]');if(s&&!phone())try{s.focus({preventScroll:true})}catch(e){}}
   if(!openI)openI=setInterval(()=>{if(P.hidden){clearInterval(openI);openI=0;return}if(!r3Seen&&R3){r3Seen=true;if(tab!=='people')render()}},500)}
  const toggle=()=>{if(P.hidden){if(phone()){const r=$('screen').getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)$('screen').scrollIntoView({block:'start'})}open()}else P.hidden=true};
- UIX.openGoto=open;UIX.tour=tourStart;
+ UIX.openGoto=open;UIX.tour=tourStart;UIX.gotoStop=()=>{stopCam();hideDock()};
  if(!MAYOR_ON)$('gtTour').textContent='🧭 Tour the city';
  $('gtTour').addEventListener('click',tourStart);$('gtLucky').addEventListener('click',surprise);
  if(REC){vB.hidden=true;nB.hidden=true}

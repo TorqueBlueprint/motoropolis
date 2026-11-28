@@ -32,7 +32,7 @@ function gauge(label,val,color,txt){return `<div class="gauge"><div class="row">
 function esc(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 function updateCard(){
  const info=$('carInfo'),empty=$('carEmpty');
- if(!selected||selected.removed){selected=null;info.hidden=true;empty.hidden=false;return}
+ if(!selected||selected.removed){selected=null;info.hidden=true;empty.hidden=false;if(UIX.carActs)UIX.carActs(null);return}
  const c=selected;info.hidden=false;empty.hidden=true;
  const[st,fault]=stateText(c);
  const model=c.kind==='bus'?c.model:c.kind==='tow'?'Tow truck':c.kind==='van'?'Parts van':c.model+(c.isNew?' (new)':'');
@@ -46,7 +46,7 @@ function updateCard(){
  if(c.kind==='car')html+=`<dt>Speed</dt><dd>${Math.round(c.v*.37)} mph</dd><dt>Shop visits</dt><dd>${c.repairs}</dd><dt>Next inspection</dt><dd>${c.km>=c.nextInsp?'Overdue':'in '+fmtKm(c.nextInsp-c.km)}</dd>`;
  html+='</dl>';
  if(c.kind==='car')html+=`<div class="car-actions"><button type="button" id="breakSel" ${c.state==='road'&&!c.forceBreak?'':'disabled'}>Break this car</button></div>`;
- info.innerHTML=html;
+ info.innerHTML=html;if(UIX.carActs)UIX.carActs(c); // Follow / Drive / Drag race (cars/drive.js)
  const bs=$('breakSel');if(bs)bs.addEventListener('click',()=>{if(selected&&selected.state==='road'){selected.forceBreak=pickFault('tow');updateCard()}});
 }
 function updateStats(){

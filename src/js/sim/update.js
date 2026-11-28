@@ -14,6 +14,7 @@ function update(dt){
   if(c.state==='home'){c.homeLeft-=dt;continue}
   if(c.state==='service'){c.timer-=dt;if(c.timer<=0)finishService(c);continue}
   if(c.state==='hooking'){c.timer-=dt;if(c.timer<=0)finishHook(c);continue}
+  if(c.state==='drive')continue; // a viewer is driving it (cars/drive.js)
   stepCar(c,dt);
   c.checkT-=dt;if(c.checkT<=0){c.checkT=1;brain(c);if(c.state==='waitlift')tryLift(c)}
  }
