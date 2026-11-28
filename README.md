@@ -131,3 +131,23 @@ The **📍 Go to** button (viewbar on computers, "Go to" in the phone bottom nav
 | `?tour=1` | starts the Mayor's tour |
 
 They combine with the other switches (`?hosp=1`, `?drag=1`, `?mayor=0`, …), e.g. `?hosp=1&go=hospital`.
+
+## Car panel: Follow, Drive, Drag race (Phase 2D)
+
+Click a car in the 3D city: a bar over the city (and the "Car details" card below it) offers **Follow** (the camera stays on the car for 45 s; a drag or zoom stops it), **Drive ▶** and **Drag race ⚑**. The GO TO person bar has **DRIVE ▶** (when the resident's car is on the road) and **RACE ⚑** next to AT WORK ▶ / HOME ▶. Code: `src/js/cars/drive.js` (drive, follow, the car actions) and `src/js/ui/challenge.js`.
+
+**Drive** (root, world, xmas, remake, perf; off on the recorder page and in trailer mode):
+
+- Third-person chase camera (56° field of view while driving). The car leaves the AI traffic (`state: 'drive'`: `sim/update.js` skips it; `traffic/routing.js` `gapAhead()` treats it as an obstacle, so the AI cars stop behind or in front of it; a car blocked for more than 25 s still ghosts past, as for any jam). On exit it rejoins the AI on the nearest lane of the road whose direction is closest to its heading, in a free spot, and keeps its errand.
+- Controls: computer `W`/`↑` gas, `S`/`↓` brake (hold it when stopped to reverse), `A` `D` / `←` `→` steer, `Space` handbrake, `Esc` exit. Touch screens: ◀ ▶ steering, GAS, BRAKE and HANDBRAKE pedals (all at least 44 px), Exit button top right; on a phone the city goes full window while driving.
+- Physics (fixed 120 Hz step, no allocations): the car's real numbers from `src/data/cars/drag_specs.json` (power, kerb mass + driver, FWD/RWD/AWD, number of gears, speed at the limiter in 1st and top, drag, grip) with the drag sim's power curve, launch slip, traction limit with weight transfer and an automatic gearbox; brakes, light drift (handbrake, or RWD wheelspin), bumps off the kerbs and other cars, no damage. The car may go on the roads and 1.2 m of kerb, the service lots and the turning bulbs (a 1 m occupancy mask built on the first drive).
+- World scale: 1 m/s of physics moves the car 6.05 px/s (0.6 m/s on the map), the same scale the car card uses for the AI cars, so speeds in the HUD and the card agree. The rpm bar uses a generic 7,000 rpm limiter (the specs give speeds per gear, not revs).
+- HUD: speed in km/h and mph, gear, rpm bar, the owner (★ name, or the plate; names in `window.__HIDE` show as "A resident") and the model with hp · kW, kg · lb and drive.
+- Entering an interior (a click on a building, GO TO, Find my name, a home) ends the drive first; so does switching to the 2D map.
+- Deep link `?drive=<name>` drives that resident's car once the city has loaded (it waits while the car is at a shop; unknown names are ignored).
+
+**Drag race** (heads-up, 1/4 mile · 402 m): pick an opponent (search the residents, or 🎲 random) and get the result card: reaction time, 60 ft · 18 m, 1/4 mile elapsed time, trap speed in mph and km/h, power hp · kW, weight kg · lb, the winner and the margin (seconds, metres and feet). It is seeded from the two entrants and the UTC date (`sim/drag.js` `run()` with a pass like the daily heats), so everyone sees the same result for the same pair on the same day; nothing is saved. Residents race their Drag Strip car (the one the strip gives them, the same in every browser); a car without a driver races as itself, by plate. **Watch on the strip ▶** appears only when the strip is open on the page (or `?drag=1`) and the strip exposes its heads-up API: `RACE1V1` at the top of `src/js/ui/challenge.js` is the one adapter to point at it (`window.__DRAG.headsUp(a, b, res)` expected).
+
+| link | opens |
+|---|---|
+| `?drive=<name>` | drives that resident's car |

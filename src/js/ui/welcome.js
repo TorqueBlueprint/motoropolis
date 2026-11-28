@@ -29,11 +29,12 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
    {const hm=UIX.homeOf&&UIX.homeOf(n);if(hm){const d=document.createElement('small');d.className='fd-hm';d.textContent='Home: '+hm.label;tx.append(d);if(R3){const gh=document.createElement('button');gh.type='button';gh.className='fd-go';gh.textContent='Go to my home';
     gh.addEventListener('click',()=>{if(!view3d)setView(true,true);follow=null;hm.go();if(matchMedia('(max-width: 700px)').matches)fd.hidden=true});li.append(gh)}}}
    flist.append(li)}}
- function flyTo(n){const w=where(n);if(!w||!R3)return;if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
+ function flyTo(n){const w=where(n);if(!w||!R3)return;if(DRV&&DRV.on)DRV.stop();if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
   if(matchMedia('(max-width: 700px)').matches)fd.hidden=true}
  // keep the camera on the person for a while (they walk or drive); any drag on the city stops it
  setInterval(()=>{if(!follow||!R3||R3.mode()==='in')return;followT+=.05;const w=where(follow.n);if(!w||followT>45){follow=null;return}const p=posOf(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50);
  $('screen').addEventListener('pointerdown',e=>{if(!fd.contains(e.target)&&!nuCard.contains(e.target))follow=null});
+ UIX.unfollow=()=>{follow=null};
  const openFinder=()=>{if(UIX.only)UIX.only('finder');fd.hidden=false;fin.focus();render()};UIX.openFinder=openFinder;
  $('vFind').addEventListener('click',()=>{if(fd.hidden)openFinder();else fd.hidden=true});$('fdClose').addEventListener('click',()=>{fd.hidden=true});
  fin.addEventListener('input',render);fin.addEventListener('keydown',e=>{if(e.key==='Escape')fd.hidden=true});

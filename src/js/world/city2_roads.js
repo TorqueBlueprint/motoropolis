@@ -42,6 +42,7 @@
    {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
+   CITY.parked=PC.map(q=>[q.x,q.z,q.ry]); // the parked cars are solid for a driven car (cars/drive.js)
    instG(g,flat,dashPO,BY,null,false);
    // parked cars: the city's own car models (the same licensed models as the traffic), boxes only if the models aren't there
    if(AMBK.length){PC.forEach((q,i)=>{const m=AMBK[Math.floor(r2()*AMBK.length)],c=glbCar({len:m.len,color:m.taxi?'#f2b81d':PCc[i]},m.glb);c.scale.multiplyScalar(1.25);c.position.set(q.x,gh(q.x,q.z),q.z);c.rotation.y=q.ry;g.add(c)})}

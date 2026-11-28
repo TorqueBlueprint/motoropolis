@@ -462,6 +462,81 @@ html[data-rec="1"] .gt-tour{display:none!important}
 /* GO TO launch gate (ui/goto.js GOTO_AT): before launch the menu buttons are hidden and the phone nav keeps 4 items */
 html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto{display:none!important}
 @media (max-width:700px){html[data-goto="0"] .bnav{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Phase 2D: car panel actions (Follow / Drive / Drag race), the drive HUD and touch controls (cars/drive.js), the drag race challenge (ui/challenge.js) */
+.cd-acts .cd-b{min-height:44px;border:0;border-radius:10px;padding:0 14px;font:800 14.5px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;box-shadow:none}
+.cd-acts .cd-fol{background:rgba(140,190,255,.14);color:#fff;border:1px solid rgba(140,190,255,.4)}
+.cd-acts .cd-drv{background:var(--accent);color:#1a1205}
+.cd-acts .cd-race{background:#2e8b57;color:#fff}
+.cd-b:disabled{opacity:.45;cursor:not-allowed}
+.cd-dock .cd-race{background:#2e8b57;color:#fff}
+.cd-dock .cd-fol{background:rgba(140,190,255,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(140,190,255,.45)}
+.cd-dock .gt-dk-ic{font-size:20px}
+.dv{position:absolute;inset:0;z-index:4;pointer-events:none;font-family:var(--body);color:#fff}
+.dv[hidden]{display:none}
+.dv button{pointer-events:auto;-webkit-tap-highlight-color:transparent;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.dv-who{position:absolute;left:12px;top:12px;max-width:calc(100% - 180px);display:flex;flex-direction:column;gap:2px;background:rgba(8,26,56,.86);border:1px solid rgba(140,190,255,.35);border-left:4px solid var(--accent);border-radius:12px;padding:7px 12px 8px}
+.dv-who b{font:700 17px/1.15 var(--body);color:var(--gold);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv-who small{font:500 12.5px/1.25 var(--body);color:#cfdcf0}
+.dv-x{position:absolute;right:12px;top:12px;display:inline-flex;align-items:center;gap:6px;min-height:44px;min-width:44px;padding:0 12px;border:1px solid rgba(140,190,255,.45);border-radius:12px;background:rgba(8,26,56,.9);color:#fff;font:800 15px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.dv-x:hover{background:#173462}
+.dv kbd{font:700 11px/1 var(--mono);color:#b8cdea;border:1px solid rgba(140,190,255,.45);border-bottom-width:2px;border-radius:4px;padding:2px 4px;background:rgba(255,255,255,.05)}
+.dv-gauge{position:absolute;right:14px;bottom:14px;width:236px;box-sizing:border-box;background:rgba(8,26,56,.86);border:1px solid rgba(140,190,255,.35);border-radius:14px;padding:8px 12px 10px;display:grid;grid-template-columns:auto 1fr;align-items:end;column-gap:10px;row-gap:6px}
+.dv-spd{display:flex;align-items:baseline;gap:4px}
+.dv-spd b{font:800 52px/0.9 var(--display);font-variant-numeric:tabular-nums;min-width:2.1ch;text-align:right}
+.dv-spd span,.dv-mph span{font:700 13px/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:#b8cdea}
+.dv-mph{display:flex;align-items:baseline;gap:4px;justify-self:end}
+.dv-mph b{font:800 26px/1 var(--display);font-variant-numeric:tabular-nums;color:#ffd34d}
+.dv-row{grid-column:1/-1;display:flex;align-items:center;gap:8px}
+.dv-gear{flex:none;width:30px;height:30px;border-radius:8px;background:var(--accent);color:#1a1205;display:flex;align-items:center;justify-content:center;font:800 19px/1 var(--display)}
+.dv-rpm{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}
+.dv-rpm i{display:block;height:100%;width:100%;transform-origin:left center;transform:scaleX(.13);background:linear-gradient(90deg,#5cc98a 0 60%,#e8b931 60% 84%,#ff5a4f 84%)}
+.dv-rpmn{flex:none;width:42px;text-align:right;font:700 12px/1 var(--mono);color:#b8cdea}
+.dv.dv-red .dv-gear{background:#ff5a4f;color:#fff}
+.dv-help{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);margin:0;max-width:calc(100% - 260px);padding:8px 12px;border-radius:10px;background:rgba(8,26,56,.82);font:500 13px/1.6 var(--body);color:#dbe6f5;text-align:center;transition:opacity .8s}
+.dv-help kbd{margin:0 1px}
+.dv-help.dv-fade{opacity:0}
+.dv-touch[hidden]{display:none}
+.dv-steer{position:absolute;left:max(12px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:12px}
+.dv-ped{position:absolute;right:max(12px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;gap:10px;align-items:end}
+.dv-touch button{display:flex;align-items:center;justify-content:center;border:2px solid rgba(140,190,255,.5);background:rgba(8,26,56,.62);color:#fff;font:800 15px/1 var(--display);letter-spacing:.06em;box-shadow:0 6px 18px rgba(0,0,0,.35);padding:0}
+.dv-steer button{width:76px;height:76px;border-radius:50%}
+.dv-hb{grid-column:1;grid-row:1;width:72px;height:52px;border-radius:12px;font-size:12.5px!important;line-height:1.05!important}
+.dv-brk{grid-column:1;grid-row:2;width:72px;height:88px;border-radius:14px;border-color:rgba(255,90,79,.7)!important}
+.dv-gas{grid-column:2;grid-row:1/3;width:80px;height:150px;border-radius:16px;border-color:rgba(92,201,138,.8)!important}
+.dv-touch button.on{background:rgba(255,122,26,.55);border-color:#ff7a1a!important;transform:scale(.97)}
+.dv.dv-coarse .dv-gauge{left:50%;right:auto;top:10px;bottom:auto;transform:translateX(-50%);width:auto;grid-template-columns:auto auto auto;align-items:center;padding:5px 10px}
+.dv.dv-coarse .dv-spd b{font-size:38px}
+.dv.dv-coarse .dv-row{grid-column:auto;width:96px}
+.dv.dv-coarse .dv-rpmn{display:none}
+.dv.dv-coarse .dv-who{top:auto;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 92px);left:max(12px,env(safe-area-inset-left));max-width:min(60%,300px);padding:5px 10px 6px}
+.dv.dv-coarse .dv-who small{display:none}
+.dv.dv-coarse .dv-x span,.dv.dv-coarse .dv-x kbd{display:none}
+.screen.driving .viewbar,.screen.driving .nu-card,.screen.driving .gt-dock,.screen.driving .gt-tour,.screen.driving .finder,.screen.driving .v-msg{display:none!important}
+@media (max-width:700px){
+ .dv-who{max-width:calc(100% - 84px)}
+ .dv.dv-coarse .dv-gauge{top:10px}
+}
+@media (max-height:420px){.dv-gas{height:120px}.dv-brk{height:68px}.dv-hb{height:44px}.dv-steer button{width:66px;height:66px}}
+.ch-me{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:rgba(255,122,26,.10);border:1px solid rgba(255,138,51,.45)}
+.ch-rnd{width:100%}
+.ch-list{margin-top:2px}
+.ch-win{border-radius:12px;padding:10px 12px;background:linear-gradient(135deg,rgba(255,122,26,.24),rgba(255,122,26,.06));border:1px solid rgba(255,138,51,.6);display:flex;flex-direction:column;gap:3px}
+.ch-tb{width:100%;border-collapse:collapse;font:500 13.5px/1.25 var(--body);font-variant-numeric:tabular-nums}
+.ch-tb th{text-align:left;font:700 12px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:#8cbcff;padding:5px 6px 5px 0;white-space:nowrap}
+.ch-tb td{padding:5px 6px;color:#e6eefa;border-top:1px solid rgba(140,190,255,.16);width:38%;white-space:pre-line}
+.ch-me small.ch-strip{color:#ffb36b}
+.ch-tb td.ch-b{color:#5cc98a;font-weight:700}
+.ch-tb tr.ch-who td{border-top:0;vertical-align:top}
+.ch-tb tr.ch-who b{display:block;font:700 15px/1.2 var(--body);overflow-wrap:anywhere}
+.ch-tb tr.ch-who small{display:block;color:var(--muted);font-size:12px}
+.ch-tb tr.ch-who td.ch-w b::before{content:'🏆 '}
+.ch-acts{display:flex;gap:8px;flex-wrap:wrap}
+.ch-acts>button{flex:1 1 auto}
+html[data-rec="1"] .dv,html[data-rec="1"] .cd-dock,html[data-rec="1"] .cd-acts{display:none!important}
+.ch-body{display:flex;flex-direction:column;gap:8px}
+.ch-body>*{flex:none}
+.ch-body input{width:100%}
 </style>
 <div id="app"><div class="app">
   <header class="hero">
@@ -530,6 +605,22 @@ html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto
       <p class="pn-sub">The city reads new comments every 30 minutes. Then look for your name in Find me.</p>
       <div class="mi-acts"><a class="mi-go" href="https://www.youtube.com/@TorqueBlueprint/videos" target="_blank" rel="noopener">Open the videos</a><a class="mi-sub" href="https://www.youtube.com/@TorqueBlueprint?sub_confirmation=1" target="_blank" rel="noopener">Subscribe</a></div>
     </section>
+    <section class="finder pn ch" id="chal" hidden="" aria-labelledby="chTitle">
+      <div class="fd-head"><h2 id="chTitle">⚑ Drag race</h2><button type="button" class="fd-x" data-close="chal" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div class="ch-body" id="chBody"></div>
+    </section>
+    <div class="gt-dock cd-dock" id="carDock" hidden="" role="region" aria-label="Selected car"></div>
+    <div class="dv" id="drv" hidden="">
+      <div class="dv-who"><b id="dvName"></b><small id="dvModel"></small></div>
+      <button type="button" class="dv-x" id="dvExit" aria-label="Stop driving (Esc)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg><span>Exit</span><kbd>Esc</kbd></button>
+      <div class="dv-gauge" aria-hidden="true"><div class="dv-spd"><b id="dvKmh">0</b><span>km/h</span></div><div class="dv-mph"><b id="dvMph">0</b><span>mph</span></div>
+        <div class="dv-row"><span class="dv-gear" id="dvGear">1</span><div class="dv-rpm"><i id="dvRpm"></i></div><span class="dv-rpmn" id="dvRpmN">0.9k</span></div></div>
+      <p class="dv-help" id="dvHelp"><kbd>W</kbd><kbd>↑</kbd> gas · <kbd>S</kbd><kbd>↓</kbd> brake / reverse · <kbd>A</kbd><kbd>D</kbd> steer · <kbd>Space</kbd> handbrake · <kbd>Esc</kbd> exit</p>
+      <div class="dv-touch" id="dvTouch" hidden="">
+        <div class="dv-steer"><button type="button" data-k="l" aria-label="Steer left"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="M15 5 7 12l8 7z" fill="currentColor"/></svg></button><button type="button" data-k="r" aria-label="Steer right"><svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true" focusable="false"><path d="m9 5 8 7-8 7z" fill="currentColor"/></svg></button></div>
+        <div class="dv-ped"><button type="button" data-k="hb" class="dv-hb" aria-label="Handbrake">HAND<br>BRAKE</button><button type="button" data-k="dn" class="dv-brk" aria-label="Brake, hold to reverse">BRAKE</button><button type="button" data-k="up" class="dv-gas" aria-label="Gas">GAS</button></div>
+      </div>
+    </div>
   </div>
   <p class="hint">The city runs live in your browser: cars drive, break down, get towed and repaired. In 3D, drag to turn the camera, scroll or pinch to zoom, and right-drag or use two fingers to move around. Names in yellow are people from the Wall of Mechanics walking the streets; an orange ★ tag means they’re driving. Click any car to see its details, or click any building to step inside it in 3D (locked ones show a blueprint preview).</p>
   <div class="news-tk" id="newsTicker" aria-label="Latest news from Motoropolis Daily"><b>MOTOROPOLIS DAILY</b><div class="tk-win"><div class="tk-run"></div></div></div>
@@ -558,6 +649,7 @@ html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto
       <div class="card-b" id="cb-car">
         <p class="empty" id="carEmpty">Click a car on the map to see its plate, mileage, fuel and engine condition.</p>
         <div id="carInfo" hidden=""></div>
+        <div class="car-actions cd-acts" id="carActs" hidden=""></div>
       </div>
     </section>
     <section class="card cr-card" data-card="crime">
@@ -662,7 +754,7 @@ const fmtKm=v=>Math.round(v*.621).toLocaleString('en-US')+' mi';
 function rrect(c,x,y,w,h,r){c.beginPath();if(c.roundRect)c.roundRect(x,y,w,h,r);else c.rect(x,y,w,h)}
 
 // ---------- data ----------
-const MODELS=[{"n":"Hot hatch 2.0 turbo","len":32,"wid":15,"price":45900,"v":[100,120],"glb":"hothatch"},{"n":"Italian GT V12","len":33,"wid":16,"price":265000,"v":[110,128],"sport":true,"glb":"gt12"},{"n":"1963 American coupe V8","len":33,"wid":16,"price":120000,"v":[95,115],"classic":true,"glb":"v8sport"},{"n":"Sport saloon 4-door","len":35,"wid":16,"price":112000,"v":[100,120],"glb":"sportsaloon"},{"n":"German sport sedan 3.0","len":34,"wid":15,"price":82000,"v":[104,122],"sport":true,"glb":"sport3"},{"n":"1990 Evo sedan 2.5","len":32,"wid":15,"price":48000,"v":[95,112],"classic":true,"glb":"saloon90"},{"n":"City taxi","len":34,"wid":15,"price":31000,"v":[90,105],"glb":"taxi","taxi":true},{"n":"Off-road pickup 3.0 V6","len":39,"wid":17,"price":78000,"v":[90,108],"pickup":true,"glb":"offroad"},{"n":"1985 German coupe 2.3","len":31,"wid":15,"price":38000,"v":[92,110],"classic":true,"glb":"coupe85"},{"n":"1998 German sedan 2.5","len":32,"wid":15,"price":14900,"v":[88,104],"glb":"sedan98"},{"n":"1965 American fastback V8","len":33,"wid":16,"price":95000,"v":[92,112],"classic":true,"glb":"fastback65"},{"n":"Mid-engine supercar V10","len":32,"wid":16,"price":195000,"v":[112,130],"sport":true,"glb":"midv10"},{"n":"1998 Japanese GT 3.0 turbo","len":32,"wid":15,"price":90000,"v":[105,124],"sport":true,"glb":"jgt98"},{"n":"1999 Japanese AWD coupe","len":33,"wid":15,"price":160000,"v":[106,125],"sport":true,"glb":"awd99"},{"n":"German rear-engine turbo coupe","len":32,"wid":16,"price":250000,"v":[112,130],"sport":true,"glb":"rearturbo"},{"n":"Japanese RWD coupe 2.4","len":31,"wid":15,"price":32000,"v":[100,118],"sport":true,"glb":"rwd24"},{"n":"1983 Japanese hatchback coupe 1.6","len":30,"wid":15,"price":35000,"v":[98,116],"classic":true,"sport":true,"glb":"ae86"},{"n":"1987 Italian twin-turbo supercar","len":31,"wid":16,"price":2500000,"v":[114,132],"classic":true,"sport":true,"glb":"f40"},{"n":"American twin-turbo V8 hypercar","len":33,"wid":16,"price":2100000,"v":[116,134],"sport":true,"glb":"venom"},{"n":"German F1-engine hypercar","len":33,"wid":16,"price":2700000,"v":[115,133],"sport":true,"glb":"amgone"},{"n":"British hybrid hypercar","len":32,"wid":16,"price":1350000,"v":[115,133],"sport":true,"glb":"p1"},{"n":"1961 British roadster","len":31,"wid":15,"price":180000,"v":[98,116],"classic":true,"glb":"etype"},{"n":"1992 American V10 roadster","len":31,"wid":16,"price":70000,"v":[106,124],"classic":true,"sport":true,"glb":"viper"},{"n":"1989 Japanese roadster 1.6","len":28,"wid":15,"price":25000,"v":[96,114],"classic":true,"sport":true,"glb":"miata"},{"n":"Italian V12 supercar","len":33,"wid":17,"price":520000,"v":[116,134],"sport":true,"glb":"svj"},{"n":"1989 Japanese AWD coupe 2.6","len":32,"wid":15,"price":60000,"v":[104,122],"classic":true,"sport":true,"glb":"r32"},{"n":"1970 American muscle car V8 supercharged","len":33,"wid":16,"price":150000,"v":[104,124],"classic":true,"sport":true,"glb":"charger"},{"n":"2020 American muscle coupe V8 supercharged","len":33,"wid":15,"price":90000,"v":[108,128],"sport":true,"glb":"challenger"},{"n":"Italian super SUV V8","len":34,"wid":17,"price":230000,"v":[106,124],"glb":"urus"},{"n":"2006 Japanese rally sedan AWD","len":31,"wid":15,"price":45000,"v":[102,120],"sport":true,"glb":"evo9"}];
+const MODELS=[{"n":"Hot hatch 2.0 turbo","len":32,"wid":15,"price":45900,"v":[100,120],"glb":"hothatch"},{"n":"Italian GT V12","len":33,"wid":16,"price":265000,"v":[110,128],"sport":true,"glb":"gt12"},{"n":"1963 American coupe V8","len":33,"wid":16,"price":120000,"v":[95,115],"classic":true,"glb":"v8sport"},{"n":"Sport saloon 4-door","len":35,"wid":16,"price":112000,"v":[100,120],"glb":"sportsaloon"},{"n":"German sport sedan 3.0","len":34,"wid":15,"price":82000,"v":[104,122],"sport":true,"glb":"sport3"},{"n":"1990 rally sedan 2.5","len":32,"wid":15,"price":48000,"v":[95,112],"classic":true,"glb":"saloon90"},{"n":"City taxi","len":34,"wid":15,"price":31000,"v":[90,105],"glb":"taxi","taxi":true},{"n":"Off-road pickup 3.0 V6","len":39,"wid":17,"price":78000,"v":[90,108],"pickup":true,"glb":"offroad"},{"n":"1985 German coupe 2.3","len":31,"wid":15,"price":38000,"v":[92,110],"classic":true,"glb":"coupe85"},{"n":"1998 German sedan 2.5","len":32,"wid":15,"price":14900,"v":[88,104],"glb":"sedan98"},{"n":"1965 American fastback V8","len":33,"wid":16,"price":95000,"v":[92,112],"classic":true,"glb":"fastback65"},{"n":"Mid-engine supercar V10","len":32,"wid":16,"price":195000,"v":[112,130],"sport":true,"glb":"midv10"},{"n":"1998 Japanese GT 3.0 turbo","len":32,"wid":15,"price":90000,"v":[105,124],"sport":true,"glb":"jgt98"},{"n":"1999 Japanese AWD coupe","len":33,"wid":15,"price":160000,"v":[106,125],"sport":true,"glb":"awd99"},{"n":"German rear-engine turbo coupe","len":32,"wid":16,"price":250000,"v":[112,130],"sport":true,"glb":"rearturbo"},{"n":"Japanese RWD coupe 2.4","len":31,"wid":15,"price":32000,"v":[100,118],"sport":true,"glb":"rwd24"},{"n":"1983 Japanese hatchback coupe 1.6","len":30,"wid":15,"price":35000,"v":[98,116],"classic":true,"sport":true,"glb":"ae86"},{"n":"1987 Italian twin-turbo supercar","len":31,"wid":16,"price":2500000,"v":[114,132],"classic":true,"sport":true,"glb":"f40"},{"n":"American twin-turbo V8 hypercar","len":33,"wid":16,"price":2100000,"v":[116,134],"sport":true,"glb":"venom"},{"n":"German F1-engine hypercar","len":33,"wid":16,"price":2700000,"v":[115,133],"sport":true,"glb":"amgone"},{"n":"British hybrid hypercar","len":32,"wid":16,"price":1350000,"v":[115,133],"sport":true,"glb":"p1"},{"n":"1961 British roadster","len":31,"wid":15,"price":180000,"v":[98,116],"classic":true,"glb":"etype"},{"n":"1992 American V10 roadster","len":31,"wid":16,"price":70000,"v":[106,124],"classic":true,"sport":true,"glb":"viper"},{"n":"1989 Japanese roadster 1.6","len":28,"wid":15,"price":25000,"v":[96,114],"classic":true,"sport":true,"glb":"miata"},{"n":"Italian V12 supercar","len":33,"wid":17,"price":520000,"v":[116,134],"sport":true,"glb":"svj"},{"n":"1989 Japanese AWD coupe 2.6","len":32,"wid":15,"price":60000,"v":[104,122],"classic":true,"sport":true,"glb":"r32"},{"n":"1970 American muscle car V8 supercharged","len":33,"wid":16,"price":150000,"v":[104,124],"classic":true,"sport":true,"glb":"charger"},{"n":"2020 American muscle coupe V8 supercharged","len":33,"wid":15,"price":90000,"v":[108,128],"sport":true,"glb":"challenger"},{"n":"Italian super SUV V8","len":34,"wid":17,"price":230000,"v":[106,124],"glb":"urus"},{"n":"2006 Japanese rally sedan AWD","len":31,"wid":15,"price":45000,"v":[102,120],"sport":true,"glb":"evo9"}];
 // low-poly car models (no logos, no brand names): file in assets/cars, body colour cell in the palette texture
 const CAR_GLB={"hothatch":{"file":"hothatch.glb","len":4.59,"cell":[16,0,8,8]},"gt12":{"file":"gt12.glb","len":4.64,"cell":[8,0,8,8]},"v8sport":{"file":"v8sport.glb","len":4.64,"cell":[24,0,8,8]},"sportsaloon":{"file":"sportsaloon.glb","len":2.99,"cell":[8,0,8,8]},"sport3":{"file":"sport3.glb","paint":"CarPaint"},"saloon90":{"file":"saloon90.glb","paint":"Car_paint","fix":{"blackplastic":[1447964],"matt":[2763824],"yellow_glow":[16756736,1],"transparent":[1911352,0,0.6],"white_glow":[16774352,1],"red_glow":[13373456,1],"windshield":[1911352,0,0.75],"disc":[7830658],"brake_color":[14236207],"rims_color":[12107462],"rubber":[1381655]}},"police":{"file":"cs_police_sedan.glb","yaw":49.9,"flip":1,"keep":1},"bus":{"file":"cs_citybus.glb","keep":1},"tow":{"file":"cs_towtruck.glb","yaw":19.9,"flip":1,"keep":1},"fire":{"file":"cs_fire_truck.glb","yaw":-55,"flip":1,"keep":1},"amb":{"file":"cs_ambulance.glb","yaw":19.7,"keep":1,"lenK":1.36},"offroad":{"file":"offroad.glb","flip":1,"paint":["Material.003"]},"coupe85":{"file":"coupe85.glb","paint":["Body"],"tint":1},"sedan98":{"file":"sedan98.glb","keep":1},"fastback65":{"file":"fastback65.glb","flip":1,"paint":["CarPrimaryColor"]},"midv10":{"file":"midv10.glb","paint":["body"]},"jgt98":{"file":"jgt98.glb","paint":["wigeon"]},"awd99":{"file":"awd99.glb","paint":["body"]},"rearturbo":{"file":"rearturbo.glb","flip":1,"paint":["New_Material"]},"rwd24":{"file":"rwd24.glb","paint":["cuerpo"]},"ae86":{"file":"ae86.glb","flip":1,"keep":1},"f40":{"file":"f40.glb","keep":1},"venom":{"file":"venom.glb","paint":["hen_venom_paint"]},"amgone":{"file":"amgone.glb","keep":1},"p1":{"file":"p1.glb","keep":1},"etype":{"file":"etype.glb","keep":1},"viper":{"file":"viper.glb","keep":1},"miata":{"file":"miata.glb","keep":1},"svj":{"file":"svj.glb","keep":1},"r32":{"file":"r32.glb","paint":["paint"]},"charger":{"file":"charger.glb","keep":1},"challenger":{"file":"challenger.glb","paint":["carpaint.001"]},"urus":{"file":"urus.glb","flip":1,"keep":1},"evo9":{"file":"evo9.glb","paint":["mM_CarPaint_Max_002","mM_CarPaintNormal_Max1"]},"garbage":{"file":"cs_garbage_truck.glb","yaw":55.3,"keep":1},"taxi":{"file":"cs_taxi.glb","yaw":-50,"keep":1},"van":{"file":"cs_postvan.glb","yaw":-20.5,"keep":1}};
 const ASSET_BASE=/\/(world|remake|xmas|perf|rec)\//.test(location.pathname)?'../':'';
@@ -1068,6 +1160,8 @@ function atNode(c){
 function gapAhead(c){
  const hx=Math.cos(c.ang),hy=Math.sin(c.ang);let gp=1e9;c.gapO=null;
  for(const o of cars){
+  // the car a viewer drives (cars/drive.js): anything in our path, whatever way it faces
+  if(o.state==='drive'){if(o===c||o.hidden)continue;const dx=o.x-c.x,dy=o.y-c.y,al=dx*hx+dy*hy;if(al>0&&al<120&&Math.abs(-dx*hy+dy*hx)<(c.wid+o.wid)/2+8){const gg=al-(c.len+o.len)/2;if(gg<gp){gp=gg;c.gapO=o}}continue}
   if(o===c||o===c.towing||o.state==='lot'||o.state==='service'||o.state==='waitlift'||o.hidden||(c.task&&c.task.target===o))continue;
   // same directed road: measure along the road, so cars still finishing a turn see the queue in front of them
   if(o.state==='road'&&o.from===c.from&&o.to===c.to){const dx=o.x-c.x,dy=o.y-c.y,dd=Math.hypot(dx,dy),al=dx*hx+dy*hy;if(dd<120&&(al>4||al>-4&&o.id<c.id)){const gg=dd-(c.len+o.len)/2;if(gg<gp){gp=gg;c.gapO=o}}continue}
@@ -1388,6 +1482,7 @@ function update(dt){
   if(c.state==='home'){c.homeLeft-=dt;continue}
   if(c.state==='service'){c.timer-=dt;if(c.timer<=0)finishService(c);continue}
   if(c.state==='hooking'){c.timer-=dt;if(c.timer<=0)finishHook(c);continue}
+  if(c.state==='drive')continue; // a viewer is driving it (cars/drive.js)
   stepCar(c,dt);
   c.checkT-=dt;if(c.checkT<=0){c.checkT=1;brain(c);if(c.state==='waitlift')tryLift(c)}
  }
@@ -1994,7 +2089,7 @@ function gauge(label,val,color,txt){return `<div class="gauge"><div class="row">
 function esc(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
 function updateCard(){
  const info=$('carInfo'),empty=$('carEmpty');
- if(!selected||selected.removed){selected=null;info.hidden=true;empty.hidden=false;return}
+ if(!selected||selected.removed){selected=null;info.hidden=true;empty.hidden=false;if(UIX.carActs)UIX.carActs(null);return}
  const c=selected;info.hidden=false;empty.hidden=true;
  const[st,fault]=stateText(c);
  const model=c.kind==='bus'?c.model:c.kind==='tow'?'Tow truck':c.kind==='van'?'Parts van':c.model+(c.isNew?' (new)':'');
@@ -2008,7 +2103,7 @@ function updateCard(){
  if(c.kind==='car')html+=`<dt>Speed</dt><dd>${Math.round(c.v*.37)} mph</dd><dt>Shop visits</dt><dd>${c.repairs}</dd><dt>Next inspection</dt><dd>${c.km>=c.nextInsp?'Overdue':'in '+fmtKm(c.nextInsp-c.km)}</dd>`;
  html+='</dl>';
  if(c.kind==='car')html+=`<div class="car-actions"><button type="button" id="breakSel" ${c.state==='road'&&!c.forceBreak?'':'disabled'}>Break this car</button></div>`;
- info.innerHTML=html;
+ info.innerHTML=html;if(UIX.carActs)UIX.carActs(c); // Follow / Drive / Drag race (cars/drive.js)
  const bs=$('breakSel');if(bs)bs.addEventListener('click',()=>{if(selected&&selected.state==='road'){selected.forceBreak=pickFault('tow');updateCard()}});
 }
 function updateStats(){
@@ -3213,8 +3308,9 @@ function make3D(T,X){
  const v3=new T.Vector3();
  function toHud(x,y,z){v3.set(x,y,z).project(camera);if(v3.z>1||v3.z<-1)return null;return{x:(v3.x+1)/2*HUDW,y:(1-v3.y)/2*HUDH}}
  const ray=new T.Raycaster(),ndc=new T.Vector2(),plane=new T.Plane(new T.Vector3(0,1,0),-Y0),hit=new T.Vector3();
- function clickAt(cx,cy){if(trailer||mode==='in')return;const r=c3.getBoundingClientRect(),hx=(cx-r.left)/r.width*CW,hy=(cy-r.top)/r.height*CH;
-  let best=null,bd=40*40;for(const c of cars){if(c.hidden||c.removed)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+.7,g.position.z);if(!s)continue;const d=(s.x-hx)**2+(s.y-hy)**2;if(d<bd){bd=d;best=c}}
+ function clickAt(cx,cy){if(trailer||mode==='in')return;const r=c3.getBoundingClientRect(),hx=(cx-r.left)/r.width*HUDW,hy=(cy-r.top)/r.height*HUDH;
+  // toHud() works in HUD units (HUDW x HUDH, the screen's aspect; CW x CH only on a screen of the city's aspect, not on phones); ~26 px of finger room
+  const rad=Math.max(40,26*HUDH/Math.max(1,r.height));let best=null,bd=rad*rad;for(const c of cars){if(c.hidden||c.removed)continue;const g=meshes.get(c.id);if(!g)continue;const s=toHud(g.position.x,g.position.y+.7,g.position.z);if(!s)continue;const d=(s.x-hx)**2+(s.y-hy)**2;if(d<bd){bd=d;best=c}}
   if(!best){ndc.set((cx-r.left)/r.width*2-1,-((cy-r.top)/r.height)*2+1);ray.setFromCamera(ndc,camera);if(WORLD&&W3.hallHit&&INTS.mayor&&W3.hallHit(ray.ray)){enterIn('mayor');return}if(WORLD&&W3.hospHit&&W3.hospHit(ray.ray)){enterIn('hosp');return}if(ray.ray.intersectPlane(plane,hit)){const px=hit.x*10,py=hit.z*10,O=B.oficina;if(XMAS&&typeof XMS!=='undefined'&&XMS.santaRect){const sr=XMS.santaRect;if(px>=sr[0]&&px<=sr[1]&&py>=sr[2]&&py<=sr[3]){enterIn('santa');return}}if(inKiosk(px,py,4)){enterIn('news');return}if(inLotB(O,px,py)){enterIn('oficina');return}const Lw=B.lavagem;if(isOpen('lavagem')&&inLotB(Lw,px,py)){enterIn('lavagem');return}const Rb=B.reboques;if(isOpen('reboques')&&inLotB(Rb,px,py)){enterIn('reboques');return}const bb=buildings.find(b=>inLotB(b,px,py));if(bb&&INTS[bb.type]){enterIn(bb.type);return}}
    const og=groups.oficina;if(og){const hits=ray.intersectObject(og,true);if(hits.length){enterIn('oficina');return}}const lg=groups.lavagem;if(lg&&isOpen('lavagem')){const h2=ray.intersectObject(lg,true);if(h2.length){enterIn('lavagem');return}}const rg=groups.reboques;if(rg&&isOpen('reboques')){const h3=ray.intersectObject(rg,true);if(h3.length){enterIn('reboques');return}}}
    if(!best&&WORLD&&FIRE.hit&&isOpen('w_fire')&&FIRE.hit(ray.ray)){enterIn('fire');return} // the fire station (interiors/fire.js)
@@ -3227,7 +3323,7 @@ function make3D(T,X){
   const items=[];
   if(near)peds.forEach((p,k)=>{if(!p.name)return;const g=pedMeshes[k];items.push({w:g.position,h:2.25,t:p.name+(jobOf(p.name)?' · '+jobOf(p.name).toUpperCase():''),kind:'p'})});
   if(near&&W3.tags)W3.tags(items); // the Mayor's tag (world/mayor.js)
-  for(const c of cars){if(!c.driver||c.hidden||c.removed||c===selected)continue;const g=meshes.get(c.id);if(g&&near)items.push({w:g.position,h:2.1,t:'★ '+c.driver,kind:'d'})}
+  for(const c of cars){if(!c.driver||c.hidden||c.removed||c===selected||c.state==='drive')continue;const g=meshes.get(c.id);if(g&&near)items.push({w:g.position,h:2.1,t:'★ '+c.driver,kind:'d'})}
   const cp=camera.position;for(const it of items)it.d=Math.hypot(it.w.x-cp.x,it.w.y-cp.y,it.w.z-cp.z);items.sort((a,b)=>a.d-b.d);
   let shown=0;for(const it of items){if(shown>=(X?14:36))break;if(X&&it.d>150)continue;const s=toHud(it.w.x,it.w.y+it.h,it.w.z);if(!s||s.x<-50||s.x>CW+50||s.y<0||s.y>CH)continue;shown++;
    const a=clamp(1.6-it.d/170,.35,1);hctx.globalAlpha=a;if(it.kind==='p')pill(it.t,s.x,s.y,sz,'rgba(16,19,24,.85)','#ffd34d');else if(it.kind==='m')pill(it.t,s.x,s.y,sz*1.06,'rgba(255,211,77,.96)','#1d0f02','#ff7a1a');else pill(it.t,s.x,s.y,sz*.92,'rgba(255,122,26,.92)','#1d0f02')}
@@ -4759,6 +4855,7 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
    {const w=CITY.roads.find(r=>r.id==='west');for(const s of[-1,1])along(w.P,6,s*(w.w/2+.2),(x,z,a)=>{if(x<-60||x>80||buildings.some(b=>inLotB(b,x*10,z*10,30)))return;if(JN.some(j=>Math.hypot(x-j[0],z-j[1])<12)||CITY.nodes.some(n=>n.edges.length>2&&Math.hypot(x-n.x,z-n.z)<12))return;
      BY.push({x,y:.03,z,ry:a,sx:2.3,sy:.1,sz:.12});if(r2()<.62){const ry=a+(r2()<.5?0:Math.PI);PC.push({x,y:.05,z,ry,sx:1.9,sy:.85,sz:4.2});PCc.push(CCOL[k++%CCOL.length]);PG.push({x,y:.85,z,ry,sx:1.7,sy:.62,sz:2.2});C2.pts.push([x,z])}})}
    const bodyG=sh(W3.bodyG||(W3.bodyG=new T.BoxGeometry(1,1,1).translate(0,.5,0)));
+   CITY.parked=PC.map(q=>[q.x,q.z,q.ry]); // the parked cars are solid for a driven car (cars/drive.js)
    instG(g,flat,dashPO,BY,null,false);
    // parked cars: the city's own car models (the same licensed models as the traffic), boxes only if the models aren't there
    if(AMBK.length){PC.forEach((q,i)=>{const m=AMBK[Math.floor(r2()*AMBK.length)],c=glbCar({len:m.len,color:m.taxi?'#f2b81d':PCc[i]},m.glb);c.scale.multiplyScalar(1.25);c.position.set(q.x,gh(q.x,q.z),q.z);c.rotation.y=q.ry;g.add(c)})}
@@ -6368,8 +6465,8 @@ const sig=ALL_MS.map(m=>isOpen(m.type)?1:0).join('')+'|'+sv+'|'+(nextMilestone()
  function frame(dt){if(renderer.shadowMap.enabled){AQ.acc+=dt;AQ.n++;if(AQ.acc>=2){AQ.fps=AQ.n/AQ.acc;AQ.acc=0;AQ.n=0;const f=AQ.fps;if(f<32)AQ.shEvery=Math.min(5,AQ.shEvery+1);else if(f>52)AQ.shEvery=Math.max(2,AQ.shEvery-1)}if(++AQ.shN>=(window.__MANUAL?1:AQ.shEvery)){AQ.shN=0;renderer.shadowMap.needsUpdate=true}}
   if(WORLD&&(tfT-=dt)<=0){tfT=2;treeify()}resize();idle+=dt;stepFade(dt);if(idle>25&&!dragging)cam.yaw+=dt*(mode==='in'?.04:.025);
   if(mode==='in'){cur.sync(dt);placeCam();RENDER(cur.scene);hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);cur.labels()}
-  else{placeCam();syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);if(XMAS)XMS.sync(dt);applyNight(false);mergeTick(dt);if(CITY2){if(typeof C2W!=='undefined')C2W.sync(dt);if(typeof conTick!=='undefined')conTick(simTime)}placeCam();lodEnd();fitShadow();RENDER(scene);
-  hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);drawLabels();if(XMAS)XMS.labels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer)hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
+  else{placeCam();if(DRV&&DRV.on)DRV.frame(dt,fadeTo);syncBuildings();syncPile();syncCars(dt);syncPeople();syncParticles();syncDetails();if(WORLD&&W3.sync)W3.sync(dt);if(XMAS)XMS.sync(dt);applyNight(false);mergeTick(dt);if(CITY2){if(typeof C2W!=='undefined')C2W.sync(dt);if(typeof conTick!=='undefined')conTick(simTime)}placeCam();lodEnd();fitShadow();RENDER(scene);
+  hctx.setTransform(HUDK,0,0,HUDK,0,0);hctx.clearRect(0,0,HUDW,HUDH);drawLabels();if(XMAS)XMS.labels();const keep=ctx;ctx=hctx;try{if(showHud&&!trailer&&!(DRV&&DRV.on))hudScaled(drawHUD);if(!trailer)hudScaled(drawCeleb)}finally{ctx=keep}}
   if(fadeTo){const a=fade<1?fade:2-fade;hctx.fillStyle=`rgba(5,9,15,${clamp(a,0,1).toFixed(3)})`;hctx.fillRect(0,0,HUDW,HUDH)}}
  function reset(){Object.assign(cam,mode==='in'?cur.home:home);idle=0}
  syncBuildings();if(X)decorateRoofs(scene);
@@ -6494,11 +6591,12 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
    {const hm=UIX.homeOf&&UIX.homeOf(n);if(hm){const d=document.createElement('small');d.className='fd-hm';d.textContent='Home: '+hm.label;tx.append(d);if(R3){const gh=document.createElement('button');gh.type='button';gh.className='fd-go';gh.textContent='Go to my home';
     gh.addEventListener('click',()=>{if(!view3d)setView(true,true);follow=null;hm.go();if(matchMedia('(max-width: 700px)').matches)fd.hidden=true});li.append(gh)}}}
    flist.append(li)}}
- function flyTo(n){const w=where(n);if(!w||!R3)return;if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
+ function flyTo(n){const w=where(n);if(!w||!R3)return;if(DRV&&DRV.on)DRV.stop();if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();follow={n,w};followT=0;const c=R3.cam,p=posOf(w);c.tx=p.x;c.tz=p.z;c.dist=34;c.pitch=.62;
   if(matchMedia('(max-width: 700px)').matches)fd.hidden=true}
  // keep the camera on the person for a while (they walk or drive); any drag on the city stops it
  setInterval(()=>{if(!follow||!R3||R3.mode()==='in')return;followT+=.05;const w=where(follow.n);if(!w||followT>45){follow=null;return}const p=posOf(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50);
  $('screen').addEventListener('pointerdown',e=>{if(!fd.contains(e.target)&&!nuCard.contains(e.target))follow=null});
+ UIX.unfollow=()=>{follow=null};
  const openFinder=()=>{if(UIX.only)UIX.only('finder');fd.hidden=false;fin.focus();render()};UIX.openFinder=openFinder;
  $('vFind').addEventListener('click',()=>{if(fd.hidden)openFinder();else fd.hidden=true});$('fdClose').addEventListener('click',()=>{fd.hidden=true});
  fin.addEventListener('input',render);fin.addEventListener('keydown',e=>{if(e.key==='Escape')fd.hidden=true});
@@ -6521,7 +6619,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
 // and the collapsible cards below the city. Never shows the subscriber total: the Unlocks list copies #metas
 // (milestone thresholds, "Open", "N more to go", "Blueprint").
 {
- const PN={finder:$('finder'),unlocks:$('unlocks'),moveIn:$('moveIn'),drag:$('drag'),goto:$('goto')},scr=$('screen'),ul=$('ulList');
+ const PN={finder:$('finder'),unlocks:$('unlocks'),moveIn:$('moveIn'),drag:$('drag'),goto:$('goto'),chal:$('chal')},scr=$('screen'),ul=$('ulList');
  const phone=()=>matchMedia('(max-width: 700px)').matches;
  const only=keep=>{for(const k in PN)if(k!==keep)PN[k].hidden=true};UIX.only=only;
  // the panels live over the city: on a phone, bring the city back into view first
@@ -6539,7 +6637,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  $('nbExplore').addEventListener('click',()=>{only(null);toCity();if(hasGL()&&!view3d)setView(true,true)});
  document.addEventListener('click',e=>{const o=e.target.closest&&e.target.closest('[data-open]');if(o){open(o.dataset.open);return}
   const c=e.target.closest&&e.target.closest('[data-close]');if(c)close(c.dataset.close)});
- for(const id of ['unlocks','moveIn','drag'])PN[id].addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close(id)}});
+ for(const id of ['unlocks','moveIn','drag','chal'])PN[id].addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close(id)}});
  setInterval(()=>{if(!PN.unlocks.hidden)fillUnlocks()},5000);
  // keep the buttons in step with whichever panel is open (Find my name can also close itself)
  const sync=()=>{const f=!PN.finder.hidden,u=!PN.unlocks.hidden||!PN.drag.hidden,m=!PN.moveIn.hidden,g=!PN.goto.hidden;
@@ -6682,7 +6780,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   const w=whereN(FOL);if(!w||folT>45){FOL=null;return}const p=posW(w),c=R3.cam;c.tx+=(p.x-c.tx)*.2;c.tz+=(p.z-c.tz)*.2},50)}
  function enter(k){if(!R3)return;R3.enterIn(k);let n=0;const t=setInterval(()=>{if(!R3||R3.mode()==='in'||++n>30){clearInterval(t);return}R3.enterIn(k)},120);hideDock()}
  // ---------- actions ----------
- const afterPick=()=>{if(TOUR)tourStop();if(phone())P.hidden=true};
+ const afterPick=()=>{if(TOUR)tourStop();if(DRV&&DRV.on)DRV.stop();if(phone())P.hidden=true};
  function goPlace(pl,opt){opt=opt||{};afterPick();ready3D(()=>{const at=pl.at();if(!at)return;FOL=null;
   const canIn=!!(pl.int&&pl.open());
   if(opt.enter&&canIn){const c=R3.cam;FL=null;Object.assign(c,{tx:at.x,tz:at.z,dist:at.dist,pitch:at.pitch,ty:gy(at.x,at.z)});if(at.yaw!=null)c.yaw=at.yaw;enter(pl.int);return}
@@ -6693,6 +6791,9 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
  function workPlace(n){const j=JOBS[n];if(!j||j.free)return null;const k=WORK_IN[j.b]||j.b;const pl=PL.find(p=>p.k===k)||(j.b==='w_res'?byKey('riverside'):j.b==='w_stad'?byKey('stadium'):null);return pl&&pl.open()?pl:null}
  function goPerson(n){afterPick();ready3D(()=>{const w=whereN(n),j=jobOf(n),wp=workPlace(n),hm=UIX.homeOf&&UIX.homeOf(n);
   const acts=[];if(wp&&wp.int)acts.push(['AT WORK ▶','gt-in',()=>goPlace(wp,{enter:true})]);if(hm)acts.push(['HOME ▶','gt-in2',()=>{stopCam();hideDock();hm.go()}]);
+  // their car (cars/drive.js) and a heads-up drag race against them (ui/challenge.js)
+  {const car=cars.find(q=>q.driver===n&&q.kind==='car'&&!q.removed);if(car&&DRV&&DRV.canDrive(car))acts.push(['DRIVE ▶','gt-in',()=>{stopCam();hideDock();DRV.start(car)}])}
+  if(UIX.challenge)acts.push(['RACE ⚑','gt-in2',()=>{stopCam();hideDock();UIX.challenge({name:n})}]);
   const sub=(j&&j!=='Homeless'?j:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):wp?' · at work':'');
   if(w){const get=()=>{const q=whereN(n);return q?posW(q):null};FOL=null;fly(get,{dist:34,pitch:.62,done:()=>follow(n)});showDock('★',hid(n)?'A resident':n,sub,acts);return}
   if(wp){const at=wp.at();if(at)fly(()=>at,{dist:at.dist,pitch:at.pitch,yaw:at.yaw});showDock('★',hid(n)?'A resident':n,sub,acts);return}
@@ -6736,7 +6837,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   if(now>=T.hold){tourNext();return}requestAnimationFrame(tourHold)}
  function tourNext(){const T=TOUR;if(!T)return;T.hold=0;FL=null;if(++T.i>=T.stops.length){tourStop();return}tourGo()}
  function tourStop(){TOUR=null;FL=null;tourBox.hidden=true}
- function tourStart(){if(REC||trailer)return;P.hidden=true;hideDock();ready3D(()=>{const stops=tourStops();if(!stops.length)return;FOL=null;TOUR={stops,i:0,hold:0};tourGo()})}
+ function tourStart(){if(REC||trailer)return;if(DRV&&DRV.on)DRV.stop();P.hidden=true;hideDock();ready3D(()=>{const stops=tourStops();if(!stops.length)return;FOL=null;TOUR={stops,i:0,hold:0};tourGo()})}
  tourBox.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();tourStop()}});
  // ---------- "Surprise me 🎲": a random open place, landmark or resident (crypto random: the city's own Math.random stream is untouched) ----------
  const rnd=n=>{try{const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n}catch(e){return Math.floor((performance.now()*7919)%n)}};
@@ -6802,7 +6903,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   if(i&&!phone())i.focus();else{const s=P.querySelector('[data-gt][aria-selected="true"]');if(s&&!phone())try{s.focus({preventScroll:true})}catch(e){}}
   if(!openI)openI=setInterval(()=>{if(P.hidden){clearInterval(openI);openI=0;return}if(!r3Seen&&R3){r3Seen=true;if(tab!=='people')render()}},500)}
  const toggle=()=>{if(P.hidden){if(phone()){const r=$('screen').getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)$('screen').scrollIntoView({block:'start'})}open()}else P.hidden=true};
- UIX.openGoto=open;UIX.tour=tourStart;
+ UIX.openGoto=open;UIX.tour=tourStart;UIX.gotoStop=()=>{stopCam();hideDock()};
  if(!MAYOR_ON)$('gtTour').textContent='🧭 Tour the city';
  $('gtTour').addEventListener('click',tourStart);$('gtLucky').addEventListener('click',surprise);
  if(REC){vB.hidden=true;nB.hidden=true}
@@ -6825,6 +6926,317 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
     if(dFind){const nm=nameOf(dFind);if(nm){q=nm;open('people');goPerson(nm);return}}
     if(dGo){const pl=byKey(dGo);if(pl&&pl.at())goPlace(pl)}},150)}
  }
+}
+var DRV=null;// read by view3d/frame.js, view3d/labels.js, ui/goto.js, ui/welcome.js (var: hoisted, so the earlier partials can test it before this runs)
+{
+ const REC=document.documentElement.dataset.rec==='1';
+ const KPX=6.046,VS=KPX/10;            // px/s per m/s of the physics; visual metres per physics metre
+ const H=1/120,G=9.81,RL=7000;         // fixed step; rev limiter shown on the rpm bar (generic, the specs give speeds per gear, not rpm)
+ const phone=()=>matchMedia('(max-width: 700px)').matches;
+ const hid=n=>!!(window.__HIDE&&n&&window.__HIDE.some(h=>String(n).includes(h)));
+ // ---------- the car's numbers (same reading of the specs as sim/drag.js prep()) ----------
+ const SP={m:1500,P:1e5,vg:new Float64Array(10),n:6,shift:.3,cda:.7,mu:1,drive:'FWD',wr:.5,wf:.5,launch:.4,wb:2,kw:0,hp:0,kg:0};
+ function specOf(c){const S=DRAG.SPEC,s=S[c.m&&c.m.glb]||S.hothatch;const eff=s.drive==='AWD'?.82:s.drive==='FWD'?.88:.86;
+  SP.m=s.kg+80;SP.P=s.hp*745.7*eff;SP.n=Math.min(10,s.gears);const v1=s.v1/3.6,vt=s.vtop/3.6,q=Math.pow(vt/v1,1/Math.max(1,SP.n-1));
+  for(let g=0,v=v1;g<SP.n;g++,v*=q)SP.vg[g]=v;SP.shift=s.shift;SP.cda=s.cda;SP.mu=s.mu*.92;SP.drive=s.drive;
+  SP.wr=s.eng==='R'?.61:s.eng==='M'?.57:.5;SP.wf=s.eng==='F'?.62:1-SP.wr;SP.launch=s.launch;SP.wb=Math.max(1.6,c.len/10*.62);SP.hp=s.hp;SP.kg=s.kg}
+ const pw=x=>{if(x<=0)return 0;const y=x+x*x-x*x*x;return y<.05?.05:y};
+ // ---------- where the car may go: roads (+1.2 m of kerb), the service lots and the turning bulbs; 1 m cells ----------
+ let MK=null,MX0=0,MZ0=0,MW=0,MH=0;
+ function buildMask(){const b=CITY.bounds;MX0=Math.floor(b.x0);MZ0=Math.floor(b.z0);MW=Math.ceil(b.x1-MX0)+1;MH=Math.ceil(b.z1-MZ0)+1;MK=new Uint8Array(MW*MH);
+  const disc=(x,z,r)=>{const i0=Math.max(0,Math.floor(x-r-MX0)),i1=Math.min(MW-1,Math.ceil(x+r-MX0)),j0=Math.max(0,Math.floor(z-r-MZ0)),j1=Math.min(MH-1,Math.ceil(z+r-MZ0));
+   for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const dx=i+MX0+.5-x,dz=j+MZ0+.5-z;if(dx*dx+dz*dz<=r*r)MK[j*MW+i]=1}};
+  // each road segment: the cells within half the road width (+1.2 m of kerb) of it
+  for(const r of CITY.roads||[]){const hw=r.w/2+1.2,P=r.P;for(let k=1;k<P.length;k++){const ax=P[k-1][0],az=P[k-1][1],bx=P[k][0],bz=P[k][1],dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1;
+    const i0=Math.max(0,Math.floor(Math.min(ax,bx)-hw-MX0)),i1=Math.min(MW-1,Math.ceil(Math.max(ax,bx)+hw-MX0)),j0=Math.max(0,Math.floor(Math.min(az,bz)-hw-MZ0)),j1=Math.min(MH-1,Math.ceil(Math.max(az,bz)+hw-MZ0));
+    for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const x=i+MX0+.5,z=j+MZ0+.5;let t=((x-ax)*dx+(z-az)*dz)/l2;t=t<0?0:t>1?1:t;const ex=x-ax-dx*t,ez=z-az-dz*t;if(ex*ex+ez*ez<=hw*hw)MK[j*MW+i]=1}}}
+  for(const q of CITY.bulbs||[])disc(q.x,q.z,q.r+4);
+  for(const n of nodes)if(n.round)disc(n.x/10,n.y/10,n.round/10+6);
+  for(const B0 of buildings){if(!B0||B0.cx==null)continue;const r=Math.hypot(B0.x1-B0.x0,B0.y1-B0.y0)/20+2,cx=B0.cx/10,cz=B0.cy/10;
+   const i0=Math.max(0,Math.floor(cx-r-MX0)),i1=Math.min(MW-1,Math.ceil(cx+r-MX0)),j0=Math.max(0,Math.floor(cz-r-MZ0)),j1=Math.min(MH-1,Math.ceil(cz+r-MZ0));
+   for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++)if(inLotB(B0,(i+MX0+.5)*10,(j+MZ0+.5)*10))MK[j*MW+i]=1}
+  // the cars parked along the shopping street (world/city2_roads.js) are solid
+  for(const q of CITY.parked||[]){const cs=Math.cos(q[2]),sn=Math.sin(q[2]),i0=Math.max(0,Math.floor(q[0]-3-MX0)),i1=Math.min(MW-1,Math.ceil(q[0]+3-MX0)),j0=Math.max(0,Math.floor(q[1]-3-MZ0)),j1=Math.min(MH-1,Math.ceil(q[1]+3-MZ0));
+   for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const dx=i+MX0+.5-q[0],dz=j+MZ0+.5-q[1],u=dx*cs-dz*sn,v=dx*sn+dz*cs;if(Math.abs(u)<1.2&&Math.abs(v)<2.3)MK[j*MW+i]=0}}
+  // the roundabout island stays solid (the ring road covers it otherwise)
+  for(const n of nodes)if(n.round){const r=Math.max(0,n.round/10-5.5),x=n.x/10,z=n.y/10;const i0=Math.max(0,Math.floor(x-r-MX0)),i1=Math.min(MW-1,Math.ceil(x+r-MX0)),j0=Math.max(0,Math.floor(z-r-MZ0)),j1=Math.min(MH-1,Math.ceil(z+r-MZ0));
+   for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const dx=i+MX0+.5-x,dz=j+MZ0+.5-z;if(dx*dx+dz*dz<=r*r)MK[j*MW+i]=0}}}
+ const okPx=(x,y)=>{const i=Math.floor(x/10-MX0),j=Math.floor(y/10-MZ0);return i>=0&&j>=0&&i<MW&&j<MH&&MK[j*MW+i]===1};
+ // ---------- state (scalars only: the step allocates nothing) ----------
+ const ST={on:false,c:null,x:0,y:0,px:0,py:0,a:0,pa:0,vx:0,vy:0,g:0,shT:0,rev:false,revT:0,steer:0,acc:0,r:.13,spin:false,thr:0,brk:0,acc0:0,
+  bump:0,nW:0,nC:0,lastHit:0,ct:0,cam0:null,fov0:34,fs:false,sel:null,t:0,lastK:-1,lastM:-1,lastG:-1,lastR:-1};
+ const K={up:false,dn:false,l:false,r:false,hb:false};const TK={up:0,dn:0,l:0,r:0,hb:0};// keyboard / touch (counted per finger)
+ const kOn=k=>K[k]||TK[k]>0;
+ function step(){const c=ST.c,ca=Math.cos(ST.a),sa=Math.sin(ST.a);
+  let vF=ST.vx*ca+ST.vy*sa,vL=-ST.vx*sa+ST.vy*ca;const up=kOn('up'),dn=kOn('dn'),hb=kOn('hb');
+  // pedals: S / brake holds the car, then (stopped, still held) engages reverse; W / gas leaves reverse
+  let thr=0,brk=0;
+  if(!ST.rev){thr=up?1:0;brk=dn?1:0;if(dn&&!up&&vF<.4){ST.revT+=H;if(ST.revT>.3){ST.rev=true;ST.revT=0}}else ST.revT=0}
+  else{thr=dn?1:0;brk=up?1:0;if(up&&!dn&&vF>-.4)ST.rev=false}
+  ST.thr=thr;ST.brk=brk||(hb?1:0);
+  // steering: eased, a little slower at speed
+  const want=(kOn('r')?1:0)-(kOn('l')?1:0),sp=Math.abs(vF),rate=(want===0?6:3.4)/(1+sp/40);ST.steer+=clamp(want-ST.steer,-rate*H,rate*H);
+  // engine and gearbox (automatic): power curve P(x)=P*(x+x^2-x^3) like the drag sim, clutch slip at launch
+  let F=0;ST.spin=false;
+  if(!ST.rev){
+   if(ST.shT>0){ST.shT-=H;if(ST.shT<=0&&ST.g<SP.n-1)ST.g++}
+   const vf=vF>0?vF:0;let r=vf/SP.vg[ST.g];
+   if(ST.shT<=0){if(r>=.97&&ST.g<SP.n-1&&thr>0)ST.shT=SP.shift;else if(ST.g>0&&vf/SP.vg[ST.g-1]<.8){ST.g--;r=vf/SP.vg[ST.g]}}
+   let rr=r;if(ST.g===0&&thr>0&&rr<SP.launch)rr=SP.launch;
+   if(thr>0&&ST.shT<=0&&r<1.02){const vr=rr*SP.vg[ST.g];F=thr*SP.P*pw(rr/.88)/(vr>vf?vr:vf>.5?vf:.5)}
+   ST.r=clamp(rr<.13?.13:rr,0,1.02);
+  }else{ST.g=0;ST.shT=0;if(thr>0&&vF>-7){const f=SP.P/(Math.abs(vF)>3?Math.abs(vF):3);F=-(f<.45*SP.m*G?f:.45*SP.m*G)}ST.r=clamp(.13+Math.abs(vF)/9,0,1)}
+  // traction: grip x weight on the driven wheels, with weight transfer (RWD gains under acceleration, FWD loses)
+  const fr=SP.drive==='AWD'?.98:SP.drive==='FWD'?SP.wf-.25*ST.acc/G:SP.wr+.25*ST.acc/G,Tm=SP.mu*SP.m*G*(fr<.2?.2:fr);
+  if(F>Tm){F=Tm;ST.spin=true}else if(F<-Tm){F=-Tm;ST.spin=true}
+  const v0=vF,sg=vF>0?1:vF<0?-1:0;
+  let Fd=.5*1.2*SP.cda*vF*Math.abs(vF)+.014*SP.m*G*sg;if(!thr&&!ST.rev&&vF>0)Fd+=.035*SP.m*G;
+  vF+=(F-Fd)/(SP.m*1.05)*H;
+  const Bk=(brk?SP.mu*G*.95:0)+(hb?.5*G:0);if(Bk>0){if(vF>0)vF=Math.max(0,vF-Bk*H);else vF=Math.min(0,vF+Bk*H)}
+  if(Math.abs(vF)<.05&&!thr)vF=0;
+  ST.acc=clamp((vF-v0)/H,-12,12);
+  // sideways: the tyres pull the velocity back in line with the car (less with the handbrake or spinning rear wheels: a light drift)
+  const grip=hb?1.6:ST.spin&&SP.drive==='RWD'?3.2:ST.spin&&SP.drive==='AWD'?6:9;vL/=1+grip*H;
+  ST.vx=ca*vF-sa*vL;ST.vy=sa*vF+ca*vL;
+  // yaw from the steering (kinematic at low speed, limited by a lateral acceleration at speed); angles grow clockwise from above
+  const vv=vF*VS;let yr=vv/SP.wb*Math.tan(.6*ST.steer);const cap=(hb?16:11.5)/(Math.abs(vv)>.1?Math.abs(vv):.1);yr=yr>cap?cap:yr<-cap?-cap:yr;
+  ST.px=ST.x;ST.py=ST.y;ST.pa=ST.a;ST.a+=yr*H;
+  // move, then the world and the other cars
+  let nx=ST.x+ST.vx*KPX*H,ny=ST.y+ST.vy*KPX*H;
+  if(!fits(nx,ny,ST.a)){
+   if(!fits(ST.x,ST.y,ST.a)){ST.x=nx;ST.y=ny}// already in a bad spot (e.g. spawned on a kerb): let it drive out
+   else wall(c)}
+  else{ST.x=nx;ST.y=ny}
+  carHits(c)}
+ // against a kerb or a wall: the wall's normal from the mask around the car; the velocity into it is bounced off (20 %),
+ // the rest slides on with a little friction, and the car turns a little to run along the wall
+ const DX=new Float64Array(8),DY=new Float64Array(8);for(let k=0;k<8;k++){DX[k]=Math.cos(k*Math.PI/4);DY[k]=Math.sin(k*Math.PI/4)}
+ function wall(c){const R=c.len*.62;let wx=0,wy=0;for(let k=0;k<8;k++)if(!okPx(ST.x+DX[k]*R,ST.y+DY[k]*R)){wx-=DX[k];wy-=DY[k]}
+  const wl=Math.hypot(wx,wy);if(wl<1e-6){ST.vx*=-.3;ST.vy*=-.3;ST.a=ST.pa;ST.nW++;return}wx/=wl;wy/=wl;
+  const vn=ST.vx*wx+ST.vy*wy;if(vn<0){ST.vx-=1.2*vn*wx;ST.vy-=1.2*vn*wy;ST.vx*=.992;ST.vy*=.992;if(vn<-3){ST.bump=.25;ST.nW++}}
+  let tx=-wy,ty=wx;const ca=Math.cos(ST.a),sa=Math.sin(ST.a);if(tx*ca+ty*sa<0){tx=-tx;ty=-ty}
+  if(Math.abs(tx*ca+ty*sa)>.35)ST.a=angLerp(ST.a,Math.atan2(ty,tx),.06);
+  const nx=ST.x+ST.vx*KPX*H,ny=ST.y+ST.vy*KPX*H;if(fits(nx,ny,ST.a)){ST.x=nx;ST.y=ny}else if(!fits(ST.x,ST.y,ST.a))ST.a=ST.pa}
+ // the car's outline (a little inside) must be on drivable ground: corners plus points along the sides and ends, no gap wider
+ // than about 0.8 m, so a parked car can't slip in between two corners
+ function fits(x,y,a){const c=ST.c,ca=Math.cos(a),sa=Math.sin(a),hl=c.len*.46,hw=c.wid*.42,nl=Math.max(2,Math.ceil(2*hl/8)),nw=Math.max(1,Math.ceil(2*hw/8));
+  for(let i=0;i<=nl;i++){const l=-hl+2*hl*i/nl;if(!okPx(x+ca*l-sa*hw,y+sa*l+ca*hw)||!okPx(x+ca*l+sa*hw,y+sa*l-ca*hw))return false}
+  for(let i=1;i<nw;i++){const w=-hw+2*hw*i/nw;if(!okPx(x+ca*hl-sa*w,y+sa*hl+ca*w)||!okPx(x-ca*hl-sa*w,y-sa*hl+ca*w))return false}
+  return true}
+ // the other cars: two circles each (front and back); push out and bounce off (the AI car is not moved)
+ function carHits(c){const r1=c.wid*.5,d1=c.len*.5-r1,ca=Math.cos(ST.a),sa=Math.sin(ST.a);
+  for(let i=0;i<cars.length;i++){const o=cars[i];if(o===c||o.hidden||o.removed||o.state==='home'||o.ghost>0)continue;
+   const dx=o.x-ST.x,dy=o.y-ST.y,R=(c.len+o.len)*.5;if(dx*dx+dy*dy>R*R)continue;
+   const r2=o.wid*.5,d2=o.len*.5-r2,oc=Math.cos(o.ang),os=Math.sin(o.ang),ov=(o.v||0)/KPX;
+   for(let s1=-1;s1<=1;s1+=2)for(let s2=-1;s2<=1;s2+=2){const ex=ST.x+ca*d1*s1-(o.x+oc*d2*s2),ey=ST.y+sa*d1*s1-(o.y+os*d2*s2),d=Math.hypot(ex,ey),m=r1+r2;
+    if(d>=m||d<1e-3)continue;const nx=ex/d,ny=ey/d;ST.x+=nx*(m-d);ST.y+=ny*(m-d);
+    const vn=(ST.vx-oc*ov)*nx+(ST.vy-os*ov)*ny;if(vn<0){ST.vx-=1.3*vn*nx;ST.vy-=1.3*vn*ny;ST.bump=.25;ST.nC++;ST.lastHit=o.id}}}}
+ // ---------- leave / rejoin the AI ----------
+ const canDrive=c=>!!(c&&!REC&&!trailer&&R3&&c.kind==='car'&&!c.removed&&!c.hidden&&(c.state==='road'||c.state==='home')&&!c.stolen&&!c.emerg&&!c.towing&&!c.towedBy&&!c.forceBreak&&!(typeof crime!=='undefined'&&crime&&crime.car===c));
+ function start(c){if(ST.on){if(ST.c===c)return true;stop(true)}if(!canDrive(c))return false;
+  if(c.state==='home'&&!placeOnRoad(c))return false;
+  if(!view3d)setView(true,true);if(R3.mode()==='in')return false;
+  if(!MK)buildMask();specOf(c);
+  c.state='drive';c.pts=[];c.route=[];c.waitRed=false;c.waitWhy='';c.boxN=-1;c.stuck=0;c.ghost=0;c.rn=null;
+  ST.c=c;ST.on=true;ST.x=ST.px=c.x;ST.y=ST.py=c.y;ST.a=ST.pa=c.ang;const v=(c.v||0)/KPX;ST.vx=Math.cos(c.ang)*v;ST.vy=Math.sin(c.ang)*v;
+  ST.g=0;while(ST.g<SP.n-1&&v>SP.vg[ST.g]*.9)ST.g++;ST.shT=0;ST.rev=false;ST.steer=0;ST.acc=0;ST.acc0=0;ST.ct=0;ST.t=0;
+  ST.sel=selected===c?c:null;selected=null;updateCard();
+  const cm=R3.cam;ST.cam0={tx:cm.tx,tz:cm.tz,yaw:cm.yaw,pitch:cm.pitch,dist:cm.dist,ty:cm.ty||0};ST.fov0=R3.camera.fov;
+  if(UIX.gotoStop)UIX.gotoStop();if(UIX.unfollow)UIX.unfollow();FOLc=null;if(UIX.only)UIX.only(null);
+  for(const k in K)K[k]=false;for(const k in TK)TK[k]=0;
+  ST.fs=false;if(phone()&&!scr.classList.contains('fsfake')&&document.fullscreenElement!==scr){scr.classList.add('fsfake');document.body.classList.add('fs-lock');ST.fs=true}
+  hudShow(c);return true}
+ // the nearest lane point (of a road whose direction is closest to the car's heading)
+ function rejoin(c){const ca=Math.cos(ST.a),sa=Math.sin(ST.a);let best=1e18,ba=-1,bb=-1,bs=0;
+  for(const[k,e]of CITY.G.E){const a=Math.floor(k/65536),b=k%65536;if(!nodes[a]||!nodes[b])continue;const s=edgeS(a,b,c.x,c.y),p=lanePt(a,b,s);
+   const t=atEdge(e,p.s),d=Math.hypot(p.x-c.x,p.y-c.y)+(1-(t.tx*ca+t.ty*sa))*60;if(d<best){best=d;ba=a;bb=b;bs=p.s}}
+  if(ba<0)return false;
+  // a free spot on that lane (no car within ~4.5 m), a little further along if needed
+  const len=EDGE(ba,bb).len;let p=lanePt(ba,bb,bs);
+  for(let k=0;k<8;k++){const q=lanePt(ba,bb,bs+(k%2?1:-1)*Math.ceil(k/2)*50);if(!cars.some(o=>o!==c&&!o.hidden&&!o.removed&&o.state!=='home'&&Math.hypot(o.x-q.x,o.y-q.y)<45)){p=q;break}}
+  const t=atEdge(EDGE(ba,bb),p.s);c.x=p.x;c.y=p.y;c.ang=Math.atan2(t.ty,t.tx);c.from=ba;c.to=bb;c.pts=[stopPt(ba,bb)];c.route=[];
+  c.v=Math.min(c.vmax,Math.max(0,(ST.vx*ca+ST.vy*sa))*KPX);c.state='road';c.stuck=0;c.ghost=.8;c.waitRed=false;c.blockT=0;c.stopT=0;c.stopAt=-1;c.brake=false;void len;return true}
+ // quick: no camera move (trailer, 2D view); noSel: entering an interior (the camera is handed over, the car is not picked)
+ function stop(quick,noSel){if(!ST.on)return;const c=ST.c;ST.on=false;
+  if(c&&!c.removed){c.x=ST.x;c.y=ST.y;c.ang=ST.a;if(!rejoin(c)){c.state='road';c.pts=[stopPt(c.from,c.to)]}}
+  hudHide();
+  if(R3){const cm=R3.cam;
+   if(!quick&&c&&!noSel)outTween(c);
+   else{if(R3.camera.fov!==34){R3.camera.fov=34;R3.camera.updateProjectionMatrix()}if(!quick&&c){cm.tx=c.x/10;cm.tz=c.y/10;cm.dist=34;cm.pitch=.62;cm.ty=WORLD&&CITY.gy?CITY.gy(cm.tx,cm.tz):0}}}
+  if(ST.fs){scr.classList.remove('fsfake');document.body.classList.remove('fs-lock');ST.fs=false}
+  for(const k in K)K[k]=false;for(const k in TK)TK[k]=0;
+  if(c&&!c.removed&&!quick&&!noSel){selected=c;updateCard()}ST.c=null}
+ // after a normal exit: the camera rises from the chase view to the usual one over the car (0.9 s), then follows it for a while
+ function outTween(c){const cm=R3.cam,a={dist:cm.dist,pitch:cm.pitch,fov:R3.camera.fov},t0=performance.now();
+  const tick=()=>{if(ST.on||!R3||R3.mode()==='in'){if(!ST.on&&R3&&R3.camera.fov!==34){R3.camera.fov=34;R3.camera.updateProjectionMatrix()}return}
+   const u=Math.min(1,(performance.now()-t0)/900),e=ease(u),x=c.x/10,z=c.y/10;cm.tx+=(x-cm.tx)*.35;cm.tz+=(z-cm.tz)*.35;if(WORLD&&CITY.gy)cm.ty=(cm.ty||0)+(CITY.gy(x,z)-(cm.ty||0))*.35;
+   cm.dist=a.dist+(34-a.dist)*e;cm.pitch=a.pitch+(.62-a.pitch)*e;R3.camera.fov=a.fov+(34-a.fov)*e;R3.camera.updateProjectionMatrix();
+   if(u<1)requestAnimationFrame(tick);else followCar(c,20)};requestAnimationFrame(tick)}
+ // ---------- the frame (from view3d/frame.js, before the cars are synced): fixed steps, then the chase camera ----------
+ function frame(dt,fading){const c=ST.c;
+  if(!c||c.removed||fading==='in'||R3.mode()==='in'||!view3d||trailer){if(fading==='in'&&c&&!c.removed)stop(false,true);else stop(true);return}
+  ST.ct+=dt;if(ST.ct>.25)ST.ct=.25;while(ST.ct>=H){step();ST.ct-=H}
+  const al=ST.ct/H;c.x=ST.px+(ST.x-ST.px)*al;c.y=ST.py+(ST.y-ST.py)*al;c.ang=angLerp(ST.pa,ST.a,al);
+  const ca=Math.cos(ST.a),sa=Math.sin(ST.a),vF=ST.vx*ca+ST.vy*sa;c.v=Math.abs(vF)*KPX;c.brake=ST.brk>0||(Math.abs(vF)<.3&&!ST.thr);if(ST.bump>0)ST.bump-=dt;
+  // chase camera: behind the car, looking a little ahead; a bit further back at speed; never under the hill behind
+  ST.t+=dt;const cm=R3.cam,cam0=ST.cam0,vv=Math.abs(vF)*VS,wx=c.x/10,wz=c.y/10;
+  const tx=wx+Math.cos(c.ang)*2.2,tz=wz+Math.sin(c.ang)*2.2,ty=(WORLD&&CITY.gy?CITY.gy(wx,wz):0)+1.25;
+  const yawT=Math.atan2(-Math.cos(c.ang),-Math.sin(c.ang)),dist=8.8+vv*.11;let pitch=.2;
+  if(WORLD&&CITY.gy){const cp=Math.cos(pitch),bx=tx+Math.sin(yawT)*cp*dist,bz=tz+Math.cos(yawT)*cp*dist,need=CITY.gy(bx,bz)+1.4-ty;if(Math.sin(pitch)*dist<need)pitch=clamp(Math.asin(clamp(need/dist,-1,1)),.2,.9)}
+  const e=ST.t<1.1?ease(ST.t/1.1):1,k=1-Math.exp(-dt*(e<1?30:14));
+  if(e<1){cm.tx=cam0.tx+(tx-cam0.tx)*e;cm.tz=cam0.tz+(tz-cam0.tz)*e;cm.ty=cam0.ty+(ty-cam0.ty)*e;cm.dist=cam0.dist+(dist-cam0.dist)*e;cm.pitch=cam0.pitch+(pitch-cam0.pitch)*e;cm.yaw=angLerp(cam0.yaw,yawT,e)}
+  else{cm.tx+=(tx-cm.tx)*k;cm.tz+=(tz-cm.tz)*k;cm.ty+=(ty-cm.ty)*k;cm.dist+=(dist-cm.dist)*k;cm.pitch+=(pitch-cm.pitch)*k;cm.yaw=angLerp(cm.yaw,yawT,1-Math.exp(-dt*(ST.rev?2:4.5)))}
+  const fov=ST.fov0+(56-ST.fov0)*e;if(Math.abs(R3.camera.fov-fov)>.01){R3.camera.fov=fov;R3.camera.updateProjectionMatrix()}
+  hudTick(vF)}
+ const ease=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;
+ // ---------- HUD (DOM over the city; strings made once, a value only touches the DOM when it changes) ----------
+ const scr=$('screen'),hud=$('drv'),dvK=$('dvKmh'),dvM=$('dvMph'),dvG=$('dvGear'),dvR=$('dvRpm'),dvRN=$('dvRpmN'),dvT=$('dvTouch'),dvHelp=$('dvHelp');
+ const NUM=Array.from({length:501},(_,i)=>String(i)),RPMS=Array.from({length:51},(_,i)=>`scaleX(${(i/50).toFixed(2)})`),RPMN=Array.from({length:81},(_,i)=>(i/10).toFixed(1)+'k'),GEARS=['R','1','2','3','4','5','6','7','8','9','10'];
+ let touchSeen=false;
+ function hudShow(c){$('dvName').textContent=c.driver?(hid(c.driver)?'★ A resident':'★ '+c.driver):c.plate;
+  $('dvModel').textContent=`${c.model} · ${SP.hp} hp · ${Math.round(SP.hp*.7457)} kW · ${SP.kg.toLocaleString('en-US')} kg · ${Math.round(SP.kg*2.20462).toLocaleString('en-US')} lb · ${SP.drive}`;
+  ST.lastK=ST.lastM=ST.lastG=ST.lastR=-1;scr.classList.add('driving');hud.hidden=false;
+  const coarse=touchSeen||matchMedia('(hover: none), (pointer: coarse)').matches;dvT.hidden=!coarse;dvHelp.hidden=coarse;hud.classList.toggle('dv-coarse',coarse);dvHelp.classList.remove('dv-fade');setTimeout(()=>dvHelp.classList.add('dv-fade'),7000);
+  try{(coarse?$('dvExit'):c3).focus({preventScroll:true})}catch(e){}}
+ function hudHide(){hud.hidden=true;scr.classList.remove('driving')}
+ function hudTick(vF){const v=Math.abs(vF),kmh=Math.min(500,Math.round(v*3.6)),mph=Math.min(500,Math.round(v*2.236936)),g=ST.rev?0:ST.g+1,r=Math.round(ST.r/1.02*50),rn=Math.round((900+ST.r/1.02*(RL-900))/100);
+  if(kmh!==ST.lastK){ST.lastK=kmh;dvK.textContent=NUM[kmh]}if(mph!==ST.lastM){ST.lastM=mph;dvM.textContent=NUM[mph]}
+  if(g!==ST.lastG){ST.lastG=g;dvG.textContent=GEARS[g]}if(r!==ST.lastR){ST.lastR=r;dvR.style.transform=RPMS[r];dvRN.textContent=RPMN[rn>80?80:rn];hud.classList.toggle('dv-red',r>=47)}}
+ // ---------- controls ----------
+ const KEY={KeyW:'up',ArrowUp:'up',KeyS:'dn',ArrowDown:'dn',KeyA:'l',ArrowLeft:'l',KeyD:'r',ArrowRight:'r',Space:'hb'};
+ const typing=e=>{const t=e.target;return !!(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))};
+ window.addEventListener('keydown',e=>{if(!ST.on||typing(e))return;
+  if(e.key==='Escape'){const open=document.querySelector('.finder:not([hidden])');if(open)return;e.preventDefault();e.stopPropagation();stop();return}
+  const k=KEY[e.code]||KEY[e.key];if(!k)return;K[k]=true;e.preventDefault();e.stopPropagation()},true);
+ window.addEventListener('keyup',e=>{const k=KEY[e.code]||KEY[e.key];if(k)K[k]=false},true);
+ window.addEventListener('blur',()=>{for(const k in K)K[k]=false;for(const k in TK)TK[k]=0});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in K)K[k]=false;for(const k in TK)TK[k]=0}});
+ for(const b of dvT.querySelectorAll('[data-k]')){const k=b.dataset.k,held=new Set();
+  const dn=e=>{e.preventDefault();touchSeen=true;try{b.setPointerCapture(e.pointerId)}catch(x){}if(!held.has(e.pointerId)){held.add(e.pointerId);TK[k]=held.size}b.classList.add('on')};
+  const up=e=>{if(held.delete(e.pointerId)){TK[k]=held.size;if(!held.size)b.classList.remove('on')}};
+  b.addEventListener('pointerdown',dn);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);b.addEventListener('contextmenu',e=>e.preventDefault())}
+ window.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')touchSeen=true},{passive:true,capture:true});
+ $('dvExit').addEventListener('click',()=>stop());
+ // ---------- follow a car with the camera (any car; a drag or zoom on the city stops it) ----------
+ let FOLc=null,folT=0,folI=0;
+ function followCar(c,secs){FOLc=c;folT=secs||45;if(folI)return;folI=setInterval(()=>{const f=FOLc;if(!f||!R3||R3.mode()==='in'||ST.on||f.removed||f.hidden||(folT-=.05)<=0){FOLc=null;clearInterval(folI);folI=0;return}
+  const cm=R3.cam,x=f.x/10,z=f.y/10;cm.tx+=(x-cm.tx)*.2;cm.tz+=(z-cm.tz)*.2;if(WORLD&&CITY.gy){const ty=CITY.gy(x,z);cm.ty=(cm.ty||0)+(ty-(cm.ty||0))*.2}},50)}
+ c3.addEventListener('pointerdown',()=>{FOLc=null});c3.addEventListener('wheel',()=>{FOLc=null},{passive:true});
+ function follow(c){if(!c||!R3)return;if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();if(UIX.gotoStop)UIX.gotoStop();if(UIX.unfollow)UIX.unfollow();
+  const cm=R3.cam;cm.tx=c.x/10;cm.tz=c.y/10;cm.dist=34;cm.pitch=.62;cm.ty=WORLD&&CITY.gy?CITY.gy(cm.tx,cm.tz):0;followCar(c,45)}
+ // ---------- car panel actions: in the "Car details" card and in a dock over the city ----------
+ const acts=$('carActs'),dock=$('carDock');let dockFor=null,dockSeen=null,actFor=null,actSig='';
+ const mk=(cls,txt,fn,label)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=txt;if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b};
+ const can3D=()=>hasGL()&&!REC;
+ function fill(box,c,inDock){box.textContent='';const ok=canDrive(c)&&!trailer;
+  box.append(mk(inDock?'gt-in2 cd-b cd-fol':'cd-b cd-fol','Follow',()=>{follow(c);hideDock()},'Follow this car with the camera'));
+  const d=mk(inDock?'gt-in cd-b':'cd-b cd-drv','Drive ▶',()=>{hideDock();if(!start(c))note('This car can’t be driven right now.')},'Drive this car');d.disabled=!ok||!can3D();box.append(d);
+  box.append(mk(inDock?'gt-in cd-b cd-race':'cd-b cd-race','Drag race ⚑',()=>{hideDock();if(UIX.challenge)UIX.challenge(c)},'Challenge this car to a drag race'))}
+ function note(t){const m=$('vMsg');if(!m)return;m.textContent=t;m.hidden=false;setTimeout(()=>{m.hidden=true},2500)}
+ function hideDock(){dock.hidden=true;dockFor=null}
+ function showDock(c){dock.textContent='';const ic=document.createElement('span');ic.className='gt-dk-ic';ic.textContent=c.driver?'★':'🚗';
+  const tx=document.createElement('div');tx.className='gt-dk-tx';const b=document.createElement('b');b.className=c.driver?'gt-nm':'';b.textContent=c.driver?(hid(c.driver)?'A resident':c.driver):c.plate;
+  const sm=document.createElement('small');sm.textContent=c.model+(c.driver?' · '+c.plate:'');tx.append(b,sm);const a=document.createElement('div');a.className='gt-dk-acts';fill(a,c,true);
+  const x=mk('fd-x gt-dk-x','',hideDock,'Close');x.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  dock.append(ic,tx,a,x);const gd=$('gtDock');if(gd)gd.hidden=true;dock.hidden=false;dockFor=c}
+ // called by updateCard() (ui/panels.js) every 0.25 s and on every pick; the buttons are rebuilt only when the car or its state changes
+ UIX.carActs=c=>{const ok=!!(c&&c.kind==='car'&&!c.removed);if(!ok){acts.hidden=true;actFor=null;dockSeen=null;if(dockFor&&(!c||c!==dockFor))hideDock();return}
+  const sig=c.id+'|'+canDrive(c)+'|'+!!trailer;if(c!==actFor||sig!==actSig){actFor=c;actSig=sig;fill(acts,c,false)}acts.hidden=false;
+  if(c!==dockSeen&&view3d&&R3&&R3.mode()!=='in'&&!ST.on&&!trailer&&!REC){dockSeen=c;showDock(c)}}; // once per pick (closing it keeps it closed)
+ setInterval(()=>{if(dockFor&&(trailer||(R3&&R3.mode()==='in')||!view3d||dockFor.removed))hideDock()},400);
+ dock.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();hideDock()}});
+ DRV={get on(){return ST.on},car:()=>ST.c,start,stop:()=>stop(),frame,follow,canDrive,
+  info:()=>ST.on?{x:ST.x/10,z:ST.y/10,a:ST.a,kmh:Math.hypot(ST.vx,ST.vy)*3.6,gear:ST.rev?'R':ST.g+1,rpm:Math.round(900+ST.r/1.02*(RL-900)),spin:ST.spin,bumps:ST.nW,hits:ST.nC,lastHit:ST.lastHit}:null,
+  keys:(o)=>{for(const k in K)K[k]=!!(o&&o[k])}};// keys(): test hook (recorder/localhost captures)
+ if(location.hostname==='localhost'){window.__DRV=DRV;DRV.maskAt=(x,z,r)=>{if(!MK)buildMask();let o='';for(let j=-r;j<=r;j++){for(let i=-r;i<=r;i++)o+=okPx((x+i)*10,(z+j)*10)?'#':'.';o+='\n'}return o}}
+ // ---------- deep link ?drive=<name> (after the 3D city has loaded; unknown names are ignored) ----------
+ {const dv=(new URLSearchParams(location.search).get('drive')||'').trim().slice(0,24);
+  if(dv&&!REC&&hasGL()){let n=0;const t=setInterval(()=>{if(++n>2400){clearInterval(t);return}if(!R3||subs===null||!WALL.length)return;
+    const l=dv.toLowerCase(),norm=s=>s.toLowerCase().replace(/[^a-z0-9]/g,''),nm=WALL.find(x=>x===dv)||WALL.find(x=>x.toLowerCase()===l)||WALL.find(x=>norm(x)===norm(dv));
+    if(!nm){if(n>200)clearInterval(t);return}
+    const c=cars.find(q=>q.driver===nm&&q.kind==='car'&&!q.removed);if(!c){if(n>200)clearInterval(t);return}
+    if(!canDrive(c))return;// at a shop or towed: wait until it is back on the road
+    const wc=$('welcome');if(wc&&!wc.hidden)$('wcGo').click();
+    if(start(c))clearInterval(t)},150)}}
+}
+{
+ // ================= RACE1V1: the one place that talks to the Drag Strip (swap it for the strip's own API) =================
+ // Today it runs sim/drag.js run() for both cars with a seed of its own. When the strip publishes its heads-up API
+ // (branch wip-drag2, see its README), point run() and watch() at it; nothing else in this file needs to change.
+ //   run(a, b, date) -> {date, lanes:[A, B], win:0|1, margin}   lane: {e, rt, red, t60, t8, v8, et, vt, tune, o}
+ //   canWatch()      -> true when a one-off race can be replayed on the 3D strip on this page
+ //   watch(a, b, res) -> replays it there (camera to the strip)
+ const RACE1V1=(()=>{
+  const cache=new Map();
+  const tuneOf=e=>{const T=typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes;return e.name&&T&&T[e.name]&&DRAG.TUNES[T[e.name]]?T[e.name]:'stock'};
+  function run(A,B,date){const P=A.id<=B.id?A:B,Q=P===A?B:A,key=date+'|'+P.id+'|'+P.glb+'|'+Q.id+'|'+Q.glb;
+   if(cache.has(key)){const c=cache.get(key);return P===A?c:{date,lanes:[c.lanes[1],c.lanes[0]],win:1-c.win,margin:c.margin}}
+   const r=DRAG.rng(DRAG.h32('chal|'+key)),air=.97+r()*.05,track=.96+r()*.06;
+   // the same pass as a heat of the daily races (sim/drag.js day()): grip, air, the driver's shifting and launch, reaction time
+   const pass=e=>{const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000;
+    const o={glb:e.glb,tune,grip,power,shiftK,ldl},res=DRAG.run(o);return{e,rt,red:rt<.4,t60:res.t60,t8:res.t8,v8:res.v8,et:res.et,vt:res.vt,tune,o}};
+   const lp=pass(P),lq=pass(Q),win=DRAG.judge(lp,lq),out={date,lanes:[lp,lq],win,margin:Math.abs((lp.rt+lp.et)-(lq.rt+lq.et))};
+   cache.set(key,out);if(cache.size>40)cache.delete(cache.keys().next().value);
+   return P===A?out:{date,lanes:[lq,lp],win:1-win,margin:out.margin}}
+  const api=()=>{const D=window.__DRAG;return D&&typeof D.headsUp==='function'?D.headsUp:null};
+  return{run,canWatch:()=>!!(DRAG.isOpen()&&api()&&R3),watch:(a,b,res)=>{const f=api();if(f)f(a,b,res)}}})();
+ // ================= entrants =================
+ const REC=document.documentElement.dataset.rec==='1';
+ const hid=n=>!!(window.__HIDE&&n&&window.__HIDE.some(h=>String(n).includes(h)));
+ const who=e=>e.name?(hid(e.name)?'A resident':e.name):e.plate;
+ // a resident: their Drag Strip entrant (same formulas as sim/drag.js entrant(), for names beyond the strip's field too)
+ function byName(n){const k=String(n).toLowerCase(),f=DRAG.entrants().find(e=>e.name&&e.name.toLowerCase()===k);if(f)return f;
+  const hm=DRAG.h32('car|'+k),m=MODELS[hm%MODELS.length],r=DRAG.rng(DRAG.h32('drv|'+k));return{id:'n:'+k,name:n,plate:'',glb:m.glb,model:m.n,rt0:.415+r()*.11,cons:.3+r()*.7}}
+ // a car on the street: its driver's entrant, or the car itself (no driver: its plate and model)
+ function byCar(c){if(c.driver)return byName(c.driver);const r=DRAG.rng(DRAG.h32('drv|p:'+c.plate));return{id:'p:'+c.plate+'|'+(c.m&&c.m.glb),name:null,plate:c.plate,glb:c.m&&c.m.glb||'hothatch',model:c.model,rt0:.415+r()*.11,cons:.3+r()*.7}}
+ const spec=e=>DRAG.SPEC[e.glb]||DRAG.SPEC.hothatch;
+ // ================= the panel =================
+ const P=$('chal'),body=$('chBody');let A=null,q='';
+ const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+ const btn=(cls,txt,fn,label)=>{const b=el('button',cls,txt);b.type='button';if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b};
+ const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const initials=n=>String(n).replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'?';
+ const carLine=e=>{const s=spec(e);return `${e.model} · ${s.hp} hp · ${Math.round(s.hp*.7457)} kW · ${s.kg.toLocaleString('en-US')} kg · ${Math.round(s.kg*2.20462).toLocaleString('en-US')} lb · ${s.drive}`};
+ function head(){const h=el('div','ch-me');h.append(el('span','fd-av gt-av',A.name?(hid(A.name)?'★':initials(A.name)):'🚗'));const t=el('div','gt-tx');t.append(el('b',A.name?'gt-nm':null,who(A)),el('small',null,carLine(A)));if(A.name)t.append(el('small','ch-strip','Races their Drag Strip car (the same for everyone)'));h.append(t);return h}
+ function picker(){body.textContent='';body.append(el('p','pn-sub','Heads-up drag race over a quarter mile (402 m). Pick who to race:'),head());
+  const lb=el('label',null,'Opponent');lb.htmlFor='chIn';const inp=el('input');inp.id='chIn';inp.type='text';inp.autocomplete='off';inp.spellcheck=false;inp.placeholder='Search the residents…';inp.value=q;
+  const rnd=btn('gt-act ch-rnd','🎲 Random opponent',()=>{const pool=WALL.filter(n=>!hid(n)&&byName(n).id!==A.id);if(!pool.length)return;let i=0;try{const a=new Uint32Array(1);crypto.getRandomValues(a);i=a[0]%pool.length}catch(e){i=Math.floor(performance.now()%pool.length)}result(byName(pool[i]))});
+  const out=el('ul','gt-list ch-list');body.append(lb,inp,rnd,out);
+  const show=()=>{q=inp.value;out.textContent='';const s=norm(q);const list=WALL.filter(n=>!hid(n)&&(!s||norm(n).includes(s))&&byName(n).id!==A.id).slice(0,s?8:5);
+   if(!list.length){out.append(el('li','pn-sub',s?'No resident with that name yet.':'No residents to race yet.'));return}
+   for(const n of list){const e=byName(n),li=el('li','gt-row');const g=btn('gt-go','',()=>result(e),'Race '+n);const tx=el('span','gt-tx');tx.append(el('b','gt-nm',n),el('small',null,e.model));g.append(el('span','fd-av gt-av',initials(n)),tx);li.append(g,btn('gt-in','Race ▶',()=>result(e),'Race '+n));out.append(li)}};
+  inp.addEventListener('input',show);show();return inp}
+ const f3=t=>t.toFixed(3)+' s';
+ function result(B){const res=RACE1V1.run(A,B,DRAG.today()),[a,b]=res.lanes,w=res.lanes[res.win],l=res.lanes[1-res.win];body.textContent='';
+  const ban=el('div','ch-win');ban.append(el('div','dg-k','Heads-up · 1/4 mile · 402 m'));
+  if(a.red||b.red){const red=a.red&&b.red?l:(a.red?a:b);ban.append(el('div','dg-champ','🏆 '+who(w.e)),el('div','dg-sub',`${who(red.e)} left before the green (red light).`))}
+  else{const dm=res.margin*l.vt;ban.append(el('div','dg-champ','🏆 '+who(w.e)+' wins'),el('div','dg-sub',`by ${res.margin.toFixed(3)} s · about ${dm.toFixed(1)} m · ${Math.round(dm*3.28084)} ft at the line`))}
+  body.append(ban);
+  // the two lanes side by side; the better number of each row is marked
+  const tb=el('table','ch-tb');const tr=(lab,va,vb,better)=>{const r=el('tr');r.append(el('th',null,lab));const ca=el('td',better===0?'ch-b':null,va),cb=el('td',better===1?'ch-b':null,vb);r.append(ca,cb);tb.append(r)};
+  {const r=el('tr','ch-who');r.append(el('th'));for(const ln of[a,b]){const td=el('td',ln===w?'ch-w':null);td.append(el('b',ln.e.name?'gt-nm':null,who(ln.e)),el('small',null,ln.e.model));r.append(td)}tb.append(r)}
+  const sa=spec(a.e),sb=spec(b.e),lo=(x,y)=>x<y?0:y<x?1:-1,hi=(x,y)=>x>y?0:y>x?1:-1;
+  tr('Power',`${sa.hp} hp\n${Math.round(sa.hp*.7457)} kW`,`${sb.hp} hp\n${Math.round(sb.hp*.7457)} kW`,-1);
+  tr('Weight',`${sa.kg.toLocaleString('en-US')} kg\n${Math.round(sa.kg*2.20462).toLocaleString('en-US')} lb`,`${sb.kg.toLocaleString('en-US')} kg\n${Math.round(sb.kg*2.20462).toLocaleString('en-US')} lb`,-1);
+  tr('Reaction (R/T)',a.red?f3(a.rt)+' · red':f3(a.rt),b.red?f3(b.rt)+' · red':f3(b.rt),a.red||b.red?(a.red&&!b.red?1:b.red&&!a.red?0:-1):lo(a.rt,b.rt));
+  tr('60 ft · 18 m',f3(a.t60),f3(b.t60),lo(a.t60,b.t60));
+  tr('1/4 mile · 402 m',f3(a.et),f3(b.et),lo(a.et,b.et));
+  tr('Trap speed',(a.vt*2.236936).toFixed(1)+' mph',(b.vt*2.236936).toFixed(1)+' mph',hi(a.vt,b.vt));
+  tr('',(a.vt*3.6).toFixed(1)+' km/h',(b.vt*3.6).toFixed(1)+' km/h',hi(a.vt,b.vt));
+  tr('R/T + ET',f3(a.rt+a.et),f3(b.rt+b.et),lo(a.rt+a.et,b.rt+b.et));
+  body.append(tb);
+  body.append(el('p','dg-note','First to the line wins: reaction time plus elapsed time. Today’s conditions (UTC), the same result for everyone. Residents race their Drag Strip car.'));
+  const acts=el('div','ch-acts');
+  if(RACE1V1.canWatch())acts.append(btn('gt-in','Watch on the strip ▶',()=>{if(DRV&&DRV.on)DRV.stop();RACE1V1.watch(A,B,res);if(matchMedia('(max-width: 700px)').matches)P.hidden=true}));
+  acts.append(btn('gt-act','Race someone else',()=>{const i=picker();try{i.focus({preventScroll:true})}catch(e){}}));body.append(acts);body.scrollTop=0;P.scrollTop=0}
+ // from the car panel (a car), the GO TO dock ({name}) or a test hook
+ function open(x,opp){if(REC||trailer||!x)return;A=x.plate!==undefined&&x.id!==undefined&&x.m?byCar(x):x.name?byName(x.name):null;if(!A)return;
+  if(UIX.only)UIX.only('chal');P.hidden=false;
+  if(matchMedia('(max-width: 700px)').matches){const r=$('screen').getBoundingClientRect();if(r.top<-40||r.top>innerHeight*.35)$('screen').scrollIntoView({block:'start'})}
+  if(opp){result(byName(opp));return}const i=picker();if(!matchMedia('(max-width: 700px)').matches)try{i.focus({preventScroll:true})}catch(e){}}
+ UIX.challenge=open;UIX.race1v1=RACE1V1;
+ if(location.hostname==='localhost')window.__CHAL={run:(a,b,d)=>{const r=RACE1V1.run(byName(a),byName(b),d||DRAG.today());return{win:r.win,margin:+r.margin.toFixed(4),lanes:r.lanes.map(l=>({who:l.e.name,model:l.e.model,rt:l.rt,t60:+l.t60.toFixed(3),et:+l.et.toFixed(3),mph:+(l.vt*2.236936).toFixed(1)}))}}};// test hook
+ setInterval(()=>{if(trailer&&!P.hidden)P.hidden=true},1000);
 }
 drawBackground();setup();setSubs(SUBS_OVR!==null?SUBS_OVR:Math.max(0,Math.floor(Number(STATE.subs)||0)));
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{g.clearRect(0,0,CW,CH);drawBackground()});
