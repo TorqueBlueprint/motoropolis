@@ -180,7 +180,7 @@ const INSPJOBS=(()=>{
  return SHOPS.make({b:'inspecao',role:'Inspector',bays:2,act:2,step:600,out:8,seed:'insp',prefix:'I-',nameOff:43,crew:'The inspection crew',
   open:()=>isOpen('inspecao'),
   stages:['CHECK-IN','LIGHTS','BRAKES','EMISSIONS','SUSPENSION · TYRES','RESULT','DRIVEN OFF'],split:[.1,.16,.22,.18,.2],
-  fill(r,c){const m=c.m,diesel=!!(m.pickup||m.taxi),retest=r()<.14,fail=!retest&&r()<.26;const f=fail?SHOPS.pickW(FAILS,r):null;
+  fill(r,c){const m=c.m,diesel=!!m.pickup,retest=r()<.14,fail=!retest&&r()<.26;const f=fail?SHOPS.pickW(FAILS,r):null;
    const sp=(typeof DRAG!=='undefined'&&DRAG.SPEC&&DRAG.SPEC[m.glb])||null,kg=sp&&sp.kg?sp.kg:Math.round(900+m.len*18),lb=Math.round(kg*2.20462);
    // roller brake tester: brake force per wheel (kN), efficiency = total force / weight
    const W=kg*G/1000,eff=f&&f.n==='Service brake efficiency too low'?38+Math.round(r()*8):58+Math.round(r()*24),tot=W*eff/100;
