@@ -1,12 +1,12 @@
 //@ sim/shopjobs.js - the TorqueBlueprint Repair Shop as a business (Phase 3 step 1): a seeded job timetable for the 6 lifts.
 //@ Pure and deterministic: every job comes from the UTC clock and state.json names only (no Math.random), so everyone sees the same
-//@ job list at the same time. A new job starts every STEP seconds; job g goes on lift g % 6 and runs ARRIVED -> DIAGNOSIS -> QUOTE ->
-//@ APPROVED -> REPAIR -> INSPECTION -> READY -> HANDED OVER inside its lift's 600 s window. Mechanic = staffOf('oficina','Mechanic', g % 5).
+//@ job list at the same time. A new job starts every STEP seconds; job g goes on lift g % 5 (lift 6 is JOB OPEN) and runs ARRIVED -> DIAGNOSIS -> QUOTE ->
+//@ APPROVED -> REPAIR -> INSPECTION -> READY -> HANDED OVER inside its lift's 60 min window (40-55 min per job). Mechanic k works lift k = staffOf('oficina','Mechanic', g % 5).
 //@ Torque Coins (TC) are display-only: nothing is saved, there is no economy yet. The city's own breakdown -> tow -> repair loop
 //@ (sim/services.js) is untouched and keeps running per viewer.
 //@ closure scope (top level of the page IIFE). Ordered partial: see src/manifest.txt; //@ lines are dropped by tools/build.py
 const SHOP=(()=>{
- const LIFTS=6,STEP=100,MECHS=5,OUT=8; // OUT: seconds the car takes to drive off the lift after the handover
+ const LIFTS=6,ACT=5,STEP=720,OUT=8; // ACT: lifts with a mechanic (lift 6 waits for a 6th mechanic: JOB OPEN); STEP: a new job every 12 min; OUT: seconds to drive off
  const STAGES=['ARRIVED','DIAGNOSIS','QUOTE','APPROVED','REPAIR','INSPECTION','READY','HANDED OVER'];
  const SPLIT=[.05,.12,.08,.04,.47,.12,.12];
  const h32=(...a)=>{let h=2166136261;for(const v of a){const s=String(v);for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}h^=124;h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,0x5bd1e995);h^=h>>>15;return h>>>0};
@@ -47,16 +47,16 @@ const SHOP=(()=>{
  function job(g){let j=cache.get(g);if(j)return j;const r=rng(h32('shop',g));
   const t0=g*STEP+Math.floor(r()*10),N=WALL.length;
   // the customer: a resident (never the same one on two lifts at once: 6 jobs in a row get different names) or a car shown by plate
-  let name=null;if(N>=LIFTS){const ok=r()<.65;let st=Math.max(1,Math.round(N*.618));const gcd=(a,b)=>b?gcd(b,a%b):a;while(gcd(st,N)!==1)st++;if(ok)name=WALL[((g*st)%N+N)%N]}else{r();const q=((g%LIFTS)+LIFTS)%LIFTS;if(q<N)name=WALL[q]}
+  let name=null;if(N>=LIFTS){const ok=r()<.65;let st=Math.max(1,Math.round(N*.618));const gcd=(a,b)=>b?gcd(b,a%b):a;while(gcd(st,N)!==1)st++;if(ok)name=WALL[((g*st)%N+N)%N]}else{r();const q=((g%ACT)+ACT)%ACT;if(q<N)name=WALL[q]}
   let m,col;if(name){const c=residentCar(name);m=c.m;col=c.col}else{const L=MODELS.filter(q=>q.price<=300000||r()<.08);m=L[Math.floor(r()*L.length)]||MODELS[0];col=m.taxi?'#f2b81d':COLORS[Math.floor(r()*COLORS.length)]}
   const pl=()=>L2[Math.floor(r()*L2.length)];const plate=`${pl()}${pl()}${pl()} ${String(Math.floor(r()*10000)).padStart(4,'0')}`;
   // the fault: weighted like the city's breakdowns; a turbo job only on a car that has a turbo
   let f=null;for(let k=0;k<8&&!f;k++){let tw=0;for(const q of FL)tw+=q.w;let x=r()*tw;for(const q of FL){x-=q.w;if(x<=0){f=q.f;break}}if(!f)f=FL[0].f;if(f.n==='Failed turbo'&&!/turbo/i.test(m.n))f=null}
   const S=SVC[f.n],k=cls(m.price),rate=Math.round(RATE*(1+(k-1)*.35)),parts=S[4].map(p=>({n:p[0],sku:p[1],each:Math.round(p[2]*k),qty:p[3]}));
   const partsTC=parts.reduce((a,p)=>a+p.each*p.qty,0),labTC=Math.round(S[3]*rate),total=partsTC+labTC;
-  const dur=Math.round(Math.min(575,Math.max(420,400+S[3]*30))),st=[t0];let acc=t0;for(const s of SPLIT){acc+=s*dur;st.push(Math.round(acc))}st[7]=t0+dur;
+  const dur=Math.round(Math.min(3300,Math.max(2400,2250+S[3]*140))),st=[t0];let acc=t0;for(const s of SPLIT){acc+=s*dur;st.push(Math.round(acc))}st[7]=t0+dur;
   const no=1000+((g%9000)+9000)%9000;
-  j={g,no:'J-'+no,lift:((g%LIFTS)+LIFTS)%LIFTS,mech:((g%MECHS)+MECHS)%MECHS,t0,t1:t0+dur,st,name,m,model:m.n,color:col,plate,fault:f.n,svc:S[0],verb:S[1],wheels:!!S[2],lab:S[3],rate,parts,partsTC,labTC,total,
+  j={g,no:'J-'+no,lift:((g%ACT)+ACT)%ACT,mech:((g%ACT)+ACT)%ACT,t0,t1:t0+dur,st,name,m,model:m.n,color:col,plate,fault:f.n,svc:S[0],verb:S[1],wheels:!!S[2],lab:S[3],rate,parts,partsTC,labTC,total,
    ordered:r()<.22?parts[0]:null,km:Math.round(8000+r()*240000)};
   cache.set(g,j);if(cache.size>2400)cache.delete(cache.keys().next().value);return j}
  const now=()=>Date.now()/1000;
@@ -64,14 +64,14 @@ const SHOP=(()=>{
  const stageAt=(j,t)=>{if(t<j.t0)return-1;for(let i=6;i>=0;i--)if(t>=j.st[i])return t>=j.t1?7:i;return 0};
  // the six lifts at time t: {j, s (stage), left (seconds to READY), inS (seconds into the stage), out (0..1 driving off after the handover)}
  function lifts(t){t=t==null?now():t;const out=new Array(LIFTS).fill(null),g1=Math.floor(t/STEP);
-  for(let g=g1-LIFTS;g<=g1;g++){const j=job(g);if(t<j.t0||t>=j.t1+OUT)continue;const s=stageAt(j,t);out[j.lift]={j,s,left:Math.max(0,j.st[6]-t),inS:t-(s===7?j.t1:j.st[s]),out:s===7?(t-j.t1)/OUT:0}}
+  for(let g=g1-ACT;g<=g1;g++){const j=job(g);if(t<j.t0||t>=j.t1+OUT)continue;const s=stageAt(j,t);out[j.lift]={j,s,left:Math.max(0,j.st[6]-t),inS:t-(s===7?j.t1:j.st[s]),out:s===7?(t-j.t1)/OUT:0}}
   return out}
  // invoices: the last n jobs handed over before t, newest first
  function invoices(t,n){t=t==null?now():t;const L=[];for(let g=Math.floor(t/STEP);L.length<(n||20)&&g>Math.floor(t/STEP)-400;g--){const j=job(g);if(j.t1<=t)L.push(j)}return L}
  // the till: jobs handed over since 00:00 UTC today
  let TK='',TV=null;
  function today(t){t=t==null?now():t;const d0=Math.floor(t/86400)*86400,key=d0+':'+Math.floor(t/STEP)+':'+WALL.length;if(key===TK)return TV;let n=0,tc=0;
-  for(let g=Math.floor(d0/STEP)-LIFTS;g<=Math.floor(t/STEP);g++){const j=job(g);if(j.t1>=d0&&j.t1<=t){n++;tc+=j.total}}TK=key;TV={n,tc};return TV}
+  for(let g=Math.floor(d0/STEP)-ACT;g<=Math.floor(t/STEP);g++){const j=job(g);if(j.t1>=d0&&j.t1<=t){n++;tc+=j.total}}TK=key;TV={n,tc};return TV}
  const mechName=j=>staffOf('oficina','Mechanic',j.mech);
  const hidden=n=>!!(n&&window.__HIDE&&window.__HIDE.some(h=>String(n).includes(h)));
  // "<Mechanic> is changing the brakes on <Owner>'s car"
@@ -80,4 +80,4 @@ const SHOP=(()=>{
   const tl=s<6?` · ${Math.max(1,Math.ceil(left/60))} min left`:s===6?' · ready to collect':' · handed over';
   return `${me} ${doing} · ${j.no}${tl}`+(mn?'':' · MECHANIC JOB OPEN')}
  const tc=v=>`${Math.round(v).toLocaleString('en-US')} TC`;
- return{LIFTS,STEP,STAGES,job,lifts,invoices,today,stageAt,line,mechName,hidden,tc,now,h32,rng}})();
+ return{LIFTS,ACT,STEP,STAGES,job,lifts,invoices,today,stageAt,line,mechName,hidden,tc,now,h32,rng}})();

@@ -165,6 +165,7 @@
  let OFSK=null;function ofSkus(){if(OFSK)return OFSK;const seen=new Map();for(let g=0;g<400;g++)for(const p of SHOP.job(g).parts)if(!seen.has(p.sku))seen.set(p.sku,p);OFSK=[...seen.values()].sort((a,b)=>a.sku<b.sku?-1:1);return OFSK}
  const ofStock=(sku,t)=>2+SHOP.h32('stock',sku,Math.floor(t/86400))%9;
  function ofPaintCard(k,a,t){const A=OFA,txt=A.txt;A.paint('card'+k,(x,W,H)=>{x.fillStyle='#f7f5ef';x.fillRect(0,0,W,H);x.strokeStyle='#22252b';x.lineWidth=6;x.strokeRect(3,3,W-6,H-6);
+   if(!a&&k>=SHOP.ACT){x.fillStyle='#16181c';x.fillRect(6,6,W-12,52);txt(x,`LIFT ${k+1} · NO MECHANIC`,W/2,33,W-30,38,'#ffffff');txt(x,'MECHANIC',W/2,100,W-40,30,'#6b7280',700);txt(x,'JOB OPEN',W/2,146,W-40,46,'#e0482f',900);txt(x,'Comment WORKSHOP MECHANIC',W/2,192,W-40,24,'#4a4f57',700);return}
    if(!a){x.fillStyle='#3a3f46';x.fillRect(6,6,W-12,52);txt(x,`LIFT ${k+1} · BAY FREE`,W/2,33,W-30,38,'#ffffff');const g=Math.floor(t/SHOP.STEP);let nx=null;for(let q=g;q<g+8&&!nx;q++){const j=SHOP.job(q);if(j.lift===k&&j.t0>t)nx=j}
     txt(x,'NEXT CAR',W/2,100,W-40,30,'#6b7280',700);if(nx){txt(x,`${nx.no} · ${ofHM(nx.t0)}`,W/2,142,W-40,40,'#16181c',800,A.MONO);txt(x,nx.svc,W/2,190,W-40,28,'#4a4f57',700)}return}
    const j=a.j,s=a.s;x.fillStyle=ofStageCol[s];x.fillRect(6,6,W-12,52);txt(x,j.no,20,33,170,40,'#ffffff',800,A.MONO,'left');txt(x,SHOP.STAGES[s],W-18,33,190,30,s===2?'#16181c':'#ffffff',800,null,'right');
@@ -303,7 +304,7 @@
  function ofPanelLine(){const sel=IN.pin||IN.hover;let a=null,m=null;
   if(sel&&sel.k!=null)a=IN.A[sel.k];else if(sel&&sel.m!=null){m=sel.m;a=IN.mechJob&&IN.mechJob[m]}
   if(sel&&sel.m!=null&&!a){const n=staffOf('oficina','Mechanic',m);return n?(SHOP.hidden(n)?null:`${n} is between jobs · back at the workbench`):'MECHANIC · JOB OPEN · Comment WORKSHOP MECHANIC'}
-  if(!a){const L=IN.A.filter(q=>q&&q.s<7),R=L.filter(q=>q.s===4),P=R.length?R:L;if(!P.length)return'All six lifts are free · the next car is on its way';a=P[Math.floor(simTime/6)%P.length]}
+  if(!a){const L=IN.A.filter(q=>q&&q.s<7),R=L.filter(q=>q.s===4),P=R.length?R:L;if(!P.length)return'All lifts are free · the next car is on its way';a=P[Math.floor(simTime/6)%P.length]}
   return SHOP.line(a.j,a.s,a.left)}
  function drawInteriorLabels(){hctx.textAlign='center';hctx.textBaseline='middle';const sz=clamp(1100/cam.dist,14,26),LZ=OFL.Z;
   for(const gq of IN.gear){if(subs>=gq.n)continue;const s=toHud(gq.x,4.4,gq.z);if(s)pill(`${gq.name} · UNLOCKS AT ${gq.n.toLocaleString('en-US')} SUBS`,s.x,s.y,sz*.85,'rgba(15,47,92,.92)','#c8defa','#9fd0ff')}
