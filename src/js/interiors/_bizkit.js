@@ -142,8 +142,14 @@
   people.forEach((m,i)=>{if(!m.visible)return;const p=toHud(m.position.x,1.6,m.position.z),p2=toHud(m.position.x,4.6,m.position.z);if(!p||!p2)return;const r=Math.max(26,Math.abs(p2.y-p.y)*.7);const d=Math.min(Math.hypot(hx-p.x,hy-p.y),Math.hypot(hx-p2.x,hy-p2.y));if(d<r&&d<bd){bd=d;best={m:i}}});
   return best}
  // walk a person towards a target (no allocation once m.userData.p exists)
- function bizMove(m,tx,tz,ang,dt,speed){const p=m.userData.p||(m.userData.p={x:tx,z:tz});const dx=tx-p.x,dz=tz-p.z,d=Math.hypot(dx,dz),st=(speed||4.2)*Math.min(dt,.1);let moving=false;
-  if(d>.05){const k=Math.min(1,st/d);p.x+=dx*k;p.z+=dz*k;moving=d>st}putP(m,{x:p.x,z:p.z,ang:moving?Math.atan2(dx,dz):ang},moving)}
+ // walk to (tx, tz) and face ang when there. Hysteresis (start walking past 0.4 m, stop under 0.06 m) and a turn-rate limit keep
+ // people from flickering between the walk and stand poses, or snapping their heading, when the target creeps a little
+ function bizMove(m,tx,tz,ang,dt,speed){const p=m.userData.p||(m.userData.p={x:tx,z:tz,a:ang,w:false});if(p.a==null)p.a=ang;
+  const dx=tx-p.x,dz=tz-p.z,d=Math.hypot(dx,dz),h=Math.min(dt,.1),st=(speed||4.2)*h;
+  if(p.w){if(d<.06)p.w=false}else if(d>.4)p.w=true;
+  if(p.w){const k=Math.min(1,st/d);p.x+=dx*k;p.z+=dz*k}else if(d>1e-4){const k=Math.min(1,h*5);p.x+=dx*k;p.z+=dz*k}
+  const want=p.w&&d>1e-4?Math.atan2(dx,dz):ang;let da=want-p.a;da-=Math.round(da/(2*Math.PI))*2*Math.PI;const mx=9*h;p.a+=Math.max(-mx,Math.min(mx,da));
+  putP(m,{x:p.x,z:p.z,ang:p.a},p.w)}
  const bizEase=u=>u<0?0:u>1?1:u*u*(3-2*u);
  // a staff member's tag: "★ Name · ROLE · J-1234" or "ROLE · JOB OPEN · Comment WORKSHOP ROLE"
  function bizStaffTag(m,E,k,a,y){if(!m||!m.visible)return;const n=staffOf(E.cfg.b,E.cfg.role,k);tag(m.position.x,y||4.6,m.position.z,n?`★ ${n} · ${E.ROLE}${a?' · '+a.j.no:''}`:`${E.ROLE} · JOB OPEN · ${E.OPEN}`,n?'rgba(46,139,87,.95)':'rgba(16,19,24,.8)',n?'#fff':'#9aa3ae')}
