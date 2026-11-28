@@ -29,10 +29,7 @@
    g.add(box(5.6,4,9,mat.wall,L.x0+30.6,Y0,L.z0+12.2));rowWin(g,L.x0+28.2,L.x0+33,1.4,L.z0+16.75,3,1);g.add(sign('FUEL · SNACKS',5.4,1.1,'#d93a2f','#fff',L.x0+30.6,Y0+4.4,L.z0+16.9,0));
    g.add(sign('FUEL',8,1.6,'#d93a2f','#fff',L.x0+16.75,Y0+5.15,L.z0+17.7,0));g.add(sign('FUEL',8,1.6,'#d93a2f','#fff',L.x0+16.75,Y0+5.15,L.z0+4.5,Math.PI));
    g.add(box(.3,6,.3,mat.dark,L.x0+3.5,Y0,L.z0+19));const pr=sign('$3.49',3,1.4,'#22252b','#ffd34d',L.x0+3.5,Y0+6.2,L.z0+19,0);g.add(pr);return g},
-  stand(L){const g=new T.Group();g.add(box(L.w-3,4.8,3.6,mat.glass,L.cx,Y0,L.z0+19.4));g.add(box(L.w-2.6,.55,4,mat.wall,L.cx,Y0+4.8,L.z0+19.4));
-   g.add(sign('DEALERSHIP · NEW & USED',L.w-9,1.7,'#22252b','#fff',L.cx,Y0+6.3,L.z0+19.4,0));g.add(sign('DEALERSHIP',14,1.7,'#22252b','#fff',L.cx,Y0+6.3,L.z0+19.2,Math.PI));
-   for(let k=0;k<7;k++){const x=L.x0+1.6+k*(L.w-3.2)/6;if(Math.abs(x-U(B.stand.door.ux))<2.2)continue;g.add(box(.12,3.8,.12,mat.steel,x,Y0,L.z0+1.2));g.add(box(.04,1.1,1.1,[mat.red,mat.yellow,mat.blue][k%3],x,Y0+2.6,L.z0+1.8))}
-   for(const s of B.stand.slots)g.add(box(3.4,.04,5,mat.wall2,U(s.ux),Y0,U(s.uy),false));return g},
+  stand(L){return standExt(L)}, // buildings/stand_ext.js
   fabrica(L){const g=new T.Group();g.add(box(L.w-3,6.6,13,mat.wall2,L.cx,Y0,L.z0+8.1));
    for(let k=0;k<6;k++){const s=new T.Mesh(new T.CylinderGeometry(0,2.4,13,3,1),mat.roof);s.rotation.set(Math.PI/2,0,Math.PI/2);s.position.set(L.x0+3.6+k*5.5,Y0+7.3,L.z0+8.1);s.castShadow=true;g.add(s)}
    const ch=new T.Mesh(new T.CylinderGeometry(.9,1.2,13,12),mat.red);ch.position.set(L.x0+L.w-4.8,Y0+6.5,L.z0+3);ch.castShadow=true;g.add(ch);

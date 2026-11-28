@@ -25,7 +25,7 @@ const S=Math.PI/2;
 { let b;
  b=mkB('bomba',0,0,'top',36,'Gas station');for(const y of [72,150])for(const x of [120,215])slot(b,x,y,0,{fwd:true});
  b=mkB('oficina',1,0,'top',173,'Repair shop');for(let k=0;k<5;k++)slot(b,45+k*64,152,S);b.drop=mkSlot(b,b.w-50,30,0);b.parts=mkSlot(b,70,30,0);
- b=mkB('stand',2,0,'top',173,'Dealership');for(let k=0;k<4;k++)slot(b,62+k*74,150,S);
+ b=mkB('stand',2,0,'top',173,'Dealership');for(let k=0;k<4;k++)slot(b,300,24+k*28,0); // the NEW ARRIVALS bays beside the drive-in (buildings/stand_ext.js)
  b=mkB('fabrica',3,0,'bottom',286,'Car factory');slot(b,70,b.h-34,0,{fwd:true});slot(b,170,b.h-34,0,{fwd:true});
  b=mkB('lavagem',0,1,'top',36,'Car wash');slot(b,180,76,0,{fwd:true});slot(b,180,156,0,{fwd:true});
  b=mkB('pista',1,1,null,0,'Race track');
