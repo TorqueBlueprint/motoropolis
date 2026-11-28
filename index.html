@@ -7910,26 +7910,23 @@ var DRV=null;// read by view3d/frame.js, view3d/labels.js, ui/goto.js, ui/welcom
     if(start(c))clearInterval(t)},150)}}
 }
 {
- // ================= RACE1V1: the one place that talks to the Drag Strip (swap it for the strip's own API) =================
- // Today it runs sim/drag.js run() for both cars with a seed of its own. When the strip publishes its heads-up API
- // (branch wip-drag2, see its README), point run() and watch() at it; nothing else in this file needs to change.
+ // ================= RACE1V1: the one place that talks to the Drag Strip =================
+ // Both the result card and "Watch on the strip" use the strip's own seeded heads-up race (sim/drag.js heads(), played
+ // by world/drag3d.js __DRAG.race()), so the replay on the strip is exactly the race on the card. Seeded by the UTC date,
+ // both cars (in a fixed order, so A vs B and B vs A are the same race with the lanes swapped) and 'chal'.
  //   run(a, b, date) -> {date, lanes:[A, B], win:0|1, margin}   lane: {e, rt, red, t60, t8, v8, et, vt, tune, o}
- //   canWatch()      -> true when a one-off race can be replayed on the 3D strip on this page
- //   watch(a, b, res) -> replays it there (camera to the strip)
+ //   canWatch()      -> true when the race can be played on the 3D strip on this page (strip open)
+ //   watch(a, b, res) -> plays it there (camera to the strip)
  const RACE1V1=(()=>{
-  const cache=new Map();
-  const tuneOf=e=>{const T=typeof STATE!=='undefined'&&STATE.drag&&STATE.drag.tunes;return e.name&&T&&T[e.name]&&DRAG.TUNES[T[e.name]]?T[e.name]:'stock'};
-  function run(A,B,date){const P=A.id<=B.id?A:B,Q=P===A?B:A,key=date+'|'+P.id+'|'+P.glb+'|'+Q.id+'|'+Q.glb;
-   if(cache.has(key)){const c=cache.get(key);return P===A?c:{date,lanes:[c.lanes[1],c.lanes[0]],win:1-c.win,margin:c.margin}}
-   const r=DRAG.rng(DRAG.h32('chal|'+key)),air=.97+r()*.05,track=.96+r()*.06;
-   // the same pass as a heat of the daily races (sim/drag.js day()): grip, air, the driver's shifting and launch, reaction time
-   const pass=e=>{const tune=tuneOf(e),grip=track*(.97+r()*.05),power=air*(.99+r()*.02),shiftK=1+(r()-.4)*e.cons,ldl=(r()-.5)*.12*e.cons,rt=Math.round((e.rt0+(r()-.3)*.05)*1000)/1000;
-    const o={glb:e.glb,tune,grip,power,shiftK,ldl},res=DRAG.run(o);return{e,rt,red:rt<.4,t60:res.t60,t8:res.t8,v8:res.v8,et:res.et,vt:res.vt,tune,o}};
-   const lp=pass(P),lq=pass(Q),win=DRAG.judge(lp,lq),out={date,lanes:[lp,lq],win,margin:Math.abs((lp.rt+lp.et)-(lq.rt+lq.et))};
-   cache.set(key,out);if(cache.size>40)cache.delete(cache.keys().next().value);
-   return P===A?out:{date,lanes:[lq,lp],win:1-win,margin:out.margin}}
-  const api=()=>{const D=window.__DRAG;return D&&typeof D.headsUp==='function'?D.headsUp:null};
-  return{run,canWatch:()=>!!(DRAG.isOpen()&&api()&&R3),watch:(a,b,res)=>{const f=api();if(f)f(a,b,res)}}})();
+  const SEED='chal',arg=e=>e.name?e.name:{glb:e.glb,plate:e.plate,color:e.color};
+  const order=(A,B)=>A.id<=B.id?[A,B,false]:[B,A,true];
+  function run(A,B,date){const[P,Q,sw]=order(A,B),h=DRAG.heads(arg(P),arg(Q),{date,seed:SEED});
+   const fix=(l,e)=>Object.assign({},l,{e});const lp=fix(h.lanes[0],P),lq=fix(h.lanes[1],Q),margin=Math.abs((lp.rt+lp.et)-(lq.rt+lq.et));
+   return sw?{date,lanes:[lq,lp],win:1-h.win,margin}:{date,lanes:[lp,lq],win:h.win,margin}}
+  const api=()=>{const D=window.__DRAG;return D&&typeof D.race==='function'?D:null};
+  function watch(A,B){const D=api();if(!D)return;const[P,Q]=order(A,B);D.race(arg(P),arg(Q),{seed:SEED,label:'Challenge'});
+   if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();if(UIX.gotoStop)UIX.gotoStop();if(UIX.unfollow)UIX.unfollow();const c=D.cam&&D.cam('stands');if(c)Object.assign(R3.cam,c)}
+  return{run,canWatch:()=>!!(DRAG.isOpen()&&api()&&R3),watch}})();
  // ================= entrants =================
  const REC=document.documentElement.dataset.rec==='1';
  const hid=n=>!!(window.__HIDE&&n&&window.__HIDE.some(h=>String(n).includes(h)));
