@@ -80,20 +80,20 @@
     T(`${Math.round(mph)}`,cx+cw,py+48,nw?11:12,'#ffffff','right',800,true);T('mph',cx+cw,py+35,7,'#9fb0c4','right',700);
     if(s.sp>.05){box(cx,py+26,34,9.5,4.75,'#ff7a1a');T(`SPIN ${Math.round(s.sp*100)}%`,cx+17,py+33.5,7,'#1d0f02','center',800)}
     const bmax=Math.max(1,(T2.boost||0)*1.15),bv=Math.max(0,s.b);
-    T('BOOST',cx,py+58,7.5,'#7d8a9a','left',800);T(T2.asp==='NA'?'NA · 0.00 bar · 0.0 psi':`${bv.toFixed(2)} bar · ${f1(bv*14.5038)} psi`,cx+cw,py+58,vf,'#ffffff','right',700);
+    T('BOOST',cx,py+58,nw?6.5:7.5,'#7d8a9a','left',800);T(T2.asp==='NA'?(nw?'0.00 bar · 0.0 psi':'NA · 0.00 bar · 0.0 psi'):`${bv.toFixed(2)} bar · ${f1(bv*14.5038)} psi`,cx+cw,py+58,vf,'#ffffff','right',700);
     box(cx,py+60.5,cw,3,1.5,'rgba(255,255,255,.12)');if(bv>0)box(cx,py+60.5,Math.max(3,cw*Math.min(1,bv/bmax)),3,1.5,'#46c8ff');
-    T('IAT',cx,py+74,7.5,'#7d8a9a','left',800);T(`${Math.round(s.iat)}°C · ${Math.round(C2F(s.iat))}°F`,cx+cw,py+74,vf,'#ffffff','right',700);
-    T('EGT',cx,py+85,7.5,'#7d8a9a','left',800);T(`${Math.round(s.egt)}°C · ${Math.round(C2F(s.egt))}°F`,cx+cw,py+85,vf,s.egt>880?'#ffb36b':'#ffffff','right',700);
+    T('IAT',cx,py+74,nw?6.5:7.5,'#7d8a9a','left',800);T(`${Math.round(s.iat)}°C · ${Math.round(C2F(s.iat))}°F`,cx+cw,py+74,vf,'#ffffff','right',700);
+    T('EGT',cx,py+85,nw?6.5:7.5,'#7d8a9a','left',800);T(`${Math.round(s.egt)}°C · ${Math.round(C2F(s.egt))}°F`,cx+cw,py+85,vf,s.egt>880?'#ffb36b':'#ffffff','right',700);
     const tx=px+w-10,th=s.th;box(tx,py+28,4.5,52,2,'rgba(255,255,255,.12)');if(th>0)box(tx,py+28+52*(1-th),4.5,52*th,2,'#38e07b');T('THR',tx+2.2,py+88,6,'#7d8a9a','center',800);
     // timing ladder: label (both units), time, and the speeds at 1/8 and 1/4 (trap)
-    const ly=py+93,rh=(h-97)/6,tc=px+92;
+    const ly=py+93,rh=(h-97)/6,tc=px+(nw?84:92),sf=nw?7.5:8.5;
     x.fillStyle='rgba(255,255,255,.1)';x.fillRect(px+6,ly-1,w-12,1);
     for(let q=0;q<6;q++){const yy=ly+rh*(q+.8),last=q===5;let tv=null,red=false;
      if(q===0){if(s.tt>=0){tv=C.l.rt;red=C.l.red}}else if(s.el>=0&&s.el>=C.spl[q-1]-1e-9)tv=C.spl[q-1];
      if(last&&tv!=null){x.fillStyle='rgba(255,211,77,.14)';x.fillRect(px+5,ly+rh*q,w-10,rh)}
-     T(LAD[q][0],px+8,yy,8.5,'#c9d6e6','left',800);if(LAD[q][1])T(LAD[q][1],px+8+(font(8.5,800),x.measureText(LAD[q][0]).width)+3,yy,7.5,'#7d8a9a','left',700);
-     T(tv==null?'—':f3(tv)+(red?' RED':''),tc,yy,9,red?'#ff5a4f':tv==null?'#4a5566':last?'#ffd34d':'#ffffff','right',800,true);
-     if((q===3||q===5)&&tv!=null){const v=q===3?C.v8:C.vt;T(fit(nw?`${Math.round(v*2.236936)} mph · ${Math.round(v*3.6)} km/h`:`${f1(v*2.236936)} mph · ${f1(v*3.6)} km/h`,w-(tc-px)-10,8.5,700),px+w-7,yy,8.5,last?'#ffd34d':'#c9d6e6','right',700)}
+     const lf=nw?7.5:8.5;T(LAD[q][0],px+8,yy,lf,'#c9d6e6','left',800);if(LAD[q][1])T(LAD[q][1],px+8+(font(lf,800),x.measureText(LAD[q][0]).width)+2.5,yy,lf-1,'#7d8a9a','left',700);
+     T(tv==null?'—':f3(tv)+(red?' RED':''),tc,yy,nw?8.5:9,red?'#ff5a4f':tv==null?'#4a5566':last?'#ffd34d':'#ffffff','right',800,true);
+     if((q===3||q===5)&&tv!=null){const v=q===3?C.v8:C.vt;T(fit(nw?`${Math.round(v*2.236936)} mph · ${Math.round(v*3.6)} km/h`:`${f1(v*2.236936)} mph · ${f1(v*3.6)} km/h`,w-(tc-px)-10,sf,700),px+w-7,yy,sf,last?'#ffd34d':'#c9d6e6','right',700)}
      else if(q===5)T('ET · TRAP',px+w-7,yy,7.5,'#4a5566','right',700)}}
    const mph0=C=>C.l.vt*2.236936;
    // two steps per frame: dragHud() with the labels decides whether it shows (and tells the page HUD, drawn next, to leave
