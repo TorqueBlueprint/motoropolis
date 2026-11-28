@@ -1427,7 +1427,7 @@ const SHOP=(()=>{
   'Failed water pump':['WATER PUMP','replacing the water pump on',0,2.5,[WPUMP,BELT,COOL]]};
  const FL=FAULTS.filter(f=>SVC[f.n]).map(f=>({f,w:f.k==='tire'?f.w*.35:f.w}));
  const RATE=60;
- return SHOPS.make({b:'oficina',role:'Mechanic',bays:6,act:5,step:720,out:8,seed:'shop',prefix:'J-',crew:'The shop crew',
+ return SHOPS.make({b:'oficina',role:'Mechanic',bays:6,act:6,step:720,out:8,seed:'shop',prefix:'J-',crew:'The shop crew',
   stages:['ARRIVED','DIAGNOSIS','QUOTE','APPROVED','REPAIR','INSPECTION','READY','HANDED OVER'],split:[.05,.12,.08,.04,.47,.12,.12],
   fill(r,c){const m=c.m;
    // the fault: weighted like the city's breakdowns; a turbo job only on a car that has a turbo (drag_specs asp 'T', not the display name)
@@ -2633,27 +2633,31 @@ function stepPeds(dt){pedsOnRoad=[];for(const p of peds){
 // ---------- jobs: the Wall of Mechanics works in the city ----------
 const CIVIC=[{"type":"bus","label":"City buses · Line 1"},{"type":"taxi","label":"Motoropolis Taxis"},{"type":"sanit","label":"Sanitation"},{"type":"news","label":"Motoropolis Daily"},{"type":"park","label":"Motoropolis Park"},{"type":"police","label":"Police station"},{"type":"court","label":"Courthouse"}];
 const ROLES=(()=>{const o={},r=(STATE&&STATE.roles)||{};for(const k in r)o[String(k).toLowerCase()]=String(r[k]).toLowerCase();return o})();
-const JOB_LIST=[["bus","Bus Driver",2],["taxi","Taxi Driver",4],["sanit","Garbage Truck Driver",1],["sanit","Garbage Collector",2],["news","Reporter",2],["news","Newspaper Vendor",1],["park","Park Ranger",1],["police","Police Officer",3],["police","Detective",1],["court","Judge",1],["court","Lawyer",2],["court","Court Clerk",1],["oficina","Mechanic",5],["oficina","Receptionist",1],["reboques","Tow Truck Driver",3],["reboques","Dispatcher",1],["bomba","Cashier",1],["market","Supermarket Cashier",3],["market","Store Manager",1],["market","Supermarket CEO",1],["bomba","Fuel Attendant",1],["pneus","Tire Technician",3],["lavagem","Wash Attendant",2],["inspecao","Inspector",2],["parque","Parking Attendant",1],["pecas","Warehouse Worker",2],["pecas","Parts Van Driver",1],["stand","Car Salesman",2],["sucata","Crusher Operator",1],["fabrica","Assembly Worker",4],["pista","Race Driver",3],["pista","Pit Crew",3],["w_res","Real Estate Agent",1],["w_fire","Firefighter",3],["w_fire","Fire Chief",1],["w_hosp","Doctor",2],["w_hosp","Paramedic",2],["w_hosp","Nurse",1],["w_stad","Footballer",4],["w_stad","Coach",1],["w_mall","Shopkeeper",3],["w_mall","Security Guard",1],["w_train","Train Driver",1],["w_train","Station Master",1],["w_hwy","Toll Operator",2],["w_air","Pilot",2],["w_air","Air Traffic Controller",1],["w_air","Flight Attendant",2],["w_arena","Event Host",1],["w_arena","DJ",1],["w_port","Ship Captain",1],["w_port","Crane Operator",2],["w_tower","Mayor",1],["w_tower","Architect",1],["w_gp","GP Driver",4]].concat(XMAS?[['park','Elf',5],['park','Market Vendor',3]]:[]);
-let JOBS={},JOBSIG='';
+const JOB_LIST=[["bus","Bus Driver",2],["taxi","Taxi Driver",4],["sanit","Garbage Truck Driver",1],["sanit","Garbage Collector",2],["news","Reporter",2],["news","Newspaper Vendor",1],["park","Park Ranger",1],["police","Police Officer",3],["police","Detective",1],["court","Judge",1],["court","Lawyer",2],["court","Court Clerk",1],["oficina","Mechanic",6],["oficina","Receptionist",1],["reboques","Tow Truck Driver",3],["reboques","Dispatcher",1],["bomba","Cashier",1],["market","Supermarket Cashier",3],["market","Store Manager",1],["market","Supermarket CEO",1],["bomba","Fuel Attendant",1],["pneus","Tire Technician",3],["lavagem","Wash Attendant",2],["inspecao","Inspector",2],["parque","Parking Attendant",1],["pecas","Warehouse Worker",2],["pecas","Parts Van Driver",1],["stand","Car Salesman",2],["sucata","Crusher Operator",1],["fabrica","Assembly Worker",4],["pista","Race Driver",3],["pista","Pit Crew",3],["w_res","Real Estate Agent",1],["w_fire","Firefighter",3],["w_fire","Fire Chief",1],["w_hosp","Doctor",2],["w_hosp","Paramedic",2],["w_hosp","Nurse",1],["w_stad","Footballer",4],["w_stad","Coach",1],["w_mall","Shopkeeper",3],["w_mall","Security Guard",1],["w_train","Train Driver",1],["w_train","Station Master",1],["w_hwy","Toll Operator",2],["w_air","Pilot",2],["w_air","Air Traffic Controller",1],["w_air","Flight Attendant",2],["w_arena","Event Host",1],["w_arena","DJ",1],["w_port","Ship Captain",1],["w_port","Crane Operator",2],["w_tower","Mayor",1],["w_tower","Architect",1],["w_gp","GP Driver",4]].concat(XMAS?[['park','Elf',5],['park','Market Vendor',3]]:[]);
+let JOBS={},JOBSIG='',WAITING={},WAITOF={};
 function assignJobs(){const slots=[];for(const m of ALL_MS){if(!isOpen(m.type))continue;for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k})}
  for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)for(let k=0;k<j[2];k++)slots.push({b:m.type,title:j[1],k});
  const nj={},used=new Set(),want={police:['Police Officer','Detective'],lawyer:['Lawyer'],judge:['Judge','Lawyer'],bus:['Bus Driver'],taxi:['Taxi Driver'],garbage:['Garbage Collector','Garbage Truck Driver']};
  for(const j of JOB_LIST){const sl=j[1].toLowerCase().replace(/[^a-z]/g,'');if(!want[sl])want[sl]=[j[1]]}
- for(const n of WALL){const r=ROLE_OF(n);if(!want[r])continue;const i=slots.findIndex((q,k)=>!used.has(k)&&want[r].includes(q.title));if(i>=0){nj[n]=slots[i];used.add(i)}}
+ const wl={},wo={};// waiting list: asked for a job whose posts are all taken by people who asked first (Wall order)
+ for(const n of WALL){const r=ROLE_OF(n);if(!want[r])continue;const i=slots.findIndex((q,k)=>!used.has(k)&&want[r].includes(q.title));if(i>=0){nj[n]=slots[i];used.add(i)}else if(slots.some(q=>want[r].includes(q.title))){const t=want[r][0];(wl[t]=wl[t]||[]).push(n);wo[n]={title:t,pos:wl[t].length}}}// a job in a building that is not open yet: they get another job meanwhile
  {let h=0;for(const n of WALL)if(ROLE_OF(n)==='homeless')nj[n]={b:'park',title:'Homeless',k:h++,free:1}}
  const XJ=new Set(['Elf','Market Vendor','Supermarket CEO']);// these only go to people who asked for them (WORKSHOP ELF / VENDOR / SUPERMARKET CEO)
- let k=0;for(const n of WALL){if(nj[n]||ROLE_OF(n)==='thief')continue;while(k<slots.length&&(used.has(k)||XJ.has(slots[k].title)))k++;if(k>=slots.length)break;nj[n]=slots[k];used.add(k);k++}
- JOBS=nj;const sig=WALL.length+'|'+slots.length+'|'+Object.keys(ROLES).length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs();renderCrime()}}
+ let k=0;for(const n of WALL){if(nj[n]||wo[n]||ROLE_OF(n)==='thief')continue;while(k<slots.length&&(used.has(k)||XJ.has(slots[k].title)))k++;if(k>=slots.length)break;nj[n]=slots[k];used.add(k);k++}
+ JOBS=nj;WAITING=wl;WAITOF=wo;const sig=WALL.length+'|'+slots.length+'|'+Object.keys(ROLES).length+'|'+Object.keys(wo).length;if(sig!==JOBSIG){JOBSIG=sig;renderJobs();renderCrime()}}
 function JOB_SLOTS(){let n=0;for(const m of CIVIC)for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];for(const m of ALL_MS)if(isOpen(m.type))for(const j of JOB_LIST)if(j[0]===m.type)n+=j[2];return n}
 function staffOf(b,title,k){for(const n in JOBS){const j=JOBS[n];if(j.b===b&&j.title===title&&j.k===k)return n}return null}
 function jobOf(n){return JOBS[n]?JOBS[n].title:null}
+const hidN=n=>(window.__HIDE&&window.__HIDE.some(h=>String(n).includes(h)))?'A resident':n;
+function waitOf(n){return WAITOF[n]||null}// {title, pos}: on the waiting list for that job
 function renderJobs(){const el=$('jobs');if(!el)return;let h='';let open=0,taken=0;
  for(const m of ALL_MS){const js=JOB_LIST.filter(j=>j[0]===m.type);const isO=isOpen(m.type);
   h+=`<li class="${isO?'open':''}"><div class="jh"><b>${esc(m.label)}</b><span class="chip">${isO?'Hiring':'Opens at '+m.n.toLocaleString('en-US')}</span></div>`;
   if(isO){h+='<ul>';for(const j of js)for(let k=0;k<j[2];k++){const n=staffOf(m.type,j[1],k);if(n)taken++;else open++;h+=`<li>${esc(j[1])}: ${n?'<b>★ '+esc(n)+'</b>':'<i>open · comment WORKSHOP</i>'}</li>`}h+='</ul>'}
   else h+=`<p>${js.map(j=>j[2]+'× '+esc(j[1])).join(' · ')}</p>`;h+='</li>'}
  for(const m of CIVIC){h+=`<li class="open"><div class="jh"><b>${esc(m.label)}</b><span class="chip">Hiring</span></div><ul>`;for(const j of JOB_LIST.filter(j=>j[0]===m.type))for(let k=0;k<j[2];k++){const n=staffOf(m.type,j[1],k);if(n)taken++;else open++;h+=`<li>${esc(j[1])}: ${n?'<b>★ '+esc(n)+'</b>':'<i>open · comment WORKSHOP</i>'}</li>`}h+='</ul></li>'}
- const waiting=Math.max(0,WALL.length-Object.keys(JOBS).length);
+ const waiting=Math.max(0,WALL.length-Object.keys(JOBS).length-Object.keys(WAITOF).length);
+ {const wk=Object.keys(WAITING);if(wk.length){h+=`<li class="open wait"><div class="jh"><b>Waiting list</b><span class="chip">Next free post</span></div><ul>`;for(const t of wk)h+=`<li>${esc(t)}: ${WAITING[t].map((n,i)=>(i+1)+'. '+esc(hidN(n))).join(' · ')}</li>`;h+='</ul></li>'}}
  el.innerHTML=`<p class="jsum"><b>${taken}</b> people working · <b>${open}</b> jobs open${waiting?` · <b>${waiting}</b> looking for a job`:''}</p><ol class="jobs">${h}</ol>`}
 function assignDrivers(){
  cars.filter(c=>c.kind==='bus'&&!c.removed).forEach((c,k)=>{c.driver=staffOf('bus','Bus Driver',k)||null});
@@ -3958,8 +3962,8 @@ function make3D(T,X){
   gq(1000,'PAINT BOOTH',L=>{bx(L,7,5.6,.2,0x9fd4ff,0,0,2.4);bx(L,7,5.6,.2,0x9fd4ff,0,0,-2.4);bx(L,.2,5.6,5,0x9fd4ff,3.5,0,0);bx(L,7.4,.4,5.4,0x3ee08f,0,5.6,0)},-19,9.6);
   gq(5000,'DYNO',L=>{bx(L,4.6,.3,2.4,DARK,0,0,0);for(const dz of[-.6,.6])cyl(L,.35,.35,2,16,0xdfe5ec,dz*2.2,.35,0,Math.PI/2);bx(L,.2,2.4,.2,DARK,3,0,-1.4);bx(L,1.6,1,.15,0x0b3d2a,3,2.4,-1.4)},-8.5,9.6);
   IN.gear=G;IN.gearKey='';IN.gearM=[];
-  // people: 5 mechanics, the receptionist, up to 3 waiting customers
-  IN.mech=[0,1,2,3,4].map(i=>{const m=mkP(S,'#1d4fb8',60+i,'Mechanic');m.userData.p=null;return m});
+  // people: 6 mechanics (one per lift), the receptionist, up to 3 waiting customers
+  IN.mech=[0,1,2,3,4,5].map(i=>{const m=mkP(S,'#1d4fb8',60+i,'Mechanic');m.userData.p=null;return m});
   IN.rec=mkP(S,'#ff7a1a',30,'Receptionist');IN.cust=[0,1,2].map(i=>{const m=mkP(S,null,20+i,'civ');m.visible=false;m.userData.p=null;return m});
   // hover / click: the panel line for a car on a lift or a mechanic
   bizPointer('oficina',IN,ofHit);
@@ -4056,9 +4060,9 @@ function make3D(T,X){
   if(up.length)OFA.tex.needsUpdate=true}
  // mechanics go where their job needs them; customers check in, wait, pay and collect
  const ofMove=bizMove;
- const OF_IDLE=[[-23.6,-7.6,Math.PI],[-21.6,-8.8,Math.PI],[-22.4,2.8,1.2],[24.6,-5.6,Math.PI],[26,7.2,-1.2]];
+ const OF_IDLE=[[-23.6,-7.6,Math.PI],[-21.6,-8.8,Math.PI],[-22.4,2.8,1.2],[24.6,-5.6,Math.PI],[26,7.2,-1.2],[-20.2,-7.2,Math.PI]];
  function ofPeople(A0,t,dt){const LZ=OFL.Z,mt=[];
-  for(let m=0;m<5;m++){let best=null,pr=-1;for(const a of A0){if(!a||a.j.mech!==m)continue;const q=[1,3,0,2,5,4,0,0][a.s];if(q>pr){pr=q;best=a}}mt.push(pr>0?best:null)}
+  for(let m=0;m<6;m++){let best=null,pr=-1;for(const a of A0){if(!a||a.j.mech!==m)continue;const q=[1,3,0,2,5,4,0,0][a.s];if(q>pr){pr=q;best=a}}mt.push(pr>0?best:null)}
   IN.mechJob=mt;
   IN.mech.forEach((m,i)=>{const a=mt[i];let x,z,ang;if(a){const L=IN.lifts[a.j.lift];const s=i%2?1:-1;
     if(a.s===4){if(L.h>1.4){x=L.x+s*.55;z=LZ+.9+(i%3)*.3;ang=Math.PI+Math.sin(simTime*.8+i)*.6}else{x=L.x+s*2.0;z=LZ+3.4;ang=Math.PI}}
@@ -4067,7 +4071,7 @@ function make3D(T,X){
    ofMove(m,x,z,ang,dt);m.visible=true});
   putP(IN.rec,{x:20.3,z:5.2,ang:Math.sin(simTime*.7)*.4},false);
   // customers: residents only, the first three by lift
-  const staff=[0,1,2,3,4].map(i=>staffOf('oficina','Mechanic',i)).concat(staffOf('oficina','Receptionist',0)),cs=A0.filter(a=>a&&a.j.name&&!staff.includes(a.j.name)).slice(0,3),SEAT=[[22.7,9.9],[24,10.1],[25.3,9.9]];
+  const staff=[0,1,2,3,4,5].map(i=>staffOf('oficina','Mechanic',i)).concat(staffOf('oficina','Receptionist',0)),cs=A0.filter(a=>a&&a.j.name&&!staff.includes(a.j.name)).slice(0,3),SEAT=[[22.7,9.9],[24,10.1],[25.3,9.9]];
   IN.cust.forEach((m,i)=>{const a=cs[i];m.visible=!!a;m.userData.a=a||null;if(!a){m.userData.p=null;return}const L=IN.lifts[a.j.lift];let x,z,ang=Math.PI;
    if(a.s===0){const u=ofEase(a.inS/((a.j.st[1]-a.j.st[0])||1));x=L.x+(20.3-L.x)*u;z=(LZ+7)+(8-(LZ+7))*u}else if(a.s===2){x=19.4+i*.9;z=8;}else if(a.s===6){x=13.4+i*.8;z=8.2}else if(a.s===7){x=L.x+2.4;z=L.z+4;ang=Math.PI}else{[x,z]=SEAT[i];ang=Math.PI}
    if(!m.userData.p&&a.s!==0)m.userData.p={x,z};ofMove(m,x,z,ang,dt)})}
@@ -7747,7 +7751,7 @@ const UIX={};// shared with ui/nav.js (bottom nav, Unlocks, How to move in)
   for(const n of hits){const li=document.createElement('li');const w=where(n),job=jobOf(n);
    const av=document.createElement('span');av.className='fd-av';av.textContent=n.replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'?';
    const tx=document.createElement('span');tx.className='fd-tx';const b=document.createElement('b');b.textContent=n;const sm=document.createElement('small');
-   sm.textContent=(job?job:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);{const db=UIX.dragBest&&UIX.dragBest(n);if(db){const d=document.createElement('small');d.className='fd-dg';d.textContent=db;tx.append(d)}}li.append(av,tx);const acts=document.createElement('div');acts.className='fd-acts';
+   const wt=typeof waitOf==='function'?waitOf(n):null;sm.textContent=(job?job:wt?`Waiting list · ${wt.title} #${wt.pos}`:'Looking for a job')+(w?(w.kind==='car'?' · driving':' · walking'):' · at work');tx.append(b,sm);{const db=UIX.dragBest&&UIX.dragBest(n);if(db){const d=document.createElement('small');d.className='fd-dg';d.textContent=db;tx.append(d)}}li.append(av,tx);const acts=document.createElement('div');acts.className='fd-acts';
    if(w&&R3){const go=document.createElement('button');go.type='button';go.className='fd-go';go.textContent='Fly to me';go.addEventListener('click',()=>flyTo(n));acts.append(go)}
    // their home (interiors/home.js): the address and "Go to my home"
    {const hm=UIX.homeOf&&UIX.homeOf(n);if(hm){const d=document.createElement('small');d.className='fd-hm';d.textContent='Home: '+hm.label;tx.append(d);if(R3){const gh=document.createElement('button');gh.type='button';gh.className='fd-go';gh.textContent='Go to my home';
