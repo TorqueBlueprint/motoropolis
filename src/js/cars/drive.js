@@ -35,6 +35,9 @@ var DRV=null;// read by view3d/frame.js, view3d/labels.js, ui/goto.js, ui/welcom
   for(const B0 of buildings){if(!B0||B0.cx==null)continue;const r=Math.hypot(B0.x1-B0.x0,B0.y1-B0.y0)/20+2,cx=B0.cx/10,cz=B0.cy/10;
    const i0=Math.max(0,Math.floor(cx-r-MX0)),i1=Math.min(MW-1,Math.ceil(cx+r-MX0)),j0=Math.max(0,Math.floor(cz-r-MZ0)),j1=Math.min(MH-1,Math.ceil(cz+r-MZ0));
    for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++)if(inLotB(B0,(i+MX0+.5)*10,(j+MZ0+.5)*10))MK[j*MW+i]=1}
+  // the cars parked along the shopping street (world/city2_roads.js) are solid
+  for(const q of CITY.parked||[]){const cs=Math.cos(q[2]),sn=Math.sin(q[2]),i0=Math.max(0,Math.floor(q[0]-3-MX0)),i1=Math.min(MW-1,Math.ceil(q[0]+3-MX0)),j0=Math.max(0,Math.floor(q[1]-3-MZ0)),j1=Math.min(MH-1,Math.ceil(q[1]+3-MZ0));
+   for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const dx=i+MX0+.5-q[0],dz=j+MZ0+.5-q[1],u=dx*cs-dz*sn,v=dx*sn+dz*cs;if(Math.abs(u)<1.2&&Math.abs(v)<2.3)MK[j*MW+i]=0}}
   // the roundabout island stays solid (the ring road covers it otherwise)
   for(const n of nodes)if(n.round){const r=Math.max(0,n.round/10-5.5),x=n.x/10,z=n.y/10;const i0=Math.max(0,Math.floor(x-r-MX0)),i1=Math.min(MW-1,Math.ceil(x+r-MX0)),j0=Math.max(0,Math.floor(z-r-MZ0)),j1=Math.min(MH-1,Math.ceil(z+r-MZ0));
    for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const dx=i+MX0+.5-x,dz=j+MZ0+.5-z;if(dx*dx+dz*dz<=r*r)MK[j*MW+i]=0}}}
@@ -199,7 +202,7 @@ var DRV=null;// read by view3d/frame.js, view3d/labels.js, ui/goto.js, ui/welcom
  function follow(c){if(!c||!R3)return;if(!view3d)setView(true,true);if(R3.mode()==='in')R3.exitIn();if(UIX.gotoStop)UIX.gotoStop();if(UIX.unfollow)UIX.unfollow();
   const cm=R3.cam;cm.tx=c.x/10;cm.tz=c.y/10;cm.dist=34;cm.pitch=.62;cm.ty=WORLD&&CITY.gy?CITY.gy(cm.tx,cm.tz):0;followCar(c,45)}
  // ---------- car panel actions: in the "Car details" card and in a dock over the city ----------
- const acts=$('carActs'),dock=$('carDock');let dockFor=null,actFor=null,actSig='';
+ const acts=$('carActs'),dock=$('carDock');let dockFor=null,dockSeen=null,actFor=null,actSig='';
  const mk=(cls,txt,fn,label)=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=txt;if(label)b.setAttribute('aria-label',label);b.addEventListener('click',fn);return b};
  const can3D=()=>hasGL()&&!REC;
  function fill(box,c,inDock){box.textContent='';const ok=canDrive(c)&&!trailer;
@@ -214,9 +217,9 @@ var DRV=null;// read by view3d/frame.js, view3d/labels.js, ui/goto.js, ui/welcom
   const x=mk('fd-x gt-dk-x','',hideDock,'Close');x.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
   dock.append(ic,tx,a,x);const gd=$('gtDock');if(gd)gd.hidden=true;dock.hidden=false;dockFor=c}
  // called by updateCard() (ui/panels.js) every 0.25 s and on every pick; the buttons are rebuilt only when the car or its state changes
- UIX.carActs=c=>{const ok=!!(c&&c.kind==='car'&&!c.removed);if(!ok){acts.hidden=true;actFor=null;if(dockFor&&(!c||c!==dockFor))hideDock();return}
+ UIX.carActs=c=>{const ok=!!(c&&c.kind==='car'&&!c.removed);if(!ok){acts.hidden=true;actFor=null;dockSeen=null;if(dockFor&&(!c||c!==dockFor))hideDock();return}
   const sig=c.id+'|'+canDrive(c)+'|'+!!trailer;if(c!==actFor||sig!==actSig){actFor=c;actSig=sig;fill(acts,c,false)}acts.hidden=false;
-  if(c!==dockFor&&view3d&&R3&&R3.mode()!=='in'&&!ST.on&&!trailer&&!REC)showDock(c)};
+  if(c!==dockSeen&&view3d&&R3&&R3.mode()!=='in'&&!ST.on&&!trailer&&!REC){dockSeen=c;showDock(c)}}; // once per pick (closing it keeps it closed)
  setInterval(()=>{if(dockFor&&(trailer||(R3&&R3.mode()==='in')||!view3d||dockFor.removed))hideDock()},400);
  dock.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();hideDock()}});
  DRV={get on(){return ST.on},car:()=>ST.c,start,stop:()=>stop(),frame,follow,canDrive,

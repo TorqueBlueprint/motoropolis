@@ -521,7 +521,8 @@ html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto
 .ch-win{border-radius:12px;padding:10px 12px;background:linear-gradient(135deg,rgba(255,122,26,.24),rgba(255,122,26,.06));border:1px solid rgba(255,138,51,.6);display:flex;flex-direction:column;gap:3px}
 .ch-tb{width:100%;border-collapse:collapse;font:500 13.5px/1.25 var(--body);font-variant-numeric:tabular-nums}
 .ch-tb th{text-align:left;font:700 12px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;color:#8cbcff;padding:5px 6px 5px 0;white-space:nowrap}
-.ch-tb td{padding:5px 6px;color:#e6eefa;border-top:1px solid rgba(140,190,255,.16);width:38%}
+.ch-tb td{padding:5px 6px;color:#e6eefa;border-top:1px solid rgba(140,190,255,.16);width:38%;white-space:pre-line}
+.ch-me small.ch-strip{color:#ffb36b}
 .ch-tb td.ch-b{color:#5cc98a;font-weight:700}
 .ch-tb tr.ch-who td{border-top:0;vertical-align:top}
 .ch-tb tr.ch-who b{display:block;font:700 15px/1.2 var(--body);overflow-wrap:anywhere}
@@ -530,3 +531,6 @@ html[data-goto="0"] #vGoto,html[data-goto="0"] #nbGoto,html[data-goto="0"] #goto
 .ch-acts{display:flex;gap:8px;flex-wrap:wrap}
 .ch-acts>button{flex:1 1 auto}
 html[data-rec="1"] .dv,html[data-rec="1"] .cd-dock,html[data-rec="1"] .cd-acts{display:none!important}
+.ch-body{display:flex;flex-direction:column;gap:8px}
+.ch-body>*{flex:none}
+.ch-body input{width:100%}

@@ -43,7 +43,7 @@
  const norm=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const initials=n=>String(n).replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase()||'?';
  const carLine=e=>{const s=spec(e);return `${e.model} · ${s.hp} hp · ${Math.round(s.hp*.7457)} kW · ${s.kg.toLocaleString('en-US')} kg · ${Math.round(s.kg*2.20462).toLocaleString('en-US')} lb · ${s.drive}`};
- function head(){const h=el('div','ch-me');h.append(el('span','fd-av gt-av',A.name?(hid(A.name)?'★':initials(A.name)):'🚗'));const t=el('div','gt-tx');t.append(el('b',A.name?'gt-nm':null,who(A)),el('small',null,carLine(A)));h.append(t);return h}
+ function head(){const h=el('div','ch-me');h.append(el('span','fd-av gt-av',A.name?(hid(A.name)?'★':initials(A.name)):'🚗'));const t=el('div','gt-tx');t.append(el('b',A.name?'gt-nm':null,who(A)),el('small',null,carLine(A)));if(A.name)t.append(el('small','ch-strip','Races their Drag Strip car (the same for everyone)'));h.append(t);return h}
  function picker(){body.textContent='';body.append(el('p','pn-sub','Heads-up drag race over a quarter mile (402 m). Pick who to race:'),head());
   const lb=el('label',null,'Opponent');lb.htmlFor='chIn';const inp=el('input');inp.id='chIn';inp.type='text';inp.autocomplete='off';inp.spellcheck=false;inp.placeholder='Search the residents…';inp.value=q;
   const rnd=btn('gt-act ch-rnd','🎲 Random opponent',()=>{const pool=WALL.filter(n=>!hid(n)&&byName(n).id!==A.id);if(!pool.length)return;let i=0;try{const a=new Uint32Array(1);crypto.getRandomValues(a);i=a[0]%pool.length}catch(e){i=Math.floor(performance.now()%pool.length)}result(byName(pool[i]))});
@@ -62,8 +62,8 @@
   const tb=el('table','ch-tb');const tr=(lab,va,vb,better)=>{const r=el('tr');r.append(el('th',null,lab));const ca=el('td',better===0?'ch-b':null,va),cb=el('td',better===1?'ch-b':null,vb);r.append(ca,cb);tb.append(r)};
   {const r=el('tr','ch-who');r.append(el('th'));for(const ln of[a,b]){const td=el('td',ln===w?'ch-w':null);td.append(el('b',ln.e.name?'gt-nm':null,who(ln.e)),el('small',null,ln.e.model));r.append(td)}tb.append(r)}
   const sa=spec(a.e),sb=spec(b.e),lo=(x,y)=>x<y?0:y<x?1:-1,hi=(x,y)=>x>y?0:y>x?1:-1;
-  tr('Power',`${sa.hp} hp · ${Math.round(sa.hp*.7457)} kW`,`${sb.hp} hp · ${Math.round(sb.hp*.7457)} kW`,-1);
-  tr('Weight',`${sa.kg.toLocaleString('en-US')} kg · ${Math.round(sa.kg*2.20462).toLocaleString('en-US')} lb`,`${sb.kg.toLocaleString('en-US')} kg · ${Math.round(sb.kg*2.20462).toLocaleString('en-US')} lb`,-1);
+  tr('Power',`${sa.hp} hp\n${Math.round(sa.hp*.7457)} kW`,`${sb.hp} hp\n${Math.round(sb.hp*.7457)} kW`,-1);
+  tr('Weight',`${sa.kg.toLocaleString('en-US')} kg\n${Math.round(sa.kg*2.20462).toLocaleString('en-US')} lb`,`${sb.kg.toLocaleString('en-US')} kg\n${Math.round(sb.kg*2.20462).toLocaleString('en-US')} lb`,-1);
   tr('Reaction (R/T)',a.red?f3(a.rt)+' · red':f3(a.rt),b.red?f3(b.rt)+' · red':f3(b.rt),a.red||b.red?(a.red&&!b.red?1:b.red&&!a.red?0:-1):lo(a.rt,b.rt));
   tr('60 ft · 18 m',f3(a.t60),f3(b.t60),lo(a.t60,b.t60));
   tr('1/4 mile · 402 m',f3(a.et),f3(b.et),lo(a.et,b.et));
