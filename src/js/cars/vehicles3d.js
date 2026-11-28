@@ -9,7 +9,7 @@
   if(c.kind==='tow'){add(Wd*.9,.45,L*.96,mat.dark,0,.28,0);add(Wd,1.15,L*.3,body,0,.35,L*.3);add(Wd*1.01,.42,L*.12,mat.carGlass,0,1.0,L*.42,false);add(Wd,.28,L*.56,mat.steel,0,.72,-L*.17);
    add(.25,1.3,.25,body,0,1,-L*.38);add(.18,.18,L*.3,body,0,2.2,-L*.27,false);add(Wd*.6,.15,.25,mat.beacon,0,1.5,L*.3,false)}
   else if(c.kind==='van'){add(Wd,1.45,L*.96,body,0,.3,0);add(Wd*1.01,.45,L*.08,mat.carGlass,0,1.05,L*.45,false);add(Wd*1.01,.25,L*.7,mat.orange,0,.85,-L*.06,false)}
-  else{const sport=m.sport,pick=m.pickup,wag=m.wagon||/SUV/.test(m.n||''),cl=m.classic;
+  else{const sport=m.sport,pick=m.pickup,wag=m.wagon||m.suv||/SUV/.test(m.n||''),cl=m.classic;
    add(Wd,.5,L,body,0,.25,0);
    if(sport){add(Wd*.84,.36,L*.4,mat.carGlass,0,.75,-L*.06);add(Wd*.8,.06,L*.32,body,0,1.11,-L*.07,false);add(Wd*.9,.08,.25,mat.dark,0,.95,-L*.47,false)}
    else if(pick){add(Wd*.9,.58,L*.34,mat.carGlass,0,.75,L*.1);add(Wd*.88,.08,L*.3,body,0,1.33,L*.1,false);for(const dx of[-1,1])add(.1,.32,L*.4,body,dx*(Wd/2-.05),.75,-L*.28,false);add(Wd,.32,.1,body,0,.75,-L*.48,false)}
