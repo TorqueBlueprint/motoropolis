@@ -1,0 +1,33 @@
+<section class="on-panel" id="onPanel" hidden="" role="dialog" aria-labelledby="onTitle">
+  <div class="on-head"><h2 id="onTitle">My account</h2><button type="button" class="on-x" id="onClose" aria-label="Close"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <p class="on-msg" id="onMsg" hidden="" aria-live="polite"></p>
+  <div id="onBody"></div>
+  <p class="on-plinks"><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+</section>
+<footer class="on-legal" aria-label="Motoropolis Online legal"><a href="privacy.html">Privacy policy</a><span aria-hidden="true">·</span><a href="terms.html">Terms</a><span aria-hidden="true">·</span><span>A TorqueBlueprint fan project</span></footer>
+<style id="online-extra-css">
+.on-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 10px;padding:18px 16px 96px;font:500 14px/1.4 var(--body,sans-serif);color:#b8cdea;text-align:center}
+.on-legal a{color:#ffd34d}
+.on-panel .on-plinks{margin:0;font-size:13px;color:#9fb6d8;text-align:center}
+.on-panel .on-plinks a{color:#b8cdea}
+.od-wrap{text-align:right;margin-top:-6px}
+.od-btn{color:#ff9b91;font-size:13px}
+.od-dlg{width:min(420px,calc(100vw - 32px));box-sizing:border-box;border:1px solid rgba(255,120,110,.55);border-radius:16px;padding:18px 18px 16px;background:#0d2650;color:#fff;font:15px/1.45 var(--body,sans-serif);box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.od-dlg::backdrop{background:rgba(5,12,26,.7)}
+.od-dlg h2{margin:0 0 8px;font:800 22px/1.1 var(--display,sans-serif);letter-spacing:.03em;text-transform:uppercase;color:#ff9b91}
+.od-dlg p{margin:0 0 10px;color:#d6e4f6}
+.od-dlg .od-small{font-size:13.5px;color:#b8cdea}
+.od-dlg a{color:#ffd34d}
+.od-lab{display:block;font:700 13px/1 var(--display,sans-serif);letter-spacing:.1em;text-transform:uppercase;color:#b8cdea;margin:4px 0 6px}
+.od-dlg input{width:100%;box-sizing:border-box;min-height:44px;border-radius:10px;border:1px solid #2b4b7c;background:#0a1e3e;color:#fff;padding:0 12px;font:700 16px/1 var(--mono,monospace);letter-spacing:.1em}
+.od-note{margin:10px 0 0!important;padding:8px 10px;border-radius:10px;font-size:14px;background:rgba(255,211,77,.14);color:#ffe9a8!important}
+.od-note.err{background:rgba(232,50,42,.16);color:#ffd2cd!important}
+.od-note.ok{background:rgba(92,201,138,.15);color:#c9f5d9!important}
+.od-row{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+.od-row button{min-height:44px;border:0;border-radius:10px;padding:0 16px;font:800 15px/1 var(--display,sans-serif);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.od-cancel{background:#2b4b7c;color:#fff}
+.od-go{background:#e8322a;color:#fff}
+.od-go[disabled]{opacity:.45;cursor:default}
+.od-row button:focus-visible,.od-btn:focus-visible,.od-dlg input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+</style>
+<script src="../src/online/account_delete.js" defer></script>

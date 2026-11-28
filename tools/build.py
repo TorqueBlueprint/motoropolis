@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build every page from src/ (the source of truth).
 
-  python3 tools/build.py            # src/ -> index.html, then world/ remake/ xmas/ rec/ perf/
+  python3 tools/build.py            # src/ -> index.html, then world/ remake/ xmas/ rec/ perf/ online/
   python3 tools/build.py --check    # exit 1 if index.html or a generated page is not what src/ builds
 
 src/page/shell.html  the HTML around the page (placeholders @@CSS@@ @@APP@@ @@STATE@@ @@JS@@)
@@ -19,7 +19,7 @@ import os, re, sys, json, subprocess
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SRC = os.path.join(ROOT, "src")
-PAGES = ["world", "remake", "xmas", "rec", "perf"]
+PAGES = ["world", "remake", "xmas", "rec", "perf", "online"]
 
 
 def rd(*p):
