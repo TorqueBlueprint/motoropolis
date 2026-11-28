@@ -6,7 +6,7 @@
  "sportsaloon": {"hp": 560,  "kg": 2000, "drive": "AWD", "eng": "F", "gears": 8, "v1": 64,  "vtop": 310, "shift": 0.15, "cda": 0.66, "mu": 1.10, "launch": 0.42, "rpm": 7000, "asp": "T", "fuel": "P", "boost": 1.5, "spool": 0.38, "lag": 0.4},
  "sport3":      {"hp": 473,  "kg": 1730, "drive": "RWD", "eng": "F", "gears": 8, "v1": 62,  "vtop": 300, "shift": 0.15, "cda": 0.68, "mu": 1.12, "launch": 0.40, "rpm": 7200, "asp": "T", "fuel": "P", "boost": 1.7, "spool": 0.35, "lag": 0.35},
  "saloon90":    {"hp": 238,  "kg": 1200, "drive": "RWD", "eng": "F", "gears": 5, "v1": 60,  "vtop": 250, "shift": 0.40, "cda": 0.66, "mu": 1.02, "launch": 0.48, "rpm": 7600, "asp": "NA", "fuel": "P"},
- "taxi":        {"hp": 150,  "kg": 1600, "drive": "FWD", "eng": "F", "gears": 6, "v1": 55,  "vtop": 215, "shift": 0.35, "cda": 0.72, "mu": 0.98, "launch": 0.38, "rpm": 4600, "asp": "T", "fuel": "D", "boost": 1.5, "spool": 0.35, "lag": 0.5},
+ "taxi":        {"hp": 150,  "kg": 1600, "drive": "FWD", "eng": "F", "gears": 6, "v1": 55,  "vtop": 215, "shift": 0.35, "cda": 0.72, "mu": 0.98, "launch": 0.38, "rpm": 5000, "asp": "NA", "fuel": "P"},
  "offroad":     {"hp": 278,  "kg": 2200, "drive": "AWD", "eng": "F", "gears": 6, "v1": 52,  "vtop": 200, "shift": 0.35, "cda": 1.15, "mu": 0.95, "launch": 0.35, "rpm": 4800, "asp": "T", "fuel": "D", "boost": 1.6, "spool": 0.3, "lag": 0.45},
  "coupe85":     {"hp": 185,  "kg": 1200, "drive": "RWD", "eng": "F", "gears": 5, "v1": 60,  "vtop": 240, "shift": 0.40, "cda": 0.66, "mu": 0.98, "launch": 0.48, "rpm": 7250, "asp": "NA", "fuel": "P"},
  "sedan98":     {"hp": 170,  "kg": 1450, "drive": "RWD", "eng": "F", "gears": 5, "v1": 55,  "vtop": 225, "shift": 0.40, "cda": 0.68, "mu": 0.98, "launch": 0.42, "rpm": 6500, "asp": "NA", "fuel": "P"},

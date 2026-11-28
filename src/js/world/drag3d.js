@@ -89,15 +89,29 @@
    // pass); diesel: black smoke while the fuel is ahead of the air (launch, every shift); petrol cars of 450 hp and more pop
    // flames on every upshift; turbo petrol cars crackle on the 2-step before the green.
    const NS=140,NF=24,FX={sm:null,fl:null,p:new Float32Array(NS*3),v:new Float32Array(NS*3),age:new Float32Array(NS),life:new Float32Array(NS),s0:new Float32Array(NS),s1:new Float32Array(NS),kind:new Uint8Array(NS),
-    fp:new Float32Array(NF*3),fage:new Float32Array(NF),flife:new Float32Array(NF),flen:new Float32Array(NF),si:0,fi:0,live:0,flive:0,seed:12345,m4:new T.Matrix4(),col:new T.Color(),c0:new T.Color(0xdfe1e4),c1:new T.Color(0x18181a),c2:new T.Color(0x8d9096),c3:new T.Color(0xffa020),c4:new T.Color(0xff3a00)};
+    fp:new Float32Array(NF*3),fk:new Int8Array(NF),fage:new Float32Array(NF),flife:new Float32Array(NF),flen:new Float32Array(NF),si:0,fi:0,live:0,flive:0,seed:12345,m4:new T.Matrix4(),col:new T.Color(),c0:new T.Color(0xdfe1e4),c1:new T.Color(0x18181a),c2:new T.Color(0x8d9096),c3:new T.Color(0xffffff),c4:new T.Color(0xff6a3a)};
    const frnd=()=>{FX.seed=(FX.seed*1664525+1013904223)>>>0;return FX.seed/4294967296}; // visual jitter only (not Math.random, not the races)
+   // exhaust flame: a slim teardrop (narrow at the pipe, fullest a quarter of the way out, tapering to a point): a blue-ish
+   // root, an orange outer flame that reddens and fades out to the tip, and a short white-yellow core at the pipe. Colours
+   // carry alpha (normal blending, so it still reads as orange on the snow and the pale concrete).
+   function flameGeo(){const P=[],C=[],I=[];
+    // stops: [t, r, g, b, a] along the flame (t 0 at the pipe, 1 at the tip)
+    function layer(len,rad,stops){const prof=[],N=10;for(let k=0;k<=N;k++){const t=k/N,r=rad*(t<.22?.42+2.6*t:Math.max(0,(1-t)/.78)**.8);prof.push(new T.Vector2(Math.max(r,k===N?0:.004),t*len))}
+     const g=new T.LatheGeometry(prof,10),pos=g.attributes.position,b=P.length/3;
+     for(let v=0;v<pos.count;v++){const t=Math.min(1,pos.getY(v)/len);let s=0;while(s<stops.length-2&&t>stops[s+1][0])s++;const A=stops[s],B=stops[s+1],f=Math.min(1,Math.max(0,(t-A[0])/(B[0]-A[0])));
+      P.push(pos.getX(v),pos.getY(v),pos.getZ(v));for(let q=1;q<5;q++)C.push(A[q]+(B[q]-A[q])*f)}
+     const ix=g.index.array;for(let k=0;k<ix.length;k++)I.push(ix[k]+b);g.dispose()}
+    layer(1,.08,[[0,.4,.5,1,.5],[.1,1,.55,.1,.92],[.45,1,.34,.02,.88],[.8,.88,.14,0,.4],[1,.6,.06,0,0]]);
+    layer(.36,.036,[[0,1,1,.92,1],[.5,1,.9,.5,.95],[1,1,.6,.1,0]]);
+    const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setAttribute('color',new T.Float32BufferAttribute(C,4));g.setIndex(I);g.rotateZ(Math.PI/2);return g}
    function fxBuild(cg){const sm=new T.InstancedMesh(new T.IcosahedronGeometry(1,1),new T.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.45,roughness:1,depthWrite:false}),NS);
-    const fl=new T.InstancedMesh(new T.ConeGeometry(.15,1,7,1,true).translate(0,.5,0).rotateZ(Math.PI/2),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.92,depthWrite:false,fog:false,toneMapped:false,side:T.DoubleSide}),NF);
+    const fl=new T.InstancedMesh(flameGeo(),new T.MeshBasicMaterial({color:0xffffff,vertexColors:true,transparent:true,depthWrite:false,fog:false,toneMapped:false,side:T.DoubleSide}),NF);
     FX.m4.makeScale(0,0,0);for(let i=0;i<NS;i++){sm.setMatrixAt(i,FX.m4);sm.setColorAt(i,FX.c0);FX.age[i]=FX.life[i]=0}for(let i=0;i<NF;i++){fl.setMatrixAt(i,FX.m4);fl.setColorAt(i,FX.c3);FX.fage[i]=FX.flife[i]=0}
     for(const m of[sm,fl]){m.frustumCulled=false;m.castShadow=false;m.receiveShadow=false;m.visible=false;m.userData.nm=1;cg.add(m)}FX.sm=sm;FX.fl=fl;FX.live=FX.flive=0}
    // kind: 0 tyre smoke (light grey), 1 diesel soot (black, greys as it thins), 2 exhaust haze
    function puff(x,y,z,vx,vy,vz,life,s0,s1,kind){const i=FX.si;FX.si=(i+1)%NS;const j=i*3;FX.p[j]=x;FX.p[j+1]=y;FX.p[j+2]=z;FX.v[j]=vx;FX.v[j+1]=vy;FX.v[j+2]=vz;FX.age[i]=0;FX.life[i]=life;FX.s0[i]=s0;FX.s1[i]=s1;FX.kind[i]=kind;FX.live=NS}
-   function flame(x,y,z,life,len){const i=FX.fi;FX.fi=(i+1)%NF;const j=i*3;FX.fp[j]=x;FX.fp[j+1]=y;FX.fp[j+2]=z;FX.fage[i]=0;FX.flife[i]=life;FX.flen[i]=len;FX.flive=NF}
+   // flames ride with the car: fp holds the offset from the car's tail (fk = its lane)
+   function flame(C,x,y,z,life,len){const i=FX.fi;FX.fi=(i+1)%NF;const j=i*3;FX.fk[i]=D3.cars.indexOf(C);FX.fp[j]=x;FX.fp[j+1]=y;FX.fp[j+2]=z;FX.fage[i]=0;FX.flife[i]=life;FX.flen[i]=len;FX.flive=NF}
    function fxLane(C,t,dt){if(!FX.sm||!C.g.visible)return;const S2=C.st,A=C.acc,ex=C.x+C.rear,y0=.42;
     // tyre smoke: the burnout, then the launch while the tyres spin
     let rate=S2.ph===1?30:S2.ph===4&&S2.sp>.1&&S2.v<28?24*S2.sp*(1-S2.v/28):0;
@@ -106,17 +120,17 @@
     rate=C.dsl&&(S2.ph===3||S2.ph===4)?(S2.so>.2?S2.so*30:S2.so*8):0;
     if(rate){A[1]+=rate*dt;while(A[1]>=1){A[1]--;puff(ex-.1,y0,C.z-.45,-1.2-frnd(),.9+frnd()*.6,(frnd()-.5)*.6,1+frnd()*.5,.18,.8+frnd()*.6*S2.so,1)}}
     // flames: upshifts (petrol, 450 hp and more), the 2-step crackle before the green (turbo petrol)
-    const sh=C.tel.sh;if(S2.ph===4){if(C.ptt<0)C.shI=0;while(C.shI<sh.length&&sh[C.shI]<=S2.tt){if(C.pops&&S2.tt-sh[C.shI]<.3){for(const s of[-.42,.42])flame(ex,y0,C.z+s,.16,.9+frnd()*.5);A[3]=.09}C.shI++}C.ptt=S2.tt}else C.ptt=-1;
-    if(A[3]>0){A[3]-=dt;if(A[3]<=0&&C.pops)for(const s of[-.42,.42])flame(ex,y0,C.z+s,.1,.55+frnd()*.3)}
-    if(S2.ph===3&&C.two){A[2]+=dt*(5+frnd()*4);if(A[2]>=1){A[2]=0;flame(ex,y0,C.z+(frnd()<.5?-.42:.42),.07,.4+frnd()*.3);puff(ex-.1,y0,C.z,-.5,.6,0,.6,.15,.6,2)}}}
+    const sh=C.tel.sh;if(S2.ph===4){if(C.ptt<0)C.shI=0;while(C.shI<sh.length&&sh[C.shI]<=S2.tt){if(C.pops&&S2.tt-sh[C.shI]<.3){for(const s of[-.42,.42])flame(C,0,y0,s,.16,.8+frnd()*.4);A[3]=.09}C.shI++}C.ptt=S2.tt}else C.ptt=-1;
+    if(A[3]>0){A[3]-=dt;if(A[3]<=0&&C.pops)for(const s of[-.42,.42])flame(C,0,y0,s,.1,.55+frnd()*.3)}
+    if(S2.ph===3&&C.two){A[2]+=dt*(5+frnd()*4);if(A[2]>=1){A[2]=0;flame(C,0,y0,frnd()<.5?-.42:.42,.07,.4+frnd()*.3);puff(ex-.1,y0,C.z,-.5,.6,0,.6,.15,.6,2)}}}
    function fxStep(dt){if(!FX.sm)return;const M4=FX.m4;
     if(FX.live){let live=0;for(let i=0;i<NS;i++){if(FX.age[i]>=FX.life[i]){continue}FX.age[i]+=dt;const j=i*3,u=FX.age[i]/FX.life[i];
       if(u>=1){M4.makeScale(0,0,0);FX.sm.setMatrixAt(i,M4);continue}live++;const dr=1-1.6*dt;FX.v[j]*=dr;FX.v[j+2]*=dr;FX.p[j]+=FX.v[j]*dt;FX.p[j+1]+=FX.v[j+1]*dt;FX.p[j+2]+=FX.v[j+2]*dt;
       const sc=(FX.s0[i]+(FX.s1[i]-FX.s0[i])*Math.sqrt(u))*(u>.75?1-(u-.75)*3.2:1);M4.makeScale(sc,sc*.8,sc).setPosition(FX.p[j],FX.p[j+1],FX.p[j+2]);FX.sm.setMatrixAt(i,M4);
       const k=FX.kind[i];if(k===1)FX.col.copy(FX.c1).lerp(FX.c2,u*.8);else FX.col.copy(k===2?FX.c2:FX.c0);FX.sm.setColorAt(i,FX.col)}
      FX.sm.instanceMatrix.needsUpdate=true;FX.sm.instanceColor.needsUpdate=true;FX.live=live;FX.sm.visible=live>0;if(!live){M4.makeScale(0,0,0);for(let i=0;i<NS;i++)FX.sm.setMatrixAt(i,M4)}}
-    if(FX.flive){let live=0;for(let i=0;i<NF;i++){if(FX.fage[i]>=FX.flife[i])continue;FX.fage[i]+=dt;const u=FX.fage[i]/FX.flife[i];if(u>=1){M4.makeScale(0,0,0);FX.fl.setMatrixAt(i,M4);continue}live++;
-      const j=i*3,L=FX.flen[i]*(u<.25?.5+2*u:1.3-u),w=1-u*.5;M4.makeScale(L,w,w).setPosition(FX.fp[j],FX.fp[j+1],FX.fp[j+2]);FX.fl.setMatrixAt(i,M4);FX.col.copy(FX.c3).lerp(FX.c4,u);FX.fl.setColorAt(i,FX.col)}
+    if(FX.flive){let live=0;for(let i=0;i<NF;i++){if(FX.fage[i]>=FX.flife[i])continue;FX.fage[i]+=dt;const u=FX.fage[i]/FX.flife[i];if(u>=1){M4.makeScale(0,0,0);FX.fl.setMatrixAt(i,M4);continue}const Cf=D3.cars[FX.fk[i]];if(!Cf||!Cf.g.visible){FX.fage[i]=FX.flife[i];M4.makeScale(0,0,0);FX.fl.setMatrixAt(i,M4);continue}live++;
+      const j=i*3,L=FX.flen[i]*(u<.2?.45+2.75*u:1.25-.75*u),w=(1-.4*u)*(.88+.24*Math.sin(FX.fage[i]*90+i));M4.makeScale(L,w,w).setPosition(Cf.x+Cf.rear+FX.fp[j],FX.fp[j+1],Cf.z+FX.fp[j+2]);FX.fl.setMatrixAt(i,M4);FX.col.copy(FX.c3).lerp(FX.c4,u);FX.fl.setColorAt(i,FX.col)}
      FX.fl.instanceMatrix.needsUpdate=true;FX.fl.instanceColor.needsUpdate=true;FX.flive=live;FX.fl.visible=live>0}}
    // ---------- the loop through the day's heats ----------
    const secOfDay=()=>{const n=Date.now();return(n%864e5)/1000};
