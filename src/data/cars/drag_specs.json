@@ -30,5 +30,6 @@
  "challenger":  {"hp": 717,  "kg": 1990, "drive": "RWD", "eng": "F", "gears": 8, "v1": 75,  "vtop": 320, "shift": 0.15, "cda": 0.80, "mu": 1.12, "launch": 0.30},
  "urus":        {"hp": 650,  "kg": 2200, "drive": "AWD", "eng": "F", "gears": 8, "v1": 62,  "vtop": 310, "shift": 0.15, "cda": 0.95, "mu": 1.12, "launch": 0.42},
  "evo9":        {"hp": 286,  "kg": 1400, "drive": "AWD", "eng": "F", "gears": 5, "v1": 60,  "vtop": 250, "shift": 0.35, "cda": 0.72, "mu": 1.08, "launch": 0.55},
- "huracan":     {"hp": 631,  "kg": 1422, "drive": "AWD", "eng": "M", "gears": 7, "v1": 80,  "vtop": 325, "shift": 0.08, "cda": 0.66, "mu": 1.18, "launch": 0.45, "rpm": 8500, "asp": "NA", "fuel": "P"}
+ "huracan":     {"hp": 631,  "kg": 1422, "drive": "AWD", "eng": "M", "gears": 7, "v1": 80,  "vtop": 325, "shift": 0.08, "cda": 0.66, "mu": 1.18, "launch": 0.45, "rpm": 8500, "asp": "NA", "fuel": "P"},
+ "mach1":       {"hp": 335,  "kg": 1630, "drive": "RWD", "eng": "F", "gears": 4, "v1": 90,  "vtop": 195, "shift": 0.45, "cda": 0.88, "mu": 0.85, "launch": 0.38, "rpm": 5600, "asp": "NA", "fuel": "P"}
 }

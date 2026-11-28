@@ -372,5 +372,18 @@
   ],
   "sport": true,
   "glb": "huracan"
+ },
+ {
+  "n": "Ford Mustang Mach 1",
+  "len": 32,
+  "wid": 15,
+  "price": 95000,
+  "v": [
+   104,
+   122
+  ],
+  "classic": true,
+  "sport": true,
+  "glb": "mach1"
  }
 ]

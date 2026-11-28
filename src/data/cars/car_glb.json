@@ -258,5 +258,9 @@
  "huracan": {
   "file": "huracan.glb",
   "keep": 1
+ },
+ "mach1": {
+  "file": "mach1.glb",
+  "keep": 1
  }
 }
