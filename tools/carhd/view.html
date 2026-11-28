@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><style>body{margin:0;background:#888}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+import * as T from 'three';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
+let W=800,H=500;const r=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});r.setSize(W,H);r.toneMapping=T.ACESFilmicToneMapping;r.shadowMap.enabled=true;r.shadowMap.type=T.PCFSoftShadowMap;document.body.appendChild(r.domElement);
+const pm=new T.PMREMGenerator(r);const env=pm.fromScene(new RoomEnvironment(),.04).texture;
+const ld=new GLTFLoader();const dl=new DRACOLoader();dl.setDecoderPath('/three/examples/jsm/libs/draco/gltf/');ld.setDRACOLoader(dl);
+const cache={};
+// opts: {views:[[pos],[target],fov] in units of car length 4.4 normalised; raw: no normalisation (use real coordinates); paint:{names,col}; hide:regex}
+window.shot=async(url,views,o={})=>{if(o.W&&o.W!==W){W=o.W;H=o.H;r.setSize(W,H)}
+ const sc=new T.Scene();sc.background=new T.Color(0x9aa3ad);sc.environment=env;sc.environmentIntensity=o.env??.8;
+ const sun=new T.DirectionalLight(0xffffff,o.sun??1.6);sun.position.set(5,9,6);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-.0005;Object.assign(sun.shadow.camera,{left:-6,right:6,top:6,bottom:-6});sc.add(sun);sc.add(new T.HemisphereLight(0xdde8ff,0x445566,o.hemi??.5));
+ const g=await ld.loadAsync(url);const m=g.scene;let root=new T.Group();root.add(m);
+ if(o.hide)m.traverse(x=>{if(x.isMesh&&(o.hide.test(x.name)||o.hide.test(x.material?.name||'')))x.visible=false});
+ const bb=new T.Box3().setFromObject(m,true),sz=bb.getSize(new T.Vector3()),ce=bb.getCenter(new T.Vector3());
+ if(!o.raw){const L=Math.max(sz.x,sz.z),k=4.4/L;m.position.set(-ce.x,-bb.min.y,-ce.z);root.scale.setScalar(k);if(sz.x>sz.z)root.rotation.y=Math.PI/2;if(o.flip)root.rotation.y+=Math.PI}
+ else if(o.rawScale){root.scale.setScalar(o.rawScale)}
+ sc.add(root);
+ m.traverse(x=>{if(!x.isMesh)return;x.castShadow=x.receiveShadow=true;if(o.game!==false&&x.material&&x.material.transparent&&!/glass/i.test(x.material.name||'')){x.material=x.material.clone();x.material.transparent=false;x.material.alphaTest=.5;x.material.depthWrite=true}
+  if(o.paint&&[].concat(o.paint.names).includes(x.material.name)){const nm=x.material.clone();nm.map=null;nm.color.set(o.paint.col);nm.metalness=.35;nm.roughness=.35;nm.transparent=false;nm.opacity=1;x.material=nm}
+  if(o.cell&&x.material&&x.material.map&&x.material.name==='Car_Main'){const base=x.material,img=base.map.image;const cv=document.createElement('canvas');cv.width=img.width;cv.height=img.height;const c2=cv.getContext('2d');c2.drawImage(img,0,0);const [cx,cy,cw,ch]=o.cell,k=img.width/64;c2.fillStyle=o.col;c2.fillRect(cx*k,cy*k,cw*k,ch*k);const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;t.flipY=base.map.flipY;t.magFilter=T.NearestFilter;t.minFilter=T.NearestFilter;t.generateMipmaps=false;const nm=base.clone();nm.map=t;nm.metalness=Math.min(nm.metalness,.5);x.material=nm}
+  if(o.mark&&new RegExp(o.mark,'i').test((x.name||'')+' '+(x.material?.name||''))){x.material=new T.MeshBasicMaterial({color:0xff00ff})}});
+ const gr=new T.Mesh(new T.PlaneGeometry(60,60).rotateX(-Math.PI/2),new T.MeshStandardMaterial({color:0x5a6066,roughness:.95}));gr.receiveShadow=true;if(!o.raw)sc.add(gr);
+ const out=[];for(const V of views){const cam=new T.PerspectiveCamera(V[2],W/H,.02,500);cam.position.set(...V[0]);cam.lookAt(...V[1]);r.render(sc,cam);out.push(r.domElement.toDataURL('image/png'))}
+ let tris=0;m.traverse(x=>{if(x.isMesh&&x.visible){const g=x.geometry;tris+=(g.index?g.index.count:g.attributes.position.count)/3}});
+ return {imgs:out,tris:Math.round(tris),bb:[bb.min.toArray(),bb.max.toArray()]}};
+window.ready=true;
+</script></body></html>

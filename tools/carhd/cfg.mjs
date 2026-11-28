@@ -1,0 +1,31 @@
+const U='/mnt/user-data/uploads/';
+export const CFG={
+ mach1:{src:U+'ford_mustang_mach_1.glb',
+  remove:'^"?(Mach_1_|Mustang_Logo|Logo_Cylinder|Radio_Antenna)|^(Door__L|Door_Rill_Background_high|Door_Rills\\.007|Door_Frame\\.00[1-5]|Inside_Door_Light_Red|Window_Crank_high|Underneath_door_high|Door_Glass_Glass|Door_Glass_Bevel_high|Door_Handle\\.001|Keyhole\\.001|Door_Button\\.001|Mirror_Holder\\.000|Mirror\\.000)',
+  mirror:{axis:'z',center:-74.335,nodes:'^(Door_R_|Door_Handle_high|Door_Button_high|Keyhole_high_Chrome|Door_Frame\\.0(07|08|09|10|11)|Inside_Door_Light\\.001|Window_Crank\\.001|Door_Rill_Background\\.001|Door_Rills\\.006|Mirror_Holder\\.001|Mirror\\.001|Underneath_door\\.001|Door_Glass\\.001|Door_Glass_Bevel\\.001)'}},
+ huracan:{src:U+'huracan_black-panthertm.glb',removeMat:'^Material\\.013$',
+  tex:{Toit:{file:'/home/claude/carhd_work/huracan_toit_clean.png'},Tire:{file:'/home/claude/carhd_work/huracan_tire_clean.jpg'}}},
+
+ ae86:{src:U+'63b3a3ae-toyota_gt_apex_trueno_ae86_stock_jdm.glb',removeMat:'^(decal_toyota|trueno_trunkb__spec|digits__spec)$'},
+ p1:{src:U+'ca8580f1-ac_-_mclaren_p1_free.glb',removeMat:'^(Details|INT_Decals_.*)$'},
+ viper:{src:U+'b7f27203-dodge_viper_rt10_sr1.glb',removeMat:'Badge|^ManufacturerPlateA$'},
+ f40:{src:U+'34ff1d32-ferrari_f40.glb',removeMat:'^F40_Logos$'},
+ venom:{src:U+'8241cdee-hennessy_venom_f5_concept.glb',removeMat:'^(badges|rear_badge)$'},
+ etype:{src:U+'9306d422-jaguar_e_type.glb',removeMat:'^logo$'},
+ svj:{src:U+'75f179d9-lamborghini_aventador_svj_sdc__free.glb',removeMat:'^MetalGoldenLogo$'},
+ urus:{src:U+'7016036b-lamborghini_urus_2018.glb'},
+ miata:{src:U+'3c76089a-mazda_miata_mx-5_na.glb'},
+ evo9:{src:U+'7a78e3a9-mitsubishi_lancer_evolution_ix_mr_gsr_ct9a.glb',removeMat:'Badge'},
+
+ rwd24:{src:'/home/claude/car_sources/z_subaru_brz_zd8/x/scene.gltf',removeMat:'^extras$',flipNormals:'^Object_552$'},
+ offroad:{src:'/home/claude/car_sources/z_b2798f83-ford_ranger_raptor/x/scene.gltf'},
+ fastback65:{src:'/home/claude/car_sources/z_9fe198d0-rigged_car_mustang_1965_with_engine_3d_model/x/scene.gltf'},
+ awd99:{src:'/home/claude/car_sources/z_489d7eb8-nissan_skyline_r34_gtr/x/scene.gltf',removeTree:'^(logos_11|license plate_24)$'},
+ midv10:{src:U+'bb51eebb-2021_audi_r8_v10_performance_quattro_type_4s.glb',removeMat:'^(FrontBumperBadge1Mtl|Textured2Mtl)$',rename:{Metallic_3:'body'}},
+ hothatch:{src:U+'99cd1b4b-custom_honda_civic_type-r_2024.glb',removeMat:'^Rimbadge',cellPaint:{mat:'Paintid9490011Mtl',cell:[16,0,8,8]}},
+ v8sport:{src:U+'chevrolet_corvette_c7.glb',removeMat:'^(CorvetteWingEmblem|LicensePlate_Frame|License_Plate|Shadow)$',cellPaint:{mat:'Car_Paint',cell:[24,0,8,8]}},
+ sportsaloon:{src:U+'78812860-porsche_panamera_sport_turismo.glb',removeMat:'^Chassislicense11Mtl$',cellPaint:{mat:'Detatchdoorr60pivotcarpaint11Mtl',cell:[8,0,8,8]}},
+ sport3:{src:U+'bmw_m3_g80_2025.glb',removeTree:'badge|logo',rename:{mat_237_41:'CarPaint'}},
+ wrxsti:{src:'/home/claude/car_sources/z_a54f92de-2018_subaru_wrx_sti/x/scene.gltf',ref:'/home/claude/carhd_work/orig/rwd24.glb',removeMat:'Badge|ManufacturerPlate',removeTree:'Badge|ManufacturerPlate'},
+ brz_zc6:{src:U+'a5272e4a-subaru_brz_zc6.glb',ref:'/home/claude/carhd_work/orig/rwd24.glb'},
+};

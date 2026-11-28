@@ -7,12 +7,12 @@
  "huracan": {
   "name": "Lamborghini Huracán",
   "light": "assets/cars/lod/huracan.glb",
-  "hd": null
+  "hd": "assets/cars/hd/huracan.glb"
  },
  "mach1": {
   "name": "Ford Mustang Mach 1",
   "light": "assets/cars/lod/mach1.glb",
-  "hd": null
+  "hd": "assets/cars/hd/mach1.glb"
  },
  "rearturbo": {
   "name": "Porsche 911 GT2 (997.1)",
@@ -22,27 +22,27 @@
  "rwd24": {
   "name": "Subaru BRZ (ZD8)",
   "light": "assets/cars/lod/rwd24.glb",
-  "hd": null
+  "hd": "assets/cars/hd/rwd24.glb"
  },
  "svj": {
   "name": "Lamborghini Aventador SVJ",
   "light": "assets/cars/lod/svj.glb",
-  "hd": null
+  "hd": "assets/cars/hd/svj.glb"
  },
  "urus": {
   "name": "Lamborghini Urus",
   "light": "assets/cars/lod/urus.glb",
-  "hd": null
+  "hd": "assets/cars/hd/urus.glb"
  },
  "etype": {
   "name": "Jaguar E-Type",
   "light": "assets/cars/lod/etype.glb",
-  "hd": null
+  "hd": "assets/cars/hd/etype.glb"
  },
  "f40": {
   "name": "Ferrari F40",
   "light": "assets/cars/lod/f40.glb",
-  "hd": null
+  "hd": "assets/cars/hd/f40.glb"
  },
  "amgone": {
   "name": "Mercedes-AMG One",
@@ -52,16 +52,76 @@
  "miata": {
   "name": "Mazda MX-5 (NA)",
   "light": "assets/cars/lod/miata.glb",
-  "hd": null
+  "hd": "assets/cars/hd/miata.glb"
  },
  "p1": {
   "name": "McLaren P1",
   "light": "assets/cars/lod/p1.glb",
-  "hd": null
+  "hd": "assets/cars/hd/p1.glb"
  },
  "sedan98": {
   "name": "BMW E46",
   "light": "assets/cars/lod/sedan98.glb",
   "hd": null
+ },
+ "ae86": {
+  "name": "Toyota AE86 Trueno",
+  "light": "assets/cars/lod/ae86.glb",
+  "hd": "assets/cars/hd/ae86.glb"
+ },
+ "viper": {
+  "name": "Dodge Viper RT/10",
+  "light": "assets/cars/lod/viper.glb",
+  "hd": "assets/cars/hd/viper.glb"
+ },
+ "venom": {
+  "name": "Hennessey Venom F5",
+  "light": "assets/cars/lod/venom.glb",
+  "hd": "assets/cars/hd/venom.glb"
+ },
+ "evo9": {
+  "name": "Mitsubishi Lancer Evolution IX",
+  "light": "assets/cars/lod/evo9.glb",
+  "hd": "assets/cars/hd/evo9.glb"
+ },
+ "offroad": {
+  "name": "Ford Ranger Raptor",
+  "light": "assets/cars/lod/offroad.glb",
+  "hd": "assets/cars/hd/offroad.glb"
+ },
+ "fastback65": {
+  "name": "Ford Mustang 1965 fastback",
+  "light": "assets/cars/lod/fastback65.glb",
+  "hd": "assets/cars/hd/fastback65.glb"
+ },
+ "awd99": {
+  "name": "Nissan Skyline R34 GT-R",
+  "light": "assets/cars/lod/awd99.glb",
+  "hd": "assets/cars/hd/awd99.glb"
+ },
+ "midv10": {
+  "name": "Audi R8 V10 Performance (4S)",
+  "light": "assets/cars/lod/midv10.glb",
+  "hd": "assets/cars/hd/midv10.glb"
+ },
+ "hothatch": {
+  "name": "Honda Civic Type R (FL5)",
+  "light": "assets/cars/lod/hothatch.glb",
+  "hd": "assets/cars/hd/hothatch.glb"
+ },
+ "v8sport": {
+  "name": "Chevrolet Corvette (C7)",
+  "light": "assets/cars/lod/v8sport.glb",
+  "hd": "assets/cars/hd/v8sport.glb"
+ },
+ "sportsaloon": {
+  "name": "Porsche Panamera Sport Turismo",
+  "light": "assets/cars/lod/sportsaloon.glb",
+  "hd": "assets/cars/hd/sportsaloon.glb"
+ },
+ "sport3": {
+  "name": "BMW M3 (G80)",
+  "light": "assets/cars/lod/sport3.glb",
+  "hd": "assets/cars/hd/sport3.glb"
  }
 }
